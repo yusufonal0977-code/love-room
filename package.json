@@ -1,0 +1,10 @@
+{
+  "name": "love-room",
+  "private": true,
+  "workspaces": ["packages/*", "server", "app"],
+  "scripts": {
+    "server": "npm run dev -w server",
+    "app": "npm run web -w app",
+    "typecheck": "tsc -p packages/shared && tsc -p server"
+  }
+}

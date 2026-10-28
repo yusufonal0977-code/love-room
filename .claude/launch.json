@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "server",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules/tsx/dist/cli.mjs", "server/src/index.ts"],
+      "port": 4000
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules/expo/bin/cli", "start", "app", "--port", "8081"],
+      "env": { "CI": "1", "BROWSER": "none" },
+      "port": 8081
+    }
+  ]
+}
