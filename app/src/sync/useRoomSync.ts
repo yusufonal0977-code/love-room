@@ -3,6 +3,7 @@ import { useRoomStore } from '../state/room';
 import { useSession } from '../state/session';
 import { closeSocket, openSocket } from './socket';
 import { handleSignal, hangUp } from '../call/callStore';
+import { useFeed } from '../state/feed';
 
 /**
  * Kullanıcının odasına gerçek zamanlı bağlanır ve sunucu durumunu store'a akıtır.
@@ -21,6 +22,8 @@ export function useRoomSync() {
     socket.on('room:state', store.receive);
     socket.on('room:reaction', store.pushReaction);
     socket.on('call:signal', (signal, from) => void handleSignal(signal, from));
+    socket.on('room:feed', (kind) => useFeed.getState().refresh(kind));
+    useFeed.getState().reset();
     socket.on('disconnect', () => useRoomStore.setState({ status: 'offline' }));
     socket.on('connect_error', (err) => {
       // Oturum düştüyse ya da kullanıcı artık bir odada değilse oturum bilgisini tazele.

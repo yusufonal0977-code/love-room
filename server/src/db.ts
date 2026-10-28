@@ -5,7 +5,9 @@ import {
   createRoom,
   isCharacter,
   migrateRoom,
+  type AlbumPhoto,
   type Character,
+  type DiaryEntry,
   type Member,
   type PublicUser,
   type RoomState,
@@ -41,6 +43,28 @@ db.exec(`
     room_id TEXT NOT NULL REFERENCES rooms(id),
     joined_at INTEGER NOT NULL
   );
+`);
+
+// Günlük ve albüm sınırsız büyüyebildiği için oda durumuna değil ayrı tablolara yazılır.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS diary_entries (
+    id TEXT PRIMARY KEY,
+    room_id TEXT NOT NULL,
+    author_id TEXT NOT NULL,
+    text TEXT NOT NULL,
+    mood TEXT,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS diary_room ON diary_entries(room_id, created_at);
+  CREATE TABLE IF NOT EXISTS album_photos (
+    id TEXT PRIMARY KEY,
+    room_id TEXT NOT NULL,
+    author_id TEXT NOT NULL,
+    url TEXT NOT NULL,
+    caption TEXT,
+    created_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS album_room ON album_photos(room_id, created_at);
 `);
 
 // Şema geçişleri: eski veritabanlarına yeni sütunları ekle.
@@ -192,6 +216,56 @@ export function roomCreator(roomId: string): PublicUser | null {
 
 export function addMember(roomId: string, userId: string) {
   db.prepare('INSERT INTO memberships (user_id, room_id, joined_at) VALUES (?, ?, ?)').run(userId, roomId, Date.now());
+}
+
+// ---- Günlük ----
+
+interface DiaryRow {
+  id: string;
+  author_id: string;
+  text: string;
+  mood: string | null;
+  created_at: number;
+}
+
+export function listDiary(roomId: string, limit = 100): DiaryEntry[] {
+  const rows = db
+    .prepare('SELECT * FROM diary_entries WHERE room_id = ? ORDER BY created_at DESC LIMIT ?')
+    .all(roomId, limit) as unknown as DiaryRow[];
+  return rows.map((r) => ({ id: r.id, authorId: r.author_id, text: r.text, mood: r.mood, createdAt: r.created_at }));
+}
+
+export function addDiary(roomId: string, authorId: string, text: string, mood: string | null) {
+  db.prepare('INSERT INTO diary_entries (id, room_id, author_id, text, mood, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(
+    randomUUID(), roomId, authorId, text, mood, Date.now(),
+  );
+}
+
+// ---- Albüm ----
+
+interface AlbumRow {
+  id: string;
+  author_id: string;
+  url: string;
+  caption: string | null;
+  created_at: number;
+}
+
+export function listAlbum(roomId: string): AlbumPhoto[] {
+  const rows = db
+    .prepare('SELECT * FROM album_photos WHERE room_id = ? ORDER BY created_at DESC LIMIT 500')
+    .all(roomId) as unknown as AlbumRow[];
+  return rows.map((r) => ({ id: r.id, authorId: r.author_id, url: r.url, caption: r.caption, createdAt: r.created_at }));
+}
+
+export function addAlbumPhoto(roomId: string, authorId: string, url: string, caption: string | null) {
+  db.prepare('INSERT INTO album_photos (id, room_id, author_id, url, caption, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(
+    randomUUID(), roomId, authorId, url, caption, Date.now(),
+  );
+}
+
+export function deleteAlbumPhoto(roomId: string, photoId: string) {
+  db.prepare('DELETE FROM album_photos WHERE id = ? AND room_id = ?').run(photoId, roomId);
 }
 
 /** Kullanıcıyı tek başına olduğu odadan çıkarır ve boş kalan odayı siler. */

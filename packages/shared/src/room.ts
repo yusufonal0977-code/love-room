@@ -11,6 +11,19 @@ import {
 } from './types';
 import { questionById } from './questions';
 import { PET_ACCESSORIES, PET_COLORS, PET_SPECIES, type PetAccessory, type PetSpecies } from './character';
+import {
+  FLOWER_KINDS,
+  FLOWER_STAGES,
+  ROOM_STYLES,
+  TOGETHER_WINDOW_MS,
+  WATER_COOLDOWN_MS,
+  gameOver,
+  shuffledDeck,
+  xoxWinner,
+  type FlowerKind,
+  type GameState,
+  type RoomStyle,
+} from './extras';
 
 export const PET_HUNGRY_AFTER_MS = 8 * 60 * 60 * 1000;
 export const MAX_MEMBERS = 2;
@@ -40,6 +53,9 @@ export function createRoom(roomId: string, name: string, anniversary: string | n
     music: { playing: false, trackUrl: null, trackTitle: null, positionSec: 0, updatedAt: now },
     question: null,
     qaHistory: [],
+    style: 'cream',
+    flower: { kind: 'tulip', plantedAt: now, growth: 0, lastWatered: {}, bloomedAt: null },
+    game: null,
   };
 }
 
@@ -51,6 +67,7 @@ export function migrateRoom(s: RoomState): RoomState {
     ...s,
     tv: { ...base.tv, ...s.tv },
     music: { ...base.music, ...s.music },
+    flower: { ...base.flower, ...s.flower },
     pet: { ...base.pet, ...s.pet },
     frames: { ...base.frames, ...s.frames },
   };
@@ -185,6 +202,73 @@ function apply(s: RoomState, a: RoomAction, userId: string, now: number): RoomSt
       if (!s.question || !text) return s;
       return { ...s, question: { ...s.question, answers: { ...s.question.answers, [userId]: text } } };
     }
+
+    case 'room/style':
+      return s.style === a.style ? s : { ...s, style: a.style };
+
+    case 'flower/water': {
+      const f = s.flower;
+      if (now - (f.lastWatered[userId] ?? 0) < WATER_COOLDOWN_MS) return s;
+      // Partner de son 24 saatte suladıysa "birlikte" bonusu.
+      const together = Object.entries(f.lastWatered).some(([id, t]) => id !== userId && now - t < TOGETHER_WINDOW_MS);
+      const growth = f.growth + 1 + (together ? 1 : 0);
+      const bloomed = f.bloomedAt ?? (growth >= FLOWER_STAGES[FLOWER_STAGES.length - 1] ? now : null);
+      return { ...s, flower: { ...f, growth, lastWatered: { ...f.lastWatered, [userId]: now }, bloomedAt: bloomed } };
+    }
+
+    case 'flower/plant':
+      // Yeni tohum ancak çiçek tamamen açınca (ya da hiç büyümemişken tür değiştirmek için) ekilir.
+      if (s.flower.bloomedAt === null && s.flower.growth > 0) return s;
+      return { ...s, flower: { kind: a.kind, plantedAt: now, growth: 0, lastWatered: {}, bloomedAt: null } };
+
+    case 'game/start': {
+      const players = [userId, ...s.members.map((m) => m.id).filter((id) => id !== userId)];
+      const game: GameState =
+        a.game === 'xox'
+          ? { kind: 'xox', players, board: Array(9).fill(null), turn: userId, winner: null, startedAt: now }
+          : {
+              kind: 'memory',
+              players,
+              deck: shuffledDeck(a.seed),
+              open: [],
+              matched: [],
+              turn: userId,
+              scores: Object.fromEntries(players.map((p) => [p, 0])),
+              startedAt: now,
+            };
+      return { ...s, game, focus: focusOn('console') };
+    }
+
+    case 'game/move': {
+      const g = s.game;
+      if (!g || gameOver(g) || g.turn !== userId) return s;
+      const nextPlayer = g.players[(g.players.indexOf(userId) + 1) % g.players.length];
+
+      if (g.kind === 'xox') {
+        if (a.index < 0 || a.index > 8 || g.board[a.index]) return s;
+        const board = g.board.map((c, i) => (i === a.index ? userId : c));
+        const winner = xoxWinner(board);
+        return { ...s, game: { ...g, board, winner, turn: winner ? g.turn : nextPlayer } };
+      }
+
+      if (a.index < 0 || a.index >= g.deck.length || g.matched.includes(a.index)) return s;
+      // Önceki turdan açık kalan eşleşmeyen iki kart, yeni kart açılırken kapanır.
+      const open = g.open.length === 2 ? [] : g.open;
+      if (open.includes(a.index)) return s;
+      const nowOpen = [...open, a.index];
+      if (nowOpen.length < 2) return { ...s, game: { ...g, open: nowOpen } };
+      const [x, y] = nowOpen;
+      if (g.deck[x] === g.deck[y]) {
+        return {
+          ...s,
+          game: { ...g, open: [], matched: [...g.matched, x, y], scores: { ...g.scores, [userId]: (g.scores[userId] ?? 0) + 1 } },
+        };
+      }
+      return { ...s, game: { ...g, open: nowOpen, turn: nextPlayer } };
+    }
+
+    case 'game/close':
+      return s.game ? { ...s, game: null } : s;
   }
 }
 
@@ -221,6 +305,16 @@ export function isRoomAction(x: unknown): x is RoomAction {
       return typeof a.questionId === 'string' && !!questionById(a.questionId);
     case 'question/answer':
       return isShortText(a.text, 600);
+    case 'room/style':
+      return ROOM_STYLES.includes(a.style as RoomStyle);
+    case 'flower/plant':
+      return FLOWER_KINDS.includes(a.kind as FlowerKind);
+    case 'game/start':
+      return (a.game === 'xox' || a.game === 'memory') && Number.isInteger(a.seed);
+    case 'game/move':
+      return Number.isInteger(a.index);
+    case 'flower/water':
+    case 'game/close':
     case 'music/play':
     case 'music/pause':
     case 'focus/clear':

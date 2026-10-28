@@ -12,12 +12,11 @@ import { RoomWindow } from '../objects/RoomWindow';
 import { PhotoFrame } from '../objects/PhotoFrame';
 import { RecordPlayer } from '../objects/RecordPlayer';
 import { QuestionJar } from '../objects/QuestionJar';
+import { AlbumShelf, ConsoleObject, DiaryBooks, FlowerPot } from '../objects/Interactive';
 import {
   Armchair,
-  Bookshelf,
   CoffeeTable,
   FloorLamp,
-  GameConsole,
   JuteRug,
   LogBasket,
   LowCabinet,
@@ -62,7 +61,7 @@ export function FrontWall() {
         <Rug />
       </Placed>
       <Placed rect={DECOR.console}>
-        <MediaConsole />
+        <MediaConsole bookSlot={<DiaryBooks />} />
       </Placed>
       <Placed rect={DECOR.frontPlantL}>
         <Plant tall />
@@ -70,8 +69,8 @@ export function FrontWall() {
       <Placed rect={DECOR.frontPlantR}>
         <Plant tall />
       </Placed>
-      <Placed rect={DECOR.gameConsole}>
-        <GameConsole />
+      <Placed rect={LAYOUT.console}>
+        <ConsoleObject />
       </Placed>
       <Placed rect={DECOR.pouf}>
         <Pouf />
@@ -106,8 +105,8 @@ export function RightWall() {
       <Placed rect={LAYOUT['photo-right-2']}>
         <PhotoFrame id="photo-right-2" />
       </Placed>
-      <Placed rect={DECOR.bookshelf}>
-        <Bookshelf />
+      <Placed rect={LAYOUT.album}>
+        <AlbumShelf />
       </Placed>
       <Placed rect={DECOR.cabinet}>
         <LowCabinet />
@@ -118,8 +117,8 @@ export function RightWall() {
       <Placed rect={LAYOUT.jar}>
         <QuestionJar />
       </Placed>
-      <Placed rect={DECOR.rightPlant}>
-        <Plant />
+      <Placed rect={LAYOUT.flower}>
+        <FlowerPot />
       </Placed>
     </WallCanvas>
   );

@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import {
   daysTogether,
   FRAME_IDS,
@@ -12,7 +11,8 @@ import {
 import { memberName, serverNow, useDispatch, useMe, usePartner, useRoom, useRoomStore } from '../state/room';
 import { useSession } from '../state/session';
 import { useNow } from '../hooks/useNow';
-import { api, errorText } from '../lib/api';
+import { errorText } from '../lib/api';
+import { pickAndUploadImage } from '../lib/upload';
 import { Button } from '../ui/Button';
 import { Body, Strong, Title } from '../ui/Txt';
 import { colors, fonts, webStyle } from '../theme';
@@ -20,6 +20,10 @@ import { FOCUS_PANEL_HEIGHT } from './WallCanvas';
 import { MusicPanel } from './panels/MusicPanel';
 import { QuestionPanel } from './panels/QuestionPanel';
 import { PetCustomizer } from './panels/PetCustomizer';
+import { DiaryPanel } from './panels/DiaryPanel';
+import { AlbumPanel } from './panels/AlbumPanel';
+import { FlowerPanel } from './panels/FlowerPanel';
+import { GamePanel } from './panels/GamePanel';
 
 /** Örnek filmler (açık lisanslı Blender filmleri). Kendi .mp4 adresinizi de girebilirsiniz. */
 const CATALOG = [
@@ -44,15 +48,24 @@ const TITLES: Record<ObjectId, string> = {
   'photo-right-2': 'Polaroid',
   record: 'Pikap',
   jar: 'Soru kavanozu',
+  album: 'Albümümüz',
+  flower: 'Çiçeğimiz',
+  diary: 'Günlüğümüz',
+  console: 'Oyun gecesi',
 };
+
+/** İçeriği uzun olan paneller ekranın daha büyük kısmını kullanır. */
+const TALL: ObjectId[] = ['diary', 'album', 'console', 'jar'];
 
 /** Odaklanan objenin kontrolleri. Zoom'lu sahnenin dışında, ölçeklenmeden alttan açılır. */
 export function FocusPanel({ objectId, by }: { objectId: ObjectId; by: string }) {
   const dispatch = useDispatch();
   const byName = useRoomStore((s) => (s.userId === by ? null : memberName(s.room!, by)));
+  const { height } = useWindowDimensions();
+  const maxHeight = TALL.includes(objectId) ? Math.max(FOCUS_PANEL_HEIGHT + 40, height * 0.66) : FOCUS_PANEL_HEIGHT + 40;
 
   return (
-    <View style={styles.panel}>
+    <View style={[styles.panel, { maxHeight }]}>
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
           <Title size={22}>{TITLES[objectId]}</Title>
@@ -75,6 +88,10 @@ export function FocusPanel({ objectId, by }: { objectId: ObjectId; by: string })
         {objectId === 'window' && <WindowInfo />}
         {objectId === 'record' && <MusicPanel />}
         {objectId === 'jar' && <QuestionPanel />}
+        {objectId === 'diary' && <DiaryPanel />}
+        {objectId === 'album' && <AlbumPanel />}
+        {objectId === 'flower' && <FlowerPanel />}
+        {objectId === 'console' && <GamePanel />}
         {FRAME_IDS.includes(objectId as FrameId) && <FrameControls id={objectId as FrameId} />}
       </ScrollView>
     </View>
@@ -280,18 +297,10 @@ function FrameControls({ id }: { id: FrameId }) {
 
   const pick = async () => {
     setError(null);
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
-    if (result.canceled) return;
-    const asset = result.assets[0];
     setBusy(true);
     try {
-      const blob = await (await fetch(asset.uri)).blob();
-      const { url } = await api<{ url: string }>('/uploads', {
-        token,
-        blob,
-        contentType: asset.mimeType ?? (blob.type || 'image/jpeg'),
-      });
-      dispatch({ type: 'frame/set', frameId: id, url, caption: caption.trim() || null });
+      const url = await pickAndUploadImage(token);
+      if (url) dispatch({ type: 'frame/set', frameId: id, url, caption: caption.trim() || null });
     } catch (e) {
       setError(errorText(e));
     } finally {
@@ -339,7 +348,6 @@ const styles = StyleSheet.create({
     maxWidth: 560,
     alignSelf: 'center',
     marginHorizontal: 'auto',
-    maxHeight: FOCUS_PANEL_HEIGHT + 40,
     backgroundColor: colors.glassStrong,
     borderRadius: 26,
     borderWidth: 1,

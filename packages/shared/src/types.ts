@@ -1,5 +1,6 @@
 // Oda modeli: istemci ve sunucunun ortak "tek doğruluk kaynağı" tanımı.
 import type { Character, PetAccessory, PetSpecies } from './character';
+import type { FlowerKind, FlowerState, GameKind, GameState, RoomStyle } from './extras';
 
 /** Saat yönünde sıralı duvarlar: sağa kaydırınca bir sonrakine geçilir (sağa dönmek gibi). */
 export const WALLS = ['front', 'right', 'back', 'left'] as const;
@@ -23,6 +24,10 @@ export const OBJECT_WALL = {
   'photo-right-2': 'right',
   record: 'right',
   jar: 'right',
+  album: 'right',
+  flower: 'right',
+  diary: 'front',
+  console: 'front',
 } as const satisfies Record<string, WallId>;
 export type ObjectId = keyof typeof OBJECT_WALL;
 
@@ -119,6 +124,10 @@ export interface RoomState {
   question: QuestionState | null;
   /** İkisinin de cevapladığı sorular — anı defteri (en yeni başta). */
   qaHistory: AnsweredQuestion[];
+  style: RoomStyle;
+  flower: FlowerState;
+  /** TV önündeki konsolda açık olan mini oyun. */
+  game: GameState | null;
 }
 
 /** İstemcinin gönderebileceği tüm niyetler. Sunucu bunları reducer'dan geçirir. */
@@ -141,7 +150,13 @@ export type RoomAction =
   | { type: 'music/play' }
   | { type: 'music/pause' }
   | { type: 'question/draw'; questionId: string }
-  | { type: 'question/answer'; text: string };
+  | { type: 'question/answer'; text: string }
+  | { type: 'room/style'; style: RoomStyle }
+  | { type: 'flower/water' }
+  | { type: 'flower/plant'; kind: FlowerKind }
+  | { type: 'game/start'; game: GameKind; seed: number }
+  | { type: 'game/move'; index: number }
+  | { type: 'game/close' };
 
 /** Kalıcı olmayan, anlık duygusal etkileşimler (taslaktaki "çift etkileşimli animasyonlar"). */
 export const REACTIONS = ['heart', 'hug', 'kiss', 'miss'] as const;

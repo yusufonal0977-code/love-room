@@ -63,6 +63,15 @@ Giriş (Google) → Oda kur (ad + ilişki başlangıç tarihi) → davet linki p
 
 **Karakterler:** herkes kendi karakterini oluşturur (ten, saç, saç rengi, kıyafet, aksesuar). Karakterler avatar olarak görünür ve kanepeye oturur. Görüntülü aramada karakterin yerine kişinin videosu oturur. Ortak evcil hayvanın türü (kedi/köpek/tavşan), rengi, aksesuarı ve adı da değiştirilebilir.
 
+**Birlikte yapılacaklar:**
+- 📖 **Günlük**: TV ünitesindeki kitaplara dokun; ikinizin yazdığı, duygu emojili ortak günlük.
+- 📷 **Albüm**: kitaplıktaki albüm; sınırsız fotoğraf, not ve tam ekran görüntüleme.
+- 🌷 **Çiçek**: pencere yanındaki saksı. Herkes günde bir kez sular; ikiniz de 24 saat içinde sularsanız iki kat büyür. Tohumdan tam açmış çiçeğe 6 aşama; açınca yeni tohum (lale, gül, ayçiçeği, papatya).
+- 🎮 **Mini oyunlar**: TV önündeki konsol: XOX ve hafıza kartları, iki ekranda aynı anda.
+- 🎨 **Oda stilleri**: menüden krem, terrakota, orman, pudra, gece mavisi.
+
+Kalıcı yayın (alan adı + sunucu) için: [deploy/README.md](deploy/README.md).
+
 Her yerde: ❤️ 🤗 💋 🥺 tepkileri (karşı tarafta animasyon + mesaj). Bir objeye dokunmak iki ekranı da oraya döndürür ve yakınlaştırır.
 
 **Sesli/görüntülü arama** (üst bardaki 📞 🎥): WebRTC ile eşler arası; görüşme odanın köşesinde küçük bir pencerede sürer, dokununca büyür. Şimdilik web'de çalışır.

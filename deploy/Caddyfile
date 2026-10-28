@@ -1,0 +1,5 @@
+# Alan adına gelen her şeyi (web, API, WebSocket) Love Room sunucusuna iletir; HTTPS otomatik.
+{$DOMAIN}, www.{$DOMAIN} {
+	encode gzip
+	reverse_proxy app:4000
+}

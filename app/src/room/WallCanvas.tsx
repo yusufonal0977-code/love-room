@@ -3,7 +3,7 @@ import { Animated, Platform, Pressable, StyleSheet, View, type LayoutChangeEvent
 import Svg, { Defs, Ellipse, G, Line, LinearGradient, Mask, Polygon, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { OBJECT_WALL, type ObjectId, type WallId } from '@loveroom/shared';
 import { useRoomStore } from '../state/room';
-import { wallThemes, webStyle } from '../theme';
+import { wallColors } from '../theme';
 import { FLOOR_Y, LAYOUT, zoomFor, type Rect as R } from './layout';
 import type { Lighting } from './lighting';
 import { FairyLights } from './decor/FairyLights';
@@ -143,7 +143,8 @@ function Atmosphere({ id, lighting, lights }: { id: string; lighting: Lighting; 
  * viewBox 100×100, oranlar esnetilir.
  */
 function WallBackground({ wall, id }: { wall: WallId; id: string }) {
-  const t = wallThemes[wall];
+  const style = useRoomStore((s) => s.room?.style ?? 'cream');
+  const t = wallColors(style, wall);
   const floor = FLOOR_Y * 100;
   const ceil = 4.5;
   const rail = floor * 0.6;

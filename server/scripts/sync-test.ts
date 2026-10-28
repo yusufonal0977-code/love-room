@@ -62,6 +62,31 @@ a.socket.emit('room:action', { type: 'question/answer', text: 'Sabah mesajların
 const qs = await bSawQuestion;
 console.log('Soru:', qs.question?.text, '| Ayşe cevapladı:', !!qs.question?.answers[ayse.user.id]);
 
+// Günlük: yazı eklenince partner "room:feed" alır
+const bSawFeed = new Promise<string>((resolve) => b.socket.on('room:feed', resolve));
+await call('/diary', { text: 'İlk sayfa 💞', mood: '🥰' }, ayse.token);
+console.log('Mehmet günlük bildirimi aldı:', await bSawFeed);
+
+// Çiçek: ikisi de sulayınca birlikte bonusu (1 + 2 = 3 puan)
+const flowerGrown = new Promise<RoomState>((resolve) => b.socket.on('room:state', (st) => st.flower.growth >= 3 && resolve(st)));
+a.socket.emit('room:action', { type: 'flower/water' });
+await new Promise((r) => setTimeout(r, 200));
+b.socket.emit('room:action', { type: 'flower/water' });
+console.log('Çiçek büyüme puanı:', (await flowerGrown).flower.growth);
+
+// XOX: Ayşe sol sütunu doldurup kazanır
+const xoxDone = new Promise<RoomState>((resolve) =>
+  b.socket.on('room:state', (st) => st.game?.kind === 'xox' && st.game.winner && resolve(st)),
+);
+a.socket.emit('room:action', { type: 'game/start', game: 'xox', seed: 1 });
+const moves: [S, number][] = [[a.socket, 0], [b.socket, 1], [a.socket, 3], [b.socket, 4], [a.socket, 6]];
+for (const [sock, index] of moves) {
+  await new Promise((r) => setTimeout(r, 150));
+  sock.emit('room:action', { type: 'game/move', index });
+}
+const xox = await xoxDone;
+console.log('XOX kazanan Ayşe mi:', xox.game?.kind === 'xox' && xox.game.winner === ayse.user.id);
+
 const third = await call(`/invites/${room.inviteCode}/accept`, {}, ucuncu.token);
 console.log('3. kişi:', third.status, third.data);
 

@@ -3,7 +3,7 @@
     "name": "Love Room",
     "slug": "love-room",
     "scheme": "loveroom",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#1c1410",

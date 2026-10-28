@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { daysTogether, REACTIONS, WALLS, type ReactionKind, type WallId } from '@loveroom/shared';
+import { daysTogether, REACTIONS, ROOM_STYLES, WALLS, type ReactionKind, type WallId } from '@loveroom/shared';
 import { useMe, usePartner, useRoomStore } from '../state/room';
 import { useSession } from '../state/session';
 import { Avatar } from '../ui/Avatar';
 import { Body, Strong, Title } from '../ui/Txt';
 import { Button } from '../ui/Button';
 import { InviteCard } from '../screens/InviteCard';
-import { colors, fonts, wallThemes } from '../theme';
+import { colors, fonts, roomStyles, wallThemes } from '../theme';
 import { callSupported, startCall, useCall } from '../call/callStore';
 import { CharacterEditor } from '../characters/CharacterEditor';
 
@@ -142,6 +142,30 @@ function CallButton({ icon, online, name, onPress }: { icon: string; online: boo
   );
 }
 
+/** Oda stili: seçim iki ekranda da anında uygulanır. */
+function StylePicker() {
+  const style = useRoomStore((s) => s.room!.style);
+  const dispatch = useRoomStore((s) => s.dispatch);
+  return (
+    <View style={{ gap: 8 }}>
+      <Strong size={12} color={colors.textDim}>
+        Oda stili 🎨
+      </Strong>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {ROOM_STYLES.map((s) => (
+          <Pressable key={s} onPress={() => dispatch({ type: 'room/style', style: s })} style={[styles.styleChip, style === s && styles.styleChipActive]}>
+            <View style={styles.swatchPair}>
+              <View style={[styles.swatchHalf, { backgroundColor: roomStyles[s].swatch[0] }]} />
+              <View style={[styles.swatchHalf, { backgroundColor: roomStyles[s].swatch[1] }]} />
+            </View>
+            <Text style={styles.styleText}>{roomStyles[s].label}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function RoomMenu({ visible, onClose, onEditCharacter }: { visible: boolean; onClose: () => void; onEditCharacter: () => void }) {
   const me = useMe();
   const partner = usePartner();
@@ -175,6 +199,7 @@ function RoomMenu({ visible, onClose, onEditCharacter }: { visible: boolean; onC
               {room && <InviteCard code={room.inviteCode} />}
             </>
           )}
+          <StylePicker />
           <Button label="Karakterimi düzenle ✏️" onPress={onEditCharacter} small />
           <Button variant="ghost" label="Çıkış yap" onPress={signOut} small />
         </Pressable>
@@ -198,6 +223,22 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     minHeight: 42,
   },
+  styleChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    paddingLeft: 4,
+    paddingRight: 10,
+    paddingVertical: 4,
+    backgroundColor: colors.glass,
+  },
+  styleChipActive: { borderColor: colors.rose, backgroundColor: 'rgba(217,120,90,0.2)' },
+  swatchPair: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden', flexDirection: 'row' },
+  swatchHalf: { flex: 1 },
+  styleText: { color: colors.text, fontFamily: fonts.bodySemi, fontSize: 12 },
   callBtn: {
     width: 40,
     height: 40,

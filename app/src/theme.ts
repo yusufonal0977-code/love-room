@@ -1,4 +1,5 @@
 import { Platform, type ViewStyle } from 'react-native';
+import type { RoomStyle, WallId } from '@loveroom/shared';
 
 /** Sadece web'de desteklenen CSS (ör. backdrop-filter) — mobilde yok sayılır. */
 export const webStyle = (style: Record<string, string>): ViewStyle =>
@@ -46,3 +47,34 @@ export const wallThemes = {
   back: { top: '#f0e2cf', bottom: '#e6d0b6', wainscot: '#b98a62', trim: '#f7efe2', label: 'Kanepemiz' },
   left: { top: '#ecdccb', bottom: '#dfc9b1', wainscot: '#a7b49c', trim: '#f7efe2', label: 'Şömine başı' },
 } as const;
+
+type WallColors = { top: string; bottom: string; wainscot: string; trim: string };
+
+/** Oda stilleri: krem dışındakiler dört duvara aynı paleti uygular. */
+export const roomStyles: Record<RoomStyle, { label: string; swatch: [string, string]; walls?: WallColors }> = {
+  cream: { label: 'Krem & adaçayı', swatch: ['#efe4d2', '#9fae95'] },
+  terracotta: {
+    label: 'Terrakota',
+    swatch: ['#ecc9b0', '#b9654a'],
+    walls: { top: '#efd2bd', bottom: '#e4bb9e', wainscot: '#b9654a', trim: '#f7ece0' },
+  },
+  forest: {
+    label: 'Orman',
+    swatch: ['#dfe5d6', '#4f6b4f'],
+    walls: { top: '#e3e8da', bottom: '#d2dac6', wainscot: '#4f6b4f', trim: '#f4f0e6' },
+  },
+  blush: {
+    label: 'Pudra',
+    swatch: ['#f3dcd6', '#c98f8f'],
+    walls: { top: '#f5e2dc', bottom: '#ecd2ca', wainscot: '#c98f8f', trim: '#fbf3ef' },
+  },
+  midnight: {
+    label: 'Gece mavisi',
+    swatch: ['#3b4566', '#d9cdb8'],
+    walls: { top: '#46507a', bottom: '#384166', wainscot: '#272e4a', trim: '#d9cdb8' },
+  },
+};
+
+export function wallColors(style: RoomStyle, wall: WallId): WallColors {
+  return roomStyles[style]?.walls ?? wallThemes[wall];
+}

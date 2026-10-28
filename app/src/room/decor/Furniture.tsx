@@ -1,6 +1,9 @@
 // Dekoratif (etkileşimsiz) mobilya ve eşyalar. Hepsi gradyan, gölge ve temas gölgesiyle çizilir;
 // düz renkli "sticker" görünümünden kaçınmak için ışık hep sol üstten gelir.
+import type { ReactNode } from 'react';
+import { View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Line, Path, Polygon, RadialGradient, Rect, Stop } from 'react-native-svg';
+import { AspectBox } from '../objects/AspectBox';
 import { useUid } from './useUid';
 
 const BOTTOM = 'xMidYMax meet';
@@ -35,11 +38,15 @@ function WoodDefs({ id, light = '#a87249', dark = '#6e4426' }: { id: string; lig
   );
 }
 
-/** Orta yüzyıl tarzı alçak TV ünitesi; üstünde mumlar, kitaplar (ileride günlük), küçük bitki. */
-export function MediaConsole() {
+/**
+ * Orta yüzyıl tarzı alçak TV ünitesi; üstünde mumlar ve küçük bitki.
+ * `bookSlot`: ünitenin üstündeki kitap/günlük yuvası (etkileşimli obje buraya yerleşir).
+ */
+export function MediaConsole({ bookSlot }: { bookSlot?: ReactNode }) {
   const id = useUid('console');
   return (
-    <Svg width="100%" height="100%" viewBox="0 0 220 60" preserveAspectRatio={BOTTOM}>
+    <AspectBox ratio={220 / 60} align="flex-end">
+      <Svg width="100%" height="100%" viewBox="0 0 220 60">
       <WoodDefs id={id} />
       <ContactShadow id={id} cx={110} cy={57} rx={104} ry={4} />
       {/* Üstündekiler */}
@@ -47,9 +54,6 @@ export function MediaConsole() {
         <Rect x="20" y="4" width="5" height="12" rx="1" fill="#fbf1e2" />
         <Rect x="27" y="0" width="5" height="16" rx="1" fill="#f6e8d3" />
         <Rect x="34" y="7" width="5" height="9" rx="1" fill="#fbf1e2" />
-        <Rect x="150" y="10" width="34" height="6" rx="1" fill="#8b3f2c" />
-        <Rect x="153" y="5" width="30" height="5" rx="1" fill="#e8d8c2" />
-        <Rect x="151" y="1" width="26" height="4" rx="1" fill="#6f8a6a" />
         <Path d="M196 16 L198 6 L208 6 L210 16 Z" fill="#c46f50" />
         <Path d="M203 6 Q196 -6 190 -1 M203 6 Q206 -8 213 -3 M203 6 Q203 -10 202 -6" stroke="#5f8a5a" strokeWidth="3" fill="none" strokeLinecap="round" />
       </G>
@@ -66,7 +70,14 @@ export function MediaConsole() {
       ))}
       <Rect x="8" y="21" width="204" height="1.2" fill="rgba(0,0,0,0.25)" />
       <Path d="M22 48 L18 58 M198 48 L202 58 M70 48 L68 56 M150 48 L152 56" stroke="#4a2e1a" strokeWidth="3" strokeLinecap="round" />
-    </Svg>
+      </Svg>
+      {/* Kitap yuvası: viewBox'ta x 146–190, y -6–16 (ünitenin üst yüzeyine oturur) */}
+      {bookSlot && (
+        <View style={{ position: 'absolute', left: `${(146 / 220) * 100}%`, top: '-10%', width: '20%', height: '36.7%' }}>
+          {bookSlot}
+        </View>
+      )}
+    </AspectBox>
   );
 }
 

@@ -10,11 +10,11 @@ import type {
   InvitePreview,
   MeResponse,
 } from '@loveroom/shared';
-import { isCharacter, MAX_MEMBERS } from '@loveroom/shared';
+import { DIARY_MOODS, isCharacter, MAX_MEMBERS } from '@loveroom/shared';
 import { requireAuth, signToken, verifyGoogleIdToken, type AuthedRequest } from './auth';
 import * as db from './db';
 import { DEV_LOGIN, GOOGLE_CLIENT_ID, GOOGLE_ORIGINS, UPLOADS_DIR } from './env';
-import { refreshRoomMembers } from './realtime';
+import { notifyFeed, refreshRoomMembers } from './realtime';
 
 const fail = (res: Response, status: number, error: ApiErrorCode) => void res.status(status).json({ error });
 const ANNIVERSARY_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -119,6 +119,55 @@ api.post('/invites/:code/accept', requireAuth, (req, res) => {
   db.addMember(roomId, userId);
   refreshRoomMembers(roomId);
   res.json(db.roomSummary(roomId));
+});
+
+// ---- Günlük ve albüm ----
+
+/** Oturum açmış kullanıcının odası; yoksa 403 döner. */
+function roomOf(req: Request, res: Response): string | null {
+  const roomId = db.roomIdOf((req as AuthedRequest).userId);
+  if (!roomId) fail(res, 403, 'UNAUTHORIZED');
+  return roomId;
+}
+
+api.get('/diary', requireAuth, (req, res) => {
+  const roomId = roomOf(req, res);
+  if (roomId) res.json(db.listDiary(roomId));
+});
+
+api.post('/diary', requireAuth, (req, res) => {
+  const roomId = roomOf(req, res);
+  if (!roomId) return;
+  const text = typeof req.body?.text === 'string' ? req.body.text.trim().slice(0, 2000) : '';
+  const mood = DIARY_MOODS.includes(req.body?.mood) ? (req.body.mood as string) : null;
+  if (!text) return fail(res, 400, 'BAD_REQUEST');
+  db.addDiary(roomId, (req as AuthedRequest).userId, text, mood);
+  notifyFeed(roomId, 'diary');
+  res.status(201).json({ ok: true });
+});
+
+api.get('/album', requireAuth, (req, res) => {
+  const roomId = roomOf(req, res);
+  if (roomId) res.json(db.listAlbum(roomId));
+});
+
+api.post('/album', requireAuth, (req, res) => {
+  const roomId = roomOf(req, res);
+  if (!roomId) return;
+  const url = req.body?.url;
+  const caption = typeof req.body?.caption === 'string' ? req.body.caption.trim().slice(0, 140) || null : null;
+  if (typeof url !== 'string' || !url.startsWith('/uploads/')) return fail(res, 400, 'BAD_REQUEST');
+  db.addAlbumPhoto(roomId, (req as AuthedRequest).userId, url, caption);
+  notifyFeed(roomId, 'album');
+  res.status(201).json({ ok: true });
+});
+
+api.post('/album/:id/delete', requireAuth, (req, res) => {
+  const roomId = roomOf(req, res);
+  if (!roomId) return;
+  db.deleteAlbumPhoto(roomId, String(req.params.id));
+  notifyFeed(roomId, 'album');
+  res.json({ ok: true });
 });
 
 // ---- Pano fotoğrafı yükleme ----

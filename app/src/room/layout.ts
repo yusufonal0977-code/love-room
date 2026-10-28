@@ -32,6 +32,11 @@ export const LAYOUT: Record<ObjectId, Rect> = {
   'photo-right-2': { x: 0.76, y: 0.2, w: 0.19, h: 0.24 },
   record: { x: 0.29, y: 0.505, w: 0.24, h: 0.1 },
   jar: { x: 0.56, y: 0.475, w: 0.12, h: 0.13 },
+  album: { x: 0.02, y: 0.42, w: 0.2, h: 0.42 },
+  flower: { x: 0.75, y: 0.48, w: 0.17, h: 0.38 },
+  // Ön duvar: günlük TV ünitesinin üstünde (tıklama alanı ünitenin içinde), oyun konsolu TV'nin önünde
+  diary: { x: 0.5, y: 0.48, w: 0.36, h: 0.2 },
+  console: { x: 0.43, y: 0.74, w: 0.17, h: 0.08 },
 };
 
 /** Dekoratif (odaklanamayan) parçaların konumları. */

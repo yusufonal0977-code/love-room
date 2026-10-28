@@ -48,6 +48,11 @@ async function refreshPresence(roomId: string) {
   commit({ ...room, online, members: db.roomMembers(roomId), sofa: room.sofa.filter((u) => online.includes(u)) }, false);
 }
 
+/** Günlük/albüm değişince odadakilere haber verir; açık paneller listeyi yeniden çeker. */
+export function notifyFeed(roomId: string, kind: 'diary' | 'album') {
+  io?.to(roomId).emit('room:feed', kind);
+}
+
 /** HTTP tarafı (davet kabulü) yeni üye eklediğinde odadakilere haber verir. */
 export function refreshRoomMembers(roomId: string) {
   void refreshPresence(roomId);

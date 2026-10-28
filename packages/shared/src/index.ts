@@ -5,3 +5,4 @@ export * from './api';
 export * from './questions';
 export * from './call';
 export * from './character';
+export * from './extras';

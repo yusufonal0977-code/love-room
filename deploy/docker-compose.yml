@@ -1,0 +1,33 @@
+# Love Room — sunucuda (VPS) kalıcı yayın.
+# Kullanım (deploy/ klasöründe):  DOMAIN=loveroom.com docker compose up -d --build
+# Güncelleme:                       git pull && DOMAIN=loveroom.com docker compose up -d --build
+services:
+  app:
+    build: ..
+    restart: unless-stopped
+    env_file: ../server/.env
+    environment:
+      DATA_DIR: /data
+      CORS_ORIGIN: https://${DOMAIN}
+      GOOGLE_ORIGINS: https://${DOMAIN}
+    volumes:
+      - loveroom-data:/data # odalar, kullanıcılar, yüklenen fotoğraflar (güncellemelerde silinmez)
+
+  # Caddy: alan adı için ücretsiz HTTPS sertifikasını kendisi alır ve yeniler.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - app
+
+volumes:
+  loveroom-data:
+  caddy-data:

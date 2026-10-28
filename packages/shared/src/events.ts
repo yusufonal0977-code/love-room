@@ -19,6 +19,8 @@ export interface ServerToClientEvents {
   'room:reaction': (r: Reaction) => void;
   'room:error': (code: 'NO_ROOM' | 'UNAUTHORIZED') => void;
   'call:signal': (s: CallSignal, from: string) => void;
+  /** Günlüğe yazı ya da albüme fotoğraf eklendi: açık paneller listeyi tazeler. */
+  'room:feed': (kind: 'diary' | 'album') => void;
 }
 
 export interface SocketData {
