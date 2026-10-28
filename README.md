@@ -2,9 +2,9 @@
 
 Uzaktaki çiftler için piksel bir ev. Aynı odada yürüyün, kanepede yan yana oturun, konuşun.
 
-**▶ Oyna:** https://yusufonal0977-code.github.io/love-room/
+**▶ Oyna:** https://getloveroom.com
 
-Bir Eclip Software & Entertainment yapımı · [Hakkımızda, gizlilik ve koşullar](https://yusufonal0977-code.github.io/love-room/legal.html) · eclipsoftware.dev@gmail.com
+Bir Eclip Software & Entertainment yapımı · [Hakkımızda, gizlilik ve koşullar](https://getloveroom.com/legal.html) · eclipsoftware.dev@gmail.com
 
 ## Nasıl?
 
