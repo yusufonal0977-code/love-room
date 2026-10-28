@@ -18,6 +18,14 @@ Uçtan uca test (sunucu açıkken): `npm.cmd run test:sync -w server`
 
 **İki kişiyle denemek:** Google ayarlı değilken "Hızlı giriş" açık. Bu giriş sekmeye özeldir; aynı tarayıcıda iki sekmede iki farklı isimle girebilirsin.
 
+## Arkadaşlarla paylaşmak (herkese açık link)
+
+`paylas.cmd` dosyasına çift tıkla. Web sürümü derlenir, sunucu ve bir Cloudflare tüneli açılır, `https://….trycloudflare.com` linki ekrana yazılır ve panoya kopyalanır. Linki gönder; açan herkes tarayıcıdan kullanabilir.
+
+- Link, bilgisayarın ve açılan pencereler açık kaldıkça çalışır. Her çalıştırmada link değişir (hesap gerekmez).
+- Linkte Google butonu gizlidir (Google sadece yetkilendirilmiş adreslerde çalışır); arkadaşlar **Hızlı giriş** ile isimleriyle girer. Linkten yapılan her hızlı giriş ayrı bir misafir hesabıdır.
+- https olduğu için sesli/görüntülü arama farklı cihazlar arasında da çalışır.
+
 ## Sürümler ve arşiv
 
 Her sürüm `vX.Y.Z` etiketiyle GitHub'a yüklenir ve [Releases](https://github.com/yusufonal0977-code/love-room/releases) sayfasına zip olarak eklenir. Aynı zip, projenin yanındaki `arsiv/` klasöründe de saklanır.

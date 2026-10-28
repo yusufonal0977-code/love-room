@@ -66,6 +66,13 @@ export function upsertDevUser(name: string): PublicUser {
   return { id, name, email: null, avatarUrl: null };
 }
 
+/** Herkese açık linkte hızlı giriş: her seferinde yeni, tahmin edilemez bir misafir hesabı. */
+export function createGuestUser(name: string): PublicUser {
+  const id = `guest-${randomUUID()}`;
+  db.prepare('INSERT INTO users (id, email, name, created_at) VALUES (?, NULL, ?, ?)').run(id, name, Date.now());
+  return { id, name, email: null, avatarUrl: null };
+}
+
 export function getUser(id: string): PublicUser | null {
   const row = db.prepare('SELECT * FROM users WHERE id = ?').get(id) as UserRow | undefined;
   return row ? toPublicUser(row) : null;

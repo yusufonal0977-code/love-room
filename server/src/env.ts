@@ -14,6 +14,18 @@ export const UPLOADS_DIR = join(DATA_DIR, 'uploads');
 mkdirSync(UPLOADS_DIR, { recursive: true });
 
 export const PORT = Number(process.env.PORT ?? 4000);
+
+/** Expo web derlemesinin çıktısı; varsa sunucu web uygulamasını da sunar. */
+export const WEB_DIST = process.env.WEB_DIST ?? join(serverRoot, '..', 'app', 'dist');
+
+/**
+ * Google girişine izin verilen web adresleri (Google Console'daki "Authorized JavaScript origins" ile aynı).
+ * Başka bir adresten (ör. geçici tünel linki) açılınca Google butonu gizlenir, hızlı giriş kullanılır.
+ */
+export const GOOGLE_ORIGINS = (process.env.GOOGLE_ORIGINS ?? 'http://localhost:8081')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
 export const CORS_ORIGIN = process.env.CORS_ORIGIN ?? '*';
 
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID?.trim() || null;

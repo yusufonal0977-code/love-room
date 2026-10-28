@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isLocalWeb } from '../config';
 
 const KEY = 'loveroom.token';
 
@@ -11,7 +12,8 @@ const KEY = 'loveroom.token';
 export async function saveToken(token: string, perTab: boolean) {
   if (Platform.OS === 'web') {
     clearWeb();
-    (perTab ? sessionStorage : localStorage).setItem(KEY, token);
+    // Sekmeye özel saklama sadece yerel testte; paylaşılan linkte oturum tarayıcı kapanınca da kalsın.
+    (perTab && isLocalWeb ? sessionStorage : localStorage).setItem(KEY, token);
   } else {
     await AsyncStorage.setItem(KEY, token);
   }

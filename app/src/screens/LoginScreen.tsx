@@ -12,6 +12,7 @@ import { Field } from '../ui/Field';
 import { Avatar } from '../ui/Avatar';
 import { Body, Strong } from '../ui/Txt';
 import { colors } from '../theme';
+import { isLocalWeb } from '../config';
 
 const FEATURES = [
   ['🎬', 'Aynı anda film'],
@@ -89,7 +90,7 @@ export function LoginScreen() {
           <View style={{ gap: 12 }}>
             {google && <Divider />}
             <Field
-              label="Geliştirme girişi — sadece adınla"
+              label={isLocalWeb ? 'Geliştirme girişi — sadece adınla' : 'Hızlı giriş — sadece adınla'}
               value={devName}
               onChangeText={setDevName}
               placeholder="Örn. Ayşe"
@@ -103,7 +104,7 @@ export function LoginScreen() {
               disabled={!devName.trim()}
               onPress={() => run(() => api('/auth/dev', { body: { name: devName.trim() } }), true)}
             />
-            {!google && (
+            {!google && isLocalWeb && (
               <Body size={12} color={colors.textDim} center>
                 Google girişini açmak için server/.env dosyasına GOOGLE_CLIENT_ID ekle.
               </Body>

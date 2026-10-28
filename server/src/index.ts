@@ -1,7 +1,9 @@
 import { createServer } from 'node:http';
 import express from 'express';
 import cors from 'cors';
-import { CORS_ORIGIN, DEV_LOGIN, GOOGLE_CLIENT_ID, PORT, UPLOADS_DIR } from './env';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { CORS_ORIGIN, DEV_LOGIN, GOOGLE_CLIENT_ID, PORT, UPLOADS_DIR, WEB_DIST } from './env';
 import { api } from './http';
 import { attachRealtime } from './realtime';
 
@@ -10,7 +12,14 @@ app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json({ limit: '100kb' }));
 app.use('/api', api);
 app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '7d', immutable: true }));
-app.get('/', (_req, res) => void res.type('text').send('love-room ok'));
+
+// Web derlemesi (npm run build:web → app/dist) varsa aynı adresten sun: tek link yeter.
+if (existsSync(join(WEB_DIST, 'index.html'))) {
+  app.use(express.static(WEB_DIST, { index: false, maxAge: '1h' }));
+  app.get(/^(?!\/(api|uploads|socket\.io)\/).*/, (_req, res) => res.sendFile(join(WEB_DIST, 'index.html')));
+} else {
+  app.get('/', (_req, res) => void res.type('text').send('love-room ok'));
+}
 
 const httpServer = createServer(app);
 attachRealtime(httpServer);

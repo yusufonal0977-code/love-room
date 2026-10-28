@@ -1,4 +1,4 @@
-import express, { Router, type Response } from 'express';
+import express, { Router, type Request, type Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -13,7 +13,7 @@ import type {
 import { MAX_MEMBERS } from '@loveroom/shared';
 import { requireAuth, signToken, verifyGoogleIdToken, type AuthedRequest } from './auth';
 import * as db from './db';
-import { DEV_LOGIN, GOOGLE_CLIENT_ID, UPLOADS_DIR } from './env';
+import { DEV_LOGIN, GOOGLE_CLIENT_ID, GOOGLE_ORIGINS, UPLOADS_DIR } from './env';
 import { refreshRoomMembers } from './realtime';
 
 const fail = (res: Response, status: number, error: ApiErrorCode) => void res.status(status).json({ error });
@@ -22,8 +22,21 @@ const IMAGE_EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'p
 
 export const api = Router();
 
-api.get('/config', (_req, res) => {
-  res.json({ googleClientId: GOOGLE_CLIENT_ID, devLogin: DEV_LOGIN } satisfies AppConfig);
+/** İsteğin geldiği web adresi: geliştirmede Origin başlığı, tek adresten sunulunca (tünel) kendi adresi. */
+function requestOrigin(req: Request) {
+  if (req.headers.origin) return req.headers.origin;
+  const proto = req.get('x-forwarded-proto') ?? req.protocol;
+  return `${proto}://${req.get('x-forwarded-host') ?? req.get('host')}`;
+}
+const isLocalOrigin = (origin: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
+api.get('/config', (req, res) => {
+  const origin = requestOrigin(req);
+  res.json({
+    // Google sadece Google Console'da yetkilendirilmiş adreslerde çalışır; diğerlerinde butonu gizle.
+    googleClientId: GOOGLE_CLIENT_ID && GOOGLE_ORIGINS.includes(origin) ? GOOGLE_CLIENT_ID : null,
+    devLogin: DEV_LOGIN,
+  } satisfies AppConfig);
 });
 
 // ---- Giriş ----
@@ -42,7 +55,9 @@ api.post('/auth/dev', (req, res) => {
   if (!DEV_LOGIN) return fail(res, 403, 'DEV_LOGIN_DISABLED');
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 30) : '';
   if (!name) return fail(res, 400, 'BAD_REQUEST');
-  const user = db.upsertDevUser(name);
+  // Yerelde aynı isim aynı hesaba döner (test kolaylığı). Herkese açık linkte her giriş yeni bir hesaptır;
+  // yoksa biri başkasının adını yazıp onun odasına girebilirdi.
+  const user = isLocalOrigin(requestOrigin(req)) ? db.upsertDevUser(name) : db.createGuestUser(name);
   res.json({ token: signToken(user.id), user } satisfies AuthResponse);
 });
 
