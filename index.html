@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Love Room</title>
+<meta name="description" content="Uzaktaki çiftler için piksel bir ev: aynı odada yürüyün, konuşun, birlikte vakit geçirin.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Love Room">
+<meta property="og:description" content="Kilometreler arada, aynı odadayız.">
+<meta property="og:image" content="assets/loveroom-logo.webp">
+<link rel="icon" href="assets/loveroom-logo.webp">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Eclip açılış -->
+<div id="intro" aria-hidden="true">
+  <img src="assets/eclip-logo.webp" alt="">
+  <p><b>ECLIP</b><br>SOFTWARE &amp; ENTERTAINMENT</p>
+</div>
+
+<!-- Giriş -->
+<section id="gate" class="screen" hidden>
+  <img class="logo" src="assets/loveroom-logo.webp" alt="Love Room">
+  <h1>Love <span>Room</span></h1>
+  <p id="gateNote">Kilometreler arada, aynı odadayız.</p>
+  <button id="googleBtn" class="primary"><span class="g">G</span> Google ile gir</button>
+  <div class="or">ya da</div>
+  <div class="row">
+    <input id="nameIn" maxlength="14" placeholder="Adın" autocomplete="off">
+    <button id="guestBtn">Adınla gir</button>
+  </div>
+  <p class="small" id="gateErr"></p>
+</section>
+
+<!-- Ev kurma -->
+<section id="setup" class="screen" hidden>
+  <img class="logo sm" src="assets/loveroom-logo.webp" alt="">
+  <h2>Hoş geldin, <span id="setupName"></span></h2>
+  <p>Önce ikinize ait küçük bir ev kuralım. Partnerin, sana vereceğim davet linkiyle gelecek.</p>
+  <button id="createBtn" class="primary">Evimizi kur ✨</button>
+  <button id="logoutBtn1" class="link">Farklı hesapla gir</button>
+</section>
+
+<!-- Davet kabul -->
+<section id="invite" class="screen" hidden>
+  <img class="logo sm" src="assets/loveroom-logo.webp" alt="">
+  <h2 id="inviteTitle"></h2>
+  <p id="inviteText"></p>
+  <button id="acceptBtn" class="primary">Odaya gir 💞</button>
+  <button id="declineBtn" class="link">Vazgeç</button>
+</section>
+
+<!-- Dünya -->
+<section id="world" hidden>
+  <header id="top">
+    <div><b id="roomName">Bizim Ev</b><span id="status"></span></div>
+    <button id="inviteChip" hidden>💌 Partnerini davet et</button>
+  </header>
+  <div id="stage"><canvas id="c" width="192" height="144"></canvas><div id="ov"></div></div>
+  <nav id="bar">
+    <button id="micBtn" title="Mikrofon">🎙️</button>
+    <button id="camBtn" title="Kamera" class="off">📷</button>
+    <button id="screenBtn" title="Ekranını TV'ye yansıt" class="off">🖥️</button>
+    <span class="sep"></span>
+    <button id="heartBtn" title="Kalp gönder">❤️</button>
+    <button id="hugBtn" title="Sarıl">🤗</button>
+    <span class="sep"></span>
+    <button id="menuBtn" title="Menü">⚙️</button>
+  </nav>
+  <div id="help">⬅️⬆️⬇️➡️ / WASD yürü · E etkileşim · telefonda dokun</div>
+</section>
+
+<div id="toast"></div>
+<div id="brand"><img src="assets/eclip-logo.webp" alt="">ECLIP</div>
+<audio id="remoteAudio" autoplay></audio>
+
+<!-- Menü -->
+<div id="menu" class="modal" hidden>
+  <div class="card">
+    <h3>Bizim Ev</h3>
+    <div id="menuInvite">
+      <p class="small">Partnerine bu linki gönder:</p>
+      <div class="linkbox"><span id="inviteLink"></span></div>
+      <button id="copyBtn">Linki kopyala</button>
+    </div>
+    <button id="editBtn" class="primary">Karakterimi düzenle</button>
+    <button id="logoutBtn" class="link">Çıkış yap</button>
+    <button class="close link" data-close>Kapat</button>
+  </div>
+</div>
+
+<!-- Karakter düzenleyici -->
+<div id="editor" class="modal" hidden>
+  <div class="card">
+    <h3>Karakterin</h3>
+    <canvas id="preview" width="40" height="40"></canvas>
+    <label>Adın <input id="edName" maxlength="14"></label>
+    <div class="opts" id="edSide"></div>
+    <div class="opts" id="edHair"></div>
+    <div class="opts" id="edHairColor"></div>
+    <div class="opts" id="edSkin"></div>
+    <div class="opts" id="edShirt"></div>
+    <div class="opts" id="edPants"></div>
+    <button id="edSave" class="primary">Kaydet</button>
+  </div>
+</div>
+
+<!-- Ekran paylaşımı tam ekran -->
+<div id="screenView" class="modal" hidden>
+  <div class="card wide"><video id="screenBig" autoplay playsinline muted></video><button class="link" data-close>Kapat</button></div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

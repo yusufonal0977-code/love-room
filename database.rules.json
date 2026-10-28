@@ -1,0 +1,30 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "invites": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && !data.exists() && root.child('rooms').child(newData.val()).child('a').val() === auth.uid"
+      }
+    },
+    "rooms": {
+      "$rid": {
+        ".read": "auth != null && (data.child('a').val() === auth.uid || data.child('b').val() === auth.uid || !data.child('b').exists())",
+        "a": { ".write": "auth != null && !data.exists() && newData.val() === auth.uid" },
+        "b": { ".write": "auth != null && !data.exists() && newData.val() === auth.uid && data.parent().child('a').val() !== auth.uid" },
+        "info": { ".write": "auth != null && (newData.parent().child('a').val() === auth.uid || newData.parent().child('b').val() === auth.uid)" }
+      }
+    },
+    "live": {
+      "$rid": {
+        ".read": "auth != null && (root.child('rooms').child($rid).child('a').val() === auth.uid || root.child('rooms').child($rid).child('b').val() === auth.uid)",
+        ".write": "auth != null && (root.child('rooms').child($rid).child('a').val() === auth.uid || root.child('rooms').child($rid).child('b').val() === auth.uid)"
+      }
+    }
+  }
+}

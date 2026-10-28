@@ -1,7 +1,4 @@
 node_modules/
-.expo/
-dist/
-web-build/
 *.log
-server/data/
-server/.env
+.DS_Store
+.claude-flow/

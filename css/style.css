@@ -1,0 +1,91 @@
+/* Love Room — renkler logolardan: gece siyahı, güneş sarısı, ay kreması */
+:root {
+  --bg: #000; --panel: #15120b; --line: #3a3320; --ink: #fff6d8; --dim: #b8ad8c;
+  --sun: #fcdf4b; --sun2: #f5cf2e; --moon: #fff6d8; --rose: #ff6f8f; --ok: #9ee6a8;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: 'Pixelify Sans', monospace; overflow: hidden; -webkit-user-select: none; user-select: none; }
+button { font: inherit; cursor: pointer; }
+input { font: inherit; }
+
+/* Açılış */
+#intro { position: fixed; inset: 0; z-index: 50; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; animation: iOut .8s ease 2.6s forwards; }
+#intro img { width: min(40vmin, 220px); mix-blend-mode: lighten; animation: iIn 1.2s ease both; }
+#intro p { margin: 0; color: var(--dim); letter-spacing: .32em; font-size: clamp(10px, 2.4vw, 13px); text-align: center; animation: iIn 1.2s ease .5s both; }
+#intro p b { color: var(--sun); letter-spacing: .4em; }
+@keyframes iIn { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes iOut { to { opacity: 0; visibility: hidden; } }
+
+/* Ekranlar */
+.screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; background: radial-gradient(circle at 50% 32%, #262009 0%, #000 58%); }
+.logo { width: min(44vmin, 220px); mix-blend-mode: lighten; animation: float 5s ease-in-out infinite; }
+.logo.sm { width: min(30vmin, 150px); }
+@keyframes float { 50% { transform: translateY(-6px); } }
+h1 { margin: 0; font-size: 32px; letter-spacing: 3px; }
+h1 span, h2 span { color: var(--sun); }
+h2 { margin: 0; font-size: 24px; }
+h3 { margin: 0 0 6px; font-size: 20px; color: var(--sun); }
+.screen p { margin: 0; color: var(--dim); max-width: 34ch; line-height: 1.5; }
+.small { font-size: 12px; color: var(--dim); }
+.row { display: flex; gap: 8px; }
+.or { color: var(--dim); font-size: 12px; }
+input { background: var(--panel); color: var(--ink); border: 2px solid var(--line); border-radius: 8px; padding: 10px 12px; text-align: center; width: min(56vw, 200px); }
+input:focus { outline: none; border-color: var(--sun); }
+button { background: #221d13; color: var(--ink); border: 2px solid var(--line); border-radius: 8px; padding: 10px 16px; font-size: 16px; }
+button:hover { border-color: var(--sun); }
+button.primary { background: var(--sun); color: #1a1608; border-color: var(--sun); font-weight: 700; box-shadow: 0 0 18px rgba(252, 223, 75, .3); }
+button.link { background: none; border: 0; color: var(--dim); font-size: 13px; text-decoration: underline; padding: 4px; }
+.g { display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; background: #fff; color: #4285f4; font-weight: 700; margin-right: 6px; }
+
+/* Dünya */
+#world { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#top { position: fixed; top: 8px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; z-index: 3; pointer-events: none; }
+#top > * { pointer-events: auto; }
+#top b { color: var(--sun); font-size: 18px; margin-right: 10px; }
+#status { color: var(--dim); font-size: 14px; }
+#inviteChip { font-size: 13px; padding: 6px 10px; border-color: var(--sun); }
+#stage { position: relative; }
+#stage canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; border-radius: 6px; box-shadow: 0 0 0 2px #1d180d, 0 10px 40px rgba(252, 223, 75, .08); }
+#ov { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+#bar { position: fixed; left: 50%; bottom: max(12px, env(safe-area-inset-bottom)); transform: translateX(-50%); display: flex; gap: 8px; align-items: center; background: rgba(21, 18, 11, .92); border: 2px solid var(--line); border-radius: 14px; padding: 8px; z-index: 3; }
+#bar button { font-size: 20px; width: 46px; height: 46px; padding: 0; border-radius: 10px; }
+#bar button.off { opacity: .5; }
+#bar button.on { border-color: var(--sun); box-shadow: 0 0 10px rgba(252, 223, 75, .35); }
+#bar .sep { width: 2px; height: 30px; background: var(--line); }
+#help { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); color: var(--dim); font-size: 12px; white-space: nowrap; opacity: .7; }
+@media (max-width: 700px) { #help { display: none; } #bar button { width: 40px; height: 40px; font-size: 18px; } }
+
+/* Oyun katmanı */
+.tag { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; font-size: 13px; text-shadow: 0 1px 0 #000, 0 0 3px #000; }
+.voice { display: inline-flex; gap: 2px; align-items: flex-end; height: 10px; margin-left: 4px; vertical-align: middle; }
+.voice i { width: 2px; background: var(--ok); animation: v .45s infinite alternate ease-in-out; }
+.voice i:nth-child(2) { animation-delay: -.2s; } .voice i:nth-child(3) { animation-delay: -.35s; }
+@keyframes v { from { height: 2px; } to { height: 10px; } }
+.prompt { position: absolute; transform: translate(-50%, -100%); background: #1a1608; color: var(--moon); border: 2px solid var(--sun); border-radius: 4px; padding: 2px 7px; font-size: 13px; white-space: nowrap; }
+.fx { position: absolute; font-size: 18px; transform: translate(-50%, -100%); animation: up 1.5s ease-out forwards; }
+@keyframes up { to { transform: translate(-50%, -260%); opacity: 0; } }
+.bubble { position: absolute; width: 44px; height: 44px; transform: translate(-50%, -100%); border-radius: 50%; overflow: hidden; border: 2px solid var(--sun); box-shadow: 0 4px 10px rgba(0, 0, 0, .5); background: #000; }
+.bubble video { width: 100%; height: 100%; object-fit: cover; }
+.bubble.me video { transform: scaleX(-1); }
+.tvscreen { position: absolute; overflow: hidden; background: #000; pointer-events: auto; cursor: zoom-in; }
+.tvscreen video { width: 100%; height: 100%; object-fit: contain; }
+
+/* Bildirim, marka */
+#toast { position: fixed; top: 46px; left: 50%; transform: translateX(-50%); background: var(--moon); color: #1a1608; padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: 14px; opacity: 0; transition: opacity .4s; z-index: 30; pointer-events: none; text-align: center; max-width: 90vw; }
+#brand { position: fixed; right: 10px; bottom: 4px; display: flex; align-items: center; gap: 6px; color: var(--dim); font-size: 10px; opacity: .5; pointer-events: none; letter-spacing: .12em; z-index: 1; }
+#brand img { width: 18px; height: 18px; mix-blend-mode: lighten; }
+
+/* Pencereler */
+.modal { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, .7); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.card { background: var(--panel); border: 2px solid var(--line); border-radius: 16px; padding: 18px; width: min(92vw, 380px); max-height: 90vh; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.card.wide { width: min(96vw, 960px); }
+.card.wide video { width: 100%; border-radius: 8px; background: #000; }
+.card label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--dim); font-size: 14px; }
+.linkbox { background: #000; border: 2px dashed var(--line); border-radius: 8px; padding: 8px; font-size: 12px; word-break: break-all; user-select: text; -webkit-user-select: text; }
+#preview { width: 120px; height: 120px; align-self: center; image-rendering: pixelated; background: radial-gradient(circle, #2b2410, #15120b); border-radius: 12px; }
+.opts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.opts .lbl { width: 100%; color: var(--dim); font-size: 12px; }
+.opts button { padding: 5px 9px; font-size: 13px; }
+.opts button.sel { border-color: var(--sun); background: #2b2410; }
+.opts .sw { width: 28px; height: 28px; padding: 0; border-radius: 50%; }
