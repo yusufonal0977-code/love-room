@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Love Room · Hakkımızda ve Gizlilik</title>
+<meta name="description" content="Love Room hakkında, kullanım koşulları, gizlilik politikası, KVKK aydınlatma metni ve iletişim.">
+<link rel="icon" href="assets/loveroom-logo.webp">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --sun: #fcdf4b; --ink: #fff6d8; --dim: #b8ad8c; --panel: #15120b; --line: #3a3320; }
+  body { margin: 0; background: radial-gradient(circle at 50% 0, #262009, #000 60%) fixed; color: var(--ink); font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+  header { text-align: center; padding: 32px 16px 8px; }
+  header img { width: 96px; mix-blend-mode: lighten; }
+  h1, h2, h4, nav { font-family: 'Pixelify Sans', monospace; }
+  h1 { margin: 6px 0 0; letter-spacing: 2px; } h1 span { color: var(--sun); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 12px 16px; position: sticky; top: 0; background: rgba(0,0,0,.85); backdrop-filter: blur(8px); z-index: 1; }
+  nav a { color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+  nav a:hover { border-color: var(--sun); }
+  main { max-width: 760px; margin: 0 auto; padding: 8px 16px 48px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; margin: 16px 0; scroll-margin-top: 70px; }
+  h2 { color: var(--sun); margin: 0 0 8px; }
+  h4 { color: var(--sun); margin: 16px 0 4px; }
+  a { color: var(--sun); }
+  .muted { color: var(--dim); font-size: 13px; }
+  footer { text-align: center; color: var(--dim); font-size: 13px; padding: 0 16px 32px; }
+  .back { display: inline-block; margin-top: 8px; font-family: 'Pixelify Sans', monospace; }
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/loveroom-logo.webp" alt="">
+  <h1>Love <span>Room</span></h1>
+  <a class="back" href="./">← Eve dön</a>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<footer>© 2026 Eclip Software &amp; Entertainment Company · Bekâr bir geliştiricinin elinden, çiftlere sevgiyle.</footer>
+<script type="module">
+  import { LEGAL } from './js/legal.js';
+  const nav = document.getElementById('nav'), main = document.getElementById('main');
+  for (const d of LEGAL) {
+    nav.insertAdjacentHTML('beforeend', `<a href="#${d.id}">${d.title}</a>`);
+    main.insertAdjacentHTML('beforeend', `<section id="${d.id}"><h2>${d.title}</h2>${d.html}</section>`);
+  }
+  if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
+</script>
+</body>
+</html>

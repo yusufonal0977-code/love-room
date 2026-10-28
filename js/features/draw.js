@@ -15,7 +15,7 @@ export function createDraw(ctx) {
   const strokes = new Map();
   const canvas = h('canvas', { width: CW, height: CH, class: 'drawcanvas' });
   const g = canvas.getContext('2d');
-  const thumb = h('canvas', { width: 40, height: 32 });
+  const thumb = h('canvas', { width: 320, height: 240 });
   let color = COLORS[1], size = SIZES[1], mine = [];
 
   function clearCanvas() { g.fillStyle = '#fffaf0'; g.fillRect(0, 0, CW, CH); }
@@ -34,12 +34,12 @@ export function createDraw(ctx) {
   function updateThumb() {
     clearTimeout(thumbT);
     thumbT = setTimeout(() => {
+      DECOR.drawing = strokes.size > 0;
       const t = thumb.getContext('2d');
-      t.imageSmoothingEnabled = true;
-      t.drawImage(canvas, 0, 0, 40, 32);
-      DECOR.drawing = strokes.size ? thumb : null;
+      t.drawImage(canvas, 0, 0, thumb.width, thumb.height);
+      ctx.game.setPicture('easel', 'hobi', [60, 32, 20, 16], strokes.size ? thumb.toDataURL('image/jpeg', 0.85) : null);
       bump();
-    }, 400);
+    }, 600);
   }
   clearCanvas();
 

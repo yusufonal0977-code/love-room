@@ -81,11 +81,19 @@ export function characterSprites(look) {
     C: shade(shirt, -0.22),
     p: PANTS[look.pants] ?? PANTS[0],
     w: '#3a2a22',
+    l: shade(SKIN[look.skin] ?? SKIN[0], -0.4), // kapalı göz kapağı
+    r: '#e0475e', // dudak
   };
   const set = {};
   for (const [k, rows] of Object.entries(BODY)) set[k] = sprite(withHair(rows, look.hair, k), pal);
   set.sideL = mirror(set.side);
   set.side2L = mirror(set.side2);
+  // Sarılma: gözler kapalı. Öpücük: gözler kapalı + dudaklar öne uzanmış.
+  const closed = withHair(BODY.side, look.hair, 'side').map((row, y) => (y === 5 ? row.replace('e', 'l') : row));
+  set.hugR = sprite(closed, pal);
+  set.hugL = mirror(set.hugR);
+  set.kissR = sprite(closed.map((row, y) => (y === 7 ? row.slice(0, 9) + 'r' + row.slice(10) : row)), pal);
+  set.kissL = mirror(set.kissR);
   cache.set(key, set);
   return set;
 }

@@ -37,6 +37,22 @@
     <button id="guestBtn">Adınla gir</button>
   </div>
   <p class="small" id="gateErr"></p>
+  <p class="small legalnote">Giriş yaptıktan sonra Kullanım Koşulları ve Gizlilik Politikası'nı onaylamanız istenecek.</p>
+  <nav class="footlinks"><a href="#hakkimizda">Hakkımızda</a><a href="#gizlilik">Gizlilik</a><a href="#kosullar">Koşullar</a><a href="#iletisim">İletişim</a></nav>
+</section>
+
+<!-- Onay (ev kurulmadan / davete girilmeden önce) -->
+<section id="consent" class="screen" hidden>
+  <img class="logo sm" src="assets/loveroom-logo.webp" alt="">
+  <h2>Eve girmeden önce <span>küçük bir anlaşma</span></h2>
+  <p>Love Room'da paylaştıkların ikinize ait. Nasıl koruduğumuzu okuyup onaylaman gerekiyor.</p>
+  <div class="checks">
+    <label><input type="checkbox" id="cTerms"> <span><a href="#kosullar">Kullanım Koşulları</a>'nı ve <a href="#gizlilik">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.</span></label>
+    <label><input type="checkbox" id="cKvkk"> <span><a href="#kvkk">KVKK Aydınlatma Metni</a>'ni okudum; fotoğraf, günlük gibi verilerimin yurt dışındaki sunucularda (Google Firebase, AB) saklanmasına açık rıza veriyorum.</span></label>
+    <label><input type="checkbox" id="cAge"> <span>18 yaşından büyüğüm.</span></label>
+  </div>
+  <button id="consentBtn" class="primary" disabled>Kabul et ve devam et</button>
+  <button id="consentNo" class="link">Kabul etmiyorum, çıkış yap</button>
 </section>
 
 <!-- Ev kurma -->
@@ -108,7 +124,9 @@
     <button id="editBtn" class="primary">Karakterimi düzenle</button>
     <button id="zoomBtn"></button>
     <button id="fullBtn">Tam ekran</button>
+    <nav class="footlinks"><a href="#hakkimizda">Hakkımızda</a><a href="#gizlilik">Gizlilik</a><a href="#kosullar">Koşullar</a><a href="#kvkk">KVKK</a><a href="#iletisim">İletişim</a></nav>
     <button id="logoutBtn" class="link">Çıkış yap</button>
+    <button id="deleteBtn" class="link danger">Verilerimi sil</button>
     <button class="close link" data-close>Kapat</button>
   </div>
 </div>

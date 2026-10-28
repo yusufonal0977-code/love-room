@@ -5,6 +5,7 @@ import { DECOR, SCENES, W, H, WALL, bump, layout, lightsOf } from './scenes.js';
 
 const CELL = 4, GW = Math.ceil(W / CELL), GH = Math.ceil(H / CELL);
 const SPEED = 46; // piksel/sn
+const EMO_DUR = 3.2; // sarılma/öpücük süresi (sn)
 
 /** Saate göre gece karanlığı (0–0.62). */
 export function nightLevel(h) {
@@ -34,25 +35,35 @@ export function createGame(opts) {
   const partner = { shown: false, scene: null, x: 0, y: 0, dir: 'down', moving: false, t: 0, seat: -1, look: null, side: 'moon', name: '' };
 
   // ---------- Yerleşim: tam ekran + takip eden kamera ----------
-  let scale = 4, zoom = localStorage.getItem('lr.zoom') || 'cover';
+  let scale = 4, targetScale = 4, cine = false, zoom = localStorage.getItem('lr.zoom') || 'cover';
+  const TV = [73, 13, 46, 26]; // salondaki TV ekranı: sinema modunda kamera buraya yaklaşır
   const cam = { x: 0, y: 0, snap: true };
+  const setSize = () => { stage.style.width = W * scale + 'px'; stage.style.height = H * scale + 'px'; };
   function fit() {
     const vw = innerWidth, vh = innerHeight;
+    if (cine) { targetScale = Math.min((vw * 0.74) / TV[2], ((vh - 170) * 0.58) / TV[3]); return; } // TV yakın, oda da görünür
     const contain = Math.min(vw / W, vh / H), cover = Math.max(vw / W, vh / H);
     // Yatay ekranda oda neredeyse tamamen görünür (az kırpma); dikey telefonda oda ekranı doldurur, kamera seni takip eder.
-    scale = zoom === 'contain' ? Math.min(vw / W, (vh - 120) / H) : vw >= vh ? Math.min(cover, contain * 1.12) : Math.min(cover, vw / (W * 0.56));
-    stage.style.width = W * scale + 'px';
-    stage.style.height = H * scale + 'px';
-    cam.snap = true;
+    targetScale = zoom === 'contain' ? Math.min(vw / W, (vh - 120) / H) : vw >= vh ? Math.min(cover, contain * 1.12) : Math.min(cover, vw / (W * 0.56));
+    if (cam.snap) { scale = targetScale; setSize(); }
   }
-  addEventListener('resize', fit); fit();
+  addEventListener('resize', () => { cam.snap = true; fit(); }); fit();
   function camera(dt) {
+    // Yakınlaştırma yumuşak geçsin (sinema moduna girip çıkarken)
+    if (scale !== targetScale) {
+      const prev = scale;
+      scale = cam.snap || Math.abs(targetScale - scale) < 0.02 ? targetScale : scale + (targetScale - scale) * Math.min(1, dt * 5);
+      // ekranın ortası aynı noktada kalsın
+      cam.x = innerWidth / 2 - ((innerWidth / 2 - cam.x) / prev) * scale; cam.y = innerHeight / 2 - ((innerHeight / 2 - cam.y) / prev) * scale;
+      setSize();
+    }
     const vw = innerWidth, vh = innerHeight, sw = W * scale, sh = H * scale;
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-    const tx = sw <= vw ? (vw - sw) / 2 : clamp(vw / 2 - me.x * scale, vw - sw, 0);
+    const focusX = cine ? TV[0] + TV[2] / 2 : me.x;
+    const tx = sw <= vw ? (vw - sw) / 2 : clamp(vw / 2 - focusX * scale, vw - sw, 0);
     // Kanepede TV'ye dönük oturunca kamera TV'yi de gösterecek şekilde yukarı kayar
-    const focusY = seatOf(me)?.pose === 'back' ? 64 : me.y - 24;
-    const ty = sh <= vh ? (vh - sh) / 2 : clamp(vh / 2 - focusY * scale, vh - sh, 0);
+    const focusY = cine ? TV[1] + TV[3] / 2 : seatOf(me)?.pose === 'back' ? 64 : me.y - 24;
+    const ty = sh <= vh ? (vh - sh) / 2 : clamp((cine ? (vh - 80) / 2 : vh / 2) - focusY * scale, vh - sh, 0);
     const k = cam.snap ? 1 : Math.min(1, dt * 4);
     cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; cam.snap = false;
     stage.style.transform = `translate(${Math.round(cam.x)}px, ${Math.round(cam.y)}px)`;
@@ -100,8 +111,9 @@ export function createGame(opts) {
     if (path.length && !blocked(tx, ty)) path[path.length - 1] = { x: tx, y: ty };
     return path;
   }
-  function walkTo(x, y, onArrive = null) {
+  function walkTo(x, y, onArrive = null, door = null) {
     standUp();
+    me.doorIntent = door; // yalnızca kapıya dokununca oda değişir; yürürken kapının önünden geçmek değiştirmez
     me.path = findPath(me.x, me.y, x, y) || [];
     me.target = me.path.shift() || null;
     me.onArrive = onArrive;
@@ -213,9 +225,9 @@ export function createGame(opts) {
     const catHit = sc.hasCat && Math.abs(x - cat.x) < 10 && Math.abs(y - cat.y + 4) < 9;
     const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];
     const spot = catHit ? l.spots.find((s) => s.id === 'cat') : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
-    const door = sc.doors.find((d) => x >= d.x - 8 && x <= d.x + d.w + 8 && y >= d.y - 8 && y <= d.y + d.h + 8);
+    const door = sc.doors.find((d) => x >= d.x - 4 && x <= d.x + d.w + 4 && y >= d.y - 4 && y <= d.y + d.h + 4);
     if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
-    else if (door) walkTo(door.x + door.w / 2, door.y + door.h / 2);
+    else if (door) walkTo(door.x + door.w / 2, door.y + door.h / 2, null, door);
     else walkTo(x, y);
   });
   canvas.addEventListener('pointermove', (e) => edit && editMove(...toWorld(e)));
@@ -240,7 +252,8 @@ export function createGame(opts) {
       if (keys.arrowup || keys.w) vy -= 1;
       if (keys.arrowdown || keys.s) vy += 1;
     }
-    if (vx || vy) { me.target = null; me.path = []; if (me.seat >= 0) standUp(); }
+    const byKeys = !!(vx || vy);
+    if (byKeys) { me.target = null; me.path = []; me.doorIntent = null; if (me.seat >= 0) standUp(); }
     if (!vx && !vy && me.target) {
       const dx = me.target.x - me.x, dy = me.target.y - me.y, d = Math.hypot(dx, dy);
       if (d < 1.5) {
@@ -266,7 +279,7 @@ export function createGame(opts) {
     changed();
     // Kapı
     const door = scene().doors.find((d) => me.x >= d.x && me.x <= d.x + d.w && me.y >= d.y && me.y <= d.y + d.h);
-    if (door && !fadeTo) { fadeTo = door; fade = 0; }
+    if (door && !fadeTo && (byKeys || me.doorIntent === door)) { fadeTo = door; fade = 0; me.doorIntent = null; }
   }
 
   function stepFade(dt) {
@@ -324,8 +337,6 @@ export function createGame(opts) {
   function emote(kind) {
     if (!together()) return false;
     emo = { kind, t0: performance.now() / 1000 };
-    const mx = (me.x + partner.x) / 2, my = Math.min(headY(me), headY(partner));
-    burst(mx, my, kind === 'kiss' ? 6 : 10, true);
     return true;
   }
   function stepParts(dt) {
@@ -338,11 +349,13 @@ export function createGame(opts) {
 
   // ---------- Çizim ----------
   const seatOf = (p) => (p.seat >= 0 ? layout(SCENES[p.scene] || scene()).seats[p.seat] : null);
-  function personImg(p, face) {
+  function personImg(p, face, pose) {
     const sp = characterSprites(p.look);
     const f = (p.t * 6 | 0) % 2;
     const seat = seatOf(p);
     if (seat) return seat.pose === 'back' ? sp.sitBack : sp.sit;
+    if (pose === 'kiss') return face === 'right' ? sp.kissR : sp.kissL;
+    if (pose === 'hug') return face === 'right' ? sp.hugR : sp.hugL;
     const dir = face || p.dir, mv = !face && p.moving;
     if (dir === 'up') return mv && f ? sp.up2 : sp.up;
     if (dir === 'down') return mv && f ? sp.down2 : sp.down;
@@ -351,18 +364,27 @@ export function createGame(opts) {
   }
   function headY(p) { return p.y - personImg(p).height + (p.seat >= 0 ? 4 : 1); }
   function drawPerson(p, at) {
-    const pose = at?.face;
-    const img = personImg(p, pose);
-    const px = at ? at.x : p.x, py = at ? at.y : p.y;
+    const img = personImg(p, at?.face, at?.pose);
+    const px = at ? at.x + (at.lean ? (at.face === 'right' ? at.lean : -at.lean) : 0) : p.x, py = at ? at.y : p.y;
     const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + (p.seat >= 0 ? 4 : 1) - (at?.lift || 0));
     if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);
-    const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
-    ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
-    if (at?.arm) { // sarılma: kollar partnerin sırtında
-      const sk = characterSprites(p.look).down.getContext('2d').getImageData(4, 12, 1, 1).data;
-      R(ctx, at.arm.x, y + 10, at.arm.w, 2, `rgb(${sk[0]},${sk[1]},${sk[2]})`);
+    if (!at?.pose) {
+      const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
+      ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
     }
+  }
+  /** Sarılma kolu: omuzdan partnerin sırtına uzanan kıyafet renginde kol, ucunda el. */
+  function drawArm(p, at) {
+    const sp = characterSprites(p.look).down.getContext('2d');
+    const shirt = sp.getImageData(4, 11, 1, 1).data, skin = sp.getImageData(1, 11, 1, 1).data;
+    const img = personImg(p, at.face, 'hug');
+    const top = Math.round(at.y - img.height + 1) + 11;
+    const x0 = Math.round(at.x), x1 = Math.round(at.armTo);
+    const lo = Math.min(x0, x1), w = Math.abs(x1 - x0);
+    const row = at.face === 'right' ? 0 : 2; // iki kol üst üste binmesin
+    R(ctx, lo, top + row, w, 2, `rgb(${shirt[0]},${shirt[1]},${shirt[2]})`);
+    R(ctx, x1 - (x1 > x0 ? 1 : 0), top + row, 2, 2, `rgb(${skin[0]},${skin[1]},${skin[2]})`);
   }
   function drawCat() {
     const img = cat.sit ? cat.sprites.sit : (cat.dir > 0 ? cat.sprites.right : cat.sprites.left)[cat.target ? (cat.t * 6 | 0) % 2 : 0];
@@ -426,6 +448,22 @@ export function createGame(opts) {
   }
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
+  // Tablolardaki fotoğraflar ve şövaledeki resim piksel değil, olduğu gibi görünsün: sahnenin üstünde gerçek <img>.
+  const pictures = new Map(); // anahtar → { el, scene, rect }
+  function setPicture(key, scene, rect, src) {
+    let p = pictures.get(key);
+    if (!src) { p?.el.remove(); pictures.delete(key); return; }
+    if (!p) { p = { el: document.createElement('img') }; p.el.className = 'pic'; p.el.alt = ''; overlay.prepend(p.el); pictures.set(key, p); }
+    Object.assign(p, { scene, rect });
+    if (p.el.getAttribute('src') !== src) p.el.src = src;
+    const [x, y, w, hh] = rect;
+    Object.assign(p.el.style, { left: (x / W) * 100 + '%', top: (y / H) * 100 + '%', width: (w / W) * 100 + '%', height: (hh / H) * 100 + '%' });
+  }
+  function updatePictures(night) {
+    const f = `brightness(${(1 - night * 0.45).toFixed(2)})`;
+    pictures.forEach((p) => { p.el.style.display = p.scene === me.scene && !fadeTo ? '' : 'none'; p.el.style.filter = f; });
+  }
+
   function fx(emoji, x, y) {
     const d = document.createElement('div');
     d.className = 'fx'; d.textContent = emoji;
@@ -451,27 +489,47 @@ export function createGame(opts) {
     const info = { st: opts.getShared(), t, ...hours, night: nightLevel(hours.hour) * (sc.outdoor ? 0.85 : 1) };
     ctx.drawImage(sc.bg, 0, 0);
     sc.dyn?.(ctx, info);
-    (sc.frames || []).forEach((f) => DECOR.frames[f.id] && ctx.drawImage(DECOR.frames[f.id], f.x, f.y, f.w, f.h));
     // Duvar dekorları ve yer halıları karakterlerin arkasında
     l.items.forEach((it) => (it.c.wall || it.c.flat) && it.c.draw(ctx, it.x, it.y, info));
     const ents = l.props.map((p) => ({ y: p.sortY, d: () => { ctx.save(); ctx.translate(p.dx, p.dy); p.draw(ctx, info); ctx.restore(); } }));
     l.items.forEach((it) => !(it.c.wall || it.c.flat) && ents.push({ y: it.y, d: () => it.c.draw(ctx, it.x, it.y, info) }));
     const pHere = partner.shown && partner.scene === me.scene;
-    // Sarılma/öpücük sırasında ikisi birbirine döner
+    // Sarılma/öpücük: ikisi birbirine yaklaşır, döner, gözlerini kapatır; öpücükte dudaklar birleşir, sarılmada kollar sırta dolanır.
     let atMe = null, atP = null;
     const e = emo && performance.now() / 1000 - emo.t0;
-    if (emo && e > 2.6) emo = null;
-    if (emo && pHere && me.seat < 0 && partner.seat < 0) {
-      const mx = (me.x + partner.x) / 2, my = Math.max(me.y, partner.y), meLeft = me.x <= partner.x;
-      const gap = emo.kind === 'hug' ? 3 : 4 + (e > 0.6 && e < 1.6 ? -1 : 0);
-      const lift = emo.kind === 'kiss' && e > 0.6 && e < 1.6 ? 1 : 0;
-      atMe = { x: mx + (meLeft ? -gap : gap), y: my, face: meLeft ? 'right' : 'left', lift };
-      atP = { x: mx + (meLeft ? gap : -gap), y: my, face: meLeft ? 'left' : 'right', lift };
-      if (emo.kind === 'hug') { (meLeft ? atMe : atP).arm = { x: Math.round(mx - 1), w: 6 }; }
-      if (emo.kind === 'kiss' && e > 1.1 && !emo.kissed) { emo.kissed = true; burst(mx, my - 18, 3, false); }
+    if (emo && e > EMO_DUR) emo = null;
+    if (emo && pHere) {
+      const k = e < 0.45 ? e / 0.45 : e > EMO_DUR - 0.45 ? (EMO_DUR - e) / 0.45 : 1; // yaklaş · kal · ayrıl
+      const ease = k * k * (3 - 2 * k);
+      const meLeft = me.x <= partner.x;
+      const L = meLeft ? me : partner, Rp = meLeft ? partner : me;
+      const sway = ease > 0.95 ? Math.round(Math.sin(e * 3)) * 0.5 : 0;
+      if (me.seat < 0 && partner.seat < 0) {
+        const mx = (me.x + partner.x) / 2 + sway, my = Math.max(me.y, partner.y);
+        const gap = emo.kind === 'kiss' ? 4.5 : 3; // öpücükte yüzler, sarılmada bedenler değer
+        const lx = L.x + (mx - gap - L.x) * ease, rx = Rp.x + (mx + gap - Rp.x) * ease;
+        const ly = L.y + (my - L.y) * ease, ry = Rp.y + (my - Rp.y) * ease;
+        const pose = ease > 0.9 ? emo.kind : null;
+        const aL = { x: lx, y: ly, face: 'right', pose, lean: pose === 'kiss' ? 1 : 0 };
+        const aR = { x: rx, y: ry, face: 'left', pose, lean: pose === 'kiss' ? 1 : 0 };
+        if (pose === 'hug') { aL.armTo = rx + 4; aR.armTo = lx - 4; }
+        atMe = meLeft ? aL : aR; atP = meLeft ? aR : aL;
+        if (e > 0.9 && !emo.burst) { emo.burst = true; burst(mx, my - 22, emo.kind === 'kiss' ? 5 : 8, true); }
+      } else if (me.seat >= 0 && partner.seat >= 0) {
+        // Kanepede: başlar birbirine yaslanır
+        const mx = (me.x + partner.x) / 2, pull = Math.max(0, (Rp.x - L.x) / 2 - 5) * ease;
+        const aL = { x: L.x + pull, y: L.y, lift: 0 }, aR = { x: Rp.x - pull, y: Rp.y, lift: 0 };
+        atMe = meLeft ? aL : aR; atP = meLeft ? aR : aL;
+        if (e > 0.9 && !emo.burst) { emo.burst = true; burst(mx, Math.min(headY(me), headY(partner)) - 2, 6, true); }
+      } else if (e > 0.3 && !emo.burst) { emo.burst = true; burst((me.x + partner.x) / 2, Math.min(headY(me), headY(partner)) - 2, 6, true); }
     }
-    ents.push({ y: me.seat >= 0 ? me.y - 6 : me.y, d: () => drawPerson(me, atMe) });
-    if (pHere) ents.push({ y: (partner.seat >= 0 ? partner.y - 6 : partner.y) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
+    if (atMe?.armTo != null && atP) {
+      // Sarılırken ikisi tek parça çizilir: önce gövdeler, sonra kollar karşı tarafın sırtına
+      ents.push({ y: Math.max(me.y, partner.y), d: () => { drawPerson(partner, atP); drawPerson(me, atMe); drawArm(me, atMe); drawArm(partner, atP); } });
+    } else {
+      ents.push({ y: me.seat >= 0 ? me.y - 6 : me.y, d: () => drawPerson(me, atMe) });
+      if (pHere) ents.push({ y: (partner.seat >= 0 ? partner.y - 6 : partner.y) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
+    }
     if (sc.hasCat) ents.push({ y: cat.y, d: drawCat });
     ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
     drawLighting(sc, info);
@@ -481,6 +539,7 @@ export function createGame(opts) {
     if (fade > 0) { ctx.fillStyle = `rgba(0,0,0,${Math.min(1, fade)})`; ctx.fillRect(0, 0, W, H); }
     camera(dt);
     updateOverlay();
+    updatePictures(info.night);
     opts.onFrame?.(t);
   }
   function drawEdit(l) {
@@ -500,6 +559,7 @@ export function createGame(opts) {
     partner,
     fx,
     canvas,
+    setPicture,
     fxOn(who, emoji) {
       const p = who === 'me' ? me : partner;
       if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return false;
@@ -510,12 +570,23 @@ export function createGame(opts) {
     hearts(who) { const p = who === 'me' ? me : partner; if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return; burst(p.x, headY(p) - 2, 4, false); },
     setLook(look, side, name) { me.look = look; me.side = side; if (name) me.name = name; changed(); },
     near() { return together(); },
+    sameRoom() { return partner.shown && partner.scene === me.scene; },
+    /** Partnerin yanına yürü, varınca cb. */
+    approach(cb) {
+      const side = me.x < partner.x ? -1 : 1;
+      const tx = partner.x + side * 12, ty = partner.y;
+      walkTo(blocked(tx, ty) ? partner.x - side * 12 : tx, ty, () => (together() ? cb() : opts.onToast?.('Yanına ulaşamadım 🙂')));
+    },
     /** Belirli bir sahneye/noktaya ışınla (aktivite menüsünden). */
     goto(sceneId, x, y) { if (me.scene !== sceneId) { me.scene = sceneId; opts.onSceneChange?.(sceneId); } me.seat = -1; me.x = x; me.y = y; me.target = null; me.path = []; cam.snap = true; changed(); },
     setEdit(on) { edit = on ? { sel: null, drag: null } : null; opts.onDecorSelect?.(null); },
     get editing() { return !!edit; },
     get zoom() { return zoom; },
     setZoom(z) { zoom = z; localStorage.setItem('lr.zoom', z); fit(); },
+    /** Sinema modu: kamera odadaki TV'ye yakınlaşır, oda görünmeye devam eder. */
+    setCinema(on) { cine = !!on; fit(); },
+    get cinema() { return cine; },
+    sit: (group) => sitDown(group),
     /** Küçük pencere modunda döngüyü o pencerenin karesine bağlar (ana sekme arka planda kalsa da çizsin). */
     setRaf(fn) { raf = fn || ((f) => requestAnimationFrame(f)); gen++; raf(loop(gen)); },
     stop() { running = false; },

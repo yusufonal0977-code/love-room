@@ -71,6 +71,27 @@ export const QUESTIONS = [
 ];
 
 const DAY = 86_400_000;
+const MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+
+/** Gün / ay / yıl seçicisi: telefonlarda tarih kutusu açılmadığı için açılır listeler. .value → 'YYYY-MM-DD' ya da ''. */
+function datePicker(value, { from, to }) {
+  const [y0, m0, d0] = (value || '').split('-').map(Number);
+  const sel = (items, cur, ph) => h('select', {}, h('option', { value: '' }, ph), ...items.map(([v, t]) => h('option', { value: v, selected: v === cur }, t)));
+  const d = sel(Array.from({ length: 31 }, (_, i) => [i + 1, String(i + 1)]), d0, 'Gün');
+  const m = sel(MONTHS.map((t, i) => [i + 1, t]), m0, 'Ay');
+  const years = [];
+  for (let y = to; y >= from; y--) years.push([y, String(y)]);
+  const y = sel(years, y0, 'Yıl');
+  const box = h('div', { class: 'datepick' }, d, m, y);
+  Object.defineProperty(box, 'value', {
+    get() {
+      if (!d.value || !m.value || !y.value) return '';
+      const dd = Math.min(+d.value, new Date(+y.value, +m.value, 0).getDate()); // 31 Şubat → 28/29
+      return `${y.value}-${String(m.value).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
+    },
+  });
+  return box;
+}
 const parseDay = (s) => (s ? new Date(s + 'T00:00:00').getTime() : null);
 const daysBetween = (a, b) => Math.floor((b - a) / DAY);
 
@@ -113,12 +134,13 @@ export function createLife(ctx) {
       meetLeft != null && meetLeft >= 0 ? h('div', { class: 'meet' }, h('b', {}, meetLeft === 0 ? 'Bugün buluşuyorsunuz 💞' : `${meetLeft} gün sonra buluşuyorsunuz ✈️`), rel.meetNote ? h('small', {}, rel.meetNote) : null) : null,
       ctx.partnerTz() && ctx.partnerTz() !== tz ? h('p', { class: 'center small' }, `Sende saat ${fmt(tz)} · ${ctx.partnerName()}'de ${fmt(ctx.partnerTz())}`) : null,
     );
-    const sinceIn = h('input', { type: 'date', value: rel.since || '' });
-    const meetIn = h('input', { type: 'date', value: rel.meet || '' });
+    const year = new Date(now()).getFullYear();
+    const sinceIn = datePicker(rel.since, { from: year - 60, to: year });
+    const meetIn = datePicker(rel.meet, { from: year, to: year + 3 });
     const noteIn = h('input', { placeholder: 'Nerede? (ör. İstanbul, Kadıköy iskele)', value: rel.meetNote || '', maxLength: 60 });
     body.append(
-      h('label', {}, 'Birlikte olduğumuz gün', sinceIn),
-      h('label', {}, 'Bir sonraki buluşma', meetIn),
+      h('div', { class: 'field' }, h('b', {}, 'Sevgili olduğumuz gün'), h('small', {}, 'İlişkinizin başladığı tarih. Gün sayacı ve yıl dönümü buna göre hesaplanır.'), sinceIn),
+      h('div', { class: 'field' }, h('b', {}, 'Bir sonraki buluşmamız'), h('small', {}, 'Yüz yüze görüşeceğiniz gün; geri sayım üst çubukta görünür.'), meetIn),
       noteIn,
       h('button', { class: 'primary', onclick: async () => { await update(live.ref('rel'), { since: sinceIn.value || null, meet: meetIn.value || null, meetNote: noteIn.value.trim() || null }); toast('Kaydedildi ⏳'); openClock(); } }, 'Kaydet'),
     );
@@ -133,13 +155,15 @@ export function createLife(ctx) {
       h('button', { class: tab === 'letter' ? 'sel' : '', onclick: () => openDiary('letter') }, 'Geleceğe mektup'),
     );
     const text = h('textarea', { rows: 4, maxLength: 2000, placeholder: tab === 'diary' ? 'Bugün aklında kalan bir şey… (ikiniz de okuyabilirsiniz)' : 'Gelecekteki ikinize bir mektup. Seçtiğin gün açılacak.' });
-    const date = h('input', { type: 'date', min: new Date(now() + DAY).toISOString().slice(0, 10) });
+    const yr = new Date(now()).getFullYear();
+    const date = datePicker('', { from: yr, to: yr + 10 });
     const list = h('div', { class: 'diary' }, h('p', { class: 'small' }, 'Yükleniyor…'));
-    body.append(tabs, text, tab === 'letter' ? h('label', {}, 'Açılış günü', date) : null,
+    body.append(tabs, text, tab === 'letter' ? h('div', { class: 'field' }, h('b', {}, 'Mektup hangi gün açılsın?'), date) : null,
       h('button', { class: 'primary', html: `${icon('send')} ${tab === 'diary' ? 'Yaz' : 'Mektubu mühürle'}`, onclick: async () => {
         const t = text.value.trim();
         if (!t) return text.focus();
         if (tab === 'letter' && !date.value) return toast('Açılış gününü seç');
+        if (tab === 'letter' && parseDay(date.value) <= now()) return toast('Açılış günü ileri bir tarih olmalı');
         await push(live.ref('diary'), { by: uid, name: ctx.myName(), side: ctx.mySide(), text: t, at: serverTimestamp(), ...(tab === 'letter' ? { openAt: parseDay(date.value) } : {}) });
         live.stat('diary');
         text.value = '';

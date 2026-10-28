@@ -9,12 +9,13 @@
     "invites": {
       "$code": {
         ".read": "auth != null",
-        ".write": "auth != null && !data.exists() && root.child('rooms').child(newData.val()).child('a').val() === auth.uid"
+        ".write": "auth != null && ((!data.exists() && root.child('rooms').child(newData.val()).child('a').val() === auth.uid) || (!newData.exists() && (root.child('rooms').child(data.val()).child('a').val() === auth.uid || root.child('rooms').child(data.val()).child('b').val() === auth.uid)))"
       }
     },
     "rooms": {
       "$rid": {
         ".read": "auth != null && (data.child('a').val() === auth.uid || data.child('b').val() === auth.uid || !data.child('b').exists())",
+        ".write": "auth != null && !newData.exists() && (data.child('a').val() === auth.uid || data.child('b').val() === auth.uid)",
         "a": { ".write": "auth != null && !data.exists() && newData.val() === auth.uid" },
         "b": { ".write": "auth != null && !data.exists() && newData.val() === auth.uid && data.parent().child('a').val() !== auth.uid" },
         "info": { ".write": "auth != null && (newData.parent().child('a').val() === auth.uid || newData.parent().child('b').val() === auth.uid)" }

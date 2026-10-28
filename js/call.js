@@ -242,5 +242,17 @@ export function createCall({ uid, send, onRemote, onState }) {
       return !!screen;
     },
     get screenStream() { return screen; },
+    /** Hazır bir akışı TV kanalından gönderir (telefondan video dosyası ya da arka kamera). null → durdur. */
+    async useStream(stream) {
+      if (screen && screen !== stream) screen.getTracks().forEach((t) => t.stop());
+      screen = stream || null;
+      const v = stream?.getVideoTracks()[0];
+      if (v) {
+        v.contentHint = 'motion';
+        v.addEventListener('ended', () => { if (screen === stream) { screen = null; attachTracks(); onState?.({ ...status, screen: false }); } });
+      }
+      await attachTracks();
+      return !!screen;
+    },
   };
 }

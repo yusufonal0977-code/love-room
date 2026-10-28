@@ -21,7 +21,8 @@ export function createDecorUI(ctx) {
     if (JSON.stringify(DECOR.paint) !== before) repaint(); else bump();
   });
 
-  const scene = () => game.me.scene;
+  let room = null; // düzenlenen oda (varsayılan: bulunduğun oda)
+  const scene = () => room || game.me.scene;
 
   // ---------- Dolap ----------
   function preview(type) {
@@ -36,23 +37,28 @@ export function createDecorUI(ctx) {
     const it = CATALOG[type];
     const count = Object.keys(DECOR.items[scene()] || {}).length;
     if (count >= 24) return toast('Bu oda yeterince dolu 🙂 Önce bir şey kaldır.');
-    const x = Math.round(Math.max(14, Math.min(178, game.me.x + (Math.random() * 20 - 10))));
-    const y = it.wall ? 30 : Math.round(Math.max(WALL + 14, Math.min(H - 4, game.me.y + 12)));
+    const here = scene() === game.me.scene;
+    const wall = it.wall && !SCENES[scene()].outdoor; // balkonda duvar yok: yere konur
+    const x = Math.round(here ? Math.max(14, Math.min(178, game.me.x + (Math.random() * 20 - 10))) : 60 + Math.random() * 72);
+    const y = wall ? 30 : Math.round(here ? Math.max(WALL + 14, Math.min(H - 4, game.me.y + 12)) : 100 + Math.random() * 20);
     await push(live.ref(`decor/${scene()}/items`), { type, x, y });
     live.stat('decor');
     closeSheet();
-    toast(`${it.name} yerleşti. Yerini değiştirmek için "Eşyaları taşı".`, 3500);
+    toast(`${it.name} ${SCENES[scene()].name.toLowerCase()} içine yerleşti. Yerini değiştirmek için "Eşyaları taşı".`, 3500);
   }
 
-  function open(tab = 'shop') {
-    const body = openSheet({ title: 'Evi düzenle · ' + SCENES[scene()].name, iconName: 'paint', wide: true });
+  function open(tab = 'shop', roomId = null) {
+    const r = roomId || room || game.me.scene;
+    const body = openSheet({ title: 'Evi düzenle', iconName: 'paint', wide: true, onClose: () => (room = null) });
+    room = r; // önceki pencerenin kapanışı odayı sıfırlar; o yüzden açtıktan sonra
+    body.append(h('div', { class: 'rooms' }, ...Object.values(SCENES).map((sc) => h('button', { class: sc.id === scene() ? 'sel' : '', onclick: () => open(tab, sc.id) }, sc.name))));
     body.append(h('div', { class: 'tabs' },
       h('button', { class: tab === 'shop' ? 'sel' : '', onclick: () => open('shop') }, 'Dekor dolabı'),
       h('button', { class: tab === 'paint' ? 'sel' : '', onclick: () => open('paint') }, 'Boya'),
-      h('button', { onclick: () => { closeSheet(); startEdit(); }, html: `${icon('move')} Eşyaları taşı` }),
+      h('button', { onclick: () => { const r = scene(); closeSheet(); if (r !== game.me.scene) game.goto(r, 96, 110); startEdit(); }, html: `${icon('move')} Eşyaları taşı` }),
     ));
     if (tab === 'shop') {
-      body.append(h('p', { class: 'small' }, 'Seçtiğin eşya bulunduğun odaya, yanına konur. Duvar eşyaları duvara asılır.'),
+      body.append(h('p', { class: 'small' }, 'Yukarıdan odayı seç; eşya o odaya konur (bulunduğun odadaysa yanına). Duvar eşyaları duvara asılır.'),
         h('div', { class: 'shop' }, ...Object.entries(CATALOG).map(([type, it]) => h('button', { class: 'shopitem', onclick: () => place(type) }, preview(type), h('span', {}, it.name)))));
     } else paintTab(body);
   }

@@ -92,22 +92,33 @@ body.editing #bar, body.editing #help { display: none; }
 #tvLayer { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
 .tvbox { position: fixed; background: #000; overflow: hidden; pointer-events: auto; }
 .tvbox.away { left: -9999px !important; top: 0 !important; width: 320px !important; height: 180px !important; }
-.tvbox .yt, .tvbox .yt iframe, .tvbox video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; background: #000; }
+.tvbox .yt, .tvbox .yt iframe, .tvbox video, .tvbox .web { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; background: #000; }
 .tvbox .file, .tvbox .yt { display: none; }
-.tvbox.is-yt .yt { display: block; }
-.tvbox:not(.is-yt) .file { display: block; }
+.tvbox[data-kind=yt] .yt, .tvbox[data-kind=file] .file { display: block; }
 .tvbox .screen { display: none; }
 .tvbox.has-screen .screen { display: block; z-index: 2; }
 .tvbox .tvtap { position: absolute; inset: 0; z-index: 3; cursor: zoom-in; }
-.tvbox .tvbar { display: none; }
+.tvbox .web { display: none; background: #fff; }
+.tvbox[data-kind=web] .web { display: block; }
+.tvbox.incinema .tvtap, .tvbox.full .tvtap { display: none; }
 .tvjoin { position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 6px; align-items: center; font-size: 15px; background: var(--sun); color: #1a1608; border: 0; font-weight: 700; }
-.tvbox:not(.cinema) .tvjoin { font-size: 10px; padding: 3px 6px; }
-.tvbox.cinema { inset: 0 !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; z-index: 15; }
-.tvbox.cinema .tvtap { display: none; }
-.tvbox.cinema .yt, .tvbox.cinema video { bottom: 56px; height: auto; }
-.tvbox.cinema .tvbar { display: flex; position: absolute; left: 0; right: 0; bottom: 0; height: 56px; align-items: center; gap: 8px; padding: 0 12px env(safe-area-inset-bottom); background: #0d0b06; border-top: 1px solid var(--line); }
-.tvbar .tvtitle { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
-.tvbar button { width: 42px; height: 40px; padding: 0; display: grid; place-items: center; }
+.tvbox:not(.incinema):not(.full) .tvjoin { font-size: 10px; padding: 3px 6px; }
+.tvcount { position: absolute; z-index: 5; inset: 0; display: grid; place-items: center; font-size: clamp(28px, 8vw, 80px); color: var(--sun); background: rgba(0,0,0,.55); text-shadow: 0 2px 8px #000; pointer-events: none; }
+.tvbox.full { left: 0 !important; top: 0 !important; width: 100% !important; height: calc(100% - 64px) !important; z-index: 15; }
+.sharesrc { position: fixed; left: -10px; top: -10px; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
+/* Sinema: kamera TV'ye yakınlaşır, alt çubuğun yerine film kontrolleri gelir */
+body.cinema #bar, body.cinema #help { display: none; }
+body.cinema #top { background: linear-gradient(rgba(0,0,0,.4), transparent); }
+.cinebar { position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 16; display: flex; flex-direction: column; gap: 6px; align-items: center; background: rgba(18,15,9,.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,246,216,.12); border-radius: 20px; padding: 8px 10px; width: min(96vw, 520px); }
+.cinfo { display: flex; gap: 10px; align-items: center; width: 100%; font-size: 13px; }
+.ctitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.csync { color: var(--dim); white-space: nowrap; font-size: 12px; }
+.csync.ok { color: var(--ok); } .csync.warn { color: #ffc93c; }
+.cbtns { display: flex; gap: 6px; justify-content: center; }
+.cbtns button { width: 44px; height: 42px; padding: 0; display: grid; place-items: center; border-radius: 13px; border: 0; background: rgba(255,246,216,.08); color: var(--ink); }
+.cbtns button .ic { margin: 0; }
+.cbtns button.love { color: #ff8fab; }
+@media (max-width: 380px) { .cbtns button { width: 38px; } }
 
 /* Oyun katmanı */
 .tag { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; font-size: 13px; text-shadow: 0 1px 0 #000, 0 0 3px #000; }
@@ -195,6 +206,7 @@ a.btn { display: inline-flex; align-items: center; background: #221d13; color: v
 .np { display: flex; gap: 12px; align-items: center; background: #1d180d; border-radius: 14px; padding: 10px; }
 .np img, .npart { width: 76px; height: 76px; border-radius: 10px; object-fit: cover; flex: none; display: grid; place-items: center; background: #2b2410; }
 .np b { display: block; } .np .row { margin-top: 6px; flex-wrap: wrap; }
+.nowplaying .row button { flex: 1 1 auto; font-size: 14px; padding: 8px 10px; }
 .np .row button { width: 42px; height: 40px; padding: 0; display: grid; place-items: center; }
 .np .row button .ic { margin: 0; }
 button.spotify { background: #1db954; border-color: #1db954; color: #04130a; box-shadow: none; }
@@ -277,3 +289,31 @@ button.spotify { background: #1db954; border-color: #1db954; color: #04130a; box
 .theme { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 6px; font-size: 12px; }
 .theme i { width: 100%; height: 34px; border-radius: 6px; display: block; }
 input[type=color] { width: 44px; height: 34px; padding: 0; border: 2px solid var(--line); border-radius: 8px; background: none; }
+
+/* Tarih seçici, alanlar */
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field b { font-weight: 600; }
+.datepick { display: flex; gap: 6px; }
+select { font: inherit; background: var(--panel); color: var(--ink); border: 2px solid var(--line); border-radius: 8px; padding: 9px 8px; flex: 1; min-width: 0; }
+select:focus { outline: none; border-color: var(--sun); }
+.pic { position: absolute; object-fit: cover; pointer-events: none; image-rendering: auto; }
+.rooms { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.rooms button { padding: 7px 4px; font-size: 13px; }
+.rooms button.sel { background: var(--sun); color: #1a1608; border-color: var(--sun); }
+
+/* Onay, hukuki metinler */
+.footlinks { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; font-size: 12px; }
+.footlinks a, .legal a, .checks a { color: var(--sun); }
+.legalnote { max-width: 34ch; }
+.checks { display: flex; flex-direction: column; gap: 10px; text-align: left; max-width: 420px; }
+.checks label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ink); line-height: 1.4; }
+.checks input { width: 20px; height: 20px; flex: none; margin-top: 1px; accent-color: var(--sun); }
+.legal { line-height: 1.55; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; -webkit-user-select: text; user-select: text; }
+.legal h4 { color: var(--sun); margin: 14px 0 4px; font-family: 'Pixelify Sans', monospace; font-size: 15px; }
+.legal p, .legal ul { margin: 6px 0; }
+.legal .muted { color: var(--dim); font-size: 12px; }
+button.danger { background: #5a1a26; border-color: #ff4f7b; color: #ffd0da; }
+button.link.danger { background: none; color: #ff8fab; }
+#consent { overflow: auto; justify-content: flex-start; padding-top: max(24px, env(safe-area-inset-top)); }
+#consent > :first-child { margin-top: auto; } #consent > :last-child { margin-bottom: auto; }
+body.cinema .prompt { display: none; }

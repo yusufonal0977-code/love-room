@@ -4,7 +4,7 @@ Uzaktaki çiftler için piksel bir ev. Aynı odada yürüyün, kanepede yan yana
 
 **▶ Oyna:** https://yusufonal0977-code.github.io/love-room/
 
-Bir [Eclip Software & Entertainment](#) yapımı.
+Bir Eclip Software & Entertainment yapımı · [Hakkımızda, gizlilik ve koşullar](https://yusufonal0977-code.github.io/love-room/legal.html) · eclipsoftware.dev@gmail.com
 
 ## Nasıl?
 
@@ -26,13 +26,17 @@ Ok tuşları/WASD ile yürü, **E** ile etkileş. Telefonda gideceğin yere doku
 Alt çubuktaki **Birlikte** düğmesi her şeyi tek yerden açar.
 
 - **Sesli/görüntülü sohbet** iki kişi de odadayken kendiliğinden açılır. Sol üstteki nokta bağlantıyı gösterir (yeşil: bağlı); dokununca tanı ve "yeniden bağlan".
-- **Film:** TV'ye YouTube ya da .mp4 linki yapıştır; ikinizde aynı saniyede oynar, durdurma/sarma eşlenir. Sinema modu tam ekran. Bilgisayardan **ekran yansıtma** sesli ve 1080p (telefon tarayıcıları ekran yansıtmaya izin vermez).
+- **Film:** TV'ye YouTube ya da video linki yapıştır; ikinizde aynı saniyede oynar, durdurma/sarma eşlenir, 1 saniyeden fazla kayarsa kendiliğinden düzelir, birinin videosu takılırsa diğeri bekler. Başka siteler de TV'de açılabilir (site izin veriyorsa; "3-2-1 birlikte başlat"). **Sinema modu** kamerayı odadaki TV'ye yaklaştırır. Bilgisayardan sesli 1080p ekran paylaşımı; telefondan galerideki bir videoyu ya da kamerayı TV'ye canlı gönderme.
 - **Müzik:** Spotify hesaplarınızı bağlayın, bir liste seçin: ikinizde aynı şarkı çalar (Premium gerekir; telefonda Spotify uygulaması üzerinden).
 - **Anılar:** tablolara fotoğraf asın, albüm, fotoğraf kabini (aynı anda çekim ya da çocukluk fotoğrafları yan yana), günlük ve geleceğe mektup, ilişki saati ve buluşma geri sayımı, soru kavanozu (cevaplar ikiniz de yazınca açılır).
 - **Birlikte:** çizim, XOX, hafıza, langırt; kedi bakımı, çiçek sulama, rozetler.
 - **Ev:** dekor dolabından eşya ekleyin, odaları boyayın, eşyaları sürükleyip taşıyın.
-- **Dokunuşlar:** kalp, sarılma ve öpücük (yan yana olunca karakterler birbirine dönüp sarılır/öpüşür).
+- **Dokunuşlar:** kalp, sarılma ve öpücük: aynı odadaysanız karakterin partnerine yürür, birbirinize dönüp sarılırsınız ya da öpüşürsünüz.
 - **Küçük pencere** modu ve **tam ekran** (telefonda "Ana Ekrana Ekle" ile uygulama gibi açılır).
+
+## Gizlilik
+
+İlk girişte Kullanım Koşulları, Gizlilik Politikası ve KVKK onayı alınır ([legal.html](legal.html)). Menü → *Verilerimi sil* hesabı ve ortak evi kalıcı olarak siler.
 
 ## Teknik
 

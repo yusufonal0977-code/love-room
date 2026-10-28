@@ -3,34 +3,22 @@
 // live/{rid}/frames/{çerçeve} = { img, by, at }        (tablodaki foto; sahnede piksel haliyle görünür)
 // live/{rid}/album/{id}       = { img, title, by, at }  (kabin şeritleri ve eklenen anılar)
 // live/{rid}/booth           = { mode, slots: {uid: img}, shot: {at, by} }
-import { h, icon, openSheet, closeSheet, toast, pickImage, compressImage, loadImg, download, fmtDate, esc } from '../ui.js';
+import { h, icon, openSheet, closeSheet, toast, pickImage, compressImage, loadImg, saveImage, fmtDate } from '../ui.js';
 import { get, limitToLast, push, query, remove, serverTimestamp, set, now } from '../fb.js';
 import { DECOR, SCENES, bump } from '../scenes.js';
 
-const FRAMES = Object.values(SCENES).flatMap((s) => (s.frames || []).map((f) => ({ ...f, scene: s.name })));
-
-/** Fotoğrafı tablonun küçük boyutuna indirip piksel görünüm verir (orta kırpma). */
-async function pixelate(src, w, h_) {
-  const img = await loadImg(src);
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h_;
-  const g = c.getContext('2d');
-  const s = Math.max(w / img.width, h_ / img.height);
-  const sw = w / s, sh = h_ / s;
-  g.imageSmoothingEnabled = true;
-  g.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, 0, 0, w, h_);
-  return c;
-}
+const FRAMES = Object.values(SCENES).flatMap((s) => (s.frames || []).map((f) => ({ ...f, scene: s.name, sceneId: s.id })));
 
 export function createPhotos(ctx) {
   const { live, uid } = ctx;
   let frames = {}, booth = {}, boothBody = null, camStream = null, ownCam = false, shotTimer = null;
 
-  live.on('frames', async (v) => {
+  live.on('frames', (v) => {
     frames = v || {};
     for (const f of FRAMES) {
-      if (frames[f.id]?.img) DECOR.frames[f.id] = await pixelate(frames[f.id].img, f.w, f.h).catch(() => null);
-      else delete DECOR.frames[f.id];
+      const img = frames[f.id]?.img;
+      if (img) DECOR.frames[f.id] = true; else delete DECOR.frames[f.id];
+      ctx.game.setPicture('frame:' + f.id, f.sceneId, [f.x, f.y, f.w, f.h], img || null);
     }
     bump();
   });
@@ -51,7 +39,7 @@ export function createPhotos(ctx) {
       h('button', { class: 'primary', html: `${icon('upload')} Fotoğraf koy`, onclick: async () => {
         const file = await pickImage();
         if (!file) return;
-        const img = await compressImage(file, 480);
+        const img = await compressImage(file, 720);
         await set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() });
         if (confirm('Albüme de eklensin mi?')) addToAlbum(img, f.scene);
         closeSheet(); toast('Tabloya asıldı 🖼️');
@@ -86,8 +74,8 @@ export function createPhotos(ctx) {
     const body = openSheet({ title: it.title || fmtDate(it.at || now()), iconName: 'album', wide: true });
     body.append(h('img', { class: 'bigphoto', src: it.img, alt: '' }), h('small', {}, fmtDate(it.at || now())),
       h('div', { class: 'row wrap' },
-        h('button', { html: `${icon('download')} İndir`, onclick: () => download(it.img, `love-room-${it.key}.jpg`) }),
-        ...FRAMES.map((f) => h('button', { onclick: async () => { await set(live.ref(`frames/${f.id}`), { img: await compressImage(it.img, 480), by: uid, at: serverTimestamp() }); toast(`${f.scene} tablosuna asıldı`); } }, `${f.scene} tablosuna as`)),
+        h('button', { class: 'primary', html: `${icon('download')} Galeriye kaydet`, onclick: () => saveImage(it.img, `love-room-${it.key}.jpg`) }),
+        ...FRAMES.map((f) => h('button', { onclick: async () => { await set(live.ref(`frames/${f.id}`), { img: await compressImage(it.img, 720), by: uid, at: serverTimestamp() }); toast(`${f.scene} tablosuna asıldı`); } }, `${f.scene} tablosuna as`)),
         h('button', { class: 'link', onclick: () => { if (confirm('Bu fotoğraf albümden silinsin mi?')) { remove(live.ref(`album/${it.key}`)); openAlbum(); } } }, 'Sil'),
         h('button', { class: 'link', onclick: () => openAlbum() }, 'Albüme dön'),
       ));
@@ -171,6 +159,8 @@ export function createPhotos(ctx) {
     b.append(h('div', { class: 'row wrap' },
       mode === 'now' ? h('button', { class: 'primary', onclick: async () => { await remove(live.ref('booth/slots')); set(live.ref('booth/shot'), { at: now() + 3500, by: uid }); } }, 'Birlikte çek (3-2-1)') : null,
       both ? h('button', { class: 'primary', onclick: saveStrip }, 'Şeridi albüme kaydet') : null,
+      both ? h('button', { html: `${icon('download')} Galeriye kaydet`, onclick: async () => saveImage(await composeStrip(), `love-room-kabin-${Date.now()}.jpg`) }) : null,
+      slots[uid] ? h('button', { class: 'link', onclick: () => saveImage(slots[uid], `love-room-ben-${Date.now()}.jpg`) }, 'Kendi kareni kaydet') : null,
       Object.keys(slots).length ? h('button', { class: 'link', onclick: () => remove(live.ref('booth/slots')) }, 'Temizle') : null,
     ));
     if (both) composeStrip().then((url) => b.querySelector('.strip-prev')?.setAttribute('src', url));

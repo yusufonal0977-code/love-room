@@ -212,8 +212,8 @@ const salon = makeScene({
     { id: 'cat', dynamic: true, label: () => 'Kedimiz' },
   ],
   seats: [{ x: 84, y: 116, pose: 'back', group: 'sofa' }, { x: 108, y: 116, pose: 'back', group: 'sofa' }],
-  frames: [{ id: 'salon1', x: 45, y: 15, w: 12, h: 10, outer: [42, 12, 18, 16] }],
-  frameArt: { salon1: (g, x, y, w, h) => { R(g, x, y, w, h, '#ffd27a'); R(g, x, y + h - 3, w, 3, '#3fb7a4'); R(g, x + 4, y + 2, 3, 3, '#ff7a59'); } },
+  frames: [{ id: 'salon1', x: 43, y: 13, w: 16, h: 12, outer: [40, 10, 22, 18] }],
+  frameArt: { salon1: (g, x, y, w, h) => { R(g, x, y, w, h, '#ffd27a'); R(g, x, y + h - 3, w, 3, '#3fb7a4'); R(g, x + 5, y + 2, 4, 4, '#ff7a59'); } },
   lights: ({ st, t }) => [
     st.lamp && { x: 30, y: 74, r: 72, a: 0.95, color: '255,190,100', prop: 'lamp' },
     (st.tv || DECOR.tvOn) && { x: 96, y: 28, r: 64 + Math.sin(t * 9) * 2, a: 0.9, color: '120,170,255' },
@@ -425,7 +425,7 @@ const hobi = makeScene({
   },
   dyn(g, { st }) {
     R(g, 106, 30, 6, 4, st.desk ? '#ffe08a' : '#d6c08f'); R(g, 108, 34, 2, 10, C.metal);
-    if (DECOR.drawing) g.drawImage(DECOR.drawing, 60, 32, 20, 16);
+    if (DECOR.drawing) R(g, 60, 32, 20, 16, '#fffaf0');
     else { R(g, 66, 36, 3, 3, '#ff5d8f'); R(g, 71, 36, 3, 3, '#ff5d8f'); R(g, 65, 38, 10, 3, '#ff5d8f'); R(g, 67, 41, 6, 2, '#ff5d8f'); R(g, 69, 43, 2, 1, '#ff5d8f'); }
   },
   props: [

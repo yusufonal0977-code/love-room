@@ -128,6 +128,18 @@ export function loadImg(src) {
 export function download(dataUrl, name) {
   h('a', { href: dataUrl, download: name }).click();
 }
+/** Telefonda paylaşım menüsünü açar ("Resmi kaydet" ile galeriye gider); bilgisayarda dosya olarak indirir. */
+export async function saveImage(dataUrl, name) {
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], name, { type: blob.type || 'image/jpeg' });
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Love Room' });
+      return;
+    }
+  } catch (e) { if (e?.name === 'AbortError') return; }
+  download(dataUrl, name);
+}
 
 export const fmtDate = (ms) => new Date(ms).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 export const fmtTime = (ms) => new Date(ms).toLocaleString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });

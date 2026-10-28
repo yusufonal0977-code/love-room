@@ -16,8 +16,28 @@ import { createCare } from './features/care.js';
 import { createGames } from './features/games.js';
 import { createDecorUI } from './features/decor-ui.js';
 import { createPip } from './features/pip.js';
+import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
+import { auth, db, ref, remove } from './fb.js';
+import { deleteUser, GoogleAuthProvider, reauthenticateWithPopup } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
-const show = (id) => ['gate', 'setup', 'invite', 'world'].forEach((s) => ($(s).hidden = s !== id));
+// ---------- Hakkımızda ve hukuki metinler (uygulama içi pencere) ----------
+function openLegal(id) {
+  const doc = legalById(id) || LEGAL[0];
+  const body = openSheet({ title: doc.title, iconName: 'book', wide: true });
+  body.append(
+    h('div', { class: 'tabs' }, ...LEGAL.map((d) => h('button', { class: d.id === doc.id ? 'sel' : '', onclick: () => openLegal(d.id) }, d.title))),
+    h('div', { class: 'legal', html: doc.html }),
+    h('a', { class: 'small', href: `legal.html#${doc.id}`, target: '_blank', rel: 'noopener' }, 'Ayrı sayfada aç'),
+  );
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest?.('a[href^="#"]');
+  if (!a || !legalById(a.getAttribute('href').slice(1))) return;
+  e.preventDefault();
+  openLegal(a.getAttribute('href').slice(1));
+});
+
+const show = (id) => ['gate', 'consent', 'setup', 'invite', 'world'].forEach((s) => ($(s).hidden = s !== id));
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const SCENE_TR = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde' };
 const sideIcon = (s) => (s === 'moon' ? '🌙' : '☀️');
@@ -67,7 +87,26 @@ async function afterLogin(u, guestName) {
     profile = { name, look: { ...DEFAULT_LOOK, shirt: Math.floor(Math.random() * SHIRT.length) }, side: 'sun', tz };
     await saveProfile(u.uid, profile);
   } else if (profile.tz !== tz) saveProfile(u.uid, { tz });
+  if ((profile.consent?.v || 0) < LEGAL_VERSION) await askConsent();
   await route();
+}
+
+/** Ev kurulmadan / davete girilmeden önce koşulların onayı (sürüm değişince yeniden sorulur). */
+function askConsent() {
+  show('consent');
+  const boxes = ['cTerms', 'cKvkk', 'cAge'].map($);
+  const sync = () => ($('consentBtn').disabled = !boxes.every((b) => b.checked));
+  boxes.forEach((b) => (b.onchange = sync));
+  sync();
+  $('consentNo').onclick = async () => { await logout(); location.reload(); };
+  return new Promise((resolve) => {
+    $('consentBtn').onclick = async () => {
+      const consent = { v: LEGAL_VERSION, at: Date.now(), kvkk: true, age18: true };
+      await saveProfile(user.uid, { consent });
+      profile.consent = consent;
+      resolve();
+    };
+  });
 }
 
 async function route() {
@@ -85,7 +124,14 @@ async function route() {
       else return showInvite(inv, code);
     } else return showInvite(inv, code);
   }
-  if (profile.roomId) return enterWorld(profile.roomId);
+  if (profile.roomId) {
+    // Ev silinmişse (partner verilerini sildiyse) yeni ev kurma ekranına dön
+    const r = await getRoom(profile.roomId).catch(() => null);
+    if (r && (r.a === user.uid || r.b === user.uid)) return enterWorld(profile.roomId);
+    await saveProfile(user.uid, { roomId: null });
+    profile.roomId = null;
+    if (!r) toast('Eviniz artık yok. Yeni bir ev kurabilirsin.', 4000);
+  }
   $('setupName').textContent = profile.name;
   show('setup');
 }
@@ -214,7 +260,13 @@ async function enterWorld(rid, fresh = false) {
     partnerUid, partnerName: pName, partnerTz: () => partnerProfile?.tz, partnerOnline: () => !!partnerP(), partnerCam: () => !!partnerP()?.cam,
     myName: () => profile.name, mySide: () => profile.side ?? 'sun', isHost,
     screenAudio: $('screenAudio'),
-    toggleScreen: () => $('screenBtn').onclick(), toggleMic: () => $('micBtn').onclick(), react: (k) => live.react(k),
+    toggleScreen: () => $('screenBtn').onclick(),
+    async shareMedia(stream) {
+      const on = await call.useStream(stream);
+      setBtn('screenBtn', on); live.setPresence({ screen: on });
+      tv.setScreen(on ? call.screenStream : partnerP()?.screen ? call.remote.screen : null);
+    },
+    toggleMic: () => $('micBtn').onclick(), react: (k) => live.react(k),
     onRel: (t) => { $('relChip').textContent = t; $('relChip').hidden = !t; },
     onFrame: null,
   };
@@ -361,8 +413,9 @@ async function enterWorld(rid, fresh = false) {
     setIcon('camBtn', on ? 'cam' : 'camOff');
     bMe.v.srcObject = call.camStream;
   };
-  if (!call.canShareScreen) $('screenBtn').hidden = true;
   $('screenBtn').onclick = async () => {
+    // Telefonda tüm ekran paylaşılamaz: TV penceresindeki "Galeriden video / Kamera" seçenekleri açılır
+    if (!call.canShareScreen) return tv.open();
     const on = await call.toggleScreen(); setBtn('screenBtn', on); live.setPresence({ screen: on });
     tv.setScreen(on ? call.screenStream : partnerP()?.screen ? call.remote.screen : null);
     if (on) { toast('Ekranın salondaki TV\'de 📺'); if (game.me.scene !== 'salon') tv.cinema(true); }
@@ -370,8 +423,11 @@ async function enterWorld(rid, fresh = false) {
   $('heartBtn').onclick = () => live.react('heart');
   const touch = (kind) => {
     if (!partnerP()) return toast('Partnerin odada değil');
-    if (!game.near()) return toast(kind === 'hug' ? 'Sarılmak için yanına git 🤗' : 'Öpmek için yanına git 💋');
-    live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses');
+    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); };
+    if (game.near()) return go();
+    // Aynı odadaysanız karakterin partnerine yürür, varınca sarılır/öper
+    if (game.sameRoom() && partnerP()?.seat < 0) return game.approach(go);
+    toast(kind === 'hug' ? 'Sarılmak için aynı odaya git 🤗' : 'Öpmek için aynı odaya git 💋');
   };
   $('hugBtn').onclick = () => touch('hug');
   $('kissBtn').onclick = () => touch('kiss');
@@ -387,6 +443,41 @@ async function enterWorld(rid, fresh = false) {
   $('inviteChip').onclick = $('menuBtn').onclick;
   $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast('Davet linki kopyalandı 💌'); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
+  $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
+
+  // ---------- Verilerimi sil ----------
+  function confirmDelete() {
+    const b = openSheet({ title: 'Verilerimi sil', iconName: 'trash' });
+    const input = h('input', { placeholder: 'SİL yaz', autocomplete: 'off' });
+    b.append(
+      h('p', {}, 'Hesabın, profilin ve ortak eviniz kalıcı olarak silinir: tablolar, albüm, günlük, mektuplar, çizimler, cevaplar, kedi ve çiçek dahil. Bu, partnerinin eklediği içerikleri de siler ve geri alınamaz.'),
+      h('p', { class: 'small' }, 'Önce saklamak istediğiniz fotoğrafları Albüm → Galeriye kaydet ile indirmenizi öneririz.'),
+      h('label', {}, 'Onaylamak için SİL yaz', input),
+      h('button', { class: 'danger', onclick: async () => {
+        if (input.value.trim().toLocaleUpperCase('tr-TR') !== 'SİL') return input.focus();
+        try { await deleteEverything(); }
+        catch (e) { console.warn(e); toast('Silme tamamlanamadı. Veritabanı kuralları güncel mi? ' + (e.code || e.message || ''), 6000); }
+      } }, 'Her şeyi kalıcı olarak sil'),
+    );
+  }
+  async function deleteEverything() {
+    toast('Siliniyor…', 8000);
+    call.setPartner(null);
+    game.stop(); live.leave();
+    const r = room.data;
+    if (r?.info?.invite) await remove(ref(db, `invites/${r.info.invite}`)).catch(() => {});
+    await remove(ref(db, `live/${rid}`));
+    await remove(ref(db, `rooms/${rid}`));
+    await remove(ref(db, `users/${user.uid}`));
+    try { await deleteUser(auth.currentUser); }
+    catch (e) {
+      if (e.code === 'auth/requires-recent-login') { await reauthenticateWithPopup(auth.currentUser, new GoogleAuthProvider()); await deleteUser(auth.currentUser); }
+      else throw e;
+    }
+    localStorage.clear(); sessionStorage.clear();
+    alert('Tüm verilerin silindi. Love Room’u denediğin için teşekkürler 💛');
+    location.href = location.pathname;
+  }
   document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
   document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
   addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
