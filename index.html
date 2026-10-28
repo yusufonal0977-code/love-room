@@ -6,6 +6,11 @@
 <title>Love Room</title>
 <meta name="description" content="Uzaktaki çiftler için piksel bir ev: aynı odada yürüyün, konuşun, birlikte vakit geçirin.">
 <meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/loveroom-logo.webp">
 <meta property="og:title" content="Love Room">
 <meta property="og:description" content="Kilometreler arada, aynı odadayız.">
 <meta property="og:image" content="assets/loveroom-logo.webp">
@@ -54,27 +59,42 @@
 
 <!-- Dünya -->
 <section id="world" hidden>
-  <header id="top">
-    <div><b id="roomName">Bizim Ev</b><span id="status"></span></div>
-    <button id="inviteChip" hidden>💌 Partnerini davet et</button>
-  </header>
   <div id="stage"><canvas id="c" width="192" height="144"></canvas><div id="ov"></div></div>
+  <div id="tvLayer"></div>
+  <header id="top">
+    <div class="who"><b id="roomName">Bizim Ev</b><span id="status"></span><button id="connDot" class="conn idle" aria-label="Bağlantı"></button></div>
+    <div class="chips">
+      <span id="relChip" class="chip" hidden></span>
+      <button id="soundBtn" class="chip warn" hidden></button>
+      <button id="micWarn" class="chip warn" hidden></button>
+      <button id="inviteChip" class="chip" hidden>Partnerini davet et</button>
+    </div>
+  </header>
   <nav id="bar">
-    <button id="micBtn" title="Mikrofon">🎙️</button>
-    <button id="camBtn" title="Kamera" class="off">📷</button>
-    <button id="screenBtn" title="Ekranını TV'ye yansıt" class="off">🖥️</button>
+    <button id="micBtn" title="Mikrofon"></button>
+    <button id="camBtn" title="Kamera" class="off"></button>
+    <button id="screenBtn" title="Ekranını TV'ye yansıt" class="off"></button>
     <span class="sep"></span>
-    <button id="heartBtn" title="Kalp gönder">❤️</button>
-    <button id="hugBtn" title="Sarıl">🤗</button>
+    <button id="heartBtn" title="Kalp gönder" class="love"></button>
+    <button id="hugBtn" title="Sarıl" class="love"></button>
+    <button id="kissBtn" title="Öp" class="love"></button>
     <span class="sep"></span>
-    <button id="menuBtn" title="Menü">⚙️</button>
+    <button id="hubBtn" title="Birlikte" class="hub"></button>
+    <button id="menuBtn" title="Menü"></button>
   </nav>
-  <div id="help">⬅️⬆️⬇️➡️ / WASD yürü · E etkileşim · telefonda dokun</div>
+  <div id="editBar" hidden>
+    <span id="editHint"></span>
+    <button id="editAdd">Eşya ekle</button>
+    <button id="editRemove" hidden>Kaldır</button>
+    <button id="editDone" class="primary">Bitti</button>
+  </div>
+  <div id="help">WASD / oklar yürü · E etkileşim · eşyalara dokun</div>
 </section>
 
 <div id="toast"></div>
 <div id="brand"><img src="assets/eclip-logo.webp" alt="">ECLIP</div>
-<audio id="remoteAudio" autoplay></audio>
+<audio id="remoteAudio" autoplay playsinline></audio>
+<audio id="screenAudio" autoplay playsinline></audio>
 
 <!-- Menü -->
 <div id="menu" class="modal" hidden>
@@ -86,6 +106,8 @@
       <button id="copyBtn">Linki kopyala</button>
     </div>
     <button id="editBtn" class="primary">Karakterimi düzenle</button>
+    <button id="zoomBtn"></button>
+    <button id="fullBtn">Tam ekran</button>
     <button id="logoutBtn" class="link">Çıkış yap</button>
     <button class="close link" data-close>Kapat</button>
   </div>
@@ -107,9 +129,12 @@
   </div>
 </div>
 
-<!-- Ekran paylaşımı tam ekran -->
-<div id="screenView" class="modal" hidden>
-  <div class="card wide"><video id="screenBig" autoplay playsinline muted></video><button class="link" data-close>Kapat</button></div>
+<!-- Özellik penceresi (TV, müzik, günlük, oyunlar…) -->
+<div id="sheet" class="modal" hidden>
+  <div class="card sheet">
+    <div class="sheethead"><h3 id="sheetTitle"></h3><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div id="sheetBody"></div>
+  </div>
 </div>
 
 <script type="module" src="js/main.js"></script>

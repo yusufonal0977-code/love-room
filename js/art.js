@@ -118,3 +118,11 @@ export function catSprites(color = '#f0a050') {
   const right = CAT.map((r) => sprite(r, pal));
   return { right, left: right.map(mirror), sit: sprite(CAT_SIT, pal) };
 }
+
+// ---- Kalp parçacıkları (sarılma/öpücük animasyonu) ----
+export const HEART = sprite(['.r.r.', 'rRrrr', 'rrrrr', '.rrr.', '..r..'], { r: '#ff4f7b', R: '#ffb3c6' });
+export const HEART_BIG = sprite(
+  ['.rr...rr.', 'rRRr.rrrr', 'rRrrrrrrr', 'rrrrrrrrr', '.rrrrrrr.', '..rrrrr..', '...rrr...', '....r....'],
+  { r: '#ff4f7b', R: '#ffc2d1' },
+);
+export const SPARK = sprite(['.y.', 'yYy', '.y.'], { y: '#ffd27a', Y: '#fff6c8' }, null);

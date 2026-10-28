@@ -9,7 +9,10 @@
 //   live/{rid}/cat            kedinin konumu (oda kurucusunun cihazı yürütür)
 //   live/{rid}/fx             anlık tepkiler (kalp, sarılma)
 //   live/{rid}/signal/{uid}   sesli/görüntülü sohbet sinyalleri (okununca silinir)
-import { db, get, now, onChildAdded, onDisconnect, onValue, push, ref, remove, serverTimestamp, set, update } from './fb.js';
+//   live/{rid}/tv, music      ortak film ve müzik oynatma durumu (senkron)
+//   live/{rid}/frames, album, diary, rel, jar, draw, booth, games, pet, flower, stats, decor
+//                             ev özellikleri (her biri kendi modülünde açıklanır)
+import { db, get, increment, now, onChildAdded, onDisconnect, onValue, push, ref, remove, serverTimestamp, set, update } from './fb.js';
 
 export const getProfile = async (uid) => (await get(ref(db, `users/${uid}`))).val();
 export const saveProfile = (uid, patch) => update(ref(db, `users/${uid}`), patch);
@@ -83,7 +86,8 @@ export function joinLive(rid, uid, h) {
     onChildAdded(ref(db, `${base}/signal/${uid}`), (s) => {
       const v = s.val();
       remove(s.ref);
-      if (v) h.onSignal?.(v);
+      // Önceki oturumdan kalmış sinyaller yok sayılır
+      if (v && (v.at ?? 0) > joinedAt - 5000) h.onSignal?.(v);
     }),
   );
 
@@ -98,7 +102,13 @@ export function joinLive(rid, uid, h) {
       const r = push(ref(db, `${base}/fx`), { kind, from: uid, at: serverTimestamp() });
       setTimeout(() => remove(r), 15_000);
     },
-    signal: (to, msg) => push(ref(db, `${base}/signal/${to}`), { ...msg, from: uid }),
+    signal: (to, msg) => push(ref(db, `${base}/signal/${to}`), { ...msg, from: uid, at: serverTimestamp() }),
+    /** Özellik modülleri için: odanın canlı alanında bir yol. */
+    ref: (p) => ref(db, `${base}/${p}`),
+    /** Bir yolu dinler; oda kapanınca otomatik bırakılır. */
+    on(p, cb) { const u = onValue(ref(db, `${base}/${p}`), (s) => cb(s.val())); unsub.push(u); return u; },
+    /** Rozet sayaçları */
+    stat: (key, n = 1) => update(ref(db, `${base}/stats`), { [key]: increment(n) }),
     watchProfile(otherUid, cb) {
       unsub.push(onValue(ref(db, `users/${otherUid}`), (s) => cb(s.val())));
     },

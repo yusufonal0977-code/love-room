@@ -1,0 +1,12 @@
+{
+  "name": "Love Room",
+  "short_name": "Love Room",
+  "description": "Uzaktaki çiftler için piksel bir ev.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [{ "src": "assets/loveroom-logo.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" }]
+}

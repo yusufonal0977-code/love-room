@@ -1,6 +1,7 @@
-// Oyun motoru: sahne çizimi, yürüme + yol bulma, kapılar, oturma, etkileşim, ışık, partner gösterimi.
-import { R, characterSprites, catSprites, SUN_BADGE, MOON_BADGE } from './art.js';
-import { SCENES, W, H } from './scenes.js';
+// Oyun motoru: sahne çizimi, yürüme + yol bulma, kapılar, oturma, etkileşim, ışık, partner gösterimi,
+// tam ekran kamera, sarılma/öpücük animasyonları ve eşya taşıma (dekor) modu.
+import { R, characterSprites, catSprites, SUN_BADGE, MOON_BADGE, HEART, HEART_BIG, SPARK } from './art.js';
+import { DECOR, SCENES, W, H, WALL, bump, layout, lightsOf } from './scenes.js';
 
 const CELL = 4, GW = Math.ceil(W / CELL), GH = Math.ceil(H / CELL);
 const SPEED = 46; // piksel/sn
@@ -27,25 +28,42 @@ export function createGame(opts) {
 
   const me = {
     // Güneş solda, ay sağda doğar: ikisi üst üste binmesin
-    scene: 'salon', x: opts.side === 'moon' ? 112 : 80, y: 118, dir: 'down', moving: false, t: 0, seat: -1, path: [], target: null, onArrive: null,
+    scene: 'salon', x: opts.side === 'moon' ? 112 : 80, y: 136, dir: 'up', moving: false, t: 0, seat: -1, path: [], target: null, onArrive: null,
     look: opts.look, side: opts.side, name: opts.name,
   };
   const partner = { shown: false, scene: null, x: 0, y: 0, dir: 'down', moving: false, t: 0, seat: -1, look: null, side: 'moon', name: '' };
 
-  // ---------- Yerleşim ----------
+  // ---------- Yerleşim: tam ekran + takip eden kamera ----------
+  let scale = 4, zoom = localStorage.getItem('lr.zoom') || 'cover';
+  const cam = { x: 0, y: 0, snap: true };
   function fit() {
-    const avail = { w: innerWidth, h: innerHeight - (innerWidth < 700 ? 150 : 110) };
-    const s = Math.min(avail.w / W, avail.h / H);
-    stage.style.width = W * s + 'px';
-    stage.style.height = H * s + 'px';
+    const vw = innerWidth, vh = innerHeight;
+    const contain = Math.min(vw / W, vh / H), cover = Math.max(vw / W, vh / H);
+    // Yatay ekranda oda neredeyse tamamen görünür (az kırpma); dikey telefonda oda ekranı doldurur, kamera seni takip eder.
+    scale = zoom === 'contain' ? Math.min(vw / W, (vh - 120) / H) : vw >= vh ? Math.min(cover, contain * 1.12) : Math.min(cover, vw / (W * 0.56));
+    stage.style.width = W * scale + 'px';
+    stage.style.height = H * scale + 'px';
+    cam.snap = true;
   }
   addEventListener('resize', fit); fit();
+  function camera(dt) {
+    const vw = innerWidth, vh = innerHeight, sw = W * scale, sh = H * scale;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const tx = sw <= vw ? (vw - sw) / 2 : clamp(vw / 2 - me.x * scale, vw - sw, 0);
+    // Kanepede TV'ye dönük oturunca kamera TV'yi de gösterecek şekilde yukarı kayar
+    const focusY = seatOf(me)?.pose === 'back' ? 64 : me.y - 24;
+    const ty = sh <= vh ? (vh - sh) / 2 : clamp(vh / 2 - focusY * scale, vh - sh, 0);
+    const k = cam.snap ? 1 : Math.min(1, dt * 4);
+    cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; cam.snap = false;
+    stage.style.transform = `translate(${Math.round(cam.x)}px, ${Math.round(cam.y)}px)`;
+  }
 
   // ---------- Çarpışma ve yol ----------
   const scene = () => SCENES[me.scene];
+  const lay = () => layout(scene());
   const blockedIn = (sc, x, y) =>
     x < 4 || x > W - 4 || y > H - 2 ||
-    sc.blocks.some(([bx, by, bw, bh]) => x + 4 > bx + 0.5 && x - 4 < bx + bw - 0.5 && y > by + 0.5 && y - 2 < by + bh - 0.5);
+    layout(sc).blocks.some(([bx, by, bw, bh]) => x + 4 > bx + 0.5 && x - 4 < bx + bw - 0.5 && y > by + 0.5 && y - 2 < by + bh - 0.5);
   const blocked = (x, y) => blockedIn(scene(), x, y);
 
   function findPath(sx, sy, tx, ty) {
@@ -93,7 +111,7 @@ export function createGame(opts) {
   // ---------- Etkileşim ----------
   const spotPos = (s) => (s.id === 'cat' ? { x: cat.x - 10, y: cat.y + 2 } : { x: s.x, y: s.y });
   function spotsHere() {
-    return scene().spots.filter((s) => s.id !== 'cat' || scene().hasCat);
+    return lay().spots.filter((s) => s.id !== 'cat' || scene().hasCat);
   }
   function nearestSpot() {
     let best = null, bd = 16;
@@ -104,51 +122,105 @@ export function createGame(opts) {
     return best;
   }
   function doSpot(s) {
-    if (s.id === 'sofa' || s.id === 'bench' || s.id === 'armchair') return sitDown();
-    if (s.id === 'cat') { fx('💗', cat.x, cat.y - 10); cat.sit = true; cat.wait = 3; opts.onCatPet?.(); return; }
-    opts.onSpot?.(s.id, me.scene);
+    if (s.id === 'sit') return sitDown(s.group);
+    if (s.id === 'cat') { fx('💗', cat.x, cat.y - 10); cat.sit = true; cat.wait = 3; }
+    opts.onSpot?.(s.id, s);
   }
   function interact() {
+    if (opts.blockInput?.()) return;
     if (me.seat >= 0) return standUp();
     const s = nearestSpot();
     if (s) doSpot(s);
   }
-  function sitDown() {
-    const seats = scene().seats;
+  function sitDown(group) {
+    const seats = lay().seats;
     const taken = partner.shown && partner.scene === me.scene ? partner.seat : -1;
-    const free = seats.findIndex((_, i) => i !== taken);
+    const free = seats.findIndex((s, i) => s.group === group && i !== taken);
     if (free < 0) return opts.onToast?.('Burada yer yok 🙂');
-    me.seat = free; me.x = seats[free].x; me.y = seats[free].y; me.dir = 'down'; me.target = null; me.path = [];
+    const s = seats[free];
+    me.seat = free; me.x = s.x; me.y = s.y; me.dir = s.pose === 'back' ? 'up' : 'down'; me.target = null; me.path = [];
     changed();
-    if (taken >= 0) opts.onTogether?.();
+    if (taken >= 0 && seats[taken]?.group === group) opts.onTogether?.();
   }
   function standUp() {
     if (me.seat < 0) return;
-    const sp = scene().spots.find((s) => s.id === 'sofa' || s.id === 'bench' || s.id === 'armchair');
+    const group = lay().seats[me.seat]?.group;
+    const sp = lay().spots.find((s) => s.id === 'sit' && s.group === group);
     me.seat = -1;
     if (sp) { me.x = sp.x; me.y = sp.y; }
     changed();
   }
 
+  // ---------- Dekor modu (eşya taşıma) ----------
+  let edit = null; // { sel, drag }
+  function pickDecor(x, y) {
+    const l = lay();
+    const inR = (r) => r && x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
+    for (const it of [...l.items].reverse()) if (inR([it.x - it.c.w / 2, it.y - it.c.h, it.c.w, it.c.h])) return { kind: 'item', key: it.key, it };
+    for (const p of [...l.props].sort((a, b) => b.sortY - a.sortY)) if (p.movable && inR(p.hit)) return { kind: 'prop', id: p.id, p };
+    return null;
+  }
+  function editDown(x, y) {
+    const pick = pickDecor(x, y);
+    edit.sel = pick;
+    opts.onDecorSelect?.(pick);
+    if (!pick) return;
+    const base = pick.kind === 'item' ? { x: pick.it.x, y: pick.it.y } : { ...(DECOR.moved[me.scene]?.[pick.id] || { dx: 0, dy: 0 }) };
+    edit.drag = { sx: x, sy: y, base, moved: false };
+  }
+  function editMove(x, y) {
+    const d = edit?.drag;
+    if (!d) return;
+    const ddx = Math.round(x - d.sx), ddy = Math.round(y - d.sy);
+    if (Math.abs(ddx) + Math.abs(ddy) > 1) d.moved = true;
+    const sel = edit.sel;
+    if (sel.kind === 'item') {
+      const it = DECOR.items[me.scene][sel.key];
+      it.x = Math.max(8, Math.min(W - 8, d.base.x + ddx));
+      it.y = sel.it.c.wall ? Math.max(sel.it.c.h + 2, Math.min(WALL - 4, d.base.y + ddy)) : Math.max(WALL + 8, Math.min(H - 2, d.base.y + ddy));
+    } else {
+      (DECOR.moved[me.scene] ??= {})[sel.id] = { dx: Math.max(-160, Math.min(160, d.base.dx + ddx)), dy: Math.max(-60, Math.min(60, d.base.dy + ddy)) };
+    }
+    bump();
+  }
+  function editUp() {
+    const d = edit?.drag;
+    if (!d) return;
+    edit.drag = null;
+    if (!d.moved) return;
+    const sel = edit.sel;
+    if (sel.kind === 'item') { const it = DECOR.items[me.scene][sel.key]; opts.onDecorMove?.({ kind: 'item', scene: me.scene, key: sel.key, x: it.x, y: it.y }); }
+    else opts.onDecorMove?.({ kind: 'prop', scene: me.scene, id: sel.id, ...DECOR.moved[me.scene][sel.id] });
+  }
+
   // ---------- Girdi ----------
   addEventListener('keydown', (e) => {
-    if (e.target.closest?.('input, textarea')) return;
+    if (e.target.closest?.('input, textarea, select, [contenteditable]') || opts.blockInput?.()) return;
     keys[e.key.toLowerCase()] = true;
     if (e.key.toLowerCase() === 'e' || e.key === ' ') { e.preventDefault(); interact(); }
   });
   addEventListener('keyup', (e) => (keys[e.key.toLowerCase()] = false));
-  canvas.addEventListener('pointerdown', (e) => {
+  addEventListener('blur', () => Object.keys(keys).forEach((k) => (keys[k] = false)));
+  const toWorld = (e) => {
     const r = canvas.getBoundingClientRect();
-    const x = ((e.clientX - r.left) / r.width) * W, y = ((e.clientY - r.top) / r.height) * H;
+    return [((e.clientX - r.left) / r.width) * W, ((e.clientY - r.top) / r.height) * H];
+  };
+  canvas.addEventListener('pointerdown', (e) => {
+    const [x, y] = toWorld(e);
+    if (edit) { try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } return editDown(x, y); }
     if (me.seat >= 0) return standUp();
-    const sc = scene();
+    const sc = scene(), l = lay();
     const catHit = sc.hasCat && Math.abs(x - cat.x) < 10 && Math.abs(y - cat.y + 4) < 9;
-    const spot = catHit ? sc.spots.find((s) => s.id === 'cat') : sc.spots.find((s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3]);
+    const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];
+    const spot = catHit ? l.spots.find((s) => s.id === 'cat') : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
     const door = sc.doors.find((d) => x >= d.x - 8 && x <= d.x + d.w + 8 && y >= d.y - 8 && y <= d.y + d.h + 8);
     if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
     else if (door) walkTo(door.x + door.w / 2, door.y + door.h / 2);
     else walkTo(x, y);
   });
+  canvas.addEventListener('pointermove', (e) => edit && editMove(...toWorld(e)));
+  canvas.addEventListener('pointerup', () => edit && editUp());
+  canvas.addEventListener('pointercancel', () => edit && editUp());
 
   // ---------- Güncelleme ----------
   let lastSent = 0, dirty = true;
@@ -162,10 +234,12 @@ export function createGame(opts) {
 
   function step(dt) {
     let vx = 0, vy = 0;
-    if (keys.arrowleft || keys.a) vx -= 1;
-    if (keys.arrowright || keys.d) vx += 1;
-    if (keys.arrowup || keys.w) vy -= 1;
-    if (keys.arrowdown || keys.s) vy += 1;
+    if (!edit) {
+      if (keys.arrowleft || keys.a) vx -= 1;
+      if (keys.arrowright || keys.d) vx += 1;
+      if (keys.arrowup || keys.w) vy -= 1;
+      if (keys.arrowdown || keys.s) vy += 1;
+    }
     if (vx || vy) { me.target = null; me.path = []; if (me.seat >= 0) standUp(); }
     if (!vx && !vy && me.target) {
       const dx = me.target.x - me.x, dy = me.target.y - me.y, d = Math.hypot(dx, dy);
@@ -200,7 +274,7 @@ export function createGame(opts) {
     fade += dt * 4;
     if (fade >= 1) {
       me.scene = fadeTo.to; me.x = fadeTo.spawn.x; me.y = fadeTo.spawn.y; me.dir = fadeTo.spawn.dir;
-      me.target = null; me.path = []; me.seat = -1; fadeTo = null; fade = 1;
+      me.target = null; me.path = []; me.seat = -1; fadeTo = null; fade = 1; cam.snap = true;
       changed();
       opts.onSceneChange?.(me.scene);
     }
@@ -226,8 +300,9 @@ export function createGame(opts) {
       return;
     }
     cat.t += dt;
+    const area = SCENES.salon.catArea;
     if (cat.sit) { cat.wait -= dt; if (cat.wait < 0) cat.sit = false; }
-    else if (!cat.target) { cat.wait -= dt; if (cat.wait < 0) cat.target = { x: 20 + Math.random() * 150, y: 76 + Math.random() * 56 }; }
+    else if (!cat.target) { cat.wait -= dt; if (cat.wait < 0) cat.target = { x: area[0] + Math.random() * area[2], y: area[1] + Math.random() * area[3] }; }
     else {
       const dx = cat.target.x - cat.x, dy = cat.target.y - cat.y, d = Math.hypot(dx, dy);
       if (d < 1) { cat.target = null; cat.wait = 2 + Math.random() * 4; if (Math.random() < 0.4) { cat.sit = true; cat.wait = 4; } }
@@ -239,33 +314,73 @@ export function createGame(opts) {
     opts.onCat?.({ x: Math.round(cat.x), y: Math.round(cat.y), sit: cat.sit });
   }
 
+  // ---------- Sarılma / öpücük ----------
+  let emo = null; // { kind, t0 }
+  const parts = [];
+  function burst(x, y, n, big) {
+    for (let i = 0; i < n; i++) parts.push({ img: big && i === 0 ? HEART_BIG : i % 4 === 3 ? SPARK : HEART, x: x + (Math.random() * 14 - 7), y: y - Math.random() * 4, vx: Math.random() * 10 - 5, vy: -14 - Math.random() * 16, life: 1.4 + Math.random() * 0.8, t: 0 });
+  }
+  const together = () => partner.shown && partner.scene === me.scene && Math.hypot(partner.x - me.x, partner.y - me.y) < 30;
+  function emote(kind) {
+    if (!together()) return false;
+    emo = { kind, t0: performance.now() / 1000 };
+    const mx = (me.x + partner.x) / 2, my = Math.min(headY(me), headY(partner));
+    burst(mx, my, kind === 'kiss' ? 6 : 10, true);
+    return true;
+  }
+  function stepParts(dt) {
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 6 * dt; p.vx *= 0.98;
+      if (p.t > p.life) parts.splice(i, 1);
+    }
+  }
+
   // ---------- Çizim ----------
-  function personImg(p) {
+  const seatOf = (p) => (p.seat >= 0 ? layout(SCENES[p.scene] || scene()).seats[p.seat] : null);
+  function personImg(p, face) {
     const sp = characterSprites(p.look);
     const f = (p.t * 6 | 0) % 2;
-    if (p.seat >= 0) return sp.sit;
-    if (p.dir === 'up') return p.moving && f ? sp.up2 : sp.up;
-    if (p.dir === 'down') return p.moving && f ? sp.down2 : sp.down;
-    if (p.dir === 'right') return p.moving && f ? sp.side2 : sp.side;
-    return p.moving && f ? sp.side2L : sp.sideL;
+    const seat = seatOf(p);
+    if (seat) return seat.pose === 'back' ? sp.sitBack : sp.sit;
+    const dir = face || p.dir, mv = !face && p.moving;
+    if (dir === 'up') return mv && f ? sp.up2 : sp.up;
+    if (dir === 'down') return mv && f ? sp.down2 : sp.down;
+    if (dir === 'right') return mv && f ? sp.side2 : sp.side;
+    return mv && f ? sp.side2L : sp.sideL;
   }
   function headY(p) { return p.y - personImg(p).height + (p.seat >= 0 ? 4 : 1); }
-  function drawPerson(p) {
-    const img = personImg(p);
-    const x = Math.round(p.x - img.width / 2), y = Math.round(headY(p));
-    if (p.seat < 0) R(ctx, p.x - 5, p.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
+  function drawPerson(p, at) {
+    const pose = at?.face;
+    const img = personImg(p, pose);
+    const px = at ? at.x : p.x, py = at ? at.y : p.y;
+    const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + (p.seat >= 0 ? 4 : 1) - (at?.lift || 0));
+    if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);
     const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
-    ctx.drawImage(badge, Math.round(p.x - badge.width / 2), y - badge.height - 1);
+    ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
+    if (at?.arm) { // sarılma: kollar partnerin sırtında
+      const sk = characterSprites(p.look).down.getContext('2d').getImageData(4, 12, 1, 1).data;
+      R(ctx, at.arm.x, y + 10, at.arm.w, 2, `rgb(${sk[0]},${sk[1]},${sk[2]})`);
+    }
   }
   function drawCat() {
     const img = cat.sit ? cat.sprites.sit : (cat.dir > 0 ? cat.sprites.right : cat.sprites.left)[cat.target ? (cat.t * 6 | 0) % 2 : 0];
     R(ctx, cat.x - 5, cat.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, Math.round(cat.x - img.width / 2), Math.round(cat.y - img.height + 1));
+    const pet = DECOR.pet;
+    const need = pet.food < 25 ? 'food' : pet.love < 25 ? 'love' : pet.play < 25 ? 'play' : null;
+    if (need) { // küçük düşünce balonu
+      const bx = Math.round(cat.x + 3), by = Math.round(cat.y - 18 + Math.sin(performance.now() / 300));
+      R(ctx, bx, by, 9, 7, '#fff6e8'); R(ctx, bx + 1, by + 7, 2, 1, '#fff6e8');
+      if (need === 'food') { R(ctx, bx + 2, by + 3, 4, 2, '#ff7a59'); R(ctx, bx + 6, by + 2, 1, 4, '#ff7a59'); }
+      if (need === 'love') ctx.drawImage(HEART, bx + 1, by);
+      if (need === 'play') { R(ctx, bx + 3, by + 2, 3, 3, '#5b8def'); R(ctx, bx + 2, by + 3, 5, 1, '#5b8def'); }
+    }
   }
   function drawLighting(sc, info) {
-    const night = nightLevel(info.hour) * (sc.outdoor ? 0.85 : 1);
-    const lights = sc.lights(info).filter(Boolean);
+    const night = info.night;
+    const lights = lightsOf(sc, info);
     const g = light.getContext('2d');
     g.globalCompositeOperation = 'source-over';
     g.clearRect(0, 0, W, H);
@@ -293,9 +408,9 @@ export function createGame(opts) {
   const tagMe = el('tag'), tagP = el('tag'), prompt = el('prompt');
   const place = (node, x, y) => { node.style.left = (x / W) * 100 + '%'; node.style.top = (y / H) * 100 + '%'; };
   const voice = '<span class="voice"><i></i><i></i><i></i></span>';
-  function updateOverlay(t) {
+  function updateOverlay() {
     place(tagMe, me.x, headY(me) - 9);
-    tagMe.innerHTML = `${esc(me.name)}${opts.isTalking?.('me') ? voice : ''}${opts.micOff?.() ? ' 🔇' : ''}`;
+    tagMe.innerHTML = `${esc(me.name)}${opts.isTalking?.('me') ? voice : ''}${opts.micOff?.() ? ' <span class="muted">●</span>' : ''}`;
     const pShown = partner.shown && partner.scene === me.scene;
     tagP.style.display = pShown ? '' : 'none';
     if (pShown) {
@@ -304,10 +419,10 @@ export function createGame(opts) {
     }
     opts.placeVideo?.('me', me.x, headY(me) - 12, true);
     opts.placeVideo?.('partner', partner.x, pShown ? headY(partner) - 12 : 0, pShown);
-    const s = me.seat < 0 && !me.target && !fadeTo ? nearestSpot() : null;
-    prompt.style.display = s || me.seat >= 0 ? '' : 'none';
+    const s = !edit && me.seat < 0 && !me.target && !fadeTo ? nearestSpot() : null;
+    prompt.style.display = !edit && (s || me.seat >= 0) ? '' : 'none';
     if (me.seat >= 0) { place(prompt, me.x, headY(me) - 20); prompt.textContent = 'E · Kalk'; }
-    else if (s) { const p = spotPos(s); place(prompt, p.x, p.y - 26); prompt.textContent = 'E · ' + s.label(opts.getShared()); }
+    else if (s) { const p = spotPos(s); place(prompt, p.x, Math.max(14, p.y - 26)); prompt.textContent = 'E · ' + s.label(opts.getShared()); }
   }
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
@@ -319,43 +434,90 @@ export function createGame(opts) {
   }
 
   // ---------- Döngü ----------
-  let last = performance.now(), running = true;
-  function frame(nowMs) {
-    if (!running) return;
-    requestAnimationFrame(frame); // tek karelik bir hata döngüyü durdurmasın
-    try { render(nowMs); } catch (e) { console.error(e); }
-  }
+  let last = performance.now(), running = true, gen = 0;
+  let raf = (f) => requestAnimationFrame(f);
+  // Döngü kuşağı: kare kaynağı değişince (küçük pencere) eski döngü kendiliğinden biter.
+  const loop = (g) => () => {
+    if (!running || g !== gen) return;
+    raf(loop(g)); // tek karelik bir hata döngüyü durdurmasın
+    try { render(performance.now()); } catch (e) { console.error(e); }
+  };
   function render(nowMs) {
-    const dt = Math.min(0.05, (nowMs - last) / 1000), t = nowMs / 1000;
+    const dt = Math.min(0.05, Math.max(0, (nowMs - last) / 1000)), t = nowMs / 1000;
     last = nowMs;
-    step(dt); stepFade(dt); stepPartner(dt); stepCat(dt); report(nowMs);
-    const sc = scene();
-    const info = { st: opts.getShared(), t, ...opts.getHours() };
+    step(dt); stepFade(dt); stepPartner(dt); stepCat(dt); stepParts(dt); report(nowMs);
+    const sc = scene(), l = lay();
+    const hours = opts.getHours();
+    const info = { st: opts.getShared(), t, ...hours, night: nightLevel(hours.hour) * (sc.outdoor ? 0.85 : 1) };
     ctx.drawImage(sc.bg, 0, 0);
     sc.dyn?.(ctx, info);
-    const ents = sc.props.map((p) => ({ y: p.y, d: () => p.draw(ctx, info) }));
-    ents.push({ y: me.seat >= 0 ? me.y - 6 : me.y, d: () => drawPerson(me) });
-    if (partner.shown && partner.scene === me.scene) ents.push({ y: partner.seat >= 0 ? partner.y - 6 : partner.y, d: () => drawPerson(partner) });
+    (sc.frames || []).forEach((f) => DECOR.frames[f.id] && ctx.drawImage(DECOR.frames[f.id], f.x, f.y, f.w, f.h));
+    // Duvar dekorları ve yer halıları karakterlerin arkasında
+    l.items.forEach((it) => (it.c.wall || it.c.flat) && it.c.draw(ctx, it.x, it.y, info));
+    const ents = l.props.map((p) => ({ y: p.sortY, d: () => { ctx.save(); ctx.translate(p.dx, p.dy); p.draw(ctx, info); ctx.restore(); } }));
+    l.items.forEach((it) => !(it.c.wall || it.c.flat) && ents.push({ y: it.y, d: () => it.c.draw(ctx, it.x, it.y, info) }));
+    const pHere = partner.shown && partner.scene === me.scene;
+    // Sarılma/öpücük sırasında ikisi birbirine döner
+    let atMe = null, atP = null;
+    const e = emo && performance.now() / 1000 - emo.t0;
+    if (emo && e > 2.6) emo = null;
+    if (emo && pHere && me.seat < 0 && partner.seat < 0) {
+      const mx = (me.x + partner.x) / 2, my = Math.max(me.y, partner.y), meLeft = me.x <= partner.x;
+      const gap = emo.kind === 'hug' ? 3 : 4 + (e > 0.6 && e < 1.6 ? -1 : 0);
+      const lift = emo.kind === 'kiss' && e > 0.6 && e < 1.6 ? 1 : 0;
+      atMe = { x: mx + (meLeft ? -gap : gap), y: my, face: meLeft ? 'right' : 'left', lift };
+      atP = { x: mx + (meLeft ? gap : -gap), y: my, face: meLeft ? 'left' : 'right', lift };
+      if (emo.kind === 'hug') { (meLeft ? atMe : atP).arm = { x: Math.round(mx - 1), w: 6 }; }
+      if (emo.kind === 'kiss' && e > 1.1 && !emo.kissed) { emo.kissed = true; burst(mx, my - 18, 3, false); }
+    }
+    ents.push({ y: me.seat >= 0 ? me.y - 6 : me.y, d: () => drawPerson(me, atMe) });
+    if (pHere) ents.push({ y: (partner.seat >= 0 ? partner.y - 6 : partner.y) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
     if (sc.hasCat) ents.push({ y: cat.y, d: drawCat });
-    ents.sort((a, b) => a.y - b.y).forEach((e) => e.d());
+    ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
     drawLighting(sc, info);
+    parts.forEach((p) => { ctx.globalAlpha = Math.max(0, Math.min(1, (p.life - p.t) * 2)); ctx.drawImage(p.img, Math.round(p.x - p.img.width / 2), Math.round(p.y)); });
+    ctx.globalAlpha = 1;
+    if (edit) drawEdit(l);
     if (fade > 0) { ctx.fillStyle = `rgba(0,0,0,${Math.min(1, fade)})`; ctx.fillRect(0, 0, W, H); }
-    updateOverlay(t);
+    camera(dt);
+    updateOverlay();
+    opts.onFrame?.(t);
   }
-  requestAnimationFrame(frame);
+  function drawEdit(l) {
+    ctx.fillStyle = 'rgba(252,223,75,0.10)';
+    ctx.fillRect(0, 0, W, H);
+    const box = (r, col) => { ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.setLineDash([2, 2]); ctx.strokeRect(r[0] + 0.5, r[1] + 0.5, r[2], r[3]); ctx.setLineDash([]); };
+    l.props.forEach((p) => p.movable && box(p.hit, 'rgba(255,255,255,0.55)'));
+    l.items.forEach((it) => box([it.x - it.c.w / 2, it.y - it.c.h, it.c.w, it.c.h], 'rgba(255,255,255,0.55)'));
+    const s = edit.sel;
+    if (s?.kind === 'prop') { const p = l.props.find((q) => q.id === s.id); p && box(p.hit, '#fcdf4b'); }
+    if (s?.kind === 'item') { const it = l.items.find((q) => q.key === s.key); it && box([it.x - it.c.w / 2, it.y - it.c.h, it.c.w, it.c.h], '#fcdf4b'); }
+  }
+  raf(loop(gen));
 
   return {
     me,
     partner,
     fx,
+    canvas,
     fxOn(who, emoji) {
       const p = who === 'me' ? me : partner;
       if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return false;
       fx(emoji, p.x, headY(p) - 4);
       return true;
     },
+    emote,
+    hearts(who) { const p = who === 'me' ? me : partner; if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return; burst(p.x, headY(p) - 2, 4, false); },
     setLook(look, side, name) { me.look = look; me.side = side; if (name) me.name = name; changed(); },
-    near() { return partner.shown && partner.scene === me.scene && Math.hypot(partner.x - me.x, partner.y - me.y) < 26; },
+    near() { return together(); },
+    /** Belirli bir sahneye/noktaya ışınla (aktivite menüsünden). */
+    goto(sceneId, x, y) { if (me.scene !== sceneId) { me.scene = sceneId; opts.onSceneChange?.(sceneId); } me.seat = -1; me.x = x; me.y = y; me.target = null; me.path = []; cam.snap = true; changed(); },
+    setEdit(on) { edit = on ? { sel: null, drag: null } : null; opts.onDecorSelect?.(null); },
+    get editing() { return !!edit; },
+    get zoom() { return zoom; },
+    setZoom(z) { zoom = z; localStorage.setItem('lr.zoom', z); fit(); },
+    /** Küçük pencere modunda döngüyü o pencerenin karesine bağlar (ana sekme arka planda kalsa da çizsin). */
+    setRaf(fn) { raf = fn || ((f) => requestAnimationFrame(f)); gen++; raf(loop(gen)); },
     stop() { running = false; },
   };
 }

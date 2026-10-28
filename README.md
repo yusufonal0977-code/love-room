@@ -18,22 +18,28 @@ Ok tuşları/WASD ile yürü, **E** ile etkileş. Telefonda gideceğin yere doku
 
 | Sahne | İçinde |
 |---|---|
-| **Salon** | TV (ekran yansıtma), kanepe, lambader, kedi |
-| **Şömine odası** (sol kapı) | Şömine, tablolar, kitaplık, berjer, ilişki saati |
-| **Balkon** (sağ kapı) | Saate göre gökyüzü (farklı saat dilimindeyseniz ikiye bölünür), şehir, bank, ışık zinciri |
-| **Hobi köşesi** (arka kapı) | Gardırop (karakterini değiştir), şövale, fotoğraf kabini, çalışma masası |
+| **Salon** | Duvarda TV ve tam karşısında kanepe (birlikte film), pikap (Spotify), soru kavanozu, lambader, kedi ve mama kabı, foto tablosu |
+| **Şömine odası** (sol kapı) | Şömine, iki foto tablosu, kitaplıkta günlük, berjer, ilişki saati |
+| **Balkon** (sağ kapı) | Saate göre gökyüzü (farklı saat dilimindeyseniz ikiye bölünür), bank, langırt masası, bizim çiçeğimiz |
+| **Hobi köşesi** (arka kapı) | Gardırop + dekor dolabı, şövale (birlikte çizim), fotoğraf kabini, oyun masası |
 
-- **Sesli sohbet** iki kişi de odadayken kendiliğinden açılır. Konuşanın isminin yanında ses dalgası görünür.
-- **Kamera:** açınca görüntün karakterinin başının üstünde bir baloncukta çıkar.
-- **Ekran yansıtma** (🖥️, bilgisayarda): ekranın salondaki TV'de görünür. TV'ye dokununca büyür.
-- **Tepkiler:** ❤️ kalp, 🤗 sarılma (yanında olman gerekir).
-- Işıklar gerçek saate göre değişir. Gece lambalar, şömine ve ışık zinciri parlar.
+Alt çubuktaki **Birlikte** düğmesi her şeyi tek yerden açar.
+
+- **Sesli/görüntülü sohbet** iki kişi de odadayken kendiliğinden açılır. Sol üstteki nokta bağlantıyı gösterir (yeşil: bağlı); dokununca tanı ve "yeniden bağlan".
+- **Film:** TV'ye YouTube ya da .mp4 linki yapıştır; ikinizde aynı saniyede oynar, durdurma/sarma eşlenir. Sinema modu tam ekran. Bilgisayardan **ekran yansıtma** sesli ve 1080p (telefon tarayıcıları ekran yansıtmaya izin vermez).
+- **Müzik:** Spotify hesaplarınızı bağlayın, bir liste seçin: ikinizde aynı şarkı çalar (Premium gerekir; telefonda Spotify uygulaması üzerinden).
+- **Anılar:** tablolara fotoğraf asın, albüm, fotoğraf kabini (aynı anda çekim ya da çocukluk fotoğrafları yan yana), günlük ve geleceğe mektup, ilişki saati ve buluşma geri sayımı, soru kavanozu (cevaplar ikiniz de yazınca açılır).
+- **Birlikte:** çizim, XOX, hafıza, langırt; kedi bakımı, çiçek sulama, rozetler.
+- **Ev:** dekor dolabından eşya ekleyin, odaları boyayın, eşyaları sürükleyip taşıyın.
+- **Dokunuşlar:** kalp, sarılma ve öpücük (yan yana olunca karakterler birbirine dönüp sarılır/öpüşür).
+- **Küçük pencere** modu ve **tam ekran** (telefonda "Ana Ekrana Ekle" ile uygulama gibi açılır).
 
 ## Teknik
 
 - Sadece HTML + JavaScript (derleme yok). GitHub Pages'te yayınlanır.
 - Giriş ve gerçek zamanlı veri: Firebase (Authentication + Realtime Database). Güvenlik kuralları: [`database.rules.json`](database.rules.json).
-- Ses ve görüntü tarayıcılar arasında doğrudan akar (WebRTC). Firebase sadece bağlantı mesajlarını taşır.
+- Ses ve görüntü tarayıcılar arasında doğrudan akar (WebRTC); zor ağlarda Metered TURN aktarıcısı kullanılır. Firebase sadece bağlantı mesajlarını taşır.
+- Spotify: PKCE ile giriş (gizli anahtar yok). Geliştirme modunda dinleyecek hesapların Spotify panelinde User Management'a eklenmesi gerekir.
 - Yerelde denemek için klasörü herhangi bir statik sunucuyla aç (örn. `npx serve`).
 
 Eski Expo/React Native sürümü `eski-expo-surumu` dalında ve v0.3–v0.5 sürümlerinde arşivlidir.
