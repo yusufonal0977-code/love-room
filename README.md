@@ -18,6 +18,14 @@ Uçtan uca test (sunucu açıkken): `npm.cmd run test:sync -w server`
 
 **İki kişiyle denemek:** Google ayarlı değilken "Hızlı giriş" açık. Bu giriş sekmeye özeldir; aynı tarayıcıda iki sekmede iki farklı isimle girebilirsin.
 
+## Sürümler ve arşiv
+
+Her sürüm `vX.Y.Z` etiketiyle GitHub'a yüklenir ve [Releases](https://github.com/yusufonal0977-code/love-room/releases) sayfasına zip olarak eklenir. Aynı zip, projenin yanındaki `arsiv/` klasöründe de saklanır.
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts\release.ps1 -Version 0.4.0 -Notes "Neler değişti"
+```
+
 ## Google girişini açmak
 
 1. https://console.cloud.google.com → yeni proje ("Love Room").
