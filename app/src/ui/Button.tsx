@@ -18,7 +18,7 @@ export function Button({ label, onPress, variant = 'primary', icon, disabled, lo
   const content = (
     <View style={[styles.inner, small && styles.small]}>
       {loading ? <ActivityIndicator color={variant === 'light' ? colors.plum : '#fff'} /> : icon}
-      <Text style={[styles.label, small && { fontSize: 13 }, variant === 'light' && { color: '#2b1a2f' }]}>{label}</Text>
+      <Text style={[styles.label, small && { fontSize: 13 }, variant === 'light' && { color: '#2b1f18' }]}>{label}</Text>
     </View>
   );
 

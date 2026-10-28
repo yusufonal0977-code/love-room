@@ -4,23 +4,28 @@ import { Platform, type ViewStyle } from 'react-native';
 export const webStyle = (style: Record<string, string>): ViewStyle =>
   Platform.OS === 'web' ? (style as unknown as ViewStyle) : {};
 
-// Romantik akşam paleti: koyu erik gece, gül pembesi vurgular, mum ışığı altını.
+/**
+ * Sıcak ev paleti: espresso koyusu arayüz, krem duvarlar, bal rengi ahşap, terrakota vurgu,
+ * adaçayı yeşili ve lamba ışığı altını. (Eski isimler korunur: rose = ana vurgu rengi.)
+ */
 export const colors = {
-  night: '#170c1f',
-  plum: '#2a1533',
-  plumSoft: '#3d2148',
-  rose: '#ec7a96',
-  roseDeep: '#c9506f',
-  blush: '#f8c9d4',
-  cream: '#fff4ea',
-  gold: '#f7c873',
-  goldDeep: '#d89a3c',
-  text: '#fdeff3',
-  textDim: '#cfb1c0',
-  glass: 'rgba(255, 240, 245, 0.08)',
-  glassStrong: 'rgba(30, 14, 38, 0.82)',
-  line: 'rgba(255, 220, 230, 0.16)',
-  online: '#7ee0a1',
+  night: '#1c1410',
+  plum: '#2b1f18',
+  plumSoft: '#3b2a20',
+  rose: '#d9785a',
+  roseDeep: '#b75a3f',
+  blush: '#f3c9b0',
+  cream: '#fbf3e6',
+  gold: '#f2b85e',
+  goldDeep: '#c98a34',
+  sage: '#8fa382',
+  text: '#fbf3e8',
+  textDim: '#cdb8a4',
+  glass: 'rgba(255, 244, 230, 0.08)',
+  glassStrong: 'rgba(33, 23, 17, 0.86)',
+  sheet: '#2a1e17',
+  line: 'rgba(255, 232, 205, 0.16)',
+  online: '#7ed49a',
 } as const;
 
 export const fonts = {
@@ -31,10 +36,13 @@ export const fonts = {
   bodyBold: 'Nunito_800ExtraBold',
 } as const;
 
-/** Her duvarın ışık/renk teması: akşam lambası ışığında sıcak tonlar. */
+/**
+ * Duvarların gündüz renkleri. Akşam/gece tonları `lighting.ts`'teki ışık katmanlarıyla oluşur;
+ * duvarların kendisi her zaman "gerçek" rengindedir.
+ */
 export const wallThemes = {
-  front: { top: '#4a2a4f', bottom: '#6e3e5c', wainscot: '#5a3352', glow: 'rgba(120, 160, 255, 0.18)', label: 'Sinema köşesi' },
-  right: { top: '#3e2a52', bottom: '#5d3f66', wainscot: '#4c3359', glow: 'rgba(190, 210, 255, 0.16)', label: 'Pencere kenarı' },
-  back: { top: '#52293f', bottom: '#784055', wainscot: '#62324a', glow: 'rgba(255, 196, 120, 0.22)', label: 'Kanepemiz' },
-  left: { top: '#55283a', bottom: '#7e3f4c', wainscot: '#66313f', glow: 'rgba(255, 150, 80, 0.28)', label: 'Şömine başı' },
+  front: { top: '#efe4d2', bottom: '#e4d3bb', wainscot: '#9fae95', trim: '#f7f0e4', label: 'Sinema köşesi' },
+  right: { top: '#ede3d4', bottom: '#e2d2bd', wainscot: '#c9a27c', trim: '#f7f0e4', label: 'Pencere kenarı' },
+  back: { top: '#f0e2cf', bottom: '#e6d0b6', wainscot: '#b98a62', trim: '#f7efe2', label: 'Kanepemiz' },
+  left: { top: '#ecdccb', bottom: '#dfc9b1', wainscot: '#a7b49c', trim: '#f7efe2', label: 'Şömine başı' },
 } as const;

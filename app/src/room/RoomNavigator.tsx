@@ -110,6 +110,6 @@ export function RoomNavigator() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#170c1f' },
+  root: { flex: 1, backgroundColor: '#1c1410' },
   stage: { flex: 1, overflow: 'hidden' },
 });

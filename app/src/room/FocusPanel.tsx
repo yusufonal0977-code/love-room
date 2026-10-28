@@ -19,6 +19,7 @@ import { colors, fonts, webStyle } from '../theme';
 import { FOCUS_PANEL_HEIGHT } from './WallCanvas';
 import { MusicPanel } from './panels/MusicPanel';
 import { QuestionPanel } from './panels/QuestionPanel';
+import { PetCustomizer } from './panels/PetCustomizer';
 
 /** Örnek filmler (açık lisanslı Blender filmleri). Kendi .mp4 adresinizi de girebilirsiniz. */
 const CATALOG = [
@@ -32,7 +33,7 @@ const CATALOG = [
 
 const TITLES: Record<ObjectId, string> = {
   tv: 'Film gecesi',
-  pet: 'Ortak kedimiz',
+  pet: 'Ortak dostumuz',
   sofa: 'Kanepemiz',
   clock: 'İlişki saati',
   fireplace: 'Şömine',
@@ -176,6 +177,7 @@ function PetControls() {
         <Button style={{ flex: 1 }} label="Besle 🍣" onPress={() => dispatch({ type: 'pet/feed' })} />
         <Button style={{ flex: 1 }} variant="ghost" label="Sev 🤍" onPress={() => dispatch({ type: 'pet/pet' })} />
       </Row>
+      <PetCustomizer />
     </>
   );
 }
@@ -195,7 +197,7 @@ function SofaControls() {
           ? 'Yan yanasınız. Mesafeler bir an için yok 💞'
           : partnerSeated
             ? `${partner!.name} kanepede seni bekliyor.`
-            : 'Kanepeye otur; partnerin de oturunca yan yana görüneceksiniz.'}
+            : 'Kanepeye otur; partnerin de oturunca karakterleriniz yan yana oturur. Görüntülü aramadaysanız karakterin yerine videonuz oturur.'}
       </Body>
       <Button label={meSeated ? 'Kalk' : 'Kanepeye otur 🛋️'} onPress={() => dispatch({ type: 'sofa/toggle' })} />
     </>
@@ -351,7 +353,7 @@ const styles = StyleSheet.create({
   close: { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.glass, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   chip: { borderRadius: 999, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.glass },
-  chipActive: { borderColor: colors.rose, backgroundColor: 'rgba(236,122,150,0.2)' },
+  chipActive: { borderColor: colors.rose, backgroundColor: 'rgba(217,120,90,0.2)' },
   chipText: { color: colors.text, fontFamily: fonts.bodySemi, fontSize: 13 },
   input: {
     flex: 1,

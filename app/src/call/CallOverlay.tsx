@@ -70,7 +70,7 @@ function IncomingCall() {
     <View style={styles.scrim}>
       <View style={styles.card}>
         <Pulse>
-          <Avatar name={partner?.name ?? '?'} url={partner?.avatarUrl} size={84} ring={colors.gold} />
+          <Avatar name={partner?.name ?? '?'} url={partner?.avatarUrl} character={partner?.character} size={84} ring={colors.gold} />
         </Pulse>
         <Title size={26} center>
           {partner?.name} seni arıyor
@@ -93,7 +93,7 @@ function OutgoingCall() {
   return (
     <View style={styles.outgoing}>
       <Pulse>
-        <Avatar name={partner?.name ?? '?'} url={partner?.avatarUrl} size={40} />
+        <Avatar name={partner?.name ?? '?'} url={partner?.avatarUrl} character={partner?.character} size={40} />
       </Pulse>
       <View style={{ flex: 1 }}>
         <Strong size={14}>{partner?.name} aranıyor…</Strong>
@@ -123,7 +123,7 @@ function CallWindow() {
         ) : (
           <View style={styles.audioStage}>
             <Pulse>
-              <Avatar name={partner?.name ?? '?'} url={partner?.avatarUrl} size={big ? 96 : 56} ring={colors.gold} />
+              <Avatar name={partner?.name ?? '?'} url={partner?.avatarUrl} character={partner?.character} size={big ? 96 : 56} ring={colors.gold} />
             </Pulse>
             <MediaView stream={remote} hidden />
           </View>
@@ -155,18 +155,18 @@ function RoundButton({ label, onPress, danger }: { label: string; onPress: () =>
 }
 
 const styles = StyleSheet.create({
-  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10,4,14,0.55)', justifyContent: 'center', padding: 20 },
+  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(14,9,6,0.55)', justifyContent: 'center', padding: 20 },
   card: {
     alignSelf: 'center',
     width: '100%',
     maxWidth: 380,
     alignItems: 'center',
     gap: 14,
-    backgroundColor: '#24122e',
+    backgroundColor: '#2a1e17',
     borderRadius: 28,
     padding: 26,
     borderWidth: 1,
-    borderColor: 'rgba(236,122,150,0.45)',
+    borderColor: 'rgba(217,120,90,0.45)',
   },
   pulse: { position: 'absolute', width: '100%', height: '100%', borderRadius: 999, backgroundColor: colors.rose },
   outgoing: {
@@ -193,15 +193,15 @@ const styles = StyleSheet.create({
     width: 150,
     borderRadius: 22,
     overflow: 'hidden',
-    backgroundColor: '#120a16',
+    backgroundColor: '#17110d',
     borderWidth: 1,
-    borderColor: 'rgba(236,122,150,0.5)',
+    borderColor: 'rgba(217,120,90,0.5)',
     boxShadow: '0 12px 30px rgba(0,0,0,0.5)',
     zIndex: 20,
   },
   windowBig: { left: 12, width: undefined, maxWidth: 560, marginLeft: 'auto' },
   stage: { aspectRatio: 3 / 4, width: '100%' },
-  audioStage: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2a1533' },
+  audioStage: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#3b2a20' },
   self: {
     position: 'absolute',
     right: 6,
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   badge: { position: 'absolute', top: 6, left: 6, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
   badgeText: { color: '#fff', fontSize: 11, fontFamily: fonts.bodySemi },
-  controls: { flexDirection: 'row', justifyContent: 'center', gap: 8, padding: 8, backgroundColor: 'rgba(30,14,38,0.95)' },
+  controls: { flexDirection: 'row', justifyContent: 'center', gap: 8, padding: 8, backgroundColor: 'rgba(33,23,17,0.95)' },
   round: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.12)' },
   notice: {
     position: 'absolute',

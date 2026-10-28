@@ -1,4 +1,5 @@
 // Oda modeli: istemci ve sunucunun ortak "tek doğruluk kaynağı" tanımı.
+import type { Character, PetAccessory, PetSpecies } from './character';
 
 /** Saat yönünde sıralı duvarlar: sağa kaydırınca bir sonrakine geçilir (sağa dönmek gibi). */
 export const WALLS = ['front', 'right', 'back', 'left'] as const;
@@ -34,6 +35,8 @@ export interface Member {
   avatarUrl: string | null;
   /** IANA saat dilimi (ör. "Europe/Istanbul") — pencere iki şehrin saatini gösterir. */
   timezone: string | null;
+  /** Kanepede oturan, kişiye özel karakter. Henüz oluşturmadıysa null. */
+  character: Character | null;
 }
 
 export interface Focus {
@@ -84,6 +87,10 @@ export interface PetState {
   lastFedAt: number;
   lastPettedAt: number;
   lastPettedBy: string | null;
+  species: PetSpecies;
+  /** PET_COLORS indeksi. */
+  color: number;
+  accessory: PetAccessory;
 }
 
 export interface FrameState {
@@ -125,7 +132,7 @@ export type RoomAction =
   | { type: 'tv/load'; mediaUrl: string; mediaTitle: string }
   | { type: 'pet/feed' }
   | { type: 'pet/pet' }
-  | { type: 'pet/rename'; name: string }
+  | { type: 'pet/customize'; name?: string; species?: PetSpecies; color?: number; accessory?: PetAccessory }
   | { type: 'frame/set'; frameId: FrameId; url: string; caption: string | null }
   | { type: 'frame/clear'; frameId: FrameId }
   | { type: 'fireplace/toggle' }

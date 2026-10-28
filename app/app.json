@@ -3,16 +3,16 @@
     "name": "Love Room",
     "slug": "love-room",
     "scheme": "loveroom",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#170c1f",
+    "backgroundColor": "#1c1410",
     "platforms": ["ios", "android", "web"],
     "web": {
       "bundler": "metro",
       "name": "Love Room",
-      "themeColor": "#170c1f",
-      "backgroundColor": "#170c1f"
+      "themeColor": "#1c1410",
+      "backgroundColor": "#1c1410"
     },
     "plugins": ["expo-font", "expo-web-browser", "expo-video"]
   }

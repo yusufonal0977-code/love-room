@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { daysTogether, REACTIONS, WALLS, type ReactionKind, type WallId } from '@loveroom/shared';
@@ -10,6 +10,7 @@ import { Button } from '../ui/Button';
 import { InviteCard } from '../screens/InviteCard';
 import { colors, fonts, wallThemes } from '../theme';
 import { callSupported, startCall, useCall } from '../call/callStore';
+import { CharacterEditor } from '../characters/CharacterEditor';
 
 export const REACTION_EMOJI: Record<ReactionKind, string> = { heart: '❤️', hug: '🤗', kiss: '💋', miss: '🥺' };
 
@@ -34,9 +35,20 @@ export function Hud({ wall, index, onPrev, onNext }: Props) {
   const [menu, setMenu] = useState(false);
   const days = daysTogether(anniversary, Date.now());
 
+  // Karakteri olmayan biri odaya ilk girdiğinde karakter editörü bir kez kendiliğinden açılır.
+  const me = useMe();
+  const [editor, setEditor] = useState<'closed' | 'first' | 'edit'>('closed');
+  const askedRef = useRef(false);
+  useEffect(() => {
+    if (me && !me.character && !askedRef.current) {
+      askedRef.current = true;
+      setEditor('first');
+    }
+  }, [me?.id, me?.character]);
+
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      <LinearGradient colors={['rgba(23,12,31,0.85)', 'rgba(23,12,31,0)']} style={styles.top} pointerEvents="box-none">
+      <LinearGradient colors={['rgba(28,20,16,0.85)', 'rgba(28,20,16,0)']} style={styles.top} pointerEvents="box-none">
         <View style={{ flex: 1 }}>
           <Title size={22} numberOfLines={1}>
             {roomName}
@@ -57,7 +69,13 @@ export function Hud({ wall, index, onPrev, onNext }: Props) {
               <Body size={13} style={{ fontFamily: fonts.bodySemi }}>
                 {partner.name}
               </Body>
-              <Avatar name={partner.name} url={partner.avatarUrl} size={34} online={online.includes(partner.id)} />
+              <Avatar
+                name={partner.name}
+                url={partner.avatarUrl}
+                character={partner.character}
+                size={34}
+                online={online.includes(partner.id)}
+              />
             </>
           ) : (
             <Body size={13} style={{ fontFamily: fonts.bodyBold }} color={colors.blush}>
@@ -98,7 +116,17 @@ export function Hud({ wall, index, onPrev, onNext }: Props) {
         </View>
       )}
 
-      <RoomMenu visible={menu} onClose={() => setMenu(false)} />
+      <RoomMenu
+        visible={menu}
+        onClose={() => setMenu(false)}
+        onEditCharacter={() => {
+          setMenu(false);
+          setEditor('edit');
+        }}
+      />
+      {editor !== 'closed' && (
+        <CharacterEditor visible firstTime={editor === 'first'} onClose={() => setEditor('closed')} />
+      )}
     </View>
   );
 }
@@ -114,7 +142,7 @@ function CallButton({ icon, online, name, onPress }: { icon: string; online: boo
   );
 }
 
-function RoomMenu({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+function RoomMenu({ visible, onClose, onEditCharacter }: { visible: boolean; onClose: () => void; onEditCharacter: () => void }) {
   const me = useMe();
   const partner = usePartner();
   const room = useSession((s) => s.room);
@@ -125,10 +153,10 @@ function RoomMenu({ visible, onClose }: { visible: boolean; onClose: () => void 
       <Pressable style={styles.scrim} onPress={onClose}>
         <Pressable style={styles.sheet} onPress={() => {}}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: -8 }}>
-            {me && <Avatar name={me.name} url={me.avatarUrl} size={52} ring={colors.gold} />}
+            {me && <Avatar name={me.name} url={me.avatarUrl} character={me.character} size={52} ring={colors.gold} />}
             <Text style={{ fontSize: 22, marginHorizontal: 6 }}>💞</Text>
             {partner ? (
-              <Avatar name={partner.name} url={partner.avatarUrl} size={52} ring={colors.gold} />
+              <Avatar name={partner.name} url={partner.avatarUrl} character={partner.character} size={52} ring={colors.gold} />
             ) : (
               <View style={styles.emptyAvatar}>
                 <Text style={{ color: colors.textDim, fontSize: 22 }}>?</Text>
@@ -147,6 +175,7 @@ function RoomMenu({ visible, onClose }: { visible: boolean; onClose: () => void 
               {room && <InviteCard code={room.inviteCode} />}
             </>
           )}
+          <Button label="Karakterimi düzenle ✏️" onPress={onEditCharacter} small />
           <Button variant="ghost" label="Çıkış yap" onPress={signOut} small />
         </Pressable>
       </Pressable>
@@ -211,9 +240,9 @@ const styles = StyleSheet.create({
   arrow: { color: colors.text, fontSize: 30, lineHeight: 32 },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.3)' },
   dotActive: { backgroundColor: colors.rose, width: 16 },
-  scrim: { flex: 1, backgroundColor: 'rgba(10,4,14,0.6)', justifyContent: 'center', padding: 20 },
+  scrim: { flex: 1, backgroundColor: 'rgba(14,9,6,0.6)', justifyContent: 'center', padding: 20 },
   sheet: {
-    backgroundColor: '#24122e',
+    backgroundColor: colors.sheet,
     borderRadius: 28,
     padding: 24,
     gap: 16,

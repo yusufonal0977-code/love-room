@@ -10,6 +10,7 @@ import {
   type TvState,
 } from './types';
 import { questionById } from './questions';
+import { PET_ACCESSORIES, PET_COLORS, PET_SPECIES, type PetAccessory, type PetSpecies } from './character';
 
 export const PET_HUNGRY_AFTER_MS = 8 * 60 * 60 * 1000;
 export const MAX_MEMBERS = 2;
@@ -24,7 +25,15 @@ export function createRoom(roomId: string, name: string, anniversary: string | n
     online: [],
     focus: null,
     tv: { on: false, playing: false, mediaUrl: null, mediaTitle: null, positionSec: 0, updatedAt: now },
-    pet: { name: 'Mochi', lastFedAt: now, lastPettedAt: 0, lastPettedBy: null },
+    pet: {
+      name: 'Mochi',
+      lastFedAt: now,
+      lastPettedAt: 0,
+      lastPettedBy: null,
+      species: 'cat',
+      color: 0,
+      accessory: 'collar',
+    },
     frames: Object.fromEntries(FRAME_IDS.map((id) => [id, { url: null, caption: null, by: null }])) as RoomState['frames'],
     fireplaceLit: true,
     sofa: [],
@@ -115,8 +124,17 @@ function apply(s: RoomState, a: RoomAction, userId: string, now: number): RoomSt
     case 'pet/pet':
       return { ...s, pet: { ...s.pet, lastPettedAt: now, lastPettedBy: userId } };
 
-    case 'pet/rename':
-      return { ...s, pet: { ...s.pet, name: a.name.trim().slice(0, 20) || s.pet.name } };
+    case 'pet/customize':
+      return {
+        ...s,
+        pet: {
+          ...s.pet,
+          name: a.name?.trim().slice(0, 20) || s.pet.name,
+          species: a.species ?? s.pet.species,
+          color: a.color ?? s.pet.color,
+          accessory: a.accessory ?? s.pet.accessory,
+        },
+      };
 
     case 'frame/set':
       return { ...s, frames: { ...s.frames, [a.frameId]: { url: a.url, caption: a.caption, by: userId } } };
@@ -184,8 +202,13 @@ export function isRoomAction(x: unknown): x is RoomAction {
       return typeof a.positionSec === 'number' && Number.isFinite(a.positionSec);
     case 'tv/load':
       return isMediaUrl(a.mediaUrl) && isShortText(a.mediaTitle, 120);
-    case 'pet/rename':
-      return isShortText(a.name, 40);
+    case 'pet/customize':
+      return (
+        (a.name === undefined || isShortText(a.name, 40)) &&
+        (a.species === undefined || PET_SPECIES.includes(a.species as PetSpecies)) &&
+        (a.color === undefined || (Number.isInteger(a.color) && (a.color as number) >= 0 && (a.color as number) < PET_COLORS.length)) &&
+        (a.accessory === undefined || PET_ACCESSORIES.includes(a.accessory as PetAccessory))
+      );
     case 'frame/set':
       return (
         FRAME_IDS.includes(a.frameId as FrameId) && isMediaUrl(a.url) && (a.caption === null || isShortText(a.caption, 140))

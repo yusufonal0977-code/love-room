@@ -10,7 +10,7 @@ import type {
   InvitePreview,
   MeResponse,
 } from '@loveroom/shared';
-import { MAX_MEMBERS } from '@loveroom/shared';
+import { isCharacter, MAX_MEMBERS } from '@loveroom/shared';
 import { requireAuth, signToken, verifyGoogleIdToken, type AuthedRequest } from './auth';
 import * as db from './db';
 import { DEV_LOGIN, GOOGLE_CLIENT_ID, GOOGLE_ORIGINS, UPLOADS_DIR } from './env';
@@ -67,6 +67,15 @@ api.get('/me', requireAuth, (req, res) => {
   if (!user) return fail(res, 401, 'UNAUTHORIZED');
   const roomId = db.roomIdOf(userId);
   res.json({ user, room: roomId ? db.roomSummary(roomId) : null } satisfies MeResponse);
+});
+
+api.post('/me/character', requireAuth, (req, res) => {
+  const { userId } = req as AuthedRequest;
+  if (!isCharacter(req.body)) return fail(res, 400, 'BAD_REQUEST');
+  db.setCharacter(userId, req.body);
+  const roomId = db.roomIdOf(userId);
+  if (roomId) refreshRoomMembers(roomId);
+  res.json(db.getUser(userId));
 });
 
 // ---- Oda ve davet ----

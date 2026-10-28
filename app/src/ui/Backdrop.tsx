@@ -9,8 +9,8 @@ const useNativeDriver = Platform.OS !== 'web';
 export function Backdrop({ children }: { children: ReactNode }) {
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1a0d24', '#2c1438', '#4a1f45']} locations={[0, 0.55, 1]} style={StyleSheet.absoluteFill} />
-      <View style={[styles.blob, { top: -120, left: -80, backgroundColor: 'rgba(236,122,150,0.20)' }]} />
+      <LinearGradient colors={['#1e1510', '#3a271b', '#6b4127']} locations={[0, 0.55, 1]} style={StyleSheet.absoluteFill} />
+      <View style={[styles.blob, { top: -120, left: -80, backgroundColor: 'rgba(217,120,90,0.20)' }]} />
       <View style={[styles.blob, { bottom: -140, right: -100, backgroundColor: 'rgba(247,200,115,0.14)' }]} />
       <Stars />
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">

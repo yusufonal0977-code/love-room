@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.rose,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 0 10px 2px rgba(236,122,150,0.7)',
+    boxShadow: '0 0 10px 2px rgba(217,120,90,0.7)',
   },
   badgeText: { color: '#fff', fontSize: 10, fontFamily: fonts.bodyBold },
 });

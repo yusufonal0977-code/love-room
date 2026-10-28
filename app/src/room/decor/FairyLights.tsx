@@ -3,17 +3,19 @@ import { Animated, Platform, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 const useNativeDriver = Platform.OS !== 'web';
-const BULBS = 15;
+const BULBS = 13;
 
-/** Duvarın üstünden sarkan peri ışıkları; ampuller sırayla yavaşça parlar. */
-export function FairyLights({ seed = 0 }: { seed?: number }) {
-  // İki sarkma noktası arasında yumuşak bir eğri; ampuller eğri üzerinde.
+/**
+ * Kornişten sarkan peri ışıkları; ampuller sırayla yavaşça parlar.
+ * `intensity` (0–1) saate göre gelir: gündüz sönük, akşam/gece parlak.
+ */
+export function FairyLights({ intensity = 1 }: { intensity?: number }) {
   const points = useMemo(
     () =>
       Array.from({ length: BULBS }, (_, i) => {
-        const x = (i + 0.5) / BULBS;
-        const local = (x * 2) % 1;
-        return { x, y: 0.035 + Math.sin(local * Math.PI) * 0.045 };
+        const x = 0.06 + (i / (BULBS - 1)) * 0.88;
+        const local = ((x - 0.06) / 0.88) * 3;
+        return { x, y: 0.075 + Math.sin((local % 1) * Math.PI) * 0.035 };
       }),
     [],
   );
@@ -21,29 +23,34 @@ export function FairyLights({ seed = 0 }: { seed?: number }) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <Path d="M0 3 Q25 12 50 3 Q75 12 100 3" stroke="rgba(40,25,30,0.7)" strokeWidth="0.25" fill="none" />
+        <Path
+          d="M6 7.2 Q15.8 11.5 25.6 7.2 Q35.4 11.5 45.2 7.2 Q55 11.5 64.8 7.2 Q74.6 11.5 84.4 7.2 Q89 9.4 94 7.2"
+          stroke="rgba(60,45,35,0.55)"
+          strokeWidth="0.2"
+          fill="none"
+        />
       </Svg>
       {points.map((p, i) => (
-        <Bulb key={i} left={p.x} top={p.y} delay={((i + seed) * 397) % 2600} warm={i % 3 !== 0} />
+        <Bulb key={i} left={p.x} top={p.y} delay={(i * 397) % 2600} intensity={intensity} />
       ))}
     </View>
   );
 }
 
-function Bulb({ left, top, delay, warm }: { left: number; top: number; delay: number; warm: boolean }) {
-  const glow = useRef(new Animated.Value(0.55)).current;
+function Bulb({ left, top, delay, intensity }: { left: number; top: number; delay: number; intensity: number }) {
+  const glow = useRef(new Animated.Value(0.6)).current;
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
-        Animated.timing(glow, { toValue: 1, duration: 1600, useNativeDriver }),
-        Animated.timing(glow, { toValue: 0.55, duration: 1600, useNativeDriver }),
+        Animated.timing(glow, { toValue: 1, duration: 1800, useNativeDriver }),
+        Animated.timing(glow, { toValue: 0.6, duration: 1800, useNativeDriver }),
       ]),
     );
     loop.start();
     return () => loop.stop();
   }, []);
-  const color = warm ? '#ffd58a' : '#ffb3c4';
+  const lit = intensity > 0.3;
   return (
     <Animated.View
       style={[
@@ -51,9 +58,9 @@ function Bulb({ left, top, delay, warm }: { left: number; top: number; delay: nu
         {
           left: `${left * 100}%`,
           top: `${top * 100}%`,
-          backgroundColor: color,
-          boxShadow: `0 0 10px 3px ${warm ? 'rgba(255,200,110,0.65)' : 'rgba(255,150,180,0.6)'}`,
-          opacity: glow,
+          backgroundColor: lit ? '#ffd88f' : '#e9dcc4',
+          boxShadow: lit ? `0 0 ${6 + 8 * intensity}px ${2 + 2 * intensity}px rgba(255,196,110,${0.35 + 0.4 * intensity})` : 'none',
+          opacity: Animated.multiply(glow, 0.45 + 0.55 * intensity),
         },
       ]}
     />
@@ -61,5 +68,5 @@ function Bulb({ left, top, delay, warm }: { left: number; top: number; delay: nu
 }
 
 const styles = StyleSheet.create({
-  bulb: { position: 'absolute', width: 6, height: 8, marginLeft: -3, borderRadius: 4 },
+  bulb: { position: 'absolute', width: 5, height: 7, marginLeft: -2.5, borderRadius: 3 },
 });

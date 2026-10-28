@@ -59,6 +59,10 @@ Giriş (Google) → Oda kur (ad + ilişki başlangıç tarihi) → davet linki p
 | Arka — Kanepemiz | İlişki saati, kanepe, lambader | Birlikte kanepeye otur; birlikte geçen gün sayısı |
 | Sol — Şömine başı | Tablo 1, şömine, Tablo 2 | Ateşi yak/söndür; tablolara fotoğraf |
 
+**Saate göre ışık:** oda gerçek saati izler. Sabah aydınlık, akşamüstü altın ışık, gece lambalar, şömine ve peri ışıkları yanar. Önizlemek için adrese `?saat=21` (ya da `7.5`, `18`) ekle.
+
+**Karakterler:** herkes kendi karakterini oluşturur (ten, saç, saç rengi, kıyafet, aksesuar). Karakterler avatar olarak görünür ve kanepeye oturur. Görüntülü aramada karakterin yerine kişinin videosu oturur. Ortak evcil hayvanın türü (kedi/köpek/tavşan), rengi, aksesuarı ve adı da değiştirilebilir.
+
 Her yerde: ❤️ 🤗 💋 🥺 tepkileri (karşı tarafta animasyon + mesaj). Bir objeye dokunmak iki ekranı da oraya döndürür ve yakınlaştırır.
 
 **Sesli/görüntülü arama** (üst bardaki 📞 🎥): WebRTC ile eşler arası; görüşme odanın köşesinde küçük bir pencerede sürer, dokununca büyür. Şimdilik web'de çalışır.

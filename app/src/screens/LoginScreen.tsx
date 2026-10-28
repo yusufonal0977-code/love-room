@@ -135,7 +135,7 @@ function Divider() {
 }
 
 const styles = StyleSheet.create({
-  invite: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderColor: 'rgba(236,122,150,0.45)' },
+  invite: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderColor: 'rgba(217,120,90,0.45)' },
   features: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
   chip: { backgroundColor: colors.glass, borderColor: colors.line, borderWidth: 1, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
   rule: { flex: 1, height: 1, backgroundColor: colors.line },

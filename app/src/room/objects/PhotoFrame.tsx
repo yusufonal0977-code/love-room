@@ -3,44 +3,54 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { FrameId } from '@loveroom/shared';
 import { mediaUrl } from '../../config';
 import { useRoom } from '../../state/room';
-import { colors, fonts } from '../../theme';
+import { fonts } from '../../theme';
+import { DefaultArt } from '../decor/Artworks';
 import { Focusable } from './Focusable';
 import { AspectBox } from './AspectBox';
 
 /**
- * Anı panoları. Sol duvardakiler altın çerçeveli tablo, sağ duvardakiler polaroid.
- * Fotoğraf yükleme odak panelinde yapılır; burada sadece gösterim var.
+ * Anı panoları. Sol duvardakiler paspartulu ahşap çerçeveli tablo, sağ duvardakiler polaroid.
+ * Fotoğraf konmadıysa varsayılan bir resim asılı durur; değiştirmek için objeye dokunulur.
  */
 export function PhotoFrame({ id }: { id: FrameId }) {
   const frame = useRoom((r) => r.frames[id]);
   const polaroid = id.startsWith('photo');
-  const tilt = id === 'photo-right-1' ? '-4deg' : id === 'photo-right-2' ? '3deg' : '0deg';
+  const tilt = id === 'photo-right-1' ? '-3deg' : id === 'photo-right-2' ? '2.5deg' : '0deg';
 
   const photo = frame.url ? (
     <Image source={{ uri: mediaUrl(frame.url) }} style={styles.img} resizeMode="cover" />
   ) : (
-    <LinearGradient colors={['#f7e3e8', '#e9cfe0']} style={styles.empty}>
-      <Text style={styles.plus}>＋</Text>
-      <Text style={styles.emptyText}>Anı ekle</Text>
-    </LinearGradient>
+    <DefaultArt id={id} />
   );
 
   return (
     <Focusable id={id}>
-      <AspectBox ratio={polaroid ? 0.82 : 0.8}>
-      {polaroid ? (
-        <View style={[styles.polaroid, { transform: [{ rotate: tilt }] }]}>
-          <View style={styles.tape} />
-          <View style={styles.polaroidPhoto}>{photo}</View>
-          <Text style={styles.caption} numberOfLines={1}>
-            {frame.caption ?? ''}
-          </Text>
-        </View>
-      ) : (
-        <LinearGradient colors={['#f7d58a', '#c89038', '#f2cd7c', '#a8742a']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gilt}>
-          <View style={styles.mat}>{photo}</View>
-        </LinearGradient>
-      )}
+      <AspectBox ratio={polaroid ? 0.82 : 0.78}>
+        {polaroid ? (
+          <View style={[styles.polaroid, { transform: [{ rotate: tilt }] }]}>
+            <View style={styles.pin} />
+            <View style={styles.polaroidPhoto}>{photo}</View>
+            <Text style={styles.caption} numberOfLines={1}>
+              {frame.caption ?? ''}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.hang}>
+            <LinearGradient colors={['#8a5a36', '#5e3a20']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.wood}>
+              <View style={styles.mat}>
+                <View style={styles.inner}>{photo}</View>
+              </View>
+              {/* Cama vuran ışık */}
+              <LinearGradient
+                colors={['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0.6, y: 0.6 }}
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+              />
+            </LinearGradient>
+          </View>
+        )}
       </AspectBox>
     </Focusable>
   );
@@ -48,29 +58,29 @@ export function PhotoFrame({ id }: { id: FrameId }) {
 
 const styles = StyleSheet.create({
   img: { width: '100%', height: '100%' },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  plus: { fontSize: 18, color: colors.roseDeep, opacity: 0.7 },
-  emptyText: { fontSize: 9, color: colors.roseDeep, fontFamily: fonts.bodySemi, opacity: 0.8 },
-  gilt: { flex: 1, padding: '7%', borderRadius: 3, boxShadow: '0 8px 18px rgba(0,0,0,0.45)' },
-  mat: { flex: 1, backgroundColor: '#fbf3e8', padding: '6%' },
+  hang: { flex: 1, boxShadow: '4px 10px 16px rgba(40,20,8,0.4)' },
+  wood: { flex: 1, padding: '5%', borderRadius: 2 },
+  mat: { flex: 1, backgroundColor: '#f8f2e8', padding: '9%', boxShadow: 'inset 1px 2px 3px rgba(0,0,0,0.25)' },
+  inner: { flex: 1, overflow: 'hidden', boxShadow: 'inset 0 0 2px rgba(0,0,0,0.4)' },
   polaroid: {
     flex: 1,
     backgroundColor: '#fffdf8',
     padding: '7%',
     paddingBottom: 0,
     borderRadius: 2,
-    boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
+    boxShadow: '3px 8px 14px rgba(40,20,8,0.38)',
   },
   polaroidPhoto: { flex: 1, overflow: 'hidden', backgroundColor: '#eee' },
-  caption: { height: 20, fontFamily: fonts.displayLight, fontSize: 10, color: '#5a3a46', textAlign: 'center', paddingTop: 3 },
-  tape: {
+  caption: { height: 20, fontFamily: fonts.displayLight, fontSize: 10, color: '#5a3a2e', textAlign: 'center', paddingTop: 3 },
+  pin: {
     position: 'absolute',
-    top: -7,
+    top: 3,
     alignSelf: 'center',
-    width: '40%',
-    height: 13,
-    backgroundColor: 'rgba(248, 201, 212, 0.75)',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#c8664a',
+    boxShadow: '1px 2px 2px rgba(0,0,0,0.4)',
     zIndex: 2,
-    transform: [{ rotate: '-3deg' }],
   },
 });

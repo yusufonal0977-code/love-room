@@ -1,7 +1,16 @@
 import { DatabaseSync } from 'node:sqlite';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { join } from 'node:path';
-import { createRoom, migrateRoom, type Member, type PublicUser, type RoomState, type RoomSummary } from '@loveroom/shared';
+import {
+  createRoom,
+  isCharacter,
+  migrateRoom,
+  type Character,
+  type Member,
+  type PublicUser,
+  type RoomState,
+  type RoomSummary,
+} from '@loveroom/shared';
 import { DATA_DIR } from './env';
 
 /**
@@ -34,27 +43,52 @@ db.exec(`
   );
 `);
 
+// Şema geçişleri: eski veritabanlarına yeni sütunları ekle.
+const userColumns = (db.prepare('PRAGMA table_info(users)').all() as { name: string }[]).map((c) => c.name);
+if (!userColumns.includes('character')) db.exec('ALTER TABLE users ADD COLUMN character TEXT');
+
 interface UserRow {
   id: string;
   email: string | null;
   name: string;
   avatar_url: string | null;
   timezone: string | null;
+  character: string | null;
 }
 
-const toPublicUser = (r: UserRow): PublicUser => ({ id: r.id, name: r.name, email: r.email, avatarUrl: r.avatar_url });
+function parseCharacter(json: string | null): Character | null {
+  if (!json) return null;
+  try {
+    const c = JSON.parse(json);
+    return isCharacter(c) ? c : null;
+  } catch {
+    return null;
+  }
+}
+
+const toPublicUser = (r: UserRow): PublicUser => ({
+  id: r.id,
+  name: r.name,
+  email: r.email,
+  avatarUrl: r.avatar_url,
+  character: parseCharacter(r.character),
+});
 
 export function upsertGoogleUser(p: { sub: string; email: string | null; name: string; picture: string | null }): PublicUser {
   const existing = db.prepare('SELECT * FROM users WHERE google_sub = ?').get(p.sub) as UserRow | undefined;
   if (existing) {
     db.prepare('UPDATE users SET email = ?, name = ?, avatar_url = ? WHERE id = ?').run(p.email, p.name, p.picture, existing.id);
-    return { id: existing.id, name: p.name, email: p.email, avatarUrl: p.picture };
+    return { ...toPublicUser(existing), name: p.name, email: p.email, avatarUrl: p.picture };
   }
   const id = randomUUID();
   db.prepare('INSERT INTO users (id, google_sub, email, name, avatar_url, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(
     id, p.sub, p.email, p.name, p.picture, Date.now(),
   );
-  return { id, name: p.name, email: p.email, avatarUrl: p.picture };
+  return { id, name: p.name, email: p.email, avatarUrl: p.picture, character: null };
+}
+
+export function setCharacter(userId: string, character: Character) {
+  db.prepare('UPDATE users SET character = ? WHERE id = ?').run(JSON.stringify(character), userId);
 }
 
 /** Geliştirme kullanıcısı: aynı isim → aynı hesap (tekrar girişte odası korunur). */
@@ -63,14 +97,14 @@ export function upsertDevUser(name: string): PublicUser {
   const existing = db.prepare('SELECT * FROM users WHERE id = ?').get(id) as UserRow | undefined;
   if (existing) return toPublicUser(existing);
   db.prepare('INSERT INTO users (id, email, name, created_at) VALUES (?, NULL, ?, ?)').run(id, name, Date.now());
-  return { id, name, email: null, avatarUrl: null };
+  return { id, name, email: null, avatarUrl: null, character: null };
 }
 
 /** Herkese açık linkte hızlı giriş: her seferinde yeni, tahmin edilemez bir misafir hesabı. */
 export function createGuestUser(name: string): PublicUser {
   const id = `guest-${randomUUID()}`;
   db.prepare('INSERT INTO users (id, email, name, created_at) VALUES (?, NULL, ?, ?)').run(id, name, Date.now());
-  return { id, name, email: null, avatarUrl: null };
+  return { id, name, email: null, avatarUrl: null, character: null };
 }
 
 export function getUser(id: string): PublicUser | null {
@@ -93,7 +127,13 @@ export function roomMembers(roomId: string): Member[] {
       'SELECT u.* FROM memberships m JOIN users u ON u.id = m.user_id WHERE m.room_id = ? ORDER BY m.joined_at',
     )
     .all(roomId) as unknown as UserRow[];
-  return rows.map((r) => ({ id: r.id, name: r.name, avatarUrl: r.avatar_url, timezone: r.timezone }));
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    avatarUrl: r.avatar_url,
+    timezone: r.timezone,
+    character: parseCharacter(r.character),
+  }));
 }
 
 interface RoomRow {

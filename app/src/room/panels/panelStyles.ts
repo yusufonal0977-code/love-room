@@ -5,7 +5,7 @@ import { colors, fonts } from '../../theme';
 export const panel = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   chip: { borderRadius: 999, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.glass },
-  chipActive: { borderColor: colors.rose, backgroundColor: 'rgba(236,122,150,0.2)' },
+  chipActive: { borderColor: colors.rose, backgroundColor: 'rgba(217,120,90,0.2)' },
   chipText: { color: colors.text, fontFamily: fonts.bodySemi, fontSize: 13 },
   input: {
     flex: 1,

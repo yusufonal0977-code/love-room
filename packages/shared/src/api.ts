@@ -1,10 +1,13 @@
 // HTTP API sözleşmesi (giriş, oda oluşturma, davet, yükleme).
 
+import type { Character } from './character';
+
 export interface PublicUser {
   id: string;
   name: string;
   email: string | null;
   avatarUrl: string | null;
+  character: Character | null;
 }
 
 export interface RoomSummary {

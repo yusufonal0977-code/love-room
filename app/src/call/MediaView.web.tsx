@@ -26,7 +26,7 @@ export function MediaView({ stream, muted, mirror, hidden }: Props) {
         position: hidden ? 'absolute' : undefined,
         objectFit: 'cover',
         transform: mirror ? 'scaleX(-1)' : undefined,
-        backgroundColor: '#120a16',
+        backgroundColor: '#17110d',
       }}
     />
   );
