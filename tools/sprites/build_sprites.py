@@ -100,6 +100,9 @@ def build_outfit(rows, pal, basic=False):
 # Kapalı küçük cepler (ne ana saça ne yüze bağlı): çizimde kâkül çizgisinin altında kalanlar yüzdür.
 # Tasarımla tek tek karşılaştırıldı (tools/sprites/pockets.py): bu görünümlerdeki cepler ten, diğerleri saç.
 SKIN_POCKETS = {('spiky', 'front'), ('round', 'front'), ('bob', 'side'), ('round', 'side')}
+# Arkadan görünümde çizgi altındaki kafa derisi saç sayılır, yalnızca ense (bu satır ve altı) ten kalır.
+# Kısa saçın arka çiziminde çizgi kafanın ortasında; altını ten boyamak kafayı kel gösteriyordu.
+NAPE_FROM = {('short', 'back'): 14}
 
 def build_hair(rows, pal, view, hid=''):
     bald = BALD[view][0]
@@ -118,6 +121,10 @@ def build_hair(rows, pal, view, hid=''):
         elif not reaches_body and (hid, view) not in SKIN_POCKETS:
             hair.update(comp)
     h, w = len(rows), len(rows[0])
+    nape = NAPE_FROM.get((hid, view))
+    if nape:
+        for comp in components(rows, out):
+            hair.update((y, x) for y, x in comp if y < nape)
     isin = lambda y, x: 0 <= y < h and 0 <= x < w
     res = []
     for y in range(h):
