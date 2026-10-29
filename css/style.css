@@ -321,7 +321,7 @@ button.link.danger { background: none; color: #ff8fab; }
 body.cinema .prompt { display: none; }
 
 /* Marka ve tanıtım */
-h1 .get { color: var(--moon); font-size: 1em; text-shadow: 0 0 14px rgba(252, 223, 75, .45); border-bottom: 3px solid var(--sun); padding-bottom: 1px; }
+h1 .get { color: var(--moon); font-size: 1em; text-shadow: 0 0 14px rgba(252, 223, 75, .45); }
 .pitch { max-width: 420px; text-align: left; color: var(--dim); font-size: 13px; line-height: 1.5; }
 .pitch summary { cursor: pointer; text-align: center; color: var(--sun); list-style: none; }
 .pitch summary::-webkit-details-marker { display: none; }
