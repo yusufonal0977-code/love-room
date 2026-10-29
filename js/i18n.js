@@ -3,9 +3,11 @@
 // İngilizceye düşer. Değişkenler {ad} biçiminde: t('{name} geldi', { name }).
 
 export const LANGS = [
-  ['tr', 'Türkçe'], ['en', 'English'], ['es', 'Español'], ['de', 'Deutsch'], ['fr', 'Français'], ['pt', 'Português'],
+  ['tr', 'Türkçe'], ['en', 'English'], ['es', 'Español'], ['de', 'Deutsch'], ['fr', 'Français'], ['pt', 'Português'], ['ar', 'العربية'],
 ];
-const LOCALES = { tr: 'tr-TR', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR' };
+const LOCALES = { tr: 'tr-TR', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', ar: 'ar' };
+/** Sağdan sola yazılan diller */
+export const rtl = (l) => l === 'ar';
 
 function detect() {
   for (const l of navigator.languages || [navigator.language || 'en']) {
@@ -23,6 +25,13 @@ let dict = {}, fallback = {};
 /** Açılışta bir kez: seçili dilin sözlüğünü yükler ve sayfadaki sabit metinleri çevirir. */
 export async function initI18n() {
   document.documentElement.lang = lang;
+  if (rtl(lang)) {
+    document.documentElement.dir = 'rtl';
+    const f = document.createElement('link');
+    f.rel = 'stylesheet';
+    f.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap';
+    document.head.append(f);
+  }
   if (lang !== 'tr') {
     dict = (await import(`./i18n/${lang}.js`)).default;
     if (lang !== 'en') fallback = (await import('./i18n/en.js')).default;

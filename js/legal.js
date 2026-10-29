@@ -140,6 +140,6 @@ const LEGAL_TR = [
 ];
 
 // Türkçe dışındaki tüm dillerde İngilizce metin gösterilir (başına kısa bir not eklenir).
-const NOTE = { es: 'Los textos legales están disponibles en inglés y turco.', de: 'Die rechtlichen Texte sind auf Englisch und Türkisch verfügbar.', fr: 'Les textes juridiques sont disponibles en anglais et en turc.', pt: 'Os textos legais estão disponíveis em inglês e turco.' };
+const NOTE = { es: 'Los textos legales están disponibles en inglés y turco.', de: 'Die rechtlichen Texte sind auf Englisch und Türkisch verfügbar.', fr: 'Les textes juridiques sont disponibles en anglais et en turc.', pt: 'Os textos legais estão disponíveis em inglês e turco.', ar: 'النصوص القانونية متوفرة باللغتين الإنجليزية والتركية.' };
 export const LEGAL = lang === 'tr' ? LEGAL_TR : LEGAL_EN.map((d) => (NOTE[lang] ? { ...d, html: `<p class="muted">${NOTE[lang]}</p>` + d.html } : d));
 export const legalById = (id) => LEGAL.find((x) => x.id === id);

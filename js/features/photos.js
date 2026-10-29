@@ -214,5 +214,13 @@ export function createPhotos(ctx) {
     renderBooth();
   }
 
-  return { openFrame, openAlbum, openBooth, addToAlbum };
+  /** Albümdeki en son fotoğraf (paylaşım kartı için). */
+  async function latest() {
+    const snap = await get(query(live.ref('album'), limitToLast(1)));
+    let it = null;
+    snap.forEach((c) => { it = c.val(); });
+    return it;
+  }
+
+  return { openFrame, openAlbum, openBooth, addToAlbum, latest, frameImages: () => Object.fromEntries(Object.entries(frames).filter(([, v]) => v?.img).map(([k, v]) => [k, v.img])) };
 }

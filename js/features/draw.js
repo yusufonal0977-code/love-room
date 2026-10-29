@@ -85,5 +85,5 @@ export function createDraw(ctx) {
     ), h('p', { class: 'small' }, 'Beyaz renk silgi gibi çalışır. Çizdiğiniz resim hobi köşesindeki şövalede durur.'));
   }
 
-  return { open };
+  return { open, snapshot: () => (strokes.size ? canvas.toDataURL('image/png') : null) };
 }

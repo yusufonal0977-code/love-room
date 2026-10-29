@@ -134,3 +134,48 @@ export const HEART_BIG = sprite(
   { r: '#ff4f7b', R: '#ffc2d1' },
 );
 export const SPARK = sprite(['.y.', 'yYy', '.y.'], { y: '#ffd27a', Y: '#fff6c8' }, null);
+
+// ---- Evcil hayvanlar: kedi, köpek, tavşan (sağa bakan 2 yürüme karesi + oturma) ----
+// head: aksesuarın takılacağı baş noktası (sprite içi piksel, dış hat dahil), [sağ, oturma]
+const PETS = {
+  cat: { walk: CAT, sit: CAT_SIT, head: [[11, 1], [4, 1]] },
+  dog: {
+    walk: [
+      ['........kkk.', '.......kkkkk', '.......kkekn', 'k.kkkkkkkkk.', 'kkkkkkkkkk..', '.kkwkkkkkk..', '.k.k...k.k..'],
+      ['........kkk.', '.......kkkkk', '.......kkekn', 'k.kkkkkkkkk.', 'kkkkkkkkkk..', '.kkwkkkkkk..', 'k...k..k...k'],
+    ],
+    sit: ['..kkk...', '.kkkkk..', '.kkekn..', '..kkk...', '.kkkkk..', 'kkkwkkk.', '.kkkkk.k'],
+    head: [[10, 1], [4, 1]],
+  },
+  bunny: {
+    walk: [
+      ['.........k.k', '.........k.k', '.........kkk', '........kkek', '.kkkkkkkkkk.', 'wkkkkkkkkk..', '..k.k..k.k..'],
+      ['.........k.k', '.........k.k', '.........kkk', '........kkek', '.kkkkkkkkkk.', 'wkkkkkkkkk..', '.k...k.k...k'],
+    ],
+    sit: ['..k.k...', '..k.k...', '..kkk...', '.kkek...', '.kkkkk..', 'kkkwkkk.', '.kkkkkw.'],
+    head: [[11, 3], [4, 3]],
+  },
+};
+export const PET_SPECIES = ['cat', 'dog', 'bunny'];
+export const PET_COLORS = ['#f0a050', '#3a3330', '#f4efe6', '#9a9aa6', '#c8742c', '#e8c9a0'];
+/** Aksesuar: [ad, açılış seviyesi] */
+export const PET_ACC = [['none', 1], ['bow', 1], ['collar', 2], ['hat', 4], ['crown', 8]];
+const petCache = new Map();
+export function petSprites(species = 'cat', color = PET_COLORS[0]) {
+  const key = species + color;
+  if (petCache.has(key)) return petCache.get(key);
+  const d = PETS[species] || PETS.cat;
+  const pal = { k: color, e: '#2b1d16', n: '#2b1d16', w: '#fff1e2' };
+  const right = d.walk.map((r) => sprite(r, pal));
+  const set = { right, left: right.map(mirror), sit: sprite(d.sit, pal), head: d.head, w: right[0].width };
+  petCache.set(key, set);
+  return set;
+}
+/** Aksesuarı (x, y) baş noktasına çizer. */
+export function drawPetAcc(g, acc, x, y) {
+  const P = (dx, dy, w, h, c) => R(g, x + dx, y + dy, w, h, c);
+  if (acc === 'bow') { P(-2, -2, 2, 2, '#ff4f7b'); P(1, -2, 2, 2, '#ff4f7b'); P(0, -2, 1, 1, '#ffb3c6'); }
+  if (acc === 'hat') { P(-2, -2, 5, 1, '#26160f'); P(-1, -5, 3, 3, '#26160f'); P(-1, -3, 3, 1, '#e0473f'); }
+  if (acc === 'crown') { P(-2, -3, 5, 2, '#ffc93c'); P(-2, -4, 1, 1, '#ffc93c'); P(0, -4, 1, 1, '#ffc93c'); P(2, -4, 1, 1, '#ffc93c'); P(0, -2, 1, 1, '#ff4f7b'); }
+  if (acc === 'collar') { P(-2, 3, 4, 1, '#e0473f'); P(-1, 4, 1, 1, '#ffc93c'); }
+}

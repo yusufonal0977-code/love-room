@@ -18,7 +18,7 @@ export const DECOR = {
   music: false, // pikap dönüyor mu
   tvOn: false, // TV'de film/ekran var mı
   flower: { stage: 0, wilt: false },
-  pet: { food: 80, love: 80, play: 80 },
+  pet: { species: 'cat', color: '#f0a050', acc: 'none', food: 80, love: 80, play: 80, clean: 80 },
 };
 export const bump = () => DECOR.v++;
 
@@ -209,7 +209,7 @@ const salon = makeScene({
     { id: 'lamp', prop: 'lamp', x: 30, y: 126, hit: [20, 68, 20, 54], label: (st) => (st.lamp ? 'Lambayı söndür' : 'Lambayı yak') },
     { id: 'jar', prop: 'jartable', x: 152, y: 124, hit: [140, 88, 24, 32], label: () => 'Soru kavanozu' },
     { id: 'bowl', x: 45, y: 74, hit: [36, 60, 18, 12], label: () => 'Mama koy' },
-    { id: 'cat', dynamic: true, label: () => 'Kedimiz' },
+    { id: 'cat', dynamic: true, label: () => 'Evcil dostumuz' },
   ],
   seats: [{ x: 84, y: 116, pose: 'back', group: 'sofa' }, { x: 108, y: 116, pose: 'back', group: 'sofa' }],
   frames: [{ id: 'salon1', x: 43, y: 13, w: 16, h: 12, outer: [40, 10, 22, 18] }],

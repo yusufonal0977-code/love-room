@@ -248,5 +248,5 @@ export function createLife(ctx) {
     });
   }
 
-  return { openClock, openDiary, openJar, chip };
+  return { openClock, openDiary, openJar, chip, since, jarNow: () => (jar?.answers && ctx.partnerUid() && jar.answers[uid] && jar.answers[ctx.partnerUid()] ? { q: QUESTIONS[jar.q], mine: jar.answers[uid], theirs: jar.answers[ctx.partnerUid()] } : null) };
 }

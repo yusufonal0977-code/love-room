@@ -30,13 +30,17 @@ Alt çubuktaki **Birlikte** düğmesi her şeyi tek yerden açar.
 - **Müzik:** Spotify hesaplarınızı bağlayın, bir liste seçin: ikinizde aynı şarkı çalar (Premium gerekir; telefonda Spotify uygulaması üzerinden).
 - **Anılar:** tablolara fotoğraf asın, albüm, fotoğraf kabini (aynı anda çekim ya da çocukluk fotoğrafları yan yana), günlük ve geleceğe mektup, ilişki saati ve buluşma geri sayımı, soru kavanozu (cevaplar ikiniz de yazınca açılır).
 - **Birlikte:** çizim, XOX, hafıza, langırt; kedi bakımı, çiçek sulama, rozetler.
+- **Oda sohbeti:** yazılı mesajlar; aynı odadaysanız karakterin başının üstünde balon olarak da görünür.
+- **Evcil dostumuz:** kedi, köpek ya da tavşan; renk ve seviyeyle açılan aksesuarlar; mama, sevgi, oyun, banyo; yanına çağırma; gece uyur.
+- **Paylaş:** evi, gün sayacını, kavanoz cevabını, evcil dostu, rozetleri, fotoğraf ve çizimi hazır şablonlarla (hikâye/kare) paylaş.
+- **Evimizi göster:** dekore ettiğiniz evi bir linkle arkadaşlarınıza gösterin; giriş yapmadan misafir olarak gezerler.
 - **Ev:** dekor dolabından eşya ekleyin, odaları boyayın, eşyaları sürükleyip taşıyın.
 - **Dokunuşlar:** kalp, sarılma ve öpücük: aynı odadaysanız karakterin partnerine yürür, birbirinize dönüp sarılırsınız ya da öpüşürsünüz.
 - **Küçük pencere** modu ve **tam ekran** (telefonda "Ana Ekrana Ekle" ile uygulama gibi açılır).
 
 ## Diller
 
-Türkçe, English, Español, Deutsch, Français, Português. İlk açılışta tarayıcının dili seçilir; giriş ekranının sağ üstünden ve Menü → Dil'den değiştirilir. Çeviriler `js/i18n/<dil>.js` içinde (anahtar: Türkçe kaynak metin). Hukuki metinler Türkçe ve İngilizce.
+Türkçe, English, Español, Deutsch, Français, Português, العربية (sağdan sola). İlk açılışta tarayıcının dili seçilir; giriş ekranının sağ üstünden ve Menü → Dil'den değiştirilir. Çeviriler `js/i18n/<dil>.js` içinde (anahtar: Türkçe kaynak metin); kaynakları `tools/i18n/` altında, `python tools/i18n/build.py` ile üretilir (`--missing` çevrilmemiş metinleri listeler). Hukuki metinler Türkçe ve İngilizce.
 
 ## Gizlilik
 

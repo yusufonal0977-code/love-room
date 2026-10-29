@@ -1,6 +1,6 @@
 // Oyun motoru: sahne çizimi, yürüme + yol bulma, kapılar, oturma, etkileşim, ışık, partner gösterimi,
 // tam ekran kamera, sarılma/öpücük animasyonları ve eşya taşıma (dekor) modu.
-import { R, characterSprites, catSprites, SUN_BADGE, MOON_BADGE, HEART, HEART_BIG, SPARK } from './art.js';
+import { R, characterSprites, petSprites, drawPetAcc, SUN_BADGE, MOON_BADGE, HEART, HEART_BIG, SPARK } from './art.js';
 import { t } from './i18n.js';
 import { DECOR, SCENES, W, H, WALL, bump, layout, lightsOf } from './scenes.js';
 
@@ -25,7 +25,7 @@ export function createGame(opts) {
   const light = document.createElement('canvas');
   light.width = W; light.height = H;
   const keys = {};
-  const cat = { sprites: catSprites('#f0a050'), x: 120, y: 120, dir: 1, t: 0, target: null, wait: 2, sit: false };
+  const cat = { x: 120, y: 120, dir: 1, t: 0, target: null, wait: 2, sit: false };
   let fade = 0, fadeTo = null;
 
   const me = {
@@ -319,7 +319,7 @@ export function createGame(opts) {
     else if (!cat.target) { cat.wait -= dt; if (cat.wait < 0) cat.target = { x: area[0] + Math.random() * area[2], y: area[1] + Math.random() * area[3] }; }
     else {
       const dx = cat.target.x - cat.x, dy = cat.target.y - cat.y, d = Math.hypot(dx, dy);
-      if (d < 1) { cat.target = null; cat.wait = 2 + Math.random() * 4; if (Math.random() < 0.4) { cat.sit = true; cat.wait = 4; } }
+      if (d < 1) { cat.target = null; cat.wait = 2 + Math.random() * 4; if (Math.random() < 0.4 || lastNight > 0.4) { cat.sit = true; cat.wait = lastNight > 0.4 ? 20 : 4; } }
       else {
         const nx = cat.x + (dx / d) * 22 * dt, ny = cat.y + (dy / d) * 22 * dt;
         if (blockedIn(SCENES.salon, nx, ny)) { cat.target = null; cat.wait = 1; } else { cat.x = nx; cat.y = ny; cat.dir = dx > 0 ? 1 : -1; }
@@ -330,6 +330,7 @@ export function createGame(opts) {
 
   // ---------- Sarılma / öpücük ----------
   let emo = null; // { kind, t0 }
+  let lastNight = 0;
   const parts = [];
   function burst(x, y, n, big) {
     for (let i = 0; i < n; i++) parts.push({ img: big && i === 0 ? HEART_BIG : i % 4 === 3 ? SPARK : HEART, x: x + (Math.random() * 14 - 7), y: y - Math.random() * 4, vx: Math.random() * 10 - 5, vy: -14 - Math.random() * 16, life: 1.4 + Math.random() * 0.8, t: 0 });
@@ -388,17 +389,31 @@ export function createGame(opts) {
     R(ctx, x1 - (x1 > x0 ? 1 : 0), top + row, 2, 2, `rgb(${skin[0]},${skin[1]},${skin[2]})`);
   }
   function drawCat() {
-    const img = cat.sit ? cat.sprites.sit : (cat.dir > 0 ? cat.sprites.right : cat.sprites.left)[cat.target ? (cat.t * 6 | 0) % 2 : 0];
-    R(ctx, cat.x - 5, cat.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
-    ctx.drawImage(img, Math.round(cat.x - img.width / 2), Math.round(cat.y - img.height + 1));
     const pet = DECOR.pet;
-    const need = pet.food < 25 ? 'food' : pet.love < 25 ? 'love' : pet.play < 25 ? 'play' : null;
+    const sp = petSprites(pet.species, pet.color);
+    // Gece ve boşta: kıvrılıp uyur
+    const sleeping = !cat.target && lastNight > 0.4 && cat.sit;
+    const img = cat.sit ? sp.sit : (cat.dir > 0 ? sp.right : sp.left)[cat.target ? (cat.t * 6 | 0) % 2 : 0];
+    const x0 = Math.round(cat.x - img.width / 2), y0 = Math.round(cat.y - img.height + 1);
+    R(ctx, cat.x - 5, cat.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
+    ctx.drawImage(img, x0, y0);
+    if (pet.acc && pet.acc !== 'none') {
+      const [hx, hy] = cat.sit ? sp.head[1] : sp.head[0];
+      drawPetAcc(ctx, pet.acc, x0 + (cat.sit || cat.dir > 0 ? hx : img.width - 1 - hx), y0 + hy);
+    }
+    if (sleeping) { // Zz
+      const k = (performance.now() / 600) % 3 | 0;
+      for (let i = 0; i <= k; i++) { const zx = x0 + img.width + i * 3, zy = y0 - 2 - i * 3; R(ctx, zx, zy, 3, 1, '#fff6e8'); R(ctx, zx + 1, zy + 1, 1, 1, '#fff6e8'); R(ctx, zx, zy + 2, 3, 1, '#fff6e8'); }
+      return;
+    }
+    const need = pet.food < 25 ? 'food' : pet.love < 25 ? 'love' : pet.play < 25 ? 'play' : pet.clean < 25 ? 'clean' : null;
     if (need) { // küçük düşünce balonu
       const bx = Math.round(cat.x + 3), by = Math.round(cat.y - 18 + Math.sin(performance.now() / 300));
       R(ctx, bx, by, 9, 7, '#fff6e8'); R(ctx, bx + 1, by + 7, 2, 1, '#fff6e8');
       if (need === 'food') { R(ctx, bx + 2, by + 3, 4, 2, '#ff7a59'); R(ctx, bx + 6, by + 2, 1, 4, '#ff7a59'); }
       if (need === 'love') ctx.drawImage(HEART, bx + 1, by);
       if (need === 'play') { R(ctx, bx + 3, by + 2, 3, 3, '#5b8def'); R(ctx, bx + 2, by + 3, 5, 1, '#5b8def'); }
+      if (need === 'clean') { R(ctx, bx + 2, by + 2, 2, 2, '#8fd0ff'); R(ctx, bx + 5, by + 3, 2, 2, '#8fd0ff'); R(ctx, bx + 4, by + 1, 1, 1, '#8fd0ff'); }
     }
   }
   function drawLighting(sc, info) {
@@ -429,6 +444,7 @@ export function createGame(opts) {
   // ---------- HTML katmanı ----------
   const el = (cls) => { const d = document.createElement('div'); d.className = cls; overlay.appendChild(d); return d; };
   const tagMe = el('tag'), tagP = el('tag'), prompt = el('prompt');
+  const speech = { me: { el: el('speech'), until: 0 }, partner: { el: el('speech'), until: 0 } };
   const place = (node, x, y) => { node.style.left = (x / W) * 100 + '%'; node.style.top = (y / H) * 100 + '%'; };
   const voice = '<span class="voice"><i></i><i></i><i></i></span>';
   function updateOverlay() {
@@ -439,6 +455,13 @@ export function createGame(opts) {
     if (pShown) {
       place(tagP, partner.x, headY(partner) - 9);
       tagP.innerHTML = `${esc(partner.name)}${opts.isTalking?.('partner') ? voice : ''}`;
+    }
+    // Sohbet balonları (6 sn)
+    for (const who of ['me', 'partner']) {
+      const sp = speech[who], p = who === 'me' ? me : partner;
+      const vis = performance.now() < sp.until && (who === 'me' || pShown);
+      sp.el.style.display = vis ? '' : 'none';
+      if (vis) place(sp.el, p.x, headY(p) - 12);
     }
     opts.placeVideo?.('me', me.x, headY(me) - 12, true);
     opts.placeVideo?.('partner', partner.x, pShown ? headY(partner) - 12 : 0, pShown);
@@ -488,6 +511,7 @@ export function createGame(opts) {
     const sc = scene(), l = lay();
     const hours = opts.getHours();
     const info = { st: opts.getShared(), t, ...hours, night: nightLevel(hours.hour) * (sc.outdoor ? 0.85 : 1) };
+    lastNight = info.night;
     ctx.drawImage(sc.bg, 0, 0);
     sc.dyn?.(ctx, info);
     // Duvar dekorları ve yer halıları karakterlerin arkasında
@@ -531,6 +555,18 @@ export function createGame(opts) {
       ents.push({ y: me.seat >= 0 ? me.y - 6 : me.y, d: () => drawPerson(me, atMe) });
       if (pHere) ents.push({ y: (partner.seat >= 0 ? partner.y - 6 : partner.y) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
     }
+    // Ek karakterler (vitrin evinde ev sahipleri kanepede oturur)
+    for (const x of opts.getExtras?.() || []) {
+      if (x.scene !== me.scene) continue;
+      ents.push({ y: x.y - 6, d: () => {
+        const sp = characterSprites(x.look);
+        const img = x.pose === 'back' ? sp.sitBack : x.pose === 'sit' ? sp.sit : sp.down;
+        const yy = Math.round(x.y - img.height + (x.pose ? 4 : 1));
+        ctx.drawImage(img, Math.round(x.x - img.width / 2), yy);
+        const b = x.side === 'moon' ? MOON_BADGE : SUN_BADGE;
+        ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);
+      } });
+    }
     if (sc.hasCat) ents.push({ y: cat.y, d: drawCat });
     ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
     drawLighting(sc, info);
@@ -571,6 +607,10 @@ export function createGame(opts) {
     hearts(who) { const p = who === 'me' ? me : partner; if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return; burst(p.x, headY(p) - 2, 4, false); },
     setLook(look, side, name) { me.look = look; me.side = side; if (name) me.name = name; changed(); },
     near() { return together(); },
+    /** Sohbet mesajını karakterin başının üstünde gösterir. */
+    /** Evcil hayvanı bir noktaya çağırır (simülasyonu yöneten cihazda). */
+    petCome(x, y) { cat.sit = false; cat.target = { x, y: Math.max(64, y + 6) }; cat.wait = 4; },
+    say(who, text) { const sp = speech[who]; sp.el.textContent = text.length > 80 ? text.slice(0, 78) + '…' : text; sp.until = performance.now() + 6000; },
     sameRoom() { return partner.shown && partner.scene === me.scene; },
     /** Partnerin yanına yürü, varınca cb. */
     approach(cb) {

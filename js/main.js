@@ -16,8 +16,11 @@ import { createCare } from './features/care.js';
 import { createGames } from './features/games.js';
 import { createDecorUI } from './features/decor-ui.js';
 import { createPip } from './features/pip.js';
+import { createChat } from './features/chat.js';
+import { createShare } from './features/share.js';
+import { createShowcase } from './features/showcase.js';
 import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
-import { auth, db, ref, remove } from './fb.js';
+import { auth, db, get, ref, remove } from './fb.js';
 import { initI18n, t, lang, locale, langPicker } from './i18n.js';
 import { deleteUser, GoogleAuthProvider, reauthenticateWithPopup } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
@@ -57,6 +60,12 @@ async function boot() {
   await initI18n();
   $('langCorner').append(langPicker());
   $('langMenu').append(langPicker());
+  // Vitrin linki (?ev=…): giriş gerekmeden evi misafir olarak gez
+  if (params.get('ev')) {
+    const { runViewer } = await import('./viewer.js');
+    if (await runViewer(params.get('ev'))) { setTimeout(() => $('intro')?.remove(), 1200); return; }
+    toast(t('Bu vitrin linki artık yok.'), 4000);
+  }
   const intro = new Promise((r) => setTimeout(r, 2600));
   spotifyReturn = await handleSpotifyRedirect();
   const [u] = await Promise.all([firstUser(), spotifyReturn ? Promise.resolve() : intro]);
@@ -262,7 +271,8 @@ async function enterWorld(rid, fresh = false) {
   const ctx = {
     uid: user.uid, live, call,
     partnerUid, partnerName: pName, partnerTz: () => partnerProfile?.tz, partnerOnline: () => !!partnerP(), partnerCam: () => !!partnerP()?.cam,
-    myName: () => profile.name, mySide: () => profile.side ?? 'sun', isHost,
+    rid, myName: () => profile.name, mySide: () => profile.side ?? 'sun', myLook: () => profile.look ?? DEFAULT_LOOK, isHost,
+    partnerProfile: () => partnerProfile, shared: () => shared,
     screenAudio: $('screenAudio'),
     toggleScreen: () => $('screenBtn').onclick(),
     async shareMedia(stream) {
@@ -319,6 +329,10 @@ async function enterWorld(rid, fresh = false) {
   const games = createGames(ctx);
   decor = createDecorUI(ctx);
   const pip = createPip(ctx);
+  Object.assign(ctx, { life, draw, care });
+  createChat(ctx);
+  const share = createShare(ctx);
+  const showcase = createShowcase(ctx);
 
   // Hata ayıklama için konsoldan erişim: window.__lr
   window.__lr = { game, get presence() { return presence; }, get partnerProfile() { return partnerProfile; }, get room() { return room.data; }, call, ctx };
@@ -470,6 +484,8 @@ async function enterWorld(rid, fresh = false) {
     call.setPartner(null);
     game.stop(); live.leave();
     const r = room.data;
+    const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
+    if (sc) await remove(ref(db, `showcase/${sc}`)).catch(() => {});
     if (r?.info?.invite) await remove(ref(db, `invites/${r.info.invite}`)).catch(() => {});
     await remove(ref(db, `live/${rid}`));
     await remove(ref(db, `rooms/${rid}`));
@@ -509,10 +525,12 @@ async function enterWorld(rid, fresh = false) {
       tile('book', 'Günlük', 'Şömine · kitaplık', () => life.openDiary()),
       tile('clock', 'İlişki saati', 'Şömine', () => life.openClock()),
       tile('game', 'Oyunlar', 'XOX · Hafıza · Langırt', () => games.openHub()),
-      tile('paw', 'Kedimiz', 'Bakım', () => care.openPet()),
+      tile('paw', 'Evcil dostumuz', 'Kedi · köpek · tavşan', () => care.openPet()),
       tile('flower', 'Çiçeğimiz', 'Balkon', () => care.openFlower()),
       tile('badge', 'Rozetler', 'Başarılar', () => care.openBadges()),
       tile('paint', 'Evi düzenle', 'Eşya, boya, taşı', () => decor.open('shop')),
+      tile('eye', 'Evimizi göster', 'Linkle arkadaşlarına', () => showcase.open()),
+      tile('share', 'Paylaş', 'Hikâye ve kare şablonlar', () => share.open()),
       pip.supported ? tile('pip', 'Küçük pencere', 'Başka işle uğraşırken', () => pip.toggle()) : null,
       tile('full', 'Tam ekran', 'Bu cihazda', fullscreen),
     ));

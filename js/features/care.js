@@ -1,11 +1,12 @@
-// Ortak sorumluluklar: kedimiz (mama, sevgi, oyun), balkondaki çiçeğimiz ve rozetler.
+// Ortak sorumluluklar: evcil dostumuz (mama, sevgi, oyun, temizlik), balkondaki çiçeğimiz ve rozetler.
 //
-// live/{rid}/pet    = { name, food, love, play, at, xp }   değerler zamanla azalır (saatte 4 puan)
+// live/{rid}/pet    = { name, species, color, acc, food, love, play, clean, at, xp }   değerler zamanla azalır
 // live/{rid}/flower = { growth, water: {uid: zaman}, blooms }
 // live/{rid}/stats  = sayaçlar (rozetler bunlardan hesaplanır)
 import { h, icon, openSheet, toast } from '../ui.js';
 import { serverTimestamp, set, update, now } from '../fb.js';
 import { DECOR, bump } from '../scenes.js';
+import { petSprites, drawPetAcc, PET_COLORS, PET_ACC } from '../art.js';
 import { t } from '../i18n.js';
 
 const HOUR = 3_600_000, DAY = 24 * HOUR;
@@ -34,49 +35,99 @@ export function createCare(ctx) {
   const { live, uid } = ctx;
   let pet = null, flower = null, stats = null, petBody = null, flowerBody = null;
 
-  // ---------- Kedi ----------
+  // ---------- Evcil dostumuz ----------
+  // Tür (kedi/köpek/tavşan), renk ve aksesuar seçilebilir; seviye arttıkça yeni aksesuarlar açılır.
+  // live/{rid}/petCall = { x, y, at }: "Yanıma çağır" deyince hayvanı simüle eden cihaz (oda kurucusu) onu çağırır.
   const petNow = () => {
-    const p = pet || { name: 'Pamuk', food: 80, love: 80, play: 80, at: now(), xp: 0 };
+    const p = { name: t('Pamuk'), species: 'cat', color: PET_COLORS[0], acc: 'none', food: 80, love: 80, play: 80, clean: 80, at: now(), xp: 0, ...(pet || {}) };
     const hrs = Math.max(0, (now() - (p.at || now())) / HOUR);
-    return { ...p, food: clamp(p.food - hrs * 4), love: clamp(p.love - hrs * 3), play: clamp(p.play - hrs * 3.5) };
+    return { ...p, food: clamp(p.food - hrs * 4), love: clamp(p.love - hrs * 3), play: clamp(p.play - hrs * 3.5), clean: clamp((p.clean ?? 80) - hrs * 2) };
   };
   const level = (xp) => 1 + Math.floor((xp || 0) / 10);
   const title = (lv) => (lv >= 10 ? 'Ebeveynler' : lv >= 4 ? 'Pet arkadaşları' : 'Bakıcılar');
-  function syncDecor() { const p = petNow(); Object.assign(DECOR.pet, { food: p.food, love: p.love, play: p.play }); }
+  const SPECIES = { cat: 'Kedi', dog: 'Köpek', bunny: 'Tavşan' };
+  const ACC = { none: 'Yok', bow: 'Fiyonk', collar: 'Tasma', hat: 'Şapka', crown: 'Taç' };
+  const SAYS = {
+    cat: { food: '{name} mırlayarak yedi 😺', love: '{name} sana sokuldu 😻', play: '{name} yün yumağının peşinde 🧶', clean: '{name} pırıl pırıl oldu 🫧' },
+    dog: { food: '{name} kuyruğunu sallayarak yedi 🐶', love: '{name} seni yaladı 🥰', play: '{name} topu getirdi 🎾', clean: '{name} silkelendi, her yer su 💦' },
+    bunny: { food: '{name} havucu kemirdi 🥕', love: '{name} burnunu oynattı 🐰', play: '{name} zıp zıp zıpladı ✨', clean: '{name} pamuk gibi oldu 🫧' },
+  };
+  function syncDecor() { const p = petNow(); Object.assign(DECOR.pet, { species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean }); }
   live.on('pet', (v) => { pet = v; syncDecor(); renderPet(); });
+  live.on('petCall', (v) => { if (v && ctx.isHost() && now() - (v.at || 0) < 8000) ctx.game.petCome(v.x, v.y); });
   setInterval(syncDecor, 30_000);
+
+  const save = (p, extra = {}) => set(live.ref('pet'), { name: p.name, species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean, xp: p.xp || 0, at: serverTimestamp(), ...extra });
 
   async function care(kind) {
     const p = petNow();
-    const gain = { food: 35, love: 30, play: 30 }[kind];
-    if (p[kind] >= 98) return toast(t(kind === 'food' ? '{name} tok 😺' : kind === 'love' ? '{name} şu an yeterince sevildi 😺' : '{name} şu an yeterince oynadı 😺', { name: p.name }));
-    await set(live.ref('pet'), { name: p.name, food: p.food, love: p.love, play: p.play, [kind]: clamp(p[kind] + gain), xp: (p.xp || 0) + 1, at: serverTimestamp() });
+    const gain = { food: 35, love: 30, play: 30, clean: 40 }[kind];
+    if (p[kind] >= 98) return toast(t(kind === 'food' ? '{name} tok 😺' : kind === 'love' ? '{name} şu an yeterince sevildi 😺' : kind === 'clean' ? '{name} zaten tertemiz ✨' : '{name} şu an yeterince oynadı 😺', { name: p.name }));
+    const before = level(p.xp);
+    await save(p, { [kind]: clamp(p[kind] + gain), xp: (p.xp || 0) + 1 });
     live.stat('pet');
-    ctx.onPetCare?.(kind);
+    toast(t((SAYS[p.species] || SAYS.cat)[kind], { name: p.name }));
+    if (level((p.xp || 0) + 1) > before) toast(t('{name} seviye atladı: {lv}! 🎉', { name: p.name, lv: level((p.xp || 0) + 1) }), 3500);
+  }
+  function call() {
+    if (ctx.game.me.scene !== 'salon') return toast(t('{name} salonda; çağırmak için salona git.', { name: petNow().name }));
+    const { x, y } = ctx.game.me;
+    if (ctx.isHost()) ctx.game.petCome(x, y);
+    else set(live.ref('petCall'), { x: Math.round(x), y: Math.round(y), at: now() });
+    toast(t('{name} geliyor! 🐾', { name: petNow().name }));
   }
   function bar(label, v, col) {
     return h('div', { class: 'stat' }, h('span', {}, label), h('div', { class: 'meter' }, h('i', { style: { width: v + '%', background: v < 25 ? '#ff4f7b' : col } })), h('b', {}, v));
   }
+  function preview(p) {
+    const c = h('canvas', { width: 32, height: 26, class: 'petprev' });
+    const g = c.getContext('2d');
+    const sp = petSprites(p.species, p.color);
+    const img = sp.right[0];
+    const x0 = Math.round(16 - img.width / 2), y0 = 24 - img.height;
+    g.drawImage(img, x0, y0);
+    if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1]);
+    return c;
+  }
   function renderPet() {
     if (!petBody || !document.body.contains(petBody)) return;
     const p = petNow(), lv = level(p.xp);
+    const prog = ((p.xp || 0) % 10) * 10;
     petBody.innerHTML = '';
     const name = h('input', { value: p.name, maxLength: 14 });
-    name.onchange = () => update(live.ref('pet'), { name: name.value.trim() || 'Pamuk' });
+    name.onchange = () => update(live.ref('pet'), { name: name.value.trim() || t('Pamuk') });
+    const pick = (items, cur, onPick, render) => h('div', { class: 'opts' }, ...items.map((it) => {
+      const b = render(it);
+      if (it.value === cur) b.classList.add('sel');
+      if (it.locked) { b.disabled = true; b.title = t('Seviye {lv} ile açılır', { lv: it.locked }); }
+      b.onclick = () => onPick(it.value);
+      return b;
+    }));
     petBody.append(
-      h('label', {}, 'Adı', name),
-      h('p', { class: 'small' }, t('Seviye {lv} · {title} · {n} bakım', { lv, title: t(title(lv)), n: p.xp || 0 })),
-      bar('Mama', p.food, '#ffc93c'), bar('Sevgi', p.love, '#ff7aa3'), bar('Oyun', p.play, '#8fd0ff'),
-      h('div', { class: 'row' },
+      h('div', { class: 'pethead' }, preview(p), h('div', { class: 'grow' },
+        h('label', {}, 'Adı', name),
+        h('p', { class: 'small' }, t('Seviye {lv} · {title} · {n} bakım', { lv, title: t(title(lv)), n: p.xp || 0 })),
+        h('div', { class: 'meter' }, h('i', { style: { width: prog + '%' } })),
+      )),
+      bar('Mama', p.food, '#ffc93c'), bar('Sevgi', p.love, '#ff7aa3'), bar('Oyun', p.play, '#8fd0ff'), bar('Temizlik', p.clean, '#9ee6a8'),
+      h('div', { class: 'row wrap petacts' },
         h('button', { class: 'primary', onclick: () => care('food') }, 'Mama ver'),
         h('button', { onclick: () => care('love') }, 'Sev'),
         h('button', { onclick: () => care('play') }, 'Oyna'),
+        h('button', { onclick: () => care('clean') }, 'Yıka'),
+        h('button', { onclick: call }, 'Yanıma çağır'),
       ),
-      h('p', { class: 'small' }, 'Değerler zamanla azalır. İkiniz de bakabilirsiniz; kedi acıkınca başının üstünde balon çıkar.'),
+      h('small', {}, 'Tür'),
+      pick(Object.entries(SPECIES).map(([value, label]) => ({ value, label })), p.species, (v) => update(live.ref('pet'), { species: v }), (it) => h('button', {}, it.label)),
+      h('small', {}, 'Renk'),
+      pick(PET_COLORS.map((value) => ({ value })), p.color, (v) => update(live.ref('pet'), { color: v }), (it) => h('button', { class: 'sw', style: { background: it.value } })),
+      h('small', {}, 'Aksesuar'),
+      pick(PET_ACC.map(([value, need]) => ({ value, label: ACC[value], locked: lv < need ? need : 0 })), p.acc, (v) => update(live.ref('pet'), { acc: v }), (it) => h('button', {}, t(it.label) + (it.locked ? ' 🔒' : ''))),
+      h('p', { class: 'small' }, 'Değerler zamanla azalır. İkiniz de bakabilirsiniz; acıkınca, sıkılınca ya da kirlenince başının üstünde balon çıkar. Geceleri kıvrılıp uyur.'),
     );
   }
   function openPet() {
-    petBody = openSheet({ title: 'Kedimiz', iconName: 'paw', onClose: () => (petBody = null) });
+    petBody = openSheet({ title: 'Evcil dostumuz', iconName: 'paw', onClose: () => (petBody = null) });
     renderPet();
   }
 
@@ -155,5 +206,5 @@ export function createCare(ctx) {
       })));
   }
 
-  return { openPet, openFlower, openBadges, care, visit };
+  return { openPet, openFlower, openBadges, care, visit, petNow, unlockedBadges: () => BADGES.filter((b) => unlocked(stats).has(b.id)) };
 }
