@@ -38,7 +38,7 @@ export const SHIRT = ['#ff7a59', '#3fb7a4', '#5b8def', '#ffc93c', '#ff5d8f', '#2
 export const PANTS = ['#3b4a6b', '#2e2e3a', '#7a5a46'];
 export const HAIR_STYLES = ['short', 'long', 'bob', 'bun', 'none'];
 
-export const DEFAULT_LOOK = { skin: 1, hair: 'short', hairColor: 1, shirt: 0, pants: 0 };
+export const DEFAULT_LOOK = { skin: 1, hair: 'short', hairColor: 1, shirt: 0, pants: 0, outfit: 'basic' };
 
 // 14×21 tombul kafalı karakter (çizilmiş modele göre). s ten, e göz, b yanak, m ağız, o iç çizgi,
 // c/C kıyafet, p pantolon, w ayakkabı. Saç ayrı maskeyle eklenir.
@@ -53,16 +53,51 @@ const LEGS_SIDE = ['.....ppppp....', '.....ppppp....', '.....ppppp....', '.....p
 const LEGS_SIDE2 = ['.....ppppp....', '....pppppp....', '....pp...pp...', '....pp...pp...', '...ww....ww...'];
 const SIT_LEGS = ['...pppppppp...', '...pppppppp...', '...ww....ww...', '..............', '..............'];
 const EMPTY5 = Array(5).fill('..............');
-const BODY = {
-  down: [...HEAD_FRONT, ...TORSO, ...LEGS],
-  down2: [...HEAD_FRONT, ...TORSO, ...LEGS2],
-  up: [...HEAD_BACK, ...TORSO, ...LEGS],
-  up2: [...HEAD_BACK, ...TORSO, ...LEGS2],
-  side: [...HEAD_SIDE, ...TORSO_SIDE, ...LEGS_SIDE],
-  side2: [...HEAD_SIDE, ...TORSO_SIDE, ...LEGS_SIDE2],
-  sit: [...HEAD_FRONT, ...TORSO, ...SIT_LEGS],
-  sitBack: [...HEAD_BACK, ...TORSO, ...EMPTY5],
+// Kıyafet modelleri (gövdenin 5 satırı). c ana renk, C etek/gölge, x/y desen renkleri.
+// basic ve tee seçilen kıyafet rengini kullanır; diğerlerinin kendi renkleri var.
+const NORDIC = {
+  front: ['...ccxxxxcc...', '..cccccccccc..', '..xocxcxcxox..', '..coxcxcxcoc..', '..soccccccos..'],
+  back: ['...cccccccc...', '..cccccccccc..', '..xocxcxcxox..', '..coxcxcxcoc..', '..soccccccos..'],
+  side: ['.....cxxcc....', '.....ccccc....', '.....xcoxc....', '.....cxocx....', '.....ccosc....'],
 };
+const CARDIGAN = {
+  front: ['...cccxxccc...', '..cccyxxyccc..', '..cocyxxycoc..', '..cocyxxycoc..', '..soCyxxyCos..'],
+  back: TORSO_BACK_PLAIN(),
+  side: ['.....ccccc....', '.....cccyx....', '.....ccoyx....', '.....ccoyx....', '.....ccosx....'],
+};
+function TORSO_BACK_PLAIN() { return ['...cccccccc...', '..cccccccccc..', '..coccccccoc..', '..coccccccoc..', '..soCCCCCCos..']; }
+export const OUTFITS = {
+  basic: { front: TORSO, back: TORSO, side: TORSO_SIDE },
+  tee: {
+    front: ['...cccccccc...', '..cccccccccc..', '..soccccccos..', '..soccccccos..', '..soCCCCCCos..'],
+    back: ['...cccccccc...', '..cccccccccc..', '..soccccccos..', '..soccccccos..', '..soCCCCCCos..'],
+    side: ['.....ccccc....', '.....ccccc....', '.....ccosc....', '.....ccosc....', '.....CCosC....'],
+  },
+  nordic: { ...NORDIC, pal: { c: '#2f7fe0', C: '#2568b8', x: '#f094c4' } },
+  nordicPink: { ...NORDIC, front: ['...cxccccxc...', ...NORDIC.front.slice(1)], pal: { c: '#f094c4', C: '#d97aab', x: '#2f7fe0' } },
+  cardigan: { ...CARDIGAN, pal: { c: '#bcbcbc', C: '#a4a4a4', x: '#2f6a2a', y: '#9a9a9a' } },
+  cardiganBeige: { ...CARDIGAN, pal: { c: '#d6c6c0', C: '#bfaea8', x: '#c6a0ec', y: '#a99a94' } },
+  sweater: {
+    front: ['...cccccccc...', '..xccccccccx..', '..coccccccoc..', '..xoccccccox..', '..soxxxxxxos..'],
+    back: ['...cccccccc...', '..xccccccccx..', '..coccccccoc..', '..xoccccccox..', '..soxxxxxxos..'],
+    side: ['.....ccccc....', '.....ccccc....', '.....ccocc....', '.....xxoxx....', '.....ccosc....'],
+    pal: { c: '#2e2e33', C: '#2e2e33', x: '#55555e' },
+  },
+};
+export const OUTFIT_IDS = Object.keys(OUTFITS);
+function bodyFor(outfit) {
+  const o = OUTFITS[outfit] || OUTFITS.basic;
+  return {
+    down: [...HEAD_FRONT, ...o.front, ...LEGS],
+    down2: [...HEAD_FRONT, ...o.front, ...LEGS2],
+    up: [...HEAD_BACK, ...o.back, ...LEGS],
+    up2: [...HEAD_BACK, ...o.back, ...LEGS2],
+    side: [...HEAD_SIDE, ...o.side, ...LEGS_SIDE],
+    side2: [...HEAD_SIDE, ...o.side, ...LEGS_SIDE2],
+    sit: [...HEAD_FRONT, ...o.front, ...SIT_LEGS],
+    sitBack: [...HEAD_BACK, ...o.back, ...EMPTY5],
+  };
+}
 
 // Saç maskeleri: h = saç, * = yalnızca tenin üstüne saç, . = dokunma
 const FULL = '**************';
@@ -118,7 +153,11 @@ export function characterSprites(look) {
     w: '#3a2a22',
     l: shade(skin, -0.45), // kapalı göz
     r: '#e0475e', // dudak
+    x: '#ffffff',
+    y: '#ffffff',
+    ...(OUTFITS[look.outfit]?.pal || {}),
   };
+  const BODY = bodyFor(look.outfit);
   const set = { pal };
   for (const [k, rows] of Object.entries(BODY)) set[k] = sprite(withHair(rows, look.hair, k), pal);
   set.sideL = mirror(set.side);

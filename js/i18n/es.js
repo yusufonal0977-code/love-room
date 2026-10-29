@@ -678,5 +678,14 @@ export default {
  "GOL! ⚽": "¡GOL! ⚽",
  "Partnerin masada değil; bota karşı oynuyorsun 🤖": "Tu pareja no está en la mesa; juegas contra el bot 🤖",
  "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).": "Mueve el ratón/dedo arriba y abajo sobre el campo; toca o pulsa espacio para chutar. Estás a la izquierda (rojo).",
- "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "Mueve el ratón/dedo arriba y abajo sobre el campo; toca o pulsa espacio para chutar. Estás a la derecha (azul)."
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "Mueve el ratón/dedo arriba y abajo sobre el campo; toca o pulsa espacio para chutar. Estás a la derecha (azul).",
+ "Kıyafet modeli": "Atuendo",
+ "Kıyafet rengi (sade ve tişört)": "Color de ropa (básica y camiseta)",
+ "Sade": "Básica",
+ "Tişört": "Camiseta",
+ "Desenli kazak": "Jersey estampado",
+ "Pembe kazak": "Jersey rosa",
+ "Hırka": "Cárdigan",
+ "Bej hırka": "Cárdigan beige",
+ "Siyah kazak": "Jersey negro"
 };
