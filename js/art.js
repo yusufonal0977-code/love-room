@@ -46,6 +46,43 @@ export const DEFAULT_LOOK = { skin: 1, hair: 'short', hairColor: 1, shirt: 0, pa
 export const OUTFIT_IDS = Object.keys(CHAR_DATA.outfits);
 const LINE = '#000000';
 const LEGACY_HAIR = { bun: 'short' };
+// Beden: tasarımda yanağı pembe çizilen modeller kız. Kız erkekten 2 piksel kısa (tasarımcının kız tabanı 29 satır).
+const HEIGHT = { f: 29, m: 31 };
+const BLUSH_AT = { front: [[12, 4], [12, 13]], side: [[12, 10]], back: [] }; // kel kafa koordinatı (satır, sütun)
+const BLUSH = '#ef9090';
+/** Kayıtlı bedeni yoksa eski profiller için tahmin: kız saçı ya da kız kıyafeti → kız. */
+export function bodyOf(look) {
+  if (look?.body === 'f' || look?.body === 'm') return look.body;
+  return ['long', 'bob', 'bowl', 'round'].includes(look?.hair) || ['nordicPink', 'tee', 'cardiganBeige'].includes(look?.outfit) ? 'f' : 'm';
+}
+/** Boyu bacaklardan ayarlar: aynı olan ardışık satırlardan (düz pantolon, bacak arası) biri silinir ya da çoğaltılır;
+ *  böylece çizimdeki şekil bozulmaz, yalnızca bacak kısalır/uzar. Önce düz pantolon satırları, sonra bacak arası. */
+function fitHeight(L, target) {
+  const key = (y) => L.g[y].join('');
+  const runs = () => {
+    const out = [];
+    for (let y = 22; y < L.g.length - 1; y++) {
+      let e = y;
+      while (e + 1 < L.g.length - 1 && key(e + 1) === key(y)) e++;
+      if (L.g[y].includes('P')) out.push([y, e - y + 1]);
+      y = e;
+    }
+    return out;
+  };
+  let guard = 8;
+  while (L.g.length !== target && guard--) {
+    const r = runs();
+    if (!r.length) break;
+    if (L.g.length > target) {
+      const pick = r.find(([, n]) => n >= 2) || null; // en üstteki tekrar eden satır grubu
+      if (!pick) break;
+      L.g.splice(pick[0], 1); L.src.splice(pick[0], 1);
+    } else {
+      const [y] = r[0];
+      L.g.splice(y, 0, L.g[y].slice()); L.src.splice(y, 0, L.src[y].slice());
+    }
+  }
+}
 
 /** Bir görünüm için kod ızgarası: kıyafet + saç, ayak hizasından birleştirilmiş. */
 function layers(look, view) {
@@ -67,13 +104,22 @@ function layers(look, view) {
     if (c === 'h' && g[y][X] === '#') return; // saç kenarı kıyafet çizgisini ezmez
     g[y][X] = c === 'h' ? 'H' : c; src[y][X] = 'h';
   }));
-  return { g, src, outfit, hair, view };
+  const body = bodyOf(look);
+  for (const [y, x] of BLUSH_AT[view]) {
+    const X = x + ox, c = g[y]?.[X];
+    if (c === undefined || c === '#' || c === 'H') continue;
+    if (body === 'f') { if (c === 'S') { g[y][X] = 'B'; src[y][X] = ''; } } // çizimde yanak varsa kendi rengi kalır
+    else { g[y][X] = 'S'; src[y][X] = ''; }
+  }
+  const L = { g, src, outfit, hair, view };
+  fitHeight(L, HEIGHT[body]);
+  return L;
 }
 
 function paint(L, look, mapRow = (r) => r) {
   const skin = SKIN[look.skin] ?? SKIN[0];
   const col = {
-    '#': LINE, S: skin, P: PANTS[look.pants] ?? PANTS[0], C: SHIRT[look.shirt] ?? SHIRT[0], H: HAIR[look.hairColor] ?? HAIR[0],
+    '#': LINE, B: BLUSH, S: skin, P: PANTS[look.pants] ?? PANTS[0], C: SHIRT[look.shirt] ?? SHIRT[0], H: HAIR[look.hairColor] ?? HAIR[0],
   };
   const rows = mapRow(L.g);
   const c = document.createElement('canvas');

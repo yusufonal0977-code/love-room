@@ -195,7 +195,11 @@ export function createGame(opts) {
       it.x = Math.max(8, Math.min(W - 8, d.base.x + ddx));
       it.y = sel.it.c.wall ? Math.max(sel.it.c.h + 2, Math.min(WALL - 4, d.base.y + ddy)) : Math.max(WALL + 8, Math.min(H - 2, d.base.y + ddy));
     } else {
-      (DECOR.moved[me.scene] ??= {})[sel.id] = { dx: Math.max(-160, Math.min(160, d.base.dx + ddx)), dy: Math.max(-60, Math.min(60, d.base.dy + ddy)) };
+      const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      const o = sel.p.frame?.outer; // tablo duvardan çıkmasın
+      (DECOR.moved[me.scene] ??= {})[sel.id] = o
+        ? { dx: cl(d.base.dx + ddx, 2 - o[0], W - 2 - o[2] - o[0]), dy: cl(d.base.dy + ddy, 2 - o[1], WALL - 2 - o[3] - o[1]) }
+        : { dx: cl(d.base.dx + ddx, -160, 160), dy: cl(d.base.dy + ddy, -60, 60) };
     }
     bump();
   }
@@ -519,14 +523,20 @@ export function createGame(opts) {
     let p = pictures.get(key);
     if (!src) { p?.el.remove(); pictures.delete(key); return; }
     if (!p) { p = { el: document.createElement('img') }; p.el.className = 'pic'; p.el.alt = ''; overlay.prepend(p.el); pictures.set(key, p); }
-    Object.assign(p, { scene, rect });
+    Object.assign(p, { scene, rect, key, at: '' });
     if (p.el.getAttribute('src') !== src) p.el.src = src;
-    const [x, y, w, hh] = rect;
-    Object.assign(p.el.style, { left: (x / W) * 100 + '%', top: (y / H) * 100 + '%', width: (w / W) * 100 + '%', height: (hh / H) * 100 + '%' });
+    placePicture(p);
+  }
+  function placePicture(p) {
+    const o = p.key.startsWith('frame:') ? DECOR.moved[p.scene]?.[p.key.slice(6)] : null;
+    const [x, y, w, hh] = p.rect, X = x + (o?.dx || 0), Y = y + (o?.dy || 0), at = X + ',' + Y;
+    if (p.at === at) return;
+    p.at = at;
+    Object.assign(p.el.style, { left: (X / W) * 100 + '%', top: (Y / H) * 100 + '%', width: (w / W) * 100 + '%', height: (hh / H) * 100 + '%' });
   }
   function updatePictures(night) {
     const f = `brightness(${(1 - night * 0.45).toFixed(2)})`;
-    pictures.forEach((p) => { p.el.style.display = p.scene === me.scene && !fadeTo ? '' : 'none'; p.el.style.filter = f; });
+    pictures.forEach((p) => { p.el.style.display = p.scene === me.scene && !fadeTo ? '' : 'none'; p.el.style.filter = f; placePicture(p); });
   }
 
   function fx(emoji, x, y) {

@@ -5,7 +5,7 @@ import { createGame } from './game.js';
 import { createCall } from './call.js';
 import { DEFAULT_STATE, SCENES, W, H } from './scenes.js';
 import { APP_URL } from './config.js';
-import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
+import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
 import { $, h, icon, toast, openSheet, closeSheet, esc } from './ui.js';
 import { createTV } from './features/tv.js';
 import { createSpotify, handleSpotifyRedirect } from './features/spotify.js';
@@ -569,6 +569,8 @@ async function enterWorld(rid, fresh = false) {
       });
     };
     opts('edSide', 'Güneş mi ay mı?', [{ label: '☀️ Güneş', value: 'sun' }, { label: '🌙 Ay', value: 'moon' }], () => side, (v) => (side = v));
+    look.body = bodyOf(look);
+    opts('edBody', 'Beden', [{ label: 'Kız', value: 'f' }, { label: 'Erkek', value: 'm' }], () => look.body, (v) => (look.body = v));
     opts('edHair', 'Saç', HAIR_STYLES.map((x) => ({ label: { short: 'Kısa', spiky: 'Kirpi', long: 'Uzun', bob: 'Küt', bowl: 'Kâse', round: 'Kabarık', none: 'Saçsız' }[x], value: x })), () => look.hair, (v) => (look.hair = v));
     opts('edHairColor', 'Saç rengi', HAIR, () => look.hairColor, (v) => (look.hairColor = v), true);
     opts('edSkin', 'Ten', SKIN, () => look.skin, (v) => (look.skin = v), true);

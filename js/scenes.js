@@ -112,7 +112,6 @@ function makeScene(def) {
     const g = bg.getContext('2d');
     g.clearRect(0, 0, W, H);
     def.draw(g, { ...def.colors, ...DECOR.paint[def.id] });
-    (def.frames || []).forEach((f) => frame(g, ...f.outer, (x, y, w, h) => def.frameArt[f.id](g, x, y, w, h)));
   };
   sc.rebuild();
   return sc;
@@ -287,7 +286,7 @@ const somine = makeScene({
   ],
   seats: [{ x: 163, y: 80, group: 'armchair', prop: 'armchair' }],
   frames: [
-    { id: 'somine1', x: 23, y: 15, w: 20, h: 14, outer: [20, 12, 26, 20] },
+    { id: 'somine1', x: 41, y: 15, w: 20, h: 14, outer: [38, 12, 26, 20] },
     { id: 'somine2', x: 151, y: 13, w: 18, h: 16, outer: [148, 10, 24, 22] },
   ],
   frameArt: {
@@ -467,7 +466,13 @@ export function layout(sc) {
   props.forEach((p) => p.block && blocks.push(shift(p.block, p.dx, p.dy)));
   items.forEach((it) => { const b = it.c.block; if (b && !it.c.wall) blocks.push([it.x + b[0], it.y + b[1], b[2], b[3]]); });
   const spots = sc.spots.map((s) => { const o = off(s.prop); return { ...s, x: s.x + o.dx, y: s.y + o.dy, hit: s.hit && shift(s.hit, o.dx, o.dy) }; });
-  (sc.frames || []).forEach((f) => spots.push({ id: 'frame', frame: f.id, x: f.x + f.w / 2, y: 60, hit: f.outer, label: () => (DECOR.frames[f.id] ? 'Fotoğrafa bak' : 'Fotoğraf koy') }));
+  (sc.frames || []).forEach((f) => {
+    const o = off(f.id);
+    // Duvar eşyası: en arkada çizilir, dekor modunda duvar üzerinde sürüklenir
+    props.push({ id: f.id, movable: true, wall: true, frame: f, dx: o.dx, dy: o.dy, sortY: -1000, hit: shift(f.outer, o.dx, o.dy),
+      draw: (g) => frame(g, ...f.outer, (x, y, w, h) => sc.frameArt[f.id](g, x, y, w, h)) });
+    spots.push({ id: 'frame', frame: f.id, x: f.x + f.w / 2 + o.dx, y: 60, hit: shift(f.outer, o.dx, o.dy), label: () => (DECOR.frames[f.id] ? 'Fotoğrafa bak' : 'Fotoğraf koy') });
+  });
   const seats = sc.seats.map((s) => { const o = off(s.prop); return { ...s, x: s.x + o.dx, y: s.y + o.dy }; });
   items.forEach((it) => {
     if (!it.c.seat) return;

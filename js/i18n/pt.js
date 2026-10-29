@@ -690,5 +690,8 @@ export default {
  "Siyah kazak": "Suéter preto",
  "Kirpi": "Espetado",
  "Kâse": "Tigela",
- "Kabarık": "Volumoso"
+ "Kabarık": "Volumoso",
+ "Beden": "Corpo",
+ "Kız": "Menina",
+ "Erkek": "Menino"
 };

@@ -690,5 +690,8 @@ export default {
  "Siyah kazak": "كنزة سوداء",
  "Kirpi": "شائك",
  "Kâse": "قصة الوعاء",
- "Kabarık": "منفوش"
+ "Kabarık": "منفوش",
+ "Beden": "الجسم",
+ "Kız": "فتاة",
+ "Erkek": "فتى"
 };

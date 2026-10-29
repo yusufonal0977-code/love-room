@@ -690,5 +690,8 @@ export default {
  "Siyah kazak": "Schwarzer Pulli",
  "Kirpi": "Stachelig",
  "Kâse": "Topfschnitt",
- "Kabarık": "Fluffig"
+ "Kabarık": "Fluffig",
+ "Beden": "Körper",
+ "Kız": "Mädchen",
+ "Erkek": "Junge"
 };

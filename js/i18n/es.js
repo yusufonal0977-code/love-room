@@ -690,5 +690,8 @@ export default {
  "Siyah kazak": "Jersey negro",
  "Kirpi": "De punta",
  "Kâse": "Tazón",
- "Kabarık": "Esponjoso"
+ "Kabarık": "Esponjoso",
+ "Beden": "Cuerpo",
+ "Kız": "Chica",
+ "Erkek": "Chico"
 };

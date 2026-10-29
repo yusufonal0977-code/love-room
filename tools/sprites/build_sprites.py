@@ -97,7 +97,11 @@ def build_outfit(rows, pal, basic=False):
         res.append(s)
     return {'rows': res, 'ax': anchor(rows)}, lp
 
-def build_hair(rows, pal, view):
+# Kapalı küçük cepler (ne ana saça ne yüze bağlı): çizimde kâkül çizgisinin altında kalanlar yüzdür.
+# Tasarımla tek tek karşılaştırıldı (tools/sprites/pockets.py): bu görünümlerdeki cepler ten, diğerleri saç.
+SKIN_POCKETS = {('spiky', 'front'), ('round', 'front'), ('bob', 'side'), ('round', 'side')}
+
+def build_hair(rows, pal, view, hid=''):
     bald = BALD[view][0]
     off = anchor(rows) - anchor(bald)  # saç figürü sütunu = kel sütun + off
     bout = outside(bald)
@@ -109,7 +113,9 @@ def build_hair(rows, pal, view):
     for comp in components(rows, out):
         head_part = [(y, x) for y, x in comp if y < 13]  # boyun üstü: kafa silüeti karşılaştırması
         reaches_body = any(y > HEAD_ROWS for y, _ in comp)
-        if any(bald_outside(y, x) for y, x in head_part) or not reaches_body:
+        if any(bald_outside(y, x) for y, x in head_part):
+            hair.update(comp)
+        elif not reaches_body and (hid, view) not in SKIN_POCKETS:
             hair.update(comp)
     h, w = len(rows), len(rows[0])
     isin = lambda y, x: 0 <= y < h and 0 <= x < w
@@ -153,7 +159,7 @@ data['outfits'] = {'basic': {'views': entry, 'pal': pal}, **data['outfits']}
 for hid, views in HAIRS.items():
     entry, blush = {}, None
     for v, (rows, p) in views.items():
-        entry[v], blush = build_hair(rows, p, v)
+        entry[v], blush = build_hair(rows, p, v, hid)
     data['hairs'][hid] = {'views': entry, 'blush': blush}
 
 js = '// Otomatik üretildi: tools/sprites/build_sprites.py (tasarımcı çizimlerinden). Elle düzenlemeyin.\n'

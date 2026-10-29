@@ -690,5 +690,8 @@ export default {
  "Siyah kazak": "Black sweater",
  "Kirpi": "Spiky",
  "Kâse": "Bowl cut",
- "Kabarık": "Fluffy"
+ "Kabarık": "Fluffy",
+ "Beden": "Body",
+ "Kız": "Girl",
+ "Erkek": "Boy"
 };
