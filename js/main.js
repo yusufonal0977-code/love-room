@@ -1,4 +1,4 @@
-// Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
+// Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
 import { firstUser, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
@@ -475,7 +475,7 @@ async function enterWorld(rid, fresh = false) {
       else throw e;
     }
     localStorage.clear(); sessionStorage.clear();
-    alert('Tüm verilerin silindi. Love Room’u denediğin için teşekkürler 💛');
+    alert('Tüm verilerin silindi. Get Love Room’u denediğin için teşekkürler 💛');
     location.href = location.pathname;
   }
   document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));

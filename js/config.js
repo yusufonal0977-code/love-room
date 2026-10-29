@@ -1,4 +1,4 @@
-// Love Room ayarları. Buradaki değerler tarayıcıda çalıştığı için gizli değildir:
+// Get Love Room ayarları. Buradaki değerler tarayıcıda çalıştığı için gizli değildir:
 // Firebase'in güvenliği database.rules.json'da; TURN ve Spotify bilgileri istemci kullanımı için tasarlanmıştır.
 export const firebaseConfig = {
   apiKey: 'AIzaSyCrFiwx-bcYCBKXWHYoK0EQvnmxr3teUdU',

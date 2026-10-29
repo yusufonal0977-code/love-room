@@ -3,18 +3,65 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Love Room</title>
-<meta name="description" content="Uzaktaki çiftler için piksel bir ev: aynı odada yürüyün, konuşun, birlikte vakit geçirin.">
+<title>Get Love Room · Uzak mesafe ilişkiler için ortak sanal ev</title>
+<meta name="description" content="Get Love Room, uzak mesafe ilişkisi yaşayan çiftler için ücretsiz, piksel bir ortak ev. Aynı odada yürüyün, sesli ve görüntülü konuşun, birlikte film izleyin, aynı şarkıyı dinleyin, anılarınızı biriktirin.">
+<meta name="keywords" content="uzak mesafe ilişki, uzak ilişki uygulaması, çiftler için uygulama, sevgiliyle birlikte film izleme, sanal ev, long distance relationship, Get Love Room">
+<meta name="author" content="Eclip Software &amp; Entertainment Company">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://getloveroom.com/">
 <meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Get Love Room">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="assets/loveroom-logo.webp">
-<meta property="og:title" content="Love Room">
-<meta property="og:description" content="Kilometreler arada, aynı odadayız.">
-<meta property="og:image" content="assets/loveroom-logo.webp">
-<link rel="icon" href="assets/loveroom-logo.webp">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<!-- Paylaşım önizlemesi (WhatsApp, Instagram, X, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Get Love Room">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:url" content="https://getloveroom.com/">
+<meta property="og:title" content="Get Love Room · Kilometreler arada, aynı odadayız">
+<meta property="og:description" content="Uzaktaki çiftler için ortak piksel ev: birlikte film izleyin, müzik dinleyin, konuşun, anılarınızı biriktirin. Ücretsiz.">
+<meta property="og:image" content="https://getloveroom.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Get Love Room logosu: güneş ve ay">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Get Love Room · Kilometreler arada, aynı odadayız">
+<meta name="twitter:description" content="Uzaktaki çiftler için ortak piksel ev. Birlikte film, müzik, sohbet.">
+<meta name="twitter:image" content="https://getloveroom.com/assets/og-image.png">
+<!-- Google için yapılandırılmış veri -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://getloveroom.com/#app",
+      "name": "Get Love Room",
+      "url": "https://getloveroom.com/",
+      "description": "Uzak mesafe ilişkisi yaşayan çiftler için ortak piksel ev: sesli/görüntülü sohbet, birlikte film izleme, ortak müzik, fotoğraf kabini, günlük, mini oyunlar.",
+      "applicationCategory": "SocialNetworkingApplication",
+      "operatingSystem": "Web, Android, iOS, Windows, macOS",
+      "inLanguage": "tr",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TRY" },
+      "image": "https://getloveroom.com/assets/og-image.png",
+      "publisher": { "@id": "https://getloveroom.com/#org" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://getloveroom.com/#org",
+      "name": "Eclip Software & Entertainment Company",
+      "url": "https://getloveroom.com/",
+      "logo": "https://getloveroom.com/assets/icon-512.png",
+      "email": "eclipsoftware.dev@gmail.com"
+    }
+  ]
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -27,8 +74,8 @@
 
 <!-- Giriş -->
 <section id="gate" class="screen" hidden>
-  <img class="logo" src="assets/loveroom-logo.webp" alt="Love Room">
-  <h1>Love <span>Room</span></h1>
+  <img class="logo" src="assets/loveroom-logo.webp" alt="Get Love Room">
+  <h1><small class="get">Get</small> Love <span>Room</span></h1>
   <p id="gateNote">Kilometreler arada, aynı odadayız.</p>
   <button id="googleBtn" class="primary"><span class="g">G</span> Google ile gir</button>
   <div class="or">ya da</div>
@@ -38,6 +85,19 @@
   </div>
   <p class="small" id="gateErr"></p>
   <p class="small legalnote">Giriş yaptıktan sonra Kullanım Koşulları ve Gizlilik Politikası'nı onaylamanız istenecek.</p>
+  <details class="pitch">
+    <summary>Get Love Room nedir?</summary>
+    <h2>Uzak mesafe ilişkiler için ortak sanal ev</h2>
+    <p>Kilometreler arada olsa da aynı odadasınız. Biriniz evi kurar, diğerine davet linki gönderir; ikinizin küçük piksel evi hazır.</p>
+    <ul>
+      <li><b>Birlikte film izleyin:</b> YouTube ya da video linki ikinizde aynı saniyede oynar, kanepede yan yana oturursunuz.</li>
+      <li><b>Konuşun:</b> sesli ve görüntülü sohbet evin içinde hep açık.</li>
+      <li><b>Aynı şarkıyı dinleyin:</b> Spotify listeleriniz ikinizde aynı anda çalar.</li>
+      <li><b>Anı biriktirin:</b> fotoğraf kabini, ortak albüm, günlük, geleceğe mektup, ilişki saati.</li>
+      <li><b>Birlikte vakit geçirin:</b> çizim, XOX, hafıza, langırt; ortak kedi ve çiçek.</li>
+    </ul>
+    <p>Ücretsiz, reklamsız; telefonda ve bilgisayarda tarayıcıdan çalışır.</p>
+  </details>
   <nav class="footlinks"><a href="#hakkimizda">Hakkımızda</a><a href="#gizlilik">Gizlilik</a><a href="#kosullar">Koşullar</a><a href="#iletisim">İletişim</a></nav>
 </section>
 
@@ -45,7 +105,7 @@
 <section id="consent" class="screen" hidden>
   <img class="logo sm" src="assets/loveroom-logo.webp" alt="">
   <h2>Eve girmeden önce <span>küçük bir anlaşma</span></h2>
-  <p>Love Room'da paylaştıkların ikinize ait. Nasıl koruduğumuzu okuyup onaylaman gerekiyor.</p>
+  <p>Get Love Room'da paylaştıkların ikinize ait. Nasıl koruduğumuzu okuyup onaylaman gerekiyor.</p>
   <div class="checks">
     <label><input type="checkbox" id="cTerms"> <span><a href="#kosullar">Kullanım Koşulları</a>'nı ve <a href="#gizlilik">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.</span></label>
     <label><input type="checkbox" id="cKvkk"> <span><a href="#kvkk">KVKK Aydınlatma Metni</a>'ni okudum; fotoğraf, günlük gibi verilerimin yurt dışındaki sunucularda (Google Firebase, AB) saklanmasına açık rıza veriyorum.</span></label>

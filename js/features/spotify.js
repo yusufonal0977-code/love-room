@@ -98,7 +98,7 @@ export function createSpotify(ctx) {
   function loadSDK() {
     if (isMobile || sdkPlayer || !connected()) return;
     window.onSpotifyWebPlaybackSDKReady = () => {
-      sdkPlayer = new window.Spotify.Player({ name: 'Love Room ☀️🌙', getOAuthToken: (cb) => token().then((t) => t && cb(t)), volume: 0.7 });
+      sdkPlayer = new window.Spotify.Player({ name: 'Get Love Room ☀️🌙', getOAuthToken: (cb) => token().then((t) => t && cb(t)), volume: 0.7 });
       sdkPlayer.addListener('ready', ({ device_id }) => { sdkDevice = device_id; if (state?.playing && state.by !== uid) playHere(state); render(); });
       sdkPlayer.addListener('not_ready', () => { sdkDevice = null; });
       sdkPlayer.addListener('account_error', () => { err = explain({ reason: 'PREMIUM_REQUIRED' }); sdkDevice = null; render(); });
@@ -217,7 +217,7 @@ export function createSpotify(ctx) {
   }
   async function makeShared() {
     try {
-      const p = await api(`/users/${me.id}/playlists`, { method: 'POST', body: { name: 'Love Room ☀️🌙', collaborative: true, public: false, description: 'İkimizin ortak listesi' } });
+      const p = await api(`/users/${me.id}/playlists`, { method: 'POST', body: { name: 'Get Love Room ☀️🌙', collaborative: true, public: false, description: 'İkimizin ortak listesi' } });
       await navigator.clipboard?.writeText(p.external_urls.spotify).catch(() => {});
       toast('Ortak liste oluşturuldu, linki kopyalandı. Partnerine gönder: takip edince ikiniz de şarkı ekleyebilirsiniz.', 6000);
       me = null; meTried = false; loadMe();

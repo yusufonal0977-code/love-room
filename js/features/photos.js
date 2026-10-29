@@ -197,7 +197,7 @@ export function createPhotos(ctx) {
     g.font = '700 26px "Pixelify Sans", monospace'; g.fillStyle = '#ff4f7b';
     g.fillText(mode === 'kid' ? 'Biz küçükken' : mode === 'then' ? 'Aynı anı, iki kalp' : fmtDate(now()), 380, 46);
     g.font = '18px "Pixelify Sans", monospace'; g.fillStyle = '#b8ad8c';
-    g.fillText('Love Room', 380, 506);
+    g.fillText('Get Love Room', 380, 506);
     return c.toDataURL('image/jpeg', 0.85);
   }
   async function saveStrip() {

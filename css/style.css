@@ -1,4 +1,4 @@
-/* Love Room — renkler logolardan: gece siyahı, güneş sarısı, ay kreması */
+/* Get Love Room — renkler logolardan: gece siyahı, güneş sarısı, ay kreması */
 :root {
   --bg: #000; --panel: #15120b; --line: #3a3320; --ink: #fff6d8; --dim: #b8ad8c;
   --sun: #fcdf4b; --sun2: #f5cf2e; --moon: #fff6d8; --rose: #ff6f8f; --ok: #9ee6a8;
@@ -317,3 +317,16 @@ button.link.danger { background: none; color: #ff8fab; }
 #consent { overflow: auto; justify-content: flex-start; padding-top: max(24px, env(safe-area-inset-top)); }
 #consent > :first-child { margin-top: auto; } #consent > :last-child { margin-bottom: auto; }
 body.cinema .prompt { display: none; }
+
+/* Marka ve tanıtım */
+h1 .get { font-size: .5em; color: var(--dim); letter-spacing: 2px; vertical-align: middle; margin-right: 2px; }
+.pitch { max-width: 420px; text-align: left; color: var(--dim); font-size: 13px; line-height: 1.5; }
+.pitch summary { cursor: pointer; text-align: center; color: var(--sun); list-style: none; }
+.pitch summary::-webkit-details-marker { display: none; }
+.pitch h2 { font-size: 16px; color: var(--ink); margin: 10px 0 6px; }
+.pitch ul { padding-left: 18px; margin: 6px 0; }
+.pitch li { margin: 3px 0; }
+.pitch b { color: var(--ink); }
+#gate { overflow: auto; justify-content: flex-start; }
+#gate > :first-child { margin-top: auto; }
+#gate > :last-child { margin-bottom: auto; }

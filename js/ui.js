@@ -134,7 +134,7 @@ export async function saveImage(dataUrl, name) {
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], name, { type: blob.type || 'image/jpeg' });
     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'Love Room' });
+      await navigator.share({ files: [file], title: 'Get Love Room' });
       return;
     }
   } catch (e) { if (e?.name === 'AbortError') return; }

@@ -12,9 +12,9 @@ export const LEGAL = [
     id: 'hakkimizda',
     title: 'Hakkımızda',
     html: `
-<p><b>Love Room</b>, aralarında kilometreler olan çiftler için küçük, piksel bir ev. Aynı odada yürüyün, kanepede yan yana oturup film izleyin, aynı şarkıyı dinleyin, balkonda iki farklı gökyüzüne birlikte bakın.</p>
-<p>Love Room'u <b>${COMPANY}</b> yapıyor. Eclip küçük bir ekip; büyük bir şirket değil, sevdiği işi yapan bir avuç insan.</p>
-<p>Küçük bir itiraf: bu evi kuran geliştirici şu an <b>bekâr</b>. Yani Love Room'daki her kanepe, her kupa, her ortak çiçek başkaları için kuruldu. Bir gün kendi Love Room'una taşınırsa kediyi ona da bakmaya ikna edeceğiz; o zamana kadar sizin eviniz bizim en sevdiğimiz ev. 🙂</p>
+<p><b>Get Love Room</b>, aralarında kilometreler olan çiftler için küçük, piksel bir ev. Aynı odada yürüyün, kanepede yan yana oturup film izleyin, aynı şarkıyı dinleyin, balkonda iki farklı gökyüzüne birlikte bakın.</p>
+<p>Get Love Room'u <b>${COMPANY}</b> yapıyor. Eclip küçük bir ekip; büyük bir şirket değil, sevdiği işi yapan bir avuç insan.</p>
+<p>Küçük bir itiraf: bu evi kuran geliştirici şu an <b>bekâr</b>. Yani Get Love Room'daki her kanepe, her kupa, her ortak çiçek başkaları için kuruldu. Bir gün kendi Get Love Room'una taşınırsa kediyi ona da bakmaya ikna edeceğiz; o zamana kadar sizin eviniz bizim en sevdiğimiz ev. 🙂</p>
 <p>Nasıl çalıştığımızı kısaca:</p>
 <ul>
   <li>Reklam yok, verilerinizi satmıyoruz, sizi takip eden analiz araçları kullanmıyoruz.</li>
@@ -38,7 +38,7 @@ export const LEGAL = [
     html: `
 <p class="muted">Son güncelleme: ${LEGAL_DATE}</p>
 <h4>1. Taraflar ve kabul</h4>
-<p>Bu koşullar, ${COMPANY} ("Eclip", "biz") tarafından sunulan Love Room uygulamasını ("Hizmet") kullanan kişi ("siz") ile aramızdaki kuralları belirler. Hizmeti kullanarak ve giriş sırasında onay kutusunu işaretleyerek bu koşulları kabul etmiş olursunuz.</p>
+<p>Bu koşullar, ${COMPANY} ("Eclip", "biz") tarafından sunulan Get Love Room uygulamasını ("Hizmet") kullanan kişi ("siz") ile aramızdaki kuralları belirler. Hizmeti kullanarak ve giriş sırasında onay kutusunu işaretleyerek bu koşulları kabul etmiş olursunuz.</p>
 <h4>2. Kimler kullanabilir</h4>
 <p>Hizmeti kullanmak için <b>18 yaşını doldurmuş</b> olmanız gerekir. Bir ev en fazla iki kişiye aittir; evi kuran kişi davet linkiyle tek bir partner davet edebilir.</p>
 <h4>3. Hesabınız</h4>
@@ -56,7 +56,7 @@ export const LEGAL = [
 <p>TV'ye eklenen link, site ya da ekran paylaşımı iki kullanıcı arasında oynatılır; bu içerikleri biz barındırmayız, seçmeyiz ve denetlemeyiz. Açtığınız sitelerin ve paylaştığınız içeriklerin hukuka ve telif haklarına uygun olmasından <b>siz sorumlusunuz</b>. YouTube, Spotify ve diğer hizmetleri kullanırken onların kendi koşulları da geçerlidir (Spotify ile birlikte dinleme için Spotify Premium gerekebilir).</p>
 <p>Hak sahibiyseniz ve Hizmet üzerinden hakkınızın ihlal edildiğini düşünüyorsanız ${mail} adresine yazın; gerekli adımları atarız.</p>
 <h4>6. Hizmetin durumu</h4>
-<p>Love Room ücretsizdir ve geliştirilmeye devam etmektedir. Hizmeti "olduğu gibi" sunuyoruz; kesintisiz ya da hatasız çalışacağını garanti etmiyoruz. Özellikleri değiştirebilir, ekleyebilir ya da kaldırabiliriz. Ses/görüntü kalitesi internet bağlantınıza bağlıdır.</p>
+<p>Get Love Room ücretsizdir ve geliştirilmeye devam etmektedir. Hizmeti "olduğu gibi" sunuyoruz; kesintisiz ya da hatasız çalışacağını garanti etmiyoruz. Özellikleri değiştirebilir, ekleyebilir ya da kaldırabiliriz. Ses/görüntü kalitesi internet bağlantınıza bağlıdır.</p>
 <h4>7. Sorumluluğun sınırı</h4>
 <p>Kanunun izin verdiği ölçüde; dolaylı zararlardan, veri kaybından, üçüncü taraf hizmetlerden ve kullanıcıların paylaştığı içeriklerden sorumlu değiliz. Önemli anılarınızın bir kopyasını (Albüm → Galeriye kaydet) cihazınızda saklamanızı öneririz.</p>
 <h4>8. Sona erme</h4>
@@ -126,7 +126,7 @@ export const LEGAL = [
     id: 'cerez',
     title: 'Çerezler ve Yerel Depolama',
     html: `
-<p>Love Room reklam ya da takip çerezi kullanmaz. Tarayıcınızda yalnızca çalışmak için gereken bilgileri saklarız:</p>
+<p>Get Love Room reklam ya da takip çerezi kullanmaz. Tarayıcınızda yalnızca çalışmak için gereken bilgileri saklarız:</p>
 <ul>
   <li><b>Oturum:</b> Firebase giriş bilgisi (tekrar giriş yapmamanız için).</li>
   <li><b>Tercihler:</b> görünüm (yakın/tüm oda), gezilen odalar, son açılan TV linkleri.</li>
