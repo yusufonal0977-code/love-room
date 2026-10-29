@@ -36,32 +36,64 @@ export const SKIN = ['#ffe0c7', '#f1c09a', '#c98a5e', '#8a5638'];
 export const HAIR = ['#2b1d16', '#6b3e22', '#c8742c', '#f2c14e', '#d9475a', '#f4efe6'];
 export const SHIRT = ['#ff7a59', '#3fb7a4', '#5b8def', '#ffc93c', '#ff5d8f', '#2e2e3a'];
 export const PANTS = ['#3b4a6b', '#2e2e3a', '#7a5a46'];
-export const HAIR_STYLES = ['short', 'long', 'bun'];
+export const HAIR_STYLES = ['short', 'long', 'bob', 'bun', 'none'];
 
 export const DEFAULT_LOOK = { skin: 1, hair: 'short', hairColor: 1, shirt: 0, pants: 0 };
 
-// 12×18 karakter kareleri (h saç, s ten, e göz, b yanak, c/C kıyafet, p pantolon, w ayakkabı)
+// 14×21 tombul kafalı karakter (çizilmiş modele göre). s ten, e göz, b yanak, m ağız, o iç çizgi,
+// c/C kıyafet, p pantolon, w ayakkabı. Saç ayrı maskeyle eklenir.
+const HEAD_FRONT = ['....ssssss....', '..ssssssssss..', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.sseesssseess.', '.ssbessssebss.', '..ssssmmssss..', '...ssssssss...', '.....ssss.....'];
+const HEAD_BACK = HEAD_FRONT.map((r, y) => (y >= 6 && y <= 8 ? r.replace(/[ebm]/g, 's') : r));
+const HEAD_SIDE = ['....ssssss....', '..ssssssssss..', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.sssssssssees.', '.sssssssssbes.', '..ssssssssss..', '...ssssssss...', '......sss.....'];
+const TORSO = ['...cccccccc...', '..cccccccccc..', '..coccccccoc..', '..coccccccoc..', '..soCCCCCCos..'];
+const TORSO_SIDE = ['.....ccccc....', '.....ccccc....', '.....ccocc....', '.....ccocc....', '.....ccosc....'];
+const LEGS = ['....pppppp....', '....pppppp....', '....ppoopp....', '....ppoopp....', '....wwooww....'];
+const LEGS2 = ['....pppppp....', '....pppppp....', '....ppoopp....', '....wwoopp....', '........ww....'];
+const LEGS_SIDE = ['.....ppppp....', '.....ppppp....', '.....ppppp....', '.....ppppp....', '.....wwwww....'];
+const LEGS_SIDE2 = ['.....ppppp....', '....pppppp....', '....pp...pp...', '....pp...pp...', '...ww....ww...'];
+const SIT_LEGS = ['...pppppppp...', '...pppppppp...', '...ww....ww...', '..............', '..............'];
+const EMPTY5 = Array(5).fill('..............');
 const BODY = {
-  down: ['....hhhh....', '..hhhhhhhh..', '.hhhhhhhhhh.', '.hhsssssshh.', '.hssssssssh.', '.hsessssesh.', '..ssssssss..', '..sbssssbs..', '...ssssss...', '..cccccccc..', '.sccccccccs.', '.sccccccccs.', '.sCccccccCs.', '..CCCCCCCC..', '..pppppppp..', '..ppp..ppp..', '..ppp..ppp..', '..www..www..'],
-  down2: ['....hhhh....', '..hhhhhhhh..', '.hhhhhhhhhh.', '.hhsssssshh.', '.hssssssssh.', '.hsessssesh.', '..ssssssss..', '..sbssssbs..', '...ssssss...', '..cccccccc..', '.sccccccccs.', '.sccccccccs.', '.sCccccccCs.', '..CCCCCCCC..', '..pppppppp..', '...pp..ppp..', '...pp..ppp..', '...ww..www..'],
-  up: ['....hhhh....', '..hhhhhhhh..', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '..hhhhhhhh..', '..shhhhhhs..', '...ssssss...', '..cccccccc..', '.sccccccccs.', '.sccccccccs.', '.sCccccccCs.', '..CCCCCCCC..', '..pppppppp..', '..ppp..ppp..', '..ppp..ppp..', '..www..www..'],
-  up2: ['....hhhh....', '..hhhhhhhh..', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '..hhhhhhhh..', '..shhhhhhs..', '...ssssss...', '..cccccccc..', '.sccccccccs.', '.sccccccccs.', '.sCccccccCs.', '..CCCCCCCC..', '..pppppppp..', '..ppp..pp...', '..ppp..pp...', '..www..ww...'],
-  side: ['...hhhhh....', '..hhhhhhhh..', '.hhhhhhhhh..', '.hhhhhssss..', '.hhhhsssss..', '.hhhhssses..', '..hhhssssss.', '..hhsssbs...', '...sssss....', '...ccccc....', '..ccccccc...', '..ccsccccc..', '..ccsccccc..', '..CCCCCCC...', '...ppppp....', '...pp.pp....', '..pp...pp...', '..ww...ww...'],
-  side2: ['...hhhhh....', '..hhhhhhhh..', '.hhhhhhhhh..', '.hhhhhssss..', '.hhhhsssss..', '.hhhhssses..', '..hhhssssss.', '..hhsssbs...', '...sssss....', '...ccccc....', '..ccccccc...', '..cccsccc...', '..cccsccc...', '..CCCCCCC...', '...ppppp....', '....ppp.....', '....pp......', '....ww......'],
-  sit: ['....hhhh....', '..hhhhhhhh..', '.hhhhhhhhhh.', '.hhsssssshh.', '.hssssssssh.', '.hsessssesh.', '..ssssssss..', '..sbssssbs..', '...ssssss...', '..cccccccc..', '.sccccccccs.', '.sccccccccs.', '.sCccccccCs.', '.pppppppppp.', '.pppppppppp.', '..ww....ww..', '............', '............'],
-  sitBack: ['....hhhh....', '..hhhhhhhh..', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '.hhhhhhhhhh.', '..hhhhhhhh..', '..shhhhhhs..', '...ssssss...', '..cccccccc..', '.sccccccccs.', '.sccccccccs.', '.sCccccccCs.', '..CCCCCCCC..', '............', '............', '............', '............'],
+  down: [...HEAD_FRONT, ...TORSO, ...LEGS],
+  down2: [...HEAD_FRONT, ...TORSO, ...LEGS2],
+  up: [...HEAD_BACK, ...TORSO, ...LEGS],
+  up2: [...HEAD_BACK, ...TORSO, ...LEGS2],
+  side: [...HEAD_SIDE, ...TORSO_SIDE, ...LEGS_SIDE],
+  side2: [...HEAD_SIDE, ...TORSO_SIDE, ...LEGS_SIDE2],
+  sit: [...HEAD_FRONT, ...TORSO, ...SIT_LEGS],
+  sitBack: [...HEAD_BACK, ...TORSO, ...EMPTY5],
 };
 
+// Saç maskeleri: h = saç, * = yalnızca tenin üstüne saç, . = dokunma
+const FULL = '**************';
+const HAIR_MASKS = {
+  short: {
+    front: ['....hhhhhh....', '..hhhhhhhhhh..', FULL, FULL, '.hhh.hhhh.hhh.', '.h..........h.'],
+    back: Array(9).fill(FULL),
+    side: [FULL, FULL, FULL, FULL, '**********....', '******........', '*****.........', '****..........', '***...........'],
+  },
+  long: {
+    front: [FULL, FULL, FULL, FULL, '.hh........hh.', ...Array(5).fill('hhh........hhh'), ...Array(7).fill('hh..........hh')],
+    back: [FULL, FULL, ...Array(15).fill('hhhhhhhhhhhhhh')],
+    side: [FULL, FULL, FULL, FULL, FULL, ...Array(12).fill('hhhhh*........')],
+  },
+  bob: {
+    front: [FULL, FULL, FULL, FULL, '.hhhhhhhhhhhh.', ...Array(4).fill('hhh........hhh'), '.hhh......hhh.'],
+    back: [FULL, FULL, ...Array(8).fill('hhhhhhhhhhhhhh'), '.hhhhhhhhhhhh.'],
+    side: [FULL, FULL, FULL, FULL, FULL, ...Array(4).fill('hhhhhhhh......'), '.hhhhhhh......', '.hhhhhh.......'],
+  },
+};
+HAIR_MASKS.bun = HAIR_MASKS.short;
+
 function withHair(rows, style, key) {
-  const back = key === 'up' || key === 'up2' || key === 'sitBack';
-  let r = rows.slice();
-  if (style === 'long') {
-    // Omuzlara inen saç: yanlara şerit
-    r = r.map((row, y) => (y >= 3 && y <= 12 && !key.startsWith('side') ? 'h' + row.slice(1, 11) + 'h' : row));
-    if (key.startsWith('side')) r = r.map((row, y) => (y >= 6 && y <= 11 ? 'hh' + row.slice(2) : row));
-    if (back) r = r.map((row, y) => (y >= 7 && y <= 11 ? '.' + 'h'.repeat(10) + '.' : row));
-  }
-  if (style === 'bun') r = ['.....hh.....', '....hhhh....', ...r];
+  const view = key.startsWith('side') || key.startsWith('hug') || key.startsWith('kiss') ? 'side' : key === 'up' || key === 'up2' || key === 'sitBack' ? 'back' : 'front';
+  const mask = HAIR_MASKS[style]?.[view] || [];
+  const r = rows.map((row, y) => {
+    const m = mask[y];
+    if (!m) return row;
+    return [...row].map((c, x) => (m[x] === 'h' || (m[x] === '*' && c === 's') ? 'h' : c)).join('');
+  });
+  if (style === 'bun') r.unshift('.....hhhh.....', '....hhhhhh....');
   return r;
 }
 
@@ -72,27 +104,30 @@ export function characterSprites(look) {
   const key = JSON.stringify(look);
   if (cache.has(key)) return cache.get(key);
   const shirt = SHIRT[look.shirt] ?? SHIRT[0];
+  const skin = SKIN[look.skin] ?? SKIN[0];
   const pal = {
     h: HAIR[look.hairColor] ?? HAIR[0],
-    s: SKIN[look.skin] ?? SKIN[0],
-    e: '#2b1d16',
+    s: skin,
+    e: '#1c1310',
+    m: '#1c1310',
     b: '#ff9d8a',
+    o: OUT,
     c: shirt,
     C: shade(shirt, -0.22),
     p: PANTS[look.pants] ?? PANTS[0],
     w: '#3a2a22',
-    l: shade(SKIN[look.skin] ?? SKIN[0], -0.4), // kapalı göz kapağı
+    l: shade(skin, -0.45), // kapalı göz
     r: '#e0475e', // dudak
   };
-  const set = {};
+  const set = { pal };
   for (const [k, rows] of Object.entries(BODY)) set[k] = sprite(withHair(rows, look.hair, k), pal);
   set.sideL = mirror(set.side);
   set.side2L = mirror(set.side2);
   // Sarılma: gözler kapalı. Öpücük: gözler kapalı + dudaklar öne uzanmış.
-  const closed = withHair(BODY.side, look.hair, 'side').map((row, y) => (y === 5 ? row.replace('e', 'l') : row));
-  set.hugR = sprite(closed, pal);
+  const closed = BODY.side.map((row, y) => (y === 6 ? row.replace(/e/g, 'l') : y === 7 ? row.replace('e', 's') : row));
+  set.hugR = sprite(withHair(closed, look.hair, 'hug'), pal);
   set.hugL = mirror(set.hugR);
-  set.kissR = sprite(closed.map((row, y) => (y === 7 ? row.slice(0, 9) + 'r' + row.slice(10) : row)), pal);
+  set.kissR = sprite(withHair(closed.map((row, y) => (y === 8 ? row.slice(0, 12) + 'r' + row.slice(13) : row)), look.hair, 'kiss'), pal);
   set.kissL = mirror(set.kissR);
   cache.set(key, set);
   return set;
@@ -115,12 +150,12 @@ export const MOON_BADGE = sprite(
   { m: '#fff6d8' },
 );
 
-// ---- Kedi (12×7) ----
-const CAT = [
-  ['.........k.k', '.........kkk', '.........kek', 'k.kkkkkkkkk.', '.kkkkkkkkkk.', '..kwkkkkkk..', '..k.k..k.k..'],
-  ['.........k.k', '.........kkk', '.........kek', 'k.kkkkkkkkk.', '.kkkkkkkkkk.', '..kwkkkkkk..', '.k.k....k.k.'],
-];
-const CAT_SIT = ['..k.k...', '..kkk...', '..kek...', '.kkkkk..', 'kkkwkkk.', 'kkkwkkkk', '.kkkkk.k'];
+// ---- Kedi (16×10; odada kolay görünsün diye karakterin yarısı boyunda) ----
+const LEGS_A = ['..kk.kk..kk.kk..', '..kk.kk..kk.kk..'];
+const LEGS_B = ['...kk.kk..kk.kk.', '..kk...kk.kk..k.'];
+const CAT_BODY = ['..........k...k.', '..........kk.kk.', '.k........kkkkk.', 'k.........kekek.', 'k.........kkwkk.', '.kkkkkkkkkkkkk..', '.kkkkkkkkkkkkk..', '..kkwwwwwwkkk...'];
+const CAT = [[...CAT_BODY, ...LEGS_A], [...CAT_BODY, ...LEGS_B]];
+const CAT_SIT = ['..k...k...', '..kk.kk...', '..kkkkk...', '..kekek...', '..kkwkk...', '.kkkkkkk..', '.kkwwwkk..', '.kkwwwkk.k', '.kkkkkkkkk', '..kk.kk...'];
 export function catSprites(color = '#f0a050') {
   const pal = { k: color, e: '#2b1d16', w: '#fff1e2' };
   const right = CAT.map((r) => sprite(r, pal));
@@ -137,23 +172,19 @@ export const SPARK = sprite(['.y.', 'yYy', '.y.'], { y: '#ffd27a', Y: '#fff6c8' 
 
 // ---- Evcil hayvanlar: kedi, köpek, tavşan (sağa bakan 2 yürüme karesi + oturma) ----
 // head: aksesuarın takılacağı baş noktası (sprite içi piksel, dış hat dahil), [sağ, oturma]
+const DOG_BODY = ['..........kkkk..', '.........kkkkkk.', 'k.......DDkkekkn', 'k.......DDkkkkkk', '.k.......Dkkkk..', '.kkkkkkkkkkkkk..', '.kkkkkkkkkkkkk..', '..kkwwwwwwkkk...'];
+const BUNNY_BODY = ['..........k.k...', '..........k.k...', '..........kkkk..', '.........kkekkk.', '..kkkkkkkkkkkkn.', 'wkkkkkkkkkkkk...', 'wkkkkkkkkkkkk...', '.kkkkkkkkkkk....'];
 const PETS = {
-  cat: { walk: CAT, sit: CAT_SIT, head: [[11, 1], [4, 1]] },
+  cat: { walk: CAT, sit: CAT_SIT, head: [[13, 1], [5, 1]] },
   dog: {
-    walk: [
-      ['........kkk.', '.......kkkkk', '.......kkekn', 'k.kkkkkkkkk.', 'kkkkkkkkkk..', '.kkwkkkkkk..', '.k.k...k.k..'],
-      ['........kkk.', '.......kkkkk', '.......kkekn', 'k.kkkkkkkkk.', 'kkkkkkkkkk..', '.kkwkkkkkk..', 'k...k..k...k'],
-    ],
-    sit: ['..kkk...', '.kkkkk..', '.kkekn..', '..kkk...', '.kkkkk..', 'kkkwkkk.', '.kkkkk.k'],
-    head: [[10, 1], [4, 1]],
+    walk: [[...DOG_BODY, ...LEGS_A], [...DOG_BODY, ...LEGS_B]],
+    sit: ['...kkkk...', '..kkkkkk..', '.DkekkekD.', '.DkkknkkD.', '..kkkkkk..', '.kkkkkkkk.', '.kkwwwwkk.', '.kkwwwwkk.', '.kkkkkkkkk', '..kk..kk..'],
+    head: [[12, 1], [5, 1]],
   },
   bunny: {
-    walk: [
-      ['.........k.k', '.........k.k', '.........kkk', '........kkek', '.kkkkkkkkkk.', 'wkkkkkkkkk..', '..k.k..k.k..'],
-      ['.........k.k', '.........k.k', '.........kkk', '........kkek', '.kkkkkkkkkk.', 'wkkkkkkkkk..', '.k...k.k...k'],
-    ],
-    sit: ['..k.k...', '..k.k...', '..kkk...', '.kkek...', '.kkkkk..', 'kkkwkkk.', '.kkkkkw.'],
-    head: [[11, 3], [4, 3]],
+    walk: [[...BUNNY_BODY, '..kkk....kkk....', '.kkk....kkk.....'], [...BUNNY_BODY, '...kkk..kkk.....', '..kkk..kkk......']],
+    sit: ['..k.k.....', '..k.k.....', '..k.k.....', '.kkkkk....', '.kekek....', '.kknkk....', 'kkkkkkk...', 'kkkkkkkk..', 'kkwwkkkkw.', '.kk..kk...'],
+    head: [[12, 1], [3, 1]],
   },
 };
 export const PET_SPECIES = ['cat', 'dog', 'bunny'];
@@ -165,7 +196,7 @@ export function petSprites(species = 'cat', color = PET_COLORS[0]) {
   const key = species + color;
   if (petCache.has(key)) return petCache.get(key);
   const d = PETS[species] || PETS.cat;
-  const pal = { k: color, e: '#2b1d16', n: '#2b1d16', w: '#fff1e2' };
+  const pal = { k: color, D: shade(color, -0.3), e: '#2b1d16', n: '#2b1d16', w: '#fff1e2' };
   const right = d.walk.map((r) => sprite(r, pal));
   const set = { right, left: right.map(mirror), sit: sprite(d.sit, pal), head: d.head, w: right[0].width };
   petCache.set(key, set);

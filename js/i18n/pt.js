@@ -671,5 +671,12 @@ export default {
  "Vitrin linki kapatıldı": "Link de vitrine desativado",
  "Linki kapat": "Desativar link",
  "Evi değiştirdikten sonra \"Evin son halini yükle\" deyin; link aynı kalır.": "Depois de mudar a casa, toque em \"Enviar a versão atual\"; o link continua o mesmo.",
- "Vitrin linki oluştur": "Criar link de vitrine"
+ "Vitrin linki oluştur": "Criar link de vitrine",
+ "Küt": "Chanel",
+ "Saçsız": "Careca",
+ "Vur! ⚡": "Chuta! ⚡",
+ "GOL! ⚽": "GOL! ⚽",
+ "Partnerin masada değil; bota karşı oynuyorsun 🤖": "Seu par não está na mesa; você joga contra o bot 🤖",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).": "Mova o mouse/dedo para cima e para baixo no campo; toque ou aperte espaço para chutar! Você está à esquerda (vermelho).",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "Mova o mouse/dedo para cima e para baixo no campo; toque ou aperte espaço para chutar! Você está à direita (azul)."
 };

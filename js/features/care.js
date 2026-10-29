@@ -37,7 +37,7 @@ export function createCare(ctx) {
 
   // ---------- Evcil dostumuz ----------
   // Tür (kedi/köpek/tavşan), renk ve aksesuar seçilebilir; seviye arttıkça yeni aksesuarlar açılır.
-  // live/{rid}/petCall = { x, y, at }: "Yanıma çağır" deyince hayvanı simüle eden cihaz (oda kurucusu) onu çağırır.
+  // live/{rid}/petCall = { x, y, scene, at }: "Yanıma çağır" deyince hayvanı simüle eden cihaz onu çağıranın odasına getirir.
   const petNow = () => {
     const p = { name: t('Pamuk'), species: 'cat', color: PET_COLORS[0], acc: 'none', food: 80, love: 80, play: 80, clean: 80, at: now(), xp: 0, ...(pet || {}) };
     const hrs = Math.max(0, (now() - (p.at || now())) / HOUR);
@@ -54,7 +54,7 @@ export function createCare(ctx) {
   };
   function syncDecor() { const p = petNow(); Object.assign(DECOR.pet, { species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean }); }
   live.on('pet', (v) => { pet = v; syncDecor(); renderPet(); });
-  live.on('petCall', (v) => { if (v && ctx.isHost() && now() - (v.at || 0) < 8000) ctx.game.petCome(v.x, v.y); });
+  live.on('petCall', (v) => { if (v && ctx.game.petSim && now() - (v.at || 0) < 8000) ctx.game.petCome(v.x, v.y, v.scene, 'partner'); });
   setInterval(syncDecor, 30_000);
 
   const save = (p, extra = {}) => set(live.ref('pet'), { name: p.name, species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean, xp: p.xp || 0, at: serverTimestamp(), ...extra });
@@ -70,10 +70,9 @@ export function createCare(ctx) {
     if (level((p.xp || 0) + 1) > before) toast(t('{name} seviye atladı: {lv}! 🎉', { name: p.name, lv: level((p.xp || 0) + 1) }), 3500);
   }
   function call() {
-    if (ctx.game.me.scene !== 'salon') return toast(t('{name} salonda; çağırmak için salona git.', { name: petNow().name }));
-    const { x, y } = ctx.game.me;
-    if (ctx.isHost()) ctx.game.petCome(x, y);
-    else set(live.ref('petCall'), { x: Math.round(x), y: Math.round(y), at: now() });
+    const { x, y, scene } = ctx.game.me;
+    if (ctx.game.petSim) ctx.game.petCome(x, y, scene, 'me');
+    else set(live.ref('petCall'), { x: Math.round(x), y: Math.round(y), scene, at: now() });
     toast(t('{name} geliyor! 🐾', { name: petNow().name }));
   }
   function bar(label, v, col) {

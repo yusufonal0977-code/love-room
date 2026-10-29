@@ -25,7 +25,9 @@ export function createGame(opts) {
   const light = document.createElement('canvas');
   light.width = W; light.height = H;
   const keys = {};
-  const cat = { x: 120, y: 120, dir: 1, t: 0, target: null, wait: 2, sit: false };
+  // Evcil dost: odadan odaya takip ettiği kişinin peşinden gelir (follow: 'me' | 'partner', simüle eden cihaza göre)
+  const cat = { scene: 'salon', x: 120, y: 120, dir: 1, t: 0, target: null, wait: 2, sit: false, follow: 'me', away: 0 };
+  const CAT_SPOT = { id: 'cat', dynamic: true, label: () => 'Evcil dostumuz' };
   let fade = 0, fadeTo = null;
 
   const me = {
@@ -124,7 +126,8 @@ export function createGame(opts) {
   // ---------- Etkileşim ----------
   const spotPos = (s) => (s.id === 'cat' ? { x: cat.x - 10, y: cat.y + 2 } : { x: s.x, y: s.y });
   function spotsHere() {
-    return lay().spots.filter((s) => s.id !== 'cat' || scene().hasCat);
+    const l = lay().spots.filter((s) => s.id !== 'cat');
+    return cat.scene === me.scene ? [...l, CAT_SPOT] : l;
   }
   function nearestSpot() {
     let best = null, bd = 16;
@@ -223,9 +226,9 @@ export function createGame(opts) {
     if (edit) { try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } return editDown(x, y); }
     if (me.seat >= 0) return standUp();
     const sc = scene(), l = lay();
-    const catHit = sc.hasCat && Math.abs(x - cat.x) < 10 && Math.abs(y - cat.y + 4) < 9;
+    const catHit = cat.scene === me.scene && Math.abs(x - cat.x) < 12 && Math.abs(y - cat.y + 5) < 10;
     const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];
-    const spot = catHit ? l.spots.find((s) => s.id === 'cat') : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
+    const spot = catHit ? CAT_SPOT : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
     const door = sc.doors.find((d) => x >= d.x - 4 && x <= d.x + d.w + 4 && y >= d.y - 4 && y <= d.y + d.h + 4);
     if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
     else if (door) walkTo(door.x + door.w / 2, door.y + door.h / 2, null, door);
@@ -307,25 +310,59 @@ export function createGame(opts) {
     if (partner.moving || d > 1) partner.t += dt;
   }
 
+  // Hayvanı oda kurucusu simüle eder; o çevrimdışıysa (ya da partner yoksa) bu cihaz.
+  const petSim = () => !!opts.isHost?.() || !partner.shown;
+  const catBlocked = (x, y) => blockedIn(SCENES[cat.scene] || SCENES.salon, x, y) || y < WALL + 10;
+  function catNear(p, r) {
+    for (let i = 0; i < 12; i++) {
+      const x = Math.max(10, Math.min(W - 10, p.x + (Math.random() * 2 - 1) * r)), y = Math.max(WALL + 12, Math.min(H - 4, p.y + (Math.random() * 2 - 1) * r * 0.6));
+      if (!catBlocked(x, y)) return { x, y };
+    }
+    return null;
+  }
   function stepCat(dt) {
-    if (!opts.isHost?.()) {
+    if (!petSim()) {
       const c = opts.getCat?.();
-      if (c) { const d = Math.hypot(c.x - cat.x, c.y - cat.y); cat.dir = c.x > cat.x ? 1 : c.x < cat.x ? -1 : cat.dir; if (d > 40) { cat.x = c.x; cat.y = c.y; } else if (d > 0.3) { cat.x += (c.x - cat.x) * Math.min(1, dt * 4); cat.y += (c.y - cat.y) * Math.min(1, dt * 4); cat.t += dt; } cat.sit = !!c.sit; cat.target = d > 0.3 ? c : null; }
+      if (c) {
+        if (c.scene && c.scene !== cat.scene) { cat.scene = c.scene; cat.x = c.x; cat.y = c.y; }
+        const d = Math.hypot(c.x - cat.x, c.y - cat.y); cat.dir = c.x > cat.x ? 1 : c.x < cat.x ? -1 : cat.dir;
+        if (d > 40) { cat.x = c.x; cat.y = c.y; } else if (d > 0.3) { cat.x += (c.x - cat.x) * Math.min(1, dt * 4); cat.y += (c.y - cat.y) * Math.min(1, dt * 4); cat.t += dt; }
+        cat.sit = !!c.sit; cat.target = d > 0.3 ? c : null;
+      }
       return;
     }
     cat.t += dt;
-    const area = SCENES.salon.catArea;
-    if (cat.sit) { cat.wait -= dt; if (cat.wait < 0) cat.sit = false; }
-    else if (!cat.target) { cat.wait -= dt; if (cat.wait < 0) cat.target = { x: area[0] + Math.random() * area[2], y: area[1] + Math.random() * area[3] }; }
-    else {
+    const who = cat.follow === 'partner' && partner.shown ? partner : me;
+    // Takip ettiği kişi başka odaya geçtiyse kısa süre sonra kapıdan o da gelir
+    if (who.scene && who.scene !== cat.scene) {
+      cat.away += dt;
+      if (cat.away > 1.2) {
+        cat.away = 0; cat.scene = who.scene; cat.sit = false; cat.target = null; cat.wait = 0.6;
+        const p = catNear(who, 14) || { x: who.x, y: who.y };
+        cat.x = p.x; cat.y = p.y;
+        if (who === me) fx('🐾', cat.x, cat.y - 10);
+      }
+    } else cat.away = 0;
+    // Eşyanın içinde kaldıysa (ilk konum, taşınan mobilya) yanımıza çıkar
+    if (catBlocked(cat.x, cat.y)) { const p = catNear(who.scene === cat.scene ? who : { x: W / 2, y: H - 20 }, 24); if (p) { cat.x = p.x; cat.y = p.y; cat.target = null; } }
+    const far = Math.hypot(who.x - cat.x, who.y - cat.y) > 46;
+    if (cat.sit) { cat.wait -= dt; if (cat.wait < 0 || (far && lastNight <= 0.4)) cat.sit = false; }
+    else if (!cat.target) {
+      cat.wait -= dt;
+      if (cat.wait < 0 || far) { cat.target = catNear(who.scene === cat.scene ? who : cat, far ? 18 : 44); cat.wait = 1; }
+    } else {
       const dx = cat.target.x - cat.x, dy = cat.target.y - cat.y, d = Math.hypot(dx, dy);
-      if (d < 1) { cat.target = null; cat.wait = 2 + Math.random() * 4; if (Math.random() < 0.4 || lastNight > 0.4) { cat.sit = true; cat.wait = lastNight > 0.4 ? 20 : 4; } }
+      if (d < 1) { cat.target = null; cat.wait = 2 + Math.random() * 4; if (Math.random() < 0.35 || lastNight > 0.4) { cat.sit = true; cat.wait = lastNight > 0.4 ? 20 : 4; } }
       else {
-        const nx = cat.x + (dx / d) * 22 * dt, ny = cat.y + (dy / d) * 22 * dt;
-        if (blockedIn(SCENES.salon, nx, ny)) { cat.target = null; cat.wait = 1; } else { cat.x = nx; cat.y = ny; cat.dir = dx > 0 ? 1 : -1; }
+        const v = far ? 40 : 22, nx = cat.x + (dx / d) * v * dt, ny = cat.y + (dy / d) * v * dt;
+        if (catBlocked(nx, ny)) {
+          // Engelin etrafından dolan: önce tek eksende dene
+          if (!catBlocked(nx, cat.y)) cat.x = nx; else if (!catBlocked(cat.x, ny)) cat.y = ny; else { cat.target = null; cat.wait = 0.5; }
+        } else { cat.x = nx; cat.y = ny; }
+        cat.dir = dx > 0 ? 1 : -1;
       }
     }
-    opts.onCat?.({ x: Math.round(cat.x), y: Math.round(cat.y), sit: cat.sit });
+    opts.onCat?.({ scene: cat.scene, x: Math.round(cat.x), y: Math.round(cat.y), sit: cat.sit });
   }
 
   // ---------- Sarılma / öpücük ----------
@@ -378,15 +415,13 @@ export function createGame(opts) {
   }
   /** Sarılma kolu: omuzdan partnerin sırtına uzanan kıyafet renginde kol, ucunda el. */
   function drawArm(p, at) {
-    const sp = characterSprites(p.look).down.getContext('2d');
-    const shirt = sp.getImageData(4, 11, 1, 1).data, skin = sp.getImageData(1, 11, 1, 1).data;
-    const img = personImg(p, at.face, 'hug');
-    const top = Math.round(at.y - img.height + 1) + 11;
+    const { pal } = characterSprites(p.look);
+    const top = Math.round(at.y - (at.lift || 0)) - 9; // omuz hizası
     const x0 = Math.round(at.x), x1 = Math.round(at.armTo);
     const lo = Math.min(x0, x1), w = Math.abs(x1 - x0);
     const row = at.face === 'right' ? 0 : 2; // iki kol üst üste binmesin
-    R(ctx, lo, top + row, w, 2, `rgb(${shirt[0]},${shirt[1]},${shirt[2]})`);
-    R(ctx, x1 - (x1 > x0 ? 1 : 0), top + row, 2, 2, `rgb(${skin[0]},${skin[1]},${skin[2]})`);
+    R(ctx, lo, top + row, w, 2, pal.c);
+    R(ctx, x1 - (x1 > x0 ? 1 : 0), top + row, 2, 2, pal.s);
   }
   function drawCat() {
     const pet = DECOR.pet;
@@ -395,7 +430,7 @@ export function createGame(opts) {
     const sleeping = !cat.target && lastNight > 0.4 && cat.sit;
     const img = cat.sit ? sp.sit : (cat.dir > 0 ? sp.right : sp.left)[cat.target ? (cat.t * 6 | 0) % 2 : 0];
     const x0 = Math.round(cat.x - img.width / 2), y0 = Math.round(cat.y - img.height + 1);
-    R(ctx, cat.x - 5, cat.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
+    R(ctx, cat.x - 7, cat.y - 1, 14, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x0, y0);
     if (pet.acc && pet.acc !== 'none') {
       const [hx, hy] = cat.sit ? sp.head[1] : sp.head[0];
@@ -408,7 +443,7 @@ export function createGame(opts) {
     }
     const need = pet.food < 25 ? 'food' : pet.love < 25 ? 'love' : pet.play < 25 ? 'play' : pet.clean < 25 ? 'clean' : null;
     if (need) { // küçük düşünce balonu
-      const bx = Math.round(cat.x + 3), by = Math.round(cat.y - 18 + Math.sin(performance.now() / 300));
+      const bx = Math.round(cat.x + 4), by = Math.round(cat.y - 22 + Math.sin(performance.now() / 300));
       R(ctx, bx, by, 9, 7, '#fff6e8'); R(ctx, bx + 1, by + 7, 2, 1, '#fff6e8');
       if (need === 'food') { R(ctx, bx + 2, by + 3, 4, 2, '#ff7a59'); R(ctx, bx + 6, by + 2, 1, 4, '#ff7a59'); }
       if (need === 'love') ctx.drawImage(HEART, bx + 1, by);
@@ -567,7 +602,7 @@ export function createGame(opts) {
         ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);
       } });
     }
-    if (sc.hasCat) ents.push({ y: cat.y, d: drawCat });
+    if (cat.scene === me.scene) ents.push({ y: cat.y, d: drawCat });
     ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
     drawLighting(sc, info);
     parts.forEach((p) => { ctx.globalAlpha = Math.max(0, Math.min(1, (p.life - p.t) * 2)); ctx.drawImage(p.img, Math.round(p.x - p.img.width / 2), Math.round(p.y)); });
@@ -609,7 +644,13 @@ export function createGame(opts) {
     near() { return together(); },
     /** Sohbet mesajını karakterin başının üstünde gösterir. */
     /** Evcil hayvanı bir noktaya çağırır (simülasyonu yöneten cihazda). */
-    petCome(x, y) { cat.sit = false; cat.target = { x, y: Math.max(64, y + 6) }; cat.wait = 4; },
+    petCome(x, y, sceneId, who = 'me') {
+      cat.follow = who; cat.sit = false; cat.wait = 4;
+      if (sceneId && sceneId !== cat.scene) { cat.away = 99; return; } // bir sonraki adımda kapıdan gelir
+      cat.target = { x, y: Math.max(WALL + 12, y + 6) };
+    },
+    get petSim() { return petSim(); },
+    get petScene() { return cat.scene; },
     say(who, text) { const sp = speech[who]; sp.el.textContent = text.length > 80 ? text.slice(0, 78) + '…' : text; sp.until = performance.now() + 6000; },
     sameRoom() { return partner.shown && partner.scene === me.scene; },
     /** Partnerin yanına yürü, varınca cb. */

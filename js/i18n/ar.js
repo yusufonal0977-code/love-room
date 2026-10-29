@@ -671,5 +671,12 @@ export default {
  "Vitrin linki kapatıldı": "تم إيقاف رابط العرض",
  "Linki kapat": "أوقف الرابط",
  "Evi değiştirdikten sonra \"Evin son halini yükle\" deyin; link aynı kalır.": "بعد تغيير البيت اضغط «ارفع آخر شكل للبيت»؛ يبقى الرابط كما هو.",
- "Vitrin linki oluştur": "أنشئ رابط العرض"
+ "Vitrin linki oluştur": "أنشئ رابط العرض",
+ "Küt": "قصير مستقيم",
+ "Saçsız": "أصلع",
+ "Vur! ⚡": "اركل! ⚡",
+ "GOL! ⚽": "هدف! ⚽",
+ "Partnerin masada değil; bota karşı oynuyorsun 🤖": "شريكك ليس على الطاولة؛ أنت تلعب ضد الروبوت 🤖",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).": "حرّك الفأرة/إصبعك لأعلى ولأسفل فوق الملعب؛ المس أو اضغط المسافة للركل! أنت على اليسار (الأحمر).",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "حرّك الفأرة/إصبعك لأعلى ولأسفل فوق الملعب؛ المس أو اضغط المسافة للركل! أنت على اليمين (الأزرق)."
 };

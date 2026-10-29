@@ -108,99 +108,203 @@ export function createGames(ctx) {
   }
 
   // ---------- Langırt ----------
-  // Saha 400×240. Odayı kuran (host) solda oynar ve topu o simüle eder; diğeri sağda.
-  const FW = 400, FH = 240, GOAL = [80, 160], BR = 6;
+  // Saha 400×240. İki oyuncu da masadaysa oda kurucusu solda oynar ve topu o simüle eder;
+  // partner masada değilse bu cihaz topu yönetir ve sağda bot oynar.
+  // live/{rid}/games/foos/here/{uid} = son görülme (masada mı?), kick/{uid} = son vuruş zamanı
+  const FW = 400, FH = 240, GOAL = [80, 160], BR = 6, KICK_MS = 260, WIN = 5;
+  // Çubuk: x, adam sayısı, adam aralığı, merkez y aralığı, sahibi ('L' | 'R'), vuruş yönü
+  const RODS = [[36, 1, 0, [70, 170], 'L', 1], [130, 3, 62, [72, 168], 'R', -1], [270, 3, 62, [72, 168], 'L', 1], [364, 1, 0, [70, 170], 'R', -1]];
   function openFoos() {
     body = openSheet({ title: 'Langırt', iconName: 'game', wide: true, onClose: close });
-    // Partner odada değilse bota karşı oynanır ve topu bu cihaz yönetir
-    const online = ctx.partnerOnline();
-    const opp = online ? ctx.partnerUid() : 'bot';
-    const host = ctx.isHost() || !online;
     const canvas = h('canvas', { width: FW, height: FH, class: 'foos' });
-    const info = h('p', { class: 'center' });
-    body.append(info, canvas, h('div', { class: 'row' }, h('button', { class: 'primary', onclick: () => reset(true) }, 'Yeni maç')), h('p', { class: 'small center' }, t(host ? 'Parmağını/fareni yukarı aşağı kaydır ya da W/S tuşlarıyla çubuklarını oynat. Sen soldasın (kırmızı).' : 'Parmağını/fareni yukarı aşağı kaydır ya da W/S tuşlarıyla çubuklarını oynat. Sen sağdasın (mavi).')));
+    const info = h('p', { class: 'center foos-score' });
+    const kickBtn = h('button', { class: 'primary foos-kick', onpointerdown: (e) => { e.preventDefault(); kick(); } }, 'Vur! ⚡');
+    const hint = h('p', { class: 'small center' });
+    body.append(info, canvas, h('div', { class: 'row' }, kickBtn, h('button', { onclick: () => newMatch() }, 'Yeni maç')), hint);
     const g = canvas.getContext('2d');
-    let st = null, myY = 120, lastSend = 0, ball = { x: 200, y: 120, vx: 0, vy: 0 }, scored = 0;
-    const left = host ? uid : opp, right = host ? opp : uid;
-    const rodsOf = (who) => (who === uid ? myY : st?.rods?.[who] ?? 120);
+    let st = null, myY = FH / 2, sentY = -1, lastSend = 0, lastBall = 0, lastHere = 0, myKick = 0, botY = FH / 2, botKick = 0, flash = null, mode = '';
+    let ball = { x: 200, y: 120, vx: 0, vy: 0, go: 0 };
+    const partnerHere = () => { const p = ctx.partnerUid(); return !!(ctx.partnerOnline() && p && st?.here?.[p] && now() - st.here[p] < 3500); };
+    const roles = () => {
+      const duo = partnerHere();
+      const meLeft = duo ? ctx.isHost() : true;
+      const opp = duo ? ctx.partnerUid() : 'bot';
+      return { duo, auth: meLeft, L: meLeft ? uid : opp, R: meLeft ? opp : uid, opp, meLeft };
+    };
+    const goals = (x) => Object.values(x?.score || {}).reduce((a, v) => a + v, 0);
     stopSub = onValue(live.ref('games/foos'), (s) => {
+      const prev = st;
       st = s.val();
-      if (!host && st?.ball) { const b = st.ball, dt = Math.max(0, (now() - (b.t || now())) / 1000); ball = { x: b.x + b.vx * dt, y: b.y + b.vy * dt, vx: b.vx, vy: b.vy }; }
+      if (!roles().auth && st?.ball) {
+        const b = st.ball, dt = Math.max(0, (now() - Math.max(b.t || now(), b.go || 0)) / 1000);
+        ball = { x: b.x + b.vx * dt, y: b.y + b.vy * dt, vx: b.vx, vy: b.vy, go: b.go || 0 };
+      }
+      // Gol olunca iki ekranda da "GOL!" yazısı
+      if (prev && goals(st) > goals(prev)) flash = { text: t('GOL! ⚽'), until: performance.now() + 1100 };
     });
-    function reset(full) {
-      const dir = Math.random() < 0.5 ? -1 : 1;
-      const b = { x: 200, y: 120, vx: 170 * dir, vy: (Math.random() - 0.5) * 140, t: now() };
-      ball = { ...b };
-      update(live.ref('games/foos'), { ball: b, ...(full ? { score: null, run: true } : {}), host: uid });
+
+    function sendBall() {
+      lastBall = performance.now();
+      set(live.ref('games/foos/ball'), { x: Math.round(ball.x), y: Math.round(ball.y), vx: Math.round(ball.vx), vy: Math.round(ball.vy), go: ball.go || 0, t: now() });
     }
-    const setY = (y) => { myY = Math.max(30, Math.min(FH - 30, y)); };
-    canvas.onpointerdown = canvas.onpointermove = (e) => { if (e.buttons || e.pointerType === 'touch') { const r = canvas.getBoundingClientRect(); setY(((e.clientY - r.top) / r.height) * FH); } };
+    function serve(dir) {
+      ball = { x: 200, y: 120, vx: 190 * dir, vy: (Math.random() - 0.5) * 120, go: now() + 1300 };
+      sendBall();
+    }
+    function newMatch() {
+      update(live.ref('games/foos'), { score: null, run: true, host: uid });
+      serve(Math.random() < 0.5 ? -1 : 1);
+    }
+    function kick() {
+      myKick = performance.now();
+      set(live.ref(`games/foos/kick/${uid}`), now());
+    }
+
+    // Girdi: fare/parmak saha üzerinde gezinince çubuklar takip eder; dokunmak/tıklamak vuruş yapar.
+    const setY = (y) => { myY = Math.max(0, Math.min(FH, y)); };
+    const yOf = (e) => { const r = canvas.getBoundingClientRect(); return ((e.clientY - r.top) / r.height) * FH; };
+    canvas.onpointerdown = (e) => { e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } setY(yOf(e)); kick(); };
+    canvas.onpointermove = (e) => setY(yOf(e));
     const keys = {};
-    const kd = (e) => { keys[e.key.toLowerCase()] = e.type === 'keydown'; };
+    const kd = (e) => {
+      if (e.target.closest?.('input, textarea')) return;
+      const k = e.key.toLowerCase();
+      if (e.type === 'keydown' && [' ', 'd', 'arrowright', 'arrowleft'].includes(k)) { e.preventDefault(); if (!e.repeat) kick(); }
+      if (['w', 's', 'arrowup', 'arrowdown'].includes(k)) e.preventDefault();
+      keys[k] = e.type === 'keydown';
+    };
     addEventListener('keydown', kd); addEventListener('keyup', kd);
     const oldStop = stopSub;
     stopSub = () => { oldStop(); removeEventListener('keydown', kd); removeEventListener('keyup', kd); };
 
-    // Çubuklar: [x, adam sayısı, kime ait, yön]
-    const rods = () => [[40, 1, left, 1], [130, 3, right, -1], [270, 3, left, 1], [360, 1, right, -1]];
-    const men = (r) => { const y = rodsOf(r[2]) ?? 120; return r[1] === 1 ? [y] : [y - 62, y, y + 62]; };
+    // Parmağın tüm saha yüksekliği, her çubuğun kendi hareket aralığına yayılır
+    const rodY = (r, v) => r[3][0] + (v / FH) * (r[3][1] - r[3][0]);
+    const yFor = (side, R) => (side === (R.meLeft ? 'L' : 'R') ? myY : R.opp === 'bot' ? botY : st?.rods?.[R.opp] ?? FH / 2);
+    const men = (r, R) => { const c = rodY(r, yFor(r[4], R)); return r[1] === 1 ? [c] : [c - r[2], c, c + r[2]]; };
+    const kicking = (side, R) => {
+      if (side === (R.meLeft ? 'L' : 'R')) return performance.now() - myKick < KICK_MS;
+      if (R.opp === 'bot') return performance.now() - botKick < KICK_MS;
+      const k = st?.kick?.[R.opp];
+      return !!k && now() - k < KICK_MS + 120;
+    };
+
+    function physics(dt, R) {
+      if (st && st.run === false) { ball.vx = ball.vy = 0; return; }
+      if (ball.go && now() < ball.go) return;
+      const steps = 4, hdt = dt / steps; // hızlı top adamların içinden geçmesin
+      for (let i = 0; i < steps; i++) {
+        ball.x += ball.vx * hdt; ball.y += ball.vy * hdt;
+        if (ball.y < BR) { ball.y = BR; ball.vy = Math.abs(ball.vy); }
+        if (ball.y > FH - BR) { ball.y = FH - BR; ball.vy = -Math.abs(ball.vy); }
+        for (const r of RODS) for (const my of men(r, R)) {
+          if (Math.abs(ball.x - r[0]) >= 7 + BR || Math.abs(ball.y - my) >= 11 + BR) continue;
+          const front = Math.sign(ball.vx) !== r[5] || Math.abs(ball.vx) < 80;
+          const k = kicking(r[4], R);
+          if (!front && !k) continue;
+          ball.vx = r[5] * (k ? 520 : Math.min(400, Math.max(210, Math.abs(ball.vx) * 1.04)));
+          ball.vy = (ball.y - my) * 10 + (Math.random() - 0.5) * 50;
+          ball.x = r[0] + r[5] * (8 + BR);
+          if (R.auth) sendBall();
+        }
+        if (ball.x < BR || ball.x > FW - BR) {
+          const inGoal = ball.y > GOAL[0] && ball.y < GOAL[1];
+          if (inGoal) {
+            if (R.auth) goal(ball.x < BR ? R.R : R.L, ball.x < BR ? -1 : 1);
+            else { ball.vx = ball.vy = 0; } // skoru topu yöneten cihaz yazar
+            return;
+          }
+          ball.vx = -ball.vx; ball.x = Math.max(BR, Math.min(FW - BR, ball.x));
+          if (R.auth) sendBall();
+        }
+      }
+      if (Math.abs(ball.vx) < 120) ball.vx = (ball.vx < 0 ? -1 : 1) * 120; // top hiç durmasın
+    }
+    function goal(who, dir) {
+      const sc = { ...(st?.score || {}) }; sc[who] = (sc[who] || 0) + 1;
+      const over = sc[who] >= WIN;
+      update(live.ref('games/foos'), { score: sc, run: !over });
+      if (over && who === uid) live.stat('wins');
+      if (over) { ball = { x: 200, y: 120, vx: 0, vy: 0, go: 0 }; sendBall(); }
+      else serve(dir); // gol yiyen taraf servis alır
+    }
+    function bot(dt) {
+      // Topun geleceği yüksekliğe gider; top yakına gelince vurur
+      const want = ball.vx > 0 ? ball.y : FH / 2 + (ball.y - FH / 2) * 0.5;
+      const r = RODS[1], target = ((want - r[3][0]) / (r[3][1] - r[3][0])) * FH;
+      botY += Math.sign(target - botY) * Math.min(Math.abs(target - botY), 190 * dt);
+      botY = Math.max(0, Math.min(FH, botY));
+      const near = RODS.some((q) => q[4] === 'R' && q[0] - ball.x > 0 && q[0] - ball.x < 26);
+      if (ball.vx > 0 && near && performance.now() - botKick > 600 && Math.random() < 0.08) botKick = performance.now();
+    }
+
     let last = performance.now();
     function tick() {
       foosLoop = requestAnimationFrame(tick);
-      const t = performance.now(), dt = Math.min(0.033, (t - last) / 1000);
-      last = t;
-      if (keys.w || keys.arrowup) setY(myY - 260 * dt);
-      if (keys.s || keys.arrowdown) setY(myY + 260 * dt);
-      if (performance.now() - lastSend > 60) { lastSend = performance.now(); set(live.ref(`games/foos/rods/${uid}`), Math.round(myY)); }
-      if (opp === 'bot') { const by = st?.rods?.bot ?? 120; set(live.ref('games/foos/rods/bot'), Math.round(by + Math.sign(ball.y - by) * Math.min(Math.abs(ball.y - by), 150 * dt))); }
-      // Fizik (host) / tahmin (diğeri)
-      ball.x += ball.vx * dt; ball.y += ball.vy * dt;
-      if (ball.y < BR || ball.y > FH - BR) { ball.vy *= -1; ball.y = Math.max(BR, Math.min(FH - BR, ball.y)); }
-      if (host && st?.run) {
-        for (const r of rods()) for (const my of men(r)) {
-          const hit = Math.abs(ball.x - r[0]) < 8 + BR && Math.abs(ball.y - my) < 11 + BR;
-          if (hit && (Math.sign(ball.vx) !== r[3] || Math.abs(ball.vx) < 60)) {
-            ball.vx = r[3] * Math.min(430, Math.max(240, Math.abs(ball.vx) * 1.08));
-            ball.vy = (ball.y - my) * 9 + (Math.random() - 0.5) * 40;
-            ball.x = r[0] + r[3] * (9 + BR);
-            send();
-          }
-        }
-        const inGoal = ball.y > GOAL[0] && ball.y < GOAL[1];
-        if (ball.x < BR || ball.x > FW - BR) {
-          if (inGoal && performance.now() - scored > 800) {
-            scored = performance.now();
-            const who = ball.x < BR ? right : left;
-            const sc = { ...(st.score || {}) }; sc[who] = (sc[who] || 0) + 1;
-            const over = sc[who] >= 5;
-            update(live.ref('games/foos'), { score: sc, run: !over });
-            if (over) live.stat('wins');
-            reset(false);
-          } else { ball.vx *= -1; ball.x = Math.max(BR, Math.min(FW - BR, ball.x)); send(); }
-        }
-        if (performance.now() - lastBall > 90) send();
+      const tm = performance.now(), dt = Math.min(0.033, (tm - last) / 1000);
+      last = tm;
+      const R = roles(), m = R.duo ? 'duo' : 'bot';
+      if (m !== mode) {
+        hint.textContent = t(R.meLeft ? 'Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).' : 'Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).');
+        if (mode && R.auth) newMatch(); // partner masaya geldi/gitti: yeni maç
+        if (m === 'bot' && mode) toast(t('Partnerin masada değil; bota karşı oynuyorsun 🤖'));
+        mode = m;
       }
-      draw();
+      if (keys.w || keys.arrowup) setY(myY - 300 * dt);
+      if (keys.s || keys.arrowdown) setY(myY + 300 * dt);
+      if (tm - lastHere > 1000) { lastHere = tm; set(live.ref(`games/foos/here/${uid}`), now()); }
+      if (tm - lastSend > 60 && Math.abs(myY - sentY) > 0.5) { lastSend = tm; sentY = myY; set(live.ref(`games/foos/rods/${uid}`), Math.round(myY)); }
+      if (R.opp === 'bot') bot(dt);
+      physics(dt, R);
+      if (R.auth && st?.run && tm - lastBall > 80) sendBall();
+      draw(R);
     }
-    let lastBall = 0;
-    function send() { lastBall = performance.now(); set(live.ref('games/foos/ball'), { x: Math.round(ball.x), y: Math.round(ball.y), vx: Math.round(ball.vx), vy: Math.round(ball.vy), t: now() }); }
-    function draw() {
+
+    function man(x, y, col, dir, k) {
+      g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(x - 5, y - 9, 14, 22);
+      g.fillStyle = col; g.fillRect(x - 7, y - 11, 14, 22);
+      g.fillStyle = '#ffe0c7'; g.fillRect(x - 4, y - 9, 8, 7);
+      g.fillStyle = '#26160f'; g.fillRect(x - 2, y - 7, 1, 2); g.fillRect(x + 1, y - 7, 1, 2);
+      // Ayak: vururken öne savrulur
+      if (k) g.fillRect(dir > 0 ? x + 7 : x - 15, y + 2, 8, 5); else g.fillRect(x - 3, y + 8, 6, 3);
+    }
+    function draw(R) {
       g.fillStyle = '#3fae5a'; g.fillRect(0, 0, FW, FH);
       g.fillStyle = '#4fbf6a'; for (let x = 0; x < FW; x += 50) g.fillRect(x, 0, 25, FH);
       g.strokeStyle = '#e8ffe8'; g.lineWidth = 2; g.strokeRect(1, 1, FW - 2, FH - 2); g.beginPath(); g.moveTo(200, 0); g.lineTo(200, FH); g.stroke();
       g.beginPath(); g.arc(200, 120, 30, 0, Math.PI * 2); g.stroke();
-      g.fillStyle = '#fff3dc'; g.fillRect(0, GOAL[0], 4, GOAL[1] - GOAL[0]); g.fillRect(FW - 4, GOAL[0], 4, GOAL[1] - GOAL[0]);
-      for (const r of rods()) {
-        g.fillStyle = '#c8ccd4'; g.fillRect(r[0] - 1, 0, 3, FH);
-        for (const my of men(r)) { g.fillStyle = r[2] === left ? '#e0473f' : '#5b8def'; g.fillRect(r[0] - 7, my - 11, 14, 22); g.fillStyle = '#ffe0c7'; g.fillRect(r[0] - 4, my - 9, 8, 6); }
+      g.strokeRect(1, GOAL[0] - 20, 40, GOAL[1] - GOAL[0] + 40); g.strokeRect(FW - 41, GOAL[0] - 20, 40, GOAL[1] - GOAL[0] + 40);
+      g.fillStyle = '#fff3dc'; g.fillRect(0, GOAL[0], 5, GOAL[1] - GOAL[0]); g.fillRect(FW - 5, GOAL[0], 5, GOAL[1] - GOAL[0]);
+      const mySide = R.meLeft ? 'L' : 'R';
+      for (const r of RODS) {
+        g.fillStyle = r[4] === mySide ? '#fff6d8' : '#a9aeb8'; g.fillRect(r[0] - 1, 0, 3, FH);
+        const k = kicking(r[4], R);
+        for (const my of men(r, R)) man(r[0], my, r[4] === 'L' ? '#e0473f' : '#5b8def', r[5], k);
       }
+      g.fillStyle = 'rgba(0,0,0,0.25)'; g.beginPath(); g.arc(ball.x + 2, ball.y + 2, BR, 0, Math.PI * 2); g.fill();
       g.fillStyle = '#fff'; g.beginPath(); g.arc(ball.x, ball.y, BR, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = '#26160f'; g.lineWidth = 1; g.stroke();
+      // Ortadaki yazılar: geri sayım / gol / maç sonu
+      const big = (text, col = '#fff6d8') => {
+        g.font = 'bold 34px Nunito, sans-serif'; g.textAlign = 'center'; g.lineWidth = 6; g.strokeStyle = 'rgba(20,10,5,0.7)';
+        g.strokeText(text, 200, 132); g.fillStyle = col; g.fillText(text, 200, 132);
+      };
       const sc = st?.score || {};
-      info.textContent = `🔴 ${host ? ctx.myName() : ctx.partnerName()} ${sc[left] || 0} – ${sc[right] || 0} ${host ? (opp === 'bot' ? 'Bot' : ctx.partnerName()) : ctx.myName()} 🔵${st && st.run === false ? '  · ' + t('Maç bitti!') : ''}`;
+      const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot 🤖' : ctx.partnerName());
+      if (st && st.run === false) {
+        const w = (sc[R.L] || 0) >= WIN ? R.L : R.R;
+        big(w === uid ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: nameOf(w) }), '#fcdf4b');
+      } else if (flash && performance.now() < flash.until) big(flash.text, '#fcdf4b');
+      else if (ball.go && now() < ball.go) big(String(Math.ceil((ball.go - now()) / 450)));
+      info.textContent = `🔴 ${nameOf(R.L)} ${sc[R.L] || 0} – ${sc[R.R] || 0} ${nameOf(R.R)} 🔵`;
     }
-    if (opp === 'bot') toast('Partnerin yokken bota karşı oynuyorsun 🤖');
     tick();
-    if (host && !st?.run) setTimeout(() => !st?.run && reset(true), 400);
+    // Topu bu cihaz yönetiyorsa ve süren maç yoksa başlat
+    setTimeout(() => {
+      if (!body) return;
+      const R = roles();
+      if (R.opp === 'bot') toast(t('Partnerin masada değil; bota karşı oynuyorsun 🤖'));
+      if (R.auth && (!st?.run || !st?.ball)) newMatch();
+    }, 500);
   }
 
   return { openHub, openXox, openMem, openFoos };

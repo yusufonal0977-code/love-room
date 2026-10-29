@@ -10,6 +10,7 @@
 // live/{rid}/tvPos = { uid: { pos, at } }   iki tarafın gerçek konumu (fark göstergesi)
 import { h, icon, openSheet, closeSheet, toast } from '../ui.js';
 import { serverTimestamp, set, now } from '../fb.js';
+import { t } from '../i18n.js';
 import { DECOR, W, H } from '../scenes.js';
 import { t } from '../i18n.js';
 

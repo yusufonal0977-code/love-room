@@ -569,7 +569,7 @@ async function enterWorld(rid, fresh = false) {
       });
     };
     opts('edSide', 'Güneş mi ay mı?', [{ label: '☀️ Güneş', value: 'sun' }, { label: '🌙 Ay', value: 'moon' }], () => side, (v) => (side = v));
-    opts('edHair', 'Saç', HAIR_STYLES.map((x) => ({ label: { short: 'Kısa', long: 'Uzun', bun: 'Topuz' }[x], value: x })), () => look.hair, (v) => (look.hair = v));
+    opts('edHair', 'Saç', HAIR_STYLES.map((x) => ({ label: { short: 'Kısa', long: 'Uzun', bob: 'Küt', bun: 'Topuz', none: 'Saçsız' }[x], value: x })), () => look.hair, (v) => (look.hair = v));
     opts('edHairColor', 'Saç rengi', HAIR, () => look.hairColor, (v) => (look.hairColor = v), true);
     opts('edSkin', 'Ten', SKIN, () => look.skin, (v) => (look.skin = v), true);
     opts('edShirt', 'Kıyafet', SHIRT, () => look.shirt, (v) => (look.shirt = v), true);

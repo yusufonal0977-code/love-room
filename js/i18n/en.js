@@ -671,5 +671,12 @@ export default {
  "Vitrin linki kapatıldı": "Showcase link turned off",
  "Linki kapat": "Turn off link",
  "Evi değiştirdikten sonra \"Evin son halini yükle\" deyin; link aynı kalır.": "After changing your home, press \"Upload the latest look\"; the link stays the same.",
- "Vitrin linki oluştur": "Create showcase link"
+ "Vitrin linki oluştur": "Create showcase link",
+ "Küt": "Bob",
+ "Saçsız": "Bald",
+ "Vur! ⚡": "Kick! ⚡",
+ "GOL! ⚽": "GOAL! ⚽",
+ "Partnerin masada değil; bota karşı oynuyorsun 🤖": "Your partner isn't at the table; you're playing the bot 🤖",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).": "Move your mouse/finger up and down over the field; tap or press space to kick! You're on the left (red).",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "Move your mouse/finger up and down over the field; tap or press space to kick! You're on the right (blue)."
 };

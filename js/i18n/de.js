@@ -671,5 +671,12 @@ export default {
  "Vitrin linki kapatıldı": "Schaufenster-Link deaktiviert",
  "Linki kapat": "Link deaktivieren",
  "Evi değiştirdikten sonra \"Evin son halini yükle\" deyin; link aynı kalır.": "Nach Änderungen „Aktuellen Stand hochladen“ drücken; der Link bleibt gleich.",
- "Vitrin linki oluştur": "Schaufenster-Link erstellen"
+ "Vitrin linki oluştur": "Schaufenster-Link erstellen",
+ "Küt": "Bob",
+ "Saçsız": "Glatze",
+ "Vur! ⚡": "Schuss! ⚡",
+ "GOL! ⚽": "TOR! ⚽",
+ "Partnerin masada değil; bota karşı oynuyorsun 🤖": "Dein Partner ist nicht am Tisch; du spielst gegen den Bot 🤖",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).": "Bewege Maus/Finger auf dem Feld hoch und runter; tippe oder drücke die Leertaste zum Schießen! Du bist links (rot).",
+ "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "Bewege Maus/Finger auf dem Feld hoch und runter; tippe oder drücke die Leertaste zum Schießen! Du bist rechts (blau)."
 };
