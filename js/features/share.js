@@ -48,7 +48,7 @@ export function createShare(ctx) {
       const img = sp.right[0], x0 = Math.round(20 - img.width / 2), y0 = 24 - img.height;
       g.drawImage(img, x0, y0);
       if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1]);
-      return { title: t('Evcil dostumuz'), image: c, pixel: true, sub: p.name, sub2: names(), caption: t('Ailemizin minik üyesi: {name} 🐾', { name: p.name }) };
+      return { title: t('Evcil dostumuz'), image: c, pixel: true, transparent: true, sub: p.name, sub2: names(), caption: t('Ailemizin minik üyesi: {name} 🐾', { name: p.name }) };
     } },
     badges: { label: 'Rozetlerimiz', async make() {
       const list = ctx.care.unlockedBadges();
@@ -126,7 +126,7 @@ export function createShare(ctx) {
       if (data.framed) { g.fillStyle = '#fffaf0'; g.fillRect(dx - 24, dy - 24, dw + 48, dh + 48); }
       g.imageSmoothingEnabled = !data.pixel;
       g.fillStyle = '#000';
-      if (!data.framed) g.fillRect(dx - 8, dy - 8, dw + 16, dh + 16);
+      if (!data.framed && !data.transparent) g.fillRect(dx - 8, dy - 8, dw + 16, dh + 16);
       g.shadowBlur = 0;
       g.drawImage(img, dx, dy, dw, dh);
       g.restore();
