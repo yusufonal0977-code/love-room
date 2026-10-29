@@ -103,6 +103,9 @@ SKIN_POCKETS = {('spiky', 'front'), ('round', 'front'), ('bob', 'side'), ('round
 # Arkadan görünümde çizgi altındaki kafa derisi saç sayılır, yalnızca ense (bu satır ve altı) ten kalır.
 # Kısa saçın arka çiziminde çizgi kafanın ortasında; altını ten boyamak kafayı kel gösteriyordu.
 NAPE_FROM = {('short', 'back'): 14}
+# Kirpi saçın arka çiziminde kafa küçük, boyun/omuz 2 satır yukarıda. Saç katmanı 1 satır aşağı konur:
+# böylece çizimin tırtıklı ense satırı kıyafetin yaka satırının hemen üstüne, aynı genişlikte oturur.
+HAIR_DY = {('spiky', 'back'): 1}
 
 def build_hair(rows, pal, view, hid=''):
     bald = BALD[view][0]
@@ -148,7 +151,8 @@ def build_hair(rows, pal, view, hid=''):
             else: s += '.'
         res.append(s)
     blush = next((pal[k] for k in pal), '#ef9090')
-    return {'rows': res, 'ax': anchor(rows)}, blush
+    dy = HAIR_DY.get((hid, view), 0)
+    return {'rows': res[:HEAD_ROWS - dy] if dy else res, 'ax': anchor(rows), 'dy': dy}, blush
 
 data = {'outfits': {}, 'hairs': {}, 'headRows': HEAD_ROWS}
 for oid, views in OUTFITS.items():

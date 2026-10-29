@@ -97,8 +97,10 @@ function layers(look, view) {
   const g = Array.from({ length: h }, () => Array(w).fill('.'));
   const src = Array.from({ length: h }, () => Array(w).fill(''));
   o.rows.forEach((r, y) => [...r].forEach((c, x) => { if (c !== '.') { g[y][x + ox] = c; src[y][x + ox] = 'o'; } }));
-  if (hv) hv.rows.forEach((r, y) => [...r].forEach((c, x) => {
-    const X = x + hx;
+  const dy = hv?.dy || 0; // bazı arka çizimlerde kafa daha alçakta: üstte kalan kel kafa satırları silinir
+  for (let y = 0; y < dy; y++) g[y].fill('.');
+  if (hv) hv.rows.forEach((r, y0) => [...r].forEach((c, x) => {
+    const X = x + hx, y = y0 + dy;
     if (y >= h || c === '.') return;
     if (y < CHAR_DATA.headRows) { g[y][X] = c === '_' ? '.' : c; src[y][X] = 'h'; return; }
     if (c === 'h' && g[y][X] === '#') return; // saç kenarı kıyafet çizgisini ezmez

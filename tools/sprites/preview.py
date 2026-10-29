@@ -18,7 +18,10 @@ def compose(outfit, hair, view, skin, hc):
         for x, c in enumerate(r):
             if c != '.': g[y][x + ox] = c; srcs[y][x + ox] = 'o'
     if hv:
-        for y, r in enumerate(hv['rows']):
+        dy = hv.get('dy', 0)
+        for y in range(dy): g[y] = ['.'] * w
+        for y0, r in enumerate(hv['rows']):
+            y = y0 + dy
             if y >= h: continue
             for x, c in enumerate(r):
                 X = x + hx
