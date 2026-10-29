@@ -687,5 +687,8 @@ export default {
  "Pembe kazak": "Rosa Pulli",
  "Hırka": "Strickjacke",
  "Bej hırka": "Beige Strickjacke",
- "Siyah kazak": "Schwarzer Pulli"
+ "Siyah kazak": "Schwarzer Pulli",
+ "Kirpi": "Stachelig",
+ "Kâse": "Topfschnitt",
+ "Kabarık": "Fluffig"
 };

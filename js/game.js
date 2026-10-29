@@ -401,11 +401,17 @@ export function createGame(opts) {
     if (dir === 'right') return mv && f ? sp.side2 : sp.side;
     return mv && f ? sp.side2L : sp.sideL;
   }
-  function headY(p) { return p.y - personImg(p).height + (p.seat >= 0 ? 4 : 1); }
+  // Oturan karakterin kesilmiş alt kenarı koltuğa oturur: önden oturuşta 2, arkadan (kanepe) -1 piksel pay
+  const seatPad = (p) => { const s = seatOf(p); return s ? (s.pose === 'back' ? -1 : 2) : 1; };
+  // Yürürken her ikinci karede 1 piksel yukarı (tasarımda ayrı yürüme karesi yok)
+  const bob = (p) => (p.moving && p.seat < 0 && (p.t * 6 | 0) % 2 ? 1 : 0);
+  // Çizim sırası: kanepede sırtı dönük oturan koltuğun arkasında, öne bakarak oturan koltuğun önünde kalır
+  const sortY = (p) => { const s = seatOf(p); return !s ? p.y : s.pose === 'back' ? p.y - 6 : p.y + 12; };
+  function headY(p) { return p.y - personImg(p).height + seatPad(p); }
   function drawPerson(p, at) {
     const img = personImg(p, at?.face, at?.pose);
     const px = at ? at.x + (at.lean ? (at.face === 'right' ? at.lean : -at.lean) : 0) : p.x, py = at ? at.y : p.y;
-    const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + (p.seat >= 0 ? 4 : 1) - (at?.lift || 0));
+    const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + seatPad(p) - (at?.lift || 0) - (at ? 0 : bob(p)));
     if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);
     if (!at?.pose) {
@@ -416,7 +422,7 @@ export function createGame(opts) {
   /** Sarılma kolu: omuzdan partnerin sırtına uzanan kıyafet renginde kol, ucunda el. */
   function drawArm(p, at) {
     const { pal } = characterSprites(p.look);
-    const top = Math.round(at.y - (at.lift || 0)) - 9; // omuz hizası
+    const top = Math.round(at.y - (at.lift || 0)) - 12; // omuz hizası
     const x0 = Math.round(at.x), x1 = Math.round(at.armTo);
     const lo = Math.min(x0, x1), w = Math.abs(x1 - x0);
     const row = at.face === 'right' ? 0 : 2; // iki kol üst üste binmesin
@@ -587,16 +593,16 @@ export function createGame(opts) {
       // Sarılırken ikisi tek parça çizilir: önce gövdeler, sonra kollar karşı tarafın sırtına
       ents.push({ y: Math.max(me.y, partner.y), d: () => { drawPerson(partner, atP); drawPerson(me, atMe); drawArm(me, atMe); drawArm(partner, atP); } });
     } else {
-      ents.push({ y: me.seat >= 0 ? me.y - 6 : me.y, d: () => drawPerson(me, atMe) });
-      if (pHere) ents.push({ y: (partner.seat >= 0 ? partner.y - 6 : partner.y) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
+      ents.push({ y: sortY(me), d: () => drawPerson(me, atMe) });
+      if (pHere) ents.push({ y: sortY(partner) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
     }
     // Ek karakterler (vitrin evinde ev sahipleri kanepede oturur)
     for (const x of opts.getExtras?.() || []) {
       if (x.scene !== me.scene) continue;
-      ents.push({ y: x.y - 6, d: () => {
+      ents.push({ y: x.pose === 'sit' ? x.y + 12 : x.y - 6, d: () => {
         const sp = characterSprites(x.look);
         const img = x.pose === 'back' ? sp.sitBack : x.pose === 'sit' ? sp.sit : sp.down;
-        const yy = Math.round(x.y - img.height + (x.pose ? 4 : 1));
+        const yy = Math.round(x.y - img.height + (x.pose === 'back' ? -1 : x.pose ? 2 : 1));
         ctx.drawImage(img, Math.round(x.x - img.width / 2), yy);
         const b = x.side === 'moon' ? MOON_BADGE : SUN_BADGE;
         ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);

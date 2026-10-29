@@ -687,5 +687,8 @@ export default {
  "Pembe kazak": "Pink sweater",
  "Hırka": "Cardigan",
  "Bej hırka": "Beige cardigan",
- "Siyah kazak": "Black sweater"
+ "Siyah kazak": "Black sweater",
+ "Kirpi": "Spiky",
+ "Kâse": "Bowl cut",
+ "Kabarık": "Fluffy"
 };

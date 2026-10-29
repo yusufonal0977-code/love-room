@@ -551,10 +551,10 @@ async function enterWorld(rid, fresh = false) {
     const pc = $('preview').getContext('2d');
     const draw_ = () => {
       pc.imageSmoothingEnabled = false;
-      pc.clearRect(0, 0, 40, 40);
+      pc.clearRect(0, 0, 48, 48);
       const img = characterSprites(look).down, b = side === 'moon' ? MOON_BADGE : SUN_BADGE;
-      pc.drawImage(img, 20 - img.width / 2, 38 - img.height);
-      pc.drawImage(b, 20 - b.width / 2, 38 - img.height - b.height - 1);
+      pc.drawImage(img, Math.round(24 - img.width / 2), 47 - img.height);
+      pc.drawImage(b, Math.round(24 - b.width / 2), 47 - img.height - b.height - 1);
     };
     const opts = (id, label, items, cur, set, isColor) => {
       const box = $(id);
@@ -569,7 +569,7 @@ async function enterWorld(rid, fresh = false) {
       });
     };
     opts('edSide', 'Güneş mi ay mı?', [{ label: '☀️ Güneş', value: 'sun' }, { label: '🌙 Ay', value: 'moon' }], () => side, (v) => (side = v));
-    opts('edHair', 'Saç', HAIR_STYLES.map((x) => ({ label: { short: 'Kısa', long: 'Uzun', bob: 'Küt', bun: 'Topuz', none: 'Saçsız' }[x], value: x })), () => look.hair, (v) => (look.hair = v));
+    opts('edHair', 'Saç', HAIR_STYLES.map((x) => ({ label: { short: 'Kısa', spiky: 'Kirpi', long: 'Uzun', bob: 'Küt', bowl: 'Kâse', round: 'Kabarık', none: 'Saçsız' }[x], value: x })), () => look.hair, (v) => (look.hair = v));
     opts('edHairColor', 'Saç rengi', HAIR, () => look.hairColor, (v) => (look.hairColor = v), true);
     opts('edSkin', 'Ten', SKIN, () => look.skin, (v) => (look.skin = v), true);
     const OUTFIT_NAMES = { basic: 'Sade', tee: 'Tişört', nordic: 'Desenli kazak', nordicPink: 'Pembe kazak', cardigan: 'Hırka', cardiganBeige: 'Bej hırka', sweater: 'Siyah kazak' };

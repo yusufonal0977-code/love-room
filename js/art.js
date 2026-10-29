@@ -1,4 +1,5 @@
 // Piksel art yardımcıları ve karakter/evcil hayvan sprite'ları.
+import { CHAR_DATA } from './char-data.js';
 // Her şey koddan üretilir: satır dizileri + palet → otomatik dış hatlı küçük canvas'lar.
 
 export const OUT = '#26160f';
@@ -36,138 +37,84 @@ export const SKIN = ['#ffe0c7', '#f1c09a', '#c98a5e', '#8a5638'];
 export const HAIR = ['#2b1d16', '#6b3e22', '#c8742c', '#f2c14e', '#d9475a', '#f4efe6'];
 export const SHIRT = ['#ff7a59', '#3fb7a4', '#5b8def', '#ffc93c', '#ff5d8f', '#2e2e3a'];
 export const PANTS = ['#3b4a6b', '#2e2e3a', '#7a5a46'];
-export const HAIR_STYLES = ['short', 'long', 'bob', 'bun', 'none'];
+export const HAIR_STYLES = ['short', 'spiky', 'long', 'bob', 'bowl', 'round', 'none'];
 
 export const DEFAULT_LOOK = { skin: 1, hair: 'short', hairColor: 1, shirt: 0, pants: 0, outfit: 'basic' };
 
-// 14×21 tombul kafalı karakter (çizilmiş modele göre). s ten, e göz, b yanak, m ağız, o iç çizgi,
-// c/C kıyafet, p pantolon, w ayakkabı. Saç ayrı maskeyle eklenir.
-const HEAD_FRONT = ['....ssssss....', '..ssssssssss..', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.sseesssseess.', '.ssbessssebss.', '..ssssmmssss..', '...ssssssss...', '.....ssss.....'];
-const HEAD_BACK = HEAD_FRONT.map((r, y) => (y >= 6 && y <= 8 ? r.replace(/[ebm]/g, 's') : r));
-const HEAD_SIDE = ['....ssssss....', '..ssssssssss..', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.ssssssssssss.', '.sssssssssees.', '.sssssssssbes.', '..ssssssssss..', '...ssssssss...', '......sss.....'];
-const TORSO = ['...cccccccc...', '..cccccccccc..', '..coccccccoc..', '..coccccccoc..', '..soCCCCCCos..'];
-const TORSO_SIDE = ['.....ccccc....', '.....ccccc....', '.....ccocc....', '.....ccocc....', '.....ccosc....'];
-const LEGS = ['....pppppp....', '....pppppp....', '....ppoopp....', '....ppoopp....', '....wwooww....'];
-const LEGS2 = ['....pppppp....', '....pppppp....', '....ppoopp....', '....wwoopp....', '........ww....'];
-const LEGS_SIDE = ['.....ppppp....', '.....ppppp....', '.....ppppp....', '.....ppppp....', '.....wwwww....'];
-const LEGS_SIDE2 = ['.....ppppp....', '....pppppp....', '....pp...pp...', '....pp...pp...', '...ww....ww...'];
-const SIT_LEGS = ['...pppppppp...', '...pppppppp...', '...ww....ww...', '..............', '..............'];
-const EMPTY5 = Array(5).fill('..............');
-// Kıyafet modelleri (gövdenin 5 satırı). c ana renk, C etek/gölge, x/y desen renkleri.
-// basic ve tee seçilen kıyafet rengini kullanır; diğerlerinin kendi renkleri var.
-const NORDIC = {
-  front: ['...ccxxxxcc...', '..cccccccccc..', '..xocxcxcxox..', '..coxcxcxcoc..', '..soccccccos..'],
-  back: ['...cccccccc...', '..cccccccccc..', '..xocxcxcxox..', '..coxcxcxcoc..', '..soccccccos..'],
-  side: ['.....cxxcc....', '.....ccccc....', '.....xcoxc....', '.....cxocx....', '.....ccosc....'],
-};
-const CARDIGAN = {
-  front: ['...cccxxccc...', '..cccyxxyccc..', '..cocyxxycoc..', '..cocyxxycoc..', '..soCyxxyCos..'],
-  back: TORSO_BACK_PLAIN(),
-  side: ['.....ccccc....', '.....cccyx....', '.....ccoyx....', '.....ccoyx....', '.....ccosx....'],
-};
-function TORSO_BACK_PLAIN() { return ['...cccccccc...', '..cccccccccc..', '..coccccccoc..', '..coccccccoc..', '..soCCCCCCos..']; }
-export const OUTFITS = {
-  basic: { front: TORSO, back: TORSO, side: TORSO_SIDE },
-  tee: {
-    front: ['...cccccccc...', '..cccccccccc..', '..soccccccos..', '..soccccccos..', '..soCCCCCCos..'],
-    back: ['...cccccccc...', '..cccccccccc..', '..soccccccos..', '..soccccccos..', '..soCCCCCCos..'],
-    side: ['.....ccccc....', '.....ccccc....', '.....ccosc....', '.....ccosc....', '.....CCosC....'],
-  },
-  nordic: { ...NORDIC, pal: { c: '#2f7fe0', C: '#2568b8', x: '#f094c4' } },
-  nordicPink: { ...NORDIC, front: ['...cxccccxc...', ...NORDIC.front.slice(1)], pal: { c: '#f094c4', C: '#d97aab', x: '#2f7fe0' } },
-  cardigan: { ...CARDIGAN, pal: { c: '#bcbcbc', C: '#a4a4a4', x: '#2f6a2a', y: '#9a9a9a' } },
-  cardiganBeige: { ...CARDIGAN, pal: { c: '#d6c6c0', C: '#bfaea8', x: '#c6a0ec', y: '#a99a94' } },
-  sweater: {
-    front: ['...cccccccc...', '..xccccccccx..', '..coccccccoc..', '..xoccccccox..', '..soxxxxxxos..'],
-    back: ['...cccccccc...', '..xccccccccx..', '..coccccccoc..', '..xoccccccox..', '..soxxxxxxos..'],
-    side: ['.....ccccc....', '.....ccccc....', '.....ccocc....', '.....xxoxx....', '.....ccosc....'],
-    pal: { c: '#2e2e33', C: '#2e2e33', x: '#55555e' },
-  },
-};
-export const OUTFIT_IDS = Object.keys(OUTFITS);
-function bodyFor(outfit) {
-  const o = OUTFITS[outfit] || OUTFITS.basic;
-  return {
-    down: [...HEAD_FRONT, ...o.front, ...LEGS],
-    down2: [...HEAD_FRONT, ...o.front, ...LEGS2],
-    up: [...HEAD_BACK, ...o.back, ...LEGS],
-    up2: [...HEAD_BACK, ...o.back, ...LEGS2],
-    side: [...HEAD_SIDE, ...o.side, ...LEGS_SIDE],
-    side2: [...HEAD_SIDE, ...o.side, ...LEGS_SIDE2],
-    sit: [...HEAD_FRONT, ...o.front, ...SIT_LEGS],
-    sitBack: [...HEAD_BACK, ...o.back, ...EMPTY5],
-  };
+// Karakterler tasarımcının çizimlerinden birebir gelir (js/char-data.js, tools/sprites/build_sprites.py).
+// Kıyafet katmanı gövdeyi + kel kafayı + yüzü taşır; saç katmanı kafayı ve sarkan saçı üstüne koyar.
+export const OUTFIT_IDS = Object.keys(CHAR_DATA.outfits);
+const LINE = '#000000';
+const LEGACY_HAIR = { bun: 'short' };
+
+/** Bir görünüm için kod ızgarası: kıyafet + saç, ayak hizasından birleştirilmiş. */
+function layers(look, view) {
+  const outfit = CHAR_DATA.outfits[look.outfit] || CHAR_DATA.outfits.basic;
+  const o = outfit.views[view];
+  const hairId = LEGACY_HAIR[look.hair] || look.hair;
+  const hair = hairId !== 'none' && CHAR_DATA.hairs[hairId] ? CHAR_DATA.hairs[hairId] : CHAR_DATA.hairs.short;
+  const hv = hairId === 'none' ? null : hair.views[view];
+  const ax = Math.max(o.ax, hv ? hv.ax : 0);
+  const ox = ax - o.ax, hx = hv ? ax - hv.ax : 0;
+  const w = Math.max(ox + o.rows[0].length, hv ? hx + hv.rows[0].length : 0), h = o.rows.length;
+  const g = Array.from({ length: h }, () => Array(w).fill('.'));
+  const src = Array.from({ length: h }, () => Array(w).fill(''));
+  o.rows.forEach((r, y) => [...r].forEach((c, x) => { if (c !== '.') { g[y][x + ox] = c; src[y][x + ox] = 'o'; } }));
+  if (hv) hv.rows.forEach((r, y) => [...r].forEach((c, x) => {
+    const X = x + hx;
+    if (y >= h || c === '.') return;
+    if (y < CHAR_DATA.headRows) { g[y][X] = c === '_' ? '.' : c; src[y][X] = 'h'; return; }
+    if (c === 'h' && g[y][X] === '#') return; // saç kenarı kıyafet çizgisini ezmez
+    g[y][X] = c === 'h' ? 'H' : c; src[y][X] = 'h';
+  }));
+  return { g, src, outfit, hair, view };
 }
 
-// Saç maskeleri: h = saç, * = yalnızca tenin üstüne saç, . = dokunma
-const FULL = '**************';
-const HAIR_MASKS = {
-  short: {
-    front: ['....hhhhhh....', '..hhhhhhhhhh..', FULL, FULL, '.hhh.hhhh.hhh.', '.h..........h.'],
-    back: Array(9).fill(FULL),
-    side: [FULL, FULL, FULL, FULL, '**********....', '******........', '*****.........', '****..........', '***...........'],
-  },
-  long: {
-    front: [FULL, FULL, FULL, FULL, '.hh........hh.', ...Array(5).fill('hhh........hhh'), ...Array(7).fill('hh..........hh')],
-    back: [FULL, FULL, ...Array(15).fill('hhhhhhhhhhhhhh')],
-    side: [FULL, FULL, FULL, FULL, FULL, ...Array(12).fill('hhhhh*........')],
-  },
-  bob: {
-    front: [FULL, FULL, FULL, FULL, '.hhhhhhhhhhhh.', ...Array(4).fill('hhh........hhh'), '.hhh......hhh.'],
-    back: [FULL, FULL, ...Array(8).fill('hhhhhhhhhhhhhh'), '.hhhhhhhhhhhh.'],
-    side: [FULL, FULL, FULL, FULL, FULL, ...Array(4).fill('hhhhhhhh......'), '.hhhhhhh......', '.hhhhhh.......'],
-  },
-};
-HAIR_MASKS.bun = HAIR_MASKS.short;
+function paint(L, look, mapRow = (r) => r) {
+  const skin = SKIN[look.skin] ?? SKIN[0];
+  const col = {
+    '#': LINE, S: skin, P: PANTS[look.pants] ?? PANTS[0], C: SHIRT[look.shirt] ?? SHIRT[0], H: HAIR[look.hairColor] ?? HAIR[0],
+  };
+  const rows = mapRow(L.g);
+  const c = document.createElement('canvas');
+  c.width = rows[0].length; c.height = rows.length;
+  const g = c.getContext('2d');
+  rows.forEach((r, y) => r.forEach((ch, x) => {
+    if (ch === '.') return;
+    let fill = col[ch];
+    if (!fill) fill = L.src[y]?.[x] === 'h' ? L.hair.blush : L.outfit.pal[`${L.view}:${ch}`];
+    R(g, x, y, 1, 1, fill || LINE);
+  }));
+  return c;
+}
 
-function withHair(rows, style, key) {
-  const view = key.startsWith('side') || key.startsWith('hug') || key.startsWith('kiss') ? 'side' : key === 'up' || key === 'up2' || key === 'sitBack' ? 'back' : 'front';
-  const mask = HAIR_MASKS[style]?.[view] || [];
-  const r = rows.map((row, y) => {
-    const m = mask[y];
-    if (!m) return row;
-    return [...row].map((c, x) => (m[x] === 'h' || (m[x] === '*' && c === 's') ? 'h' : c)).join('');
-  });
-  if (style === 'bun') r.unshift('.....hhhh.....', '....hhhhhh....');
-  return r;
+/** Oturma: bacaklar koltuğun içinde kalır; pantolonun ilk satırından sonrası kesilip altı kapatılır. */
+function seated(g) {
+  const top = g.findIndex((r) => r.includes('P'));
+  if (top < 0) return g;
+  const keep = g.slice(0, top + 2).map((r) => r.slice());
+  keep[keep.length - 1] = keep[keep.length - 1].map((c) => (c === '.' ? '.' : '#'));
+  return keep;
 }
 
 const cache = new Map();
-/** Görünüme göre tüm yön/yürüme karelerini üretir (önbellekli). */
+/** Görünüme göre tüm yön karelerini üretir (önbellekli). Yürürken kare değişmez, karakter 1 px zıplar. */
 export function characterSprites(look) {
   look = { ...DEFAULT_LOOK, ...(look || {}) };
   const key = JSON.stringify(look);
   if (cache.has(key)) return cache.get(key);
-  const shirt = SHIRT[look.shirt] ?? SHIRT[0];
-  const skin = SKIN[look.skin] ?? SKIN[0];
-  const pal = {
-    h: HAIR[look.hairColor] ?? HAIR[0],
-    s: skin,
-    e: '#1c1310',
-    m: '#1c1310',
-    b: '#ff9d8a',
-    o: OUT,
-    c: shirt,
-    C: shade(shirt, -0.22),
-    p: PANTS[look.pants] ?? PANTS[0],
-    w: '#3a2a22',
-    l: shade(skin, -0.45), // kapalı göz
-    r: '#e0475e', // dudak
-    x: '#ffffff',
-    y: '#ffffff',
-    ...(OUTFITS[look.outfit]?.pal || {}),
-  };
-  const BODY = bodyFor(look.outfit);
-  const set = { pal };
-  for (const [k, rows] of Object.entries(BODY)) set[k] = sprite(withHair(rows, look.hair, k), pal);
-  set.sideL = mirror(set.side);
-  set.side2L = mirror(set.side2);
-  // Sarılma: gözler kapalı. Öpücük: gözler kapalı + dudaklar öne uzanmış.
-  const closed = BODY.side.map((row, y) => (y === 6 ? row.replace(/e/g, 'l') : y === 7 ? row.replace('e', 's') : row));
-  set.hugR = sprite(withHair(closed, look.hair, 'hug'), pal);
-  set.hugL = mirror(set.hugR);
-  set.kissR = sprite(withHair(closed.map((row, y) => (y === 8 ? row.slice(0, 12) + 'r' + row.slice(13) : row)), look.hair, 'kiss'), pal);
-  set.kissL = mirror(set.kissR);
+  const F = layers(look, 'front'), B = layers(look, 'back'), S = layers(look, 'side');
+  const set = {};
+  set.down = set.down2 = paint(F, look);
+  set.up = set.up2 = paint(B, look);
+  set.side = set.side2 = paint(S, look);
+  set.sideL = set.side2L = mirror(set.side);
+  set.sit = paint(F, look, seated);
+  set.sitBack = paint(B, look, seated);
+  set.hugR = set.kissR = set.side;
+  set.hugL = set.kissL = set.sideL;
+  const main = CHAR_DATA.outfits[look.outfit] ? Object.entries(CHAR_DATA.outfits[look.outfit].pal).find(([k]) => k.startsWith('back:'))?.[1] : null;
+  set.pal = { c: main || (SHIRT[look.shirt] ?? SHIRT[0]), s: SKIN[look.skin] ?? SKIN[0] };
   cache.set(key, set);
   return set;
 }

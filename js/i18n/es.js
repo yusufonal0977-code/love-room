@@ -687,5 +687,8 @@ export default {
  "Pembe kazak": "Jersey rosa",
  "Hırka": "Cárdigan",
  "Bej hırka": "Cárdigan beige",
- "Siyah kazak": "Jersey negro"
+ "Siyah kazak": "Jersey negro",
+ "Kirpi": "De punta",
+ "Kâse": "Tazón",
+ "Kabarık": "Esponjoso"
 };

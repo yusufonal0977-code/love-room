@@ -687,5 +687,8 @@ export default {
  "Pembe kazak": "كنزة وردية",
  "Hırka": "سترة صوفية",
  "Bej hırka": "سترة بيج",
- "Siyah kazak": "كنزة سوداء"
+ "Siyah kazak": "كنزة سوداء",
+ "Kirpi": "شائك",
+ "Kâse": "قصة الوعاء",
+ "Kabarık": "منفوش"
 };

@@ -687,5 +687,8 @@ export default {
  "Pembe kazak": "Pull rose",
  "Hırka": "Gilet",
  "Bej hırka": "Gilet beige",
- "Siyah kazak": "Pull noir"
+ "Siyah kazak": "Pull noir",
+ "Kirpi": "En pétard",
+ "Kâse": "Au bol",
+ "Kabarık": "Bouffant"
 };
