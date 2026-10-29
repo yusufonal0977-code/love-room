@@ -11,6 +11,7 @@
 import { h, icon, openSheet, closeSheet, toast } from '../ui.js';
 import { serverTimestamp, set, now } from '../fb.js';
 import { DECOR, W, H } from '../scenes.js';
+import { t } from '../i18n.js';
 
 const TV_RECT = [73, 13, 46, 26]; // salondaki ekran (sahne pikseli)
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -102,7 +103,7 @@ export function createTV(ctx) {
     else if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   }
   function updateBar() {
-    cTitle.textContent = screenStream ? (localShare ? `Sen paylaşıyorsun · ${localShare.name}` : 'Paylaşım') : state?.title || '';
+    cTitle.textContent = screenStream ? (localShare ? t('Sen paylaşıyorsun · {name}', { name: t(localShare.name) }) : t('Paylaşım')) : state?.title || '';
     const playing = localShare?.v ? !localShare.v.paused : state?.playing;
     cPlay.innerHTML = icon(playing ? 'pause' : 'play');
     cPlay.hidden = !!screenStream && !localShare?.v;
@@ -200,8 +201,8 @@ export function createTV(ctx) {
   live.on('tv', (v) => {
     const prev = state;
     state = v;
-    if (v && prev !== undefined && prev?.src !== v.src && v.by !== uid) toast(`${ctx.partnerName()} TV'de bir şey açtı 📺`);
-    if (v?.wait && v.wait !== uid && prev?.wait !== v.wait) toast(`${ctx.partnerName()} tarafında video yükleniyor, birlikte bekliyorsunuz…`, 3500);
+    if (v && prev !== undefined && prev?.src !== v.src && v.by !== uid) toast(t('{name} TV\'de bir şey açtı 📺', { name: ctx.partnerName() }));
+    if (v?.wait && v.wait !== uid && prev?.wait !== v.wait) toast(t('{name} tarafında video yükleniyor, birlikte bekliyorsunuz…', { name: ctx.partnerName() }), 3500);
     if (v?.count && v.count !== prev?.count) countdown(v.count);
     applyState();
   });
@@ -214,24 +215,24 @@ export function createTV(ctx) {
   setInterval(() => {
     if (!syncable()) { cSync.textContent = ''; return; }
     tick++;
-    const t = Date.now();
-    if (state.playing && bufSince && t - bufSince > 2500 && !state.wait) {
+    const nowMs = Date.now();
+    if (state.playing && bufSince && nowMs - bufSince > 2500 && !state.wait) {
       publish({ playing: false, pos: current(), wait: uid });
       toast('Bağlantın yavaş: video yüklenene kadar ikiniz de bekliyorsunuz', 3000);
-    } else if (state.wait === uid && !state.playing && !bufSince && readySince && t - readySince > 1500) {
+    } else if (state.wait === uid && !state.playing && !bufSince && readySince && nowMs - readySince > 1500) {
       publish({ playing: true, pos: current(), wait: null });
       applyState(true);
-    } else if (state.playing && !bufSince && t > applyingUntil && Math.abs(current() - expected(state)) > 1) {
+    } else if (state.playing && !bufSince && nowMs > applyingUntil && Math.abs(current() - expected(state)) > 1) {
       applyState();
     }
     if (tick % 3 === 0) set(live.ref(`tvPos/${uid}`), { pos: +current().toFixed(2), at: now() });
     const pu = ctx.partnerUid(), pp = pu && positions[pu];
-    if (state.wait) cSync.textContent = '⏳ Bekleniyor…';
+    if (state.wait) cSync.textContent = t('⏳ Bekleniyor…');
     else if (pp && state.playing && now() - pp.at < 10_000) {
       const theirs = pp.pos + (now() - pp.at) / 1000, diff = Math.abs(theirs - current());
-      cSync.textContent = diff < 1 ? '● Senkron' : `↻ ${diff.toFixed(1)} sn fark, düzeltiliyor`;
+      cSync.textContent = diff < 1 ? t('● Senkron') : t('↻ {n} sn fark, düzeltiliyor', { n: diff.toFixed(1) });
       cSync.className = 'csync ' + (diff < 1 ? 'ok' : 'warn');
-    } else { cSync.textContent = state.playing ? '' : 'Durduruldu'; cSync.className = 'csync'; }
+    } else { cSync.textContent = state.playing ? '' : t('Durduruldu'); cSync.className = 'csync'; }
   }, 1000);
 
   function togglePlay() {
@@ -246,7 +247,7 @@ export function createTV(ctx) {
     count.hidden = false;
     const step = () => {
       const left = Math.ceil((at - now()) / 1000);
-      count.textContent = left > 0 ? left : 'Şimdi ▶ oynat!';
+      count.textContent = left > 0 ? left : t('Şimdi ▶ oynat!');
       if (left > -2) setTimeout(step, 200); else count.hidden = true;
     };
     step();
@@ -315,15 +316,15 @@ export function createTV(ctx) {
   async function start(raw) {
     const p = parseLink(raw);
     if (!p) return toast('Link anlaşılamadı.');
-    let t = p.kind === 'yt' ? 'YouTube videosu' : p.kind === 'web' ? p.host : decodeURIComponent(p.src.split('/').pop().split('?')[0]).slice(0, 40);
+    let title = p.kind === 'yt' ? t('YouTube videosu') : p.kind === 'web' ? p.host : decodeURIComponent(p.src.split('/').pop().split('?')[0]).slice(0, 40);
     if (p.kind === 'yt') {
-      try { const r = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent('https://youtu.be/' + p.src)}`); if (r.ok) t = (await r.json()).title || t; } catch { /* başlık olmasa da olur */ }
+      try { const r = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent('https://youtu.be/' + p.src)}`); if (r.ok) title = (await r.json()).title || title; } catch { /* başlık olmasa da olur */ }
     }
-    state = { kind: p.kind, src: p.src, title: t, playing: p.kind !== 'web', pos: p.start, by: uid };
+    state = { kind: p.kind, src: p.src, title, playing: p.kind !== 'web', pos: p.start, by: uid };
     await set(live.ref('tv'), { ...state, at: serverTimestamp() });
     live.stat('movies');
     const rec = JSON.parse(localStorage.getItem('lr.tvRecent') || '[]').filter((x) => x.url !== raw.trim());
-    localStorage.setItem('lr.tvRecent', JSON.stringify([{ url: raw.trim(), title: t }, ...rec].slice(0, 6)));
+    localStorage.setItem('lr.tvRecent', JSON.stringify([{ url: raw.trim(), title }, ...rec].slice(0, 6)));
     closeSheet();
     setCinema(true);
     join.hidden = true;

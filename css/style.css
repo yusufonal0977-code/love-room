@@ -319,7 +319,7 @@ button.link.danger { background: none; color: #ff8fab; }
 body.cinema .prompt { display: none; }
 
 /* Marka ve tanıtım */
-h1 .get { font-size: .5em; color: var(--dim); letter-spacing: 2px; vertical-align: middle; margin-right: 2px; }
+h1 .get { color: var(--moon); font-size: 1em; text-shadow: 0 0 14px rgba(252, 223, 75, .45); border-bottom: 3px solid var(--sun); padding-bottom: 1px; }
 .pitch { max-width: 420px; text-align: left; color: var(--dim); font-size: 13px; line-height: 1.5; }
 .pitch summary { cursor: pointer; text-align: center; color: var(--sun); list-style: none; }
 .pitch summary::-webkit-details-marker { display: none; }
@@ -330,3 +330,10 @@ h1 .get { font-size: .5em; color: var(--dim); letter-spacing: 2px; vertical-alig
 #gate { overflow: auto; justify-content: flex-start; }
 #gate > :first-child { margin-top: auto; }
 #gate > :last-child { margin-bottom: auto; }
+
+/* Dil seçici */
+.langpick { width: auto; flex: none; padding: 6px 10px; font-size: 14px; border-radius: 999px; background: rgba(21, 18, 11, .85); }
+#langCorner { position: fixed; top: max(10px, env(safe-area-inset-top)); right: 12px; z-index: 25; }
+.langrow { justify-content: center !important; }
+#gate .row { width: min(100%, 340px); }
+#gate .row input { flex: 1; min-width: 0; width: auto; }

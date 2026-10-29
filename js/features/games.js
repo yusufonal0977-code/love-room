@@ -5,6 +5,7 @@
 // live/{rid}/games/foos = { ball: {x,y,vx,vy,t}, rods: {uid: y}, score: {uid: n}, run, host }
 import { h, icon, openSheet, toast } from '../ui.js';
 import { onValue, set, update, now } from '../fb.js';
+import { t } from '../i18n.js';
 
 const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 const CARD_ICONS = ['heart', 'music', 'flower', 'paw', 'tv', 'book', 'jar', 'booth'];
@@ -35,7 +36,7 @@ export function createGames(ctx) {
       if (!g) { body.append(h('button', { class: 'primary', onclick: () => newXox() }, 'Oyunu başlat')); return; }
       const mark = (u) => (u === g.x ? 'X' : 'O');
       const myTurn = g.turn === uid && !g.win;
-      body.append(h('p', { class: 'center' }, g.win ? (g.win === 'draw' ? 'Berabere 🤝' : `${(g.win === 'x') === (g.x === uid) ? 'Kazandın' : ctx.partnerName() + ' kazandı'} 🎉`) : myTurn ? `Sıra sende (${mark(uid)})` : `${ctx.partnerName()} düşünüyor…`));
+      body.append(h('p', { class: 'center' }, g.win ? (g.win === 'draw' ? t('Berabere 🤝') : (g.win === 'x') === (g.x === uid) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: ctx.partnerName() })) : myTurn ? t('Sıra sende ({mark})', { mark: mark(uid) }) : t('{name} düşünüyor…', { name: ctx.partnerName() })));
       const grid = h('div', { class: 'xox' });
       [...g.b].forEach((c, i) => grid.append(h('button', {
         class: (c === 'x' ? 'x' : c === 'o' ? 'o' : '') + (g.line?.includes?.(i) ? ' win' : ''),
@@ -71,8 +72,8 @@ export function createGames(ctx) {
       const finished = Object.keys(done).length === 16;
       const sc = g.score || {};
       body.append(h('p', { class: 'center' }, finished
-        ? ((sc[uid] || 0) === (sc[pu()] || 0) ? 'Berabere 🤝' : (sc[uid] || 0) > (sc[pu()] || 0) ? 'Kazandın 🎉' : `${ctx.partnerName()} kazandı 🎉`)
-        : g.turn === uid ? 'Sıra sende: iki kart aç' : `${ctx.partnerName()} oynuyor…`),
+        ? ((sc[uid] || 0) === (sc[pu()] || 0) ? t('Berabere 🤝') : (sc[uid] || 0) > (sc[pu()] || 0) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: ctx.partnerName() }))
+        : g.turn === uid ? t('Sıra sende: iki kart aç') : t('{name} oynuyor…', { name: ctx.partnerName() })),
       h('p', { class: 'center small' }, `${ctx.myName()} ${sc[uid] || 0} · ${sc[pu()] || 0} ${ctx.partnerName()}`));
       const grid = h('div', { class: 'mem' });
       g.deck.forEach((c, i) => {
@@ -117,7 +118,7 @@ export function createGames(ctx) {
     const host = ctx.isHost() || !online;
     const canvas = h('canvas', { width: FW, height: FH, class: 'foos' });
     const info = h('p', { class: 'center' });
-    body.append(info, canvas, h('div', { class: 'row' }, h('button', { class: 'primary', onclick: () => reset(true) }, 'Yeni maç')), h('p', { class: 'small center' }, 'Parmağını/fareni yukarı aşağı kaydır ya da W/S tuşlarıyla çubuklarını oynat. Sen ' + (host ? 'soldasın (kırmızı).' : 'sağdasın (mavi).')));
+    body.append(info, canvas, h('div', { class: 'row' }, h('button', { class: 'primary', onclick: () => reset(true) }, 'Yeni maç')), h('p', { class: 'small center' }, t(host ? 'Parmağını/fareni yukarı aşağı kaydır ya da W/S tuşlarıyla çubuklarını oynat. Sen soldasın (kırmızı).' : 'Parmağını/fareni yukarı aşağı kaydır ya da W/S tuşlarıyla çubuklarını oynat. Sen sağdasın (mavi).')));
     const g = canvas.getContext('2d');
     let st = null, myY = 120, lastSend = 0, ball = { x: 200, y: 120, vx: 0, vy: 0 }, scored = 0;
     const left = host ? uid : opp, right = host ? opp : uid;
@@ -195,7 +196,7 @@ export function createGames(ctx) {
       }
       g.fillStyle = '#fff'; g.beginPath(); g.arc(ball.x, ball.y, BR, 0, Math.PI * 2); g.fill();
       const sc = st?.score || {};
-      info.textContent = `🔴 ${host ? ctx.myName() : ctx.partnerName()} ${sc[left] || 0} – ${sc[right] || 0} ${host ? (opp === 'bot' ? 'Bot' : ctx.partnerName()) : ctx.myName()} 🔵${st && st.run === false ? '  · Maç bitti!' : ''}`;
+      info.textContent = `🔴 ${host ? ctx.myName() : ctx.partnerName()} ${sc[left] || 0} – ${sc[right] || 0} ${host ? (opp === 'bot' ? 'Bot' : ctx.partnerName()) : ctx.myName()} 🔵${st && st.run === false ? '  · ' + t('Maç bitti!') : ''}`;
     }
     if (opp === 'bot') toast('Partnerin yokken bota karşı oynuyorsun 🤖');
     tick();

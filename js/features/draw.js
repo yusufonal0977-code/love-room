@@ -5,6 +5,7 @@
 import { h, icon, openSheet, toast } from '../ui.js';
 import { onChildAdded, onChildChanged, onChildRemoved, push, remove, set } from '../fb.js';
 import { DECOR, bump } from '../scenes.js';
+import { t } from '../i18n.js';
 
 const COLORS = ['#26160f', '#ff4f7b', '#ff7a59', '#ffc93c', '#4fbf6a', '#3fb7a4', '#5b8def', '#9b6bff', '#8a5638', '#ffffff'];
 const SIZES = [4, 10, 22];
@@ -79,8 +80,8 @@ export function createDraw(ctx) {
     paintSw();
     body.append(sw, canvas, h('div', { class: 'row wrap' },
       h('button', { onclick: () => { const k = mine.pop(); if (k) remove(live.ref(`draw/${k}`)); } }, 'Geri al'),
-      h('button', { onclick: () => { if (confirm('Tuval ikiniz için de temizlensin mi?')) { remove(r); mine = []; } } }, 'Temizle'),
-      h('button', { class: 'primary', html: `${icon('album')} Albüme kaydet`, onclick: async () => { await ctx.photos.addToAlbum(canvas.toDataURL('image/jpeg', 0.85), 'Birlikte çizdik'); toast('Resim albüme kaydedildi 🎨'); } }),
+      h('button', { onclick: () => { if (confirm(t('Tuval ikiniz için de temizlensin mi?'))) { remove(r); mine = []; } } }, 'Temizle'),
+      h('button', { class: 'primary', html: `${icon('album')} Albüme kaydet`, onclick: async () => { await ctx.photos.addToAlbum(canvas.toDataURL('image/jpeg', 0.85), t('Birlikte çizdik')); toast('Resim albüme kaydedildi 🎨'); } }),
     ), h('p', { class: 'small' }, 'Beyaz renk silgi gibi çalışır. Çizdiğiniz resim hobi köşesindeki şövalede durur.'));
   }
 

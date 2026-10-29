@@ -7,7 +7,10 @@ export const CONTACT = 'eclipsoftware.dev@gmail.com';
 const COMPANY = 'Eclip Software &amp; Entertainment Company';
 const mail = `<a href="mailto:${CONTACT}">${CONTACT}</a>`;
 
-export const LEGAL = [
+import { lang } from './i18n.js';
+import { LEGAL_EN } from './legal-en.js';
+
+const LEGAL_TR = [
   {
     id: 'hakkimizda',
     title: 'Hakkımızda',
@@ -136,4 +139,7 @@ export const LEGAL = [
   },
 ];
 
+// Türkçe dışındaki tüm dillerde İngilizce metin gösterilir (başına kısa bir not eklenir).
+const NOTE = { es: 'Los textos legales están disponibles en inglés y turco.', de: 'Die rechtlichen Texte sind auf Englisch und Türkisch verfügbar.', fr: 'Les textes juridiques sont disponibles en anglais et en turc.', pt: 'Os textos legais estão disponíveis em inglês e turco.' };
+export const LEGAL = lang === 'tr' ? LEGAL_TR : LEGAL_EN.map((d) => (NOTE[lang] ? { ...d, html: `<p class="muted">${NOTE[lang]}</p>` + d.html } : d));
 export const legalById = (id) => LEGAL.find((x) => x.id === id);

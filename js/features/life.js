@@ -3,8 +3,9 @@
 // live/{rid}/diary/{id} = { by, name, side, text, at, openAt? }   openAt: gelecek mektubu, o gün açılır
 // live/{rid}/rel        = { since: 'YYYY-MM-DD', meet: 'YYYY-MM-DD', meetNote }
 // live/{rid}/jar        = { q, answers: {uid: metin}, at }   live/{rid}/jarUsed/{q}=true   live/{rid}/jarLog/{id}
-import { h, icon, openSheet, closeSheet, toast, fmtDate, fmtTime } from '../ui.js';
+import { h, icon, openSheet, closeSheet, toast, fmtDate, fmtTime, esc } from '../ui.js';
 import { limitToLast, onValue, push, query, remove, serverTimestamp, set, update, now } from '../fb.js';
+import { t, locale } from '../i18n.js';
 
 // Kavanozdaki sorular: ne klişe ne de utandırıcı; cevabı merak edilen, sohbet açan sorular.
 export const QUESTIONS = [
@@ -71,7 +72,7 @@ export const QUESTIONS = [
 ];
 
 const DAY = 86_400_000;
-const MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+const MONTHS = Array.from({ length: 12 }, (_, i) => new Date(2024, i, 1).toLocaleDateString(locale, { month: 'long' }));
 
 /** Gün / ay / yıl seçicisi: telefonlarda tarih kutusu açılmadığı için açılır listeler. .value → 'YYYY-MM-DD' ya da ''. */
 function datePicker(value, { from, to }) {
@@ -104,9 +105,9 @@ export function createLife(ctx) {
   function chip() {
     const parts = [];
     const since = parseDay(rel.since);
-    if (since) parts.push(`${daysBetween(since, now()) + 1}. gün`);
+    if (since) parts.push(t('{n}. gün', { n: daysBetween(since, now()) + 1 }));
     const meet = parseDay(rel.meet);
-    if (meet) { const d = Math.ceil((meet - now()) / DAY); if (d >= 0) parts.push(d === 0 ? 'Bugün buluşuyorsunuz!' : `buluşmaya ${d} gün`); }
+    if (meet) { const d = Math.ceil((meet - now()) / DAY); if (d >= 0) parts.push(d === 0 ? t('Bugün buluşuyorsunuz!') : t('buluşmaya {n} gün', { n: d })); }
     return parts.join(' · ');
   }
   function since() {
@@ -125,14 +126,14 @@ export function createLife(ctx) {
     const meet = parseDay(rel.meet);
     const meetLeft = meet ? Math.ceil((meet - now()) / DAY) : null;
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const fmt = (z) => new Date(now()).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: z });
+    const fmt = (z) => new Date(now()).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: z });
     body.append(
       s ? h('div', { class: 'bigclock' },
-        h('div', {}, h('b', {}, s.y), h('small', {}, 'yıl')), h('div', {}, h('b', {}, s.m), h('small', {}, 'ay')), h('div', {}, h('b', {}, s.d), h('small', {}, 'gün')))
+        h('div', {}, h('b', {}, s.y), h('small', {}, 'yıl')), h('div', {}, h('b', {}, s.m), h('small', {}, t('ay'))), h('div', {}, h('b', {}, s.d), h('small', {}, 'gün')))
         : h('p', {}, 'Birlikte olduğunuz günü girin; saat ondan sonrasını saysın.'),
-      s ? h('p', { class: 'center' }, `Toplam ${s.total.toLocaleString('tr-TR')} gün. ${s.toAnniv === 0 ? `Bugün ${s.annivN}. yıl dönümünüz! 🎉` : `${s.annivN}. yıl dönümüne ${s.toAnniv} gün.`}`) : null,
-      meetLeft != null && meetLeft >= 0 ? h('div', { class: 'meet' }, h('b', {}, meetLeft === 0 ? 'Bugün buluşuyorsunuz 💞' : `${meetLeft} gün sonra buluşuyorsunuz ✈️`), rel.meetNote ? h('small', {}, rel.meetNote) : null) : null,
-      ctx.partnerTz() && ctx.partnerTz() !== tz ? h('p', { class: 'center small' }, `Sende saat ${fmt(tz)} · ${ctx.partnerName()}'de ${fmt(ctx.partnerTz())}`) : null,
+      s ? h('p', { class: 'center' }, t('Toplam {n} gün.', { n: s.total.toLocaleString(locale) }) + ' ' + (s.toAnniv === 0 ? t('Bugün {n}. yıl dönümünüz! 🎉', { n: s.annivN }) : t('{n}. yıl dönümüne {d} gün.', { n: s.annivN, d: s.toAnniv }))) : null,
+      meetLeft != null && meetLeft >= 0 ? h('div', { class: 'meet' }, h('b', {}, meetLeft === 0 ? t('Bugün buluşuyorsunuz 💞') : t('{n} gün sonra buluşuyorsunuz ✈️', { n: meetLeft })), rel.meetNote ? h('small', {}, rel.meetNote) : null) : null,
+      ctx.partnerTz() && ctx.partnerTz() !== tz ? h('p', { class: 'center small' }, t('Sende saat {mine} · {name} tarafında {theirs}', { mine: fmt(tz), name: ctx.partnerName(), theirs: fmt(ctx.partnerTz()) })) : null,
     );
     const year = new Date(now()).getFullYear();
     const sinceIn = datePicker(rel.since, { from: year - 60, to: year });
@@ -160,11 +161,11 @@ export function createLife(ctx) {
     const list = h('div', { class: 'diary' }, h('p', { class: 'small' }, 'Yükleniyor…'));
     body.append(tabs, text, tab === 'letter' ? h('div', { class: 'field' }, h('b', {}, 'Mektup hangi gün açılsın?'), date) : null,
       h('button', { class: 'primary', html: `${icon('send')} ${tab === 'diary' ? 'Yaz' : 'Mektubu mühürle'}`, onclick: async () => {
-        const t = text.value.trim();
-        if (!t) return text.focus();
+        const body_ = text.value.trim();
+        if (!body_) return text.focus();
         if (tab === 'letter' && !date.value) return toast('Açılış gününü seç');
         if (tab === 'letter' && parseDay(date.value) <= now()) return toast('Açılış günü ileri bir tarih olmalı');
-        await push(live.ref('diary'), { by: uid, name: ctx.myName(), side: ctx.mySide(), text: t, at: serverTimestamp(), ...(tab === 'letter' ? { openAt: parseDay(date.value) } : {}) });
+        await push(live.ref('diary'), { by: uid, name: ctx.myName(), side: ctx.mySide(), text: body_, at: serverTimestamp(), ...(tab === 'letter' ? { openAt: parseDay(date.value) } : {}) });
         live.stat('diary');
         text.value = '';
         toast(tab === 'diary' ? 'Günlüğe yazıldı ✍️' : 'Mektup mühürlendi 💌');
@@ -179,9 +180,9 @@ export function createLife(ctx) {
       shown.forEach((x) => {
         const locked = x.openAt && x.openAt > now();
         list.append(h('article', { class: x.side === 'moon' ? 'moon' : 'sun' },
-          h('header', {}, h('b', {}, `${x.side === 'moon' ? '🌙' : '☀️'} ${x.name || ''}`), h('small', {}, x.openAt ? (locked ? `${fmtDate(x.openAt)} günü açılacak` : `${fmtDate(x.at || now())} yazıldı`) : fmtTime(x.at || now()))),
+          h('header', {}, h('b', {}, `${x.side === 'moon' ? '🌙' : '☀️'} ${x.name || ''}`), h('small', {}, x.openAt ? (locked ? t('{date} günü açılacak', { date: fmtDate(x.openAt) }) : t('{date} yazıldı', { date: fmtDate(x.at || now()) })) : fmtTime(x.at || now()))),
           locked ? h('p', { class: 'locked', html: `${icon('lock')} Mühürlü mektup` }) : h('p', {}, x.text),
-          x.by === uid ? h('button', { class: 'link', onclick: () => confirm('Silinsin mi?') && remove(live.ref(`diary/${x.key}`)) }, 'sil') : null,
+          x.by === uid ? h('button', { class: 'link', onclick: () => confirm(t('Silinsin mi?')) && remove(live.ref(`diary/${x.key}`)) }, 'sil') : null,
         ));
       });
     });
@@ -191,8 +192,8 @@ export function createLife(ctx) {
   live.on('jar', (v) => {
     const prev = jar;
     jar = v;
-    if (v && prev && v.q === prev.q && v.answers && ctx.partnerUid() && v.answers[ctx.partnerUid()] && !prev.answers?.[ctx.partnerUid()]) toast(`${ctx.partnerName()} kavanoz sorusunu cevapladı 🫙`);
-    if (v && prev !== undefined && prev?.q !== v.q && v.by !== uid) toast(`${ctx.partnerName()} kavanozdan bir soru çekti 🫙`);
+    if (v && prev && v.q === prev.q && v.answers && ctx.partnerUid() && v.answers[ctx.partnerUid()] && !prev.answers?.[ctx.partnerUid()]) toast(t('{name} kavanoz sorusunu cevapladı 🫙', { name: ctx.partnerName() }));
+    if (v && prev !== undefined && prev?.q !== v.q && v.by !== uid) toast(t('{name} kavanozdan bir soru çekti 🫙', { name: ctx.partnerName() }));
     renderJar();
   });
   live.on('jarUsed', (v) => (jarUsed = v || {}));
@@ -210,17 +211,17 @@ export function createLife(ctx) {
     const b = jarBody;
     b.innerHTML = '';
     if (!jar) {
-      b.append(h('p', {}, 'Kavanozda ' + QUESTIONS.length + ' soru var. Biriniz çeksin, ikiniz de cevaplayın: cevaplar ikiniz de yazınca aynı anda açılır.'), h('button', { class: 'primary', onclick: draw }, 'Kavanozdan soru çek'));
+      b.append(h('p', {}, t('Kavanozda {n} soru var. Biriniz çeksin, ikiniz de cevaplayın: cevaplar ikiniz de yazınca aynı anda açılır.', { n: QUESTIONS.length })), h('button', { class: 'primary', onclick: draw }, 'Kavanozdan soru çek'));
       return;
     }
     const pu = ctx.partnerUid();
     const mine = jar.answers?.[uid], theirs = pu && jar.answers?.[pu];
     b.append(h('blockquote', { class: 'question' }, QUESTIONS[jar.q]));
     if (!mine) {
-      const t = h('textarea', { rows: 3, maxLength: 600, placeholder: 'Cevabın (partnerin de cevaplayınca görünür)' });
-      b.append(t, h('button', { class: 'primary', onclick: async () => { if (!t.value.trim()) return t.focus(); await set(live.ref(`jar/answers/${uid}`), t.value.trim()); live.stat('answers'); } }, 'Cevabı gönder'));
+      const ta = h('textarea', { rows: 3, maxLength: 600, placeholder: 'Cevabın (partnerin de cevaplayınca görünür)' });
+      b.append(ta, h('button', { class: 'primary', onclick: async () => { if (!ta.value.trim()) return ta.focus(); await set(live.ref(`jar/answers/${uid}`), ta.value.trim()); live.stat('answers'); } }, 'Cevabı gönder'));
     } else if (!theirs) {
-      b.append(h('p', { class: 'locked', html: `${icon('lock')} Cevabın kilitli. ${ctx.partnerName()} cevaplayınca ikisi birden açılacak.` }));
+      b.append(h('p', { class: 'locked', html: `${icon('lock')} ` + esc(t('Cevabın kilitli. {name} cevaplayınca ikisi birden açılacak.', { name: ctx.partnerName() })) }));
     } else {
       b.append(
         h('div', { class: 'answers' },

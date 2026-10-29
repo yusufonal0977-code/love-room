@@ -5,17 +5,19 @@
 // açıp kapatmak yeniden anlaşma gerektirmez; sadece o kanaldaki parça değişir.
 // Farklı ağlarda (mobil veri, sıkı modemler) bağlantı config.js'teki TURN sunucusu üzerinden geçer.
 import { ICE_SERVERS } from './config.js';
+import { t } from './i18n.js';
 
 const SLOTS = ['audio', 'cam', 'screen', 'screenAudio'];
 
 /** Tarayıcı hatasını kullanıcıya anlaşılır bir cümleye çevirir. */
 export function mediaError(e, what) {
   const n = e?.name || '';
-  if (!window.isSecureContext) return `${what} sadece https adresinde çalışır.`;
-  if (n === 'NotAllowedError' || n === 'SecurityError') return `${what} izni verilmedi. Adres çubuğundaki kilit 🔒 simgesinden izin verip sayfayı yenile.`;
-  if (n === 'NotFoundError' || n === 'OverconstrainedError') return `${what} bulunamadı.`;
-  if (n === 'NotReadableError' || n === 'AbortError') return `${what} başka bir uygulama tarafından kullanılıyor (Zoom, Discord vb. kapat).`;
-  return `${what} açılamadı.`;
+  what = t(what);
+  if (!window.isSecureContext) return t('{what} sadece https adresinde çalışır.', { what });
+  if (n === 'NotAllowedError' || n === 'SecurityError') return t('{what} izni verilmedi. Adres çubuğundaki kilit 🔒 simgesinden izin verip sayfayı yenile.', { what });
+  if (n === 'NotFoundError' || n === 'OverconstrainedError') return t('{what} bulunamadı.', { what });
+  if (n === 'NotReadableError' || n === 'AbortError') return t('{what} başka bir uygulama tarafından kullanılıyor (Zoom, Discord vb. kapat).', { what });
+  return t('{what} açılamadı.', { what });
 }
 
 export function createCall({ uid, send, onRemote, onState }) {

@@ -1,6 +1,7 @@
 // Oyun motoru: sahne çizimi, yürüme + yol bulma, kapılar, oturma, etkileşim, ışık, partner gösterimi,
 // tam ekran kamera, sarılma/öpücük animasyonları ve eşya taşıma (dekor) modu.
 import { R, characterSprites, catSprites, SUN_BADGE, MOON_BADGE, HEART, HEART_BIG, SPARK } from './art.js';
+import { t } from './i18n.js';
 import { DECOR, SCENES, W, H, WALL, bump, layout, lightsOf } from './scenes.js';
 
 const CELL = 4, GW = Math.ceil(W / CELL), GH = Math.ceil(H / CELL);
@@ -148,7 +149,7 @@ export function createGame(opts) {
     const seats = lay().seats;
     const taken = partner.shown && partner.scene === me.scene ? partner.seat : -1;
     const free = seats.findIndex((s, i) => s.group === group && i !== taken);
-    if (free < 0) return opts.onToast?.('Burada yer yok 🙂');
+    if (free < 0) return opts.onToast?.(t('Burada yer yok 🙂'));
     const s = seats[free];
     me.seat = free; me.x = s.x; me.y = s.y; me.dir = s.pose === 'back' ? 'up' : 'down'; me.target = null; me.path = [];
     changed();
@@ -443,8 +444,8 @@ export function createGame(opts) {
     opts.placeVideo?.('partner', partner.x, pShown ? headY(partner) - 12 : 0, pShown);
     const s = !edit && me.seat < 0 && !me.target && !fadeTo ? nearestSpot() : null;
     prompt.style.display = !edit && (s || me.seat >= 0) ? '' : 'none';
-    if (me.seat >= 0) { place(prompt, me.x, headY(me) - 20); prompt.textContent = 'E · Kalk'; }
-    else if (s) { const p = spotPos(s); place(prompt, p.x, Math.max(14, p.y - 26)); prompt.textContent = 'E · ' + s.label(opts.getShared()); }
+    if (me.seat >= 0) { place(prompt, me.x, headY(me) - 20); prompt.textContent = 'E · ' + t('Kalk'); }
+    else if (s) { const p = spotPos(s); place(prompt, p.x, Math.max(14, p.y - 26)); prompt.textContent = 'E · ' + t(s.label(opts.getShared())); }
   }
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
@@ -575,7 +576,7 @@ export function createGame(opts) {
     approach(cb) {
       const side = me.x < partner.x ? -1 : 1;
       const tx = partner.x + side * 12, ty = partner.y;
-      walkTo(blocked(tx, ty) ? partner.x - side * 12 : tx, ty, () => (together() ? cb() : opts.onToast?.('Yanına ulaşamadım 🙂')));
+      walkTo(blocked(tx, ty) ? partner.x - side * 12 : tx, ty, () => (together() ? cb() : opts.onToast?.(t('Yanına ulaşamadım 🙂'))));
     },
     /** Belirli bir sahneye/noktaya ışınla (aktivite menüsünden). */
     goto(sceneId, x, y) { if (me.scene !== sceneId) { me.scene = sceneId; opts.onSceneChange?.(sceneId); } me.seat = -1; me.x = x; me.y = y; me.target = null; me.path = []; cam.snap = true; changed(); },

@@ -5,6 +5,7 @@ import { h, icon, openSheet, closeSheet, toast, $ } from '../ui.js';
 import { push, remove, set } from '../fb.js';
 import { DECOR, SCENES, WALL, H, bump, repaint } from '../scenes.js';
 import { CATALOG, THEMES, MOTIFS } from '../decor.js';
+import { t } from '../i18n.js';
 
 export function createDecorUI(ctx) {
   const { live, game } = ctx;
@@ -44,7 +45,7 @@ export function createDecorUI(ctx) {
     await push(live.ref(`decor/${scene()}/items`), { type, x, y });
     live.stat('decor');
     closeSheet();
-    toast(`${it.name} ${SCENES[scene()].name.toLowerCase()} içine yerleşti. Yerini değiştirmek için "Eşyaları taşı".`, 3500);
+    toast(t('{item} → {room}. Yerini değiştirmek için "Eşyaları taşı".', { item: t(it.name), room: t(SCENES[scene()].name) }), 3500);
   }
 
   function open(tab = 'shop', roomId = null) {
@@ -78,7 +79,7 @@ export function createDecorUI(ctx) {
       outdoor ? pick('Karo 2', 'accent') : null,
     ));
     if (!outdoor) body.append(h('small', {}, 'Duvar kâğıdı deseni'), h('div', { class: 'row wrap' }, ...MOTIFS.map(([m, name]) => h('button', { class: cur.motif === m ? 'sel' : '', onclick: () => { save({ motif: m }); open('paint'); } }, name))));
-    body.append(h('button', { class: 'link', onclick: () => { if (confirm('Bu odanın boyası, eşya yerleri ve eklenen dekorlar sıfırlansın mı?')) { remove(live.ref(`decor/${sc.id}`)); closeSheet(); } } }, 'Bu odayı ilk haline döndür'));
+    body.append(h('button', { class: 'link', onclick: () => { if (confirm(t('Bu odanın boyası, eşya yerleri ve eklenen dekorlar sıfırlansın mı?'))) { remove(live.ref(`decor/${sc.id}`)); closeSheet(); } } }, 'Bu odayı ilk haline döndür'));
   }
 
   // ---------- Taşıma modu ----------
@@ -95,9 +96,9 @@ export function createDecorUI(ctx) {
     document.body.classList.remove('editing');
   }
   function updateBar() {
-    $('editHint').textContent = sel ? (sel.kind === 'item' ? `${sel.it.c.name} seçili · sürükle` : 'Sürükleyerek taşı') : 'Bir eşyaya dokun ve sürükle';
+    $('editHint').textContent = sel ? (sel.kind === 'item' ? t('{item} seçili · sürükle', { item: t(sel.it.c.name) }) : t('Sürükleyerek taşı')) : t('Bir eşyaya dokun ve sürükle');
     $('editRemove').hidden = !sel;
-    $('editRemove').textContent = sel?.kind === 'item' ? 'Kaldır' : 'Yerine koy';
+    $('editRemove').textContent = t(sel?.kind === 'item' ? 'Kaldır' : 'Yerine koy');
   }
   $('editDone').onclick = stopEdit;
   $('editAdd').onclick = () => { stopEdit(); open('shop'); };

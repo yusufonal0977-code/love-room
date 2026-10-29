@@ -6,6 +6,7 @@
 import { h, icon, openSheet, closeSheet, toast, pickImage, compressImage, loadImg, saveImage, fmtDate } from '../ui.js';
 import { get, limitToLast, push, query, remove, serverTimestamp, set, now } from '../fb.js';
 import { DECOR, SCENES, bump } from '../scenes.js';
+import { t } from '../i18n.js';
 
 const FRAMES = Object.values(SCENES).flatMap((s) => (s.frames || []).map((f) => ({ ...f, scene: s.name, sceneId: s.id })));
 
@@ -33,7 +34,7 @@ export function createPhotos(ctx) {
     const f = FRAMES.find((x) => x.id === id);
     const cur = frames[id];
     const body = openSheet({ title: 'Tablo', iconName: 'album' });
-    if (cur?.img) body.append(h('img', { class: 'bigphoto', src: cur.img, alt: '' }), h('small', {}, `${fmtDate(cur.at || now())} · ${cur.by === uid ? 'sen astın' : ctx.partnerName() + ' astı'}`));
+    if (cur?.img) body.append(h('img', { class: 'bigphoto', src: cur.img, alt: '' }), h('small', {}, `${fmtDate(cur.at || now())} · ${cur.by === uid ? t('sen astın') : t('{name} astı', { name: ctx.partnerName() })}`));
     else body.append(h('p', {}, 'Bu çerçeve boş. Bir fotoğrafınızı koyun, evde piksel tablo olarak dursun.'));
     body.append(h('div', { class: 'row wrap' },
       h('button', { class: 'primary', html: `${icon('upload')} Fotoğraf koy`, onclick: async () => {
@@ -41,7 +42,7 @@ export function createPhotos(ctx) {
         if (!file) return;
         const img = await compressImage(file, 720);
         await set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() });
-        if (confirm('Albüme de eklensin mi?')) addToAlbum(img, f.scene);
+        if (confirm(t('Albüme de eklensin mi?'))) addToAlbum(img, t(f.scene));
         closeSheet(); toast('Tabloya asıldı 🖼️');
       } }),
       h('button', { onclick: () => openAlbum((img) => set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() }).then(() => toast('Tabloya asıldı 🖼️'))) }, 'Albümden seç'),
@@ -57,7 +58,7 @@ export function createPhotos(ctx) {
       pickCb ? null : h('div', { class: 'row' }, h('button', { html: `${icon('upload')} Anı ekle`, onclick: async () => {
         const file = await pickImage();
         if (!file) return;
-        const title = prompt('Bu anıya bir başlık? (boş bırakabilirsin)') || '';
+        const title = prompt(t('Bu anıya bir başlık? (boş bırakabilirsin)')) || '';
         await addToAlbum(await compressImage(file, 900, 0.8), title);
         openAlbum();
       } }), h('button', { onclick: openBooth, html: `${icon('booth')} Fotoğraf kabini` })),
@@ -75,8 +76,8 @@ export function createPhotos(ctx) {
     body.append(h('img', { class: 'bigphoto', src: it.img, alt: '' }), h('small', {}, fmtDate(it.at || now())),
       h('div', { class: 'row wrap' },
         h('button', { class: 'primary', html: `${icon('download')} Galeriye kaydet`, onclick: () => saveImage(it.img, `love-room-${it.key}.jpg`) }),
-        ...FRAMES.map((f) => h('button', { onclick: async () => { await set(live.ref(`frames/${f.id}`), { img: await compressImage(it.img, 720), by: uid, at: serverTimestamp() }); toast(`${f.scene} tablosuna asıldı`); } }, `${f.scene} tablosuna as`)),
-        h('button', { class: 'link', onclick: () => { if (confirm('Bu fotoğraf albümden silinsin mi?')) { remove(live.ref(`album/${it.key}`)); openAlbum(); } } }, 'Sil'),
+        ...FRAMES.map((f) => h('button', { onclick: async () => { await set(live.ref(`frames/${f.id}`), { img: await compressImage(it.img, 720), by: uid, at: serverTimestamp() }); toast(t('{room} tablosuna asıldı', { room: t(f.scene) })); } }, t('{room} tablosuna as', { room: t(f.scene) }))),
+        h('button', { class: 'link', onclick: () => { if (confirm(t('Bu fotoğraf albümden silinsin mi?'))) { remove(live.ref(`album/${it.key}`)); openAlbum(); } } }, 'Sil'),
         h('button', { class: 'link', onclick: () => openAlbum() }, 'Albüme dön'),
       ));
   }
@@ -145,7 +146,7 @@ export function createPhotos(ctx) {
       const box = h('div', { class: 'slot' });
       if (img) box.append(h('img', { src: img, alt: '' }));
       else if (mine && mode === 'now') { const v = h('video', { class: 'live', playsInline: true, muted: true, autoplay: true }); box.append(v); startCam(v).catch(() => box.append(h('p', { class: 'small' }, 'Kamera açılamadı'))); }
-      else box.append(h('div', { class: 'empty' }, mine ? 'Senin fotoğrafın' : `${ctx.partnerName()} bekleniyor…`));
+      else box.append(h('div', { class: 'empty' }, mine ? 'Senin fotoğrafın' : t('{name} bekleniyor…', { name: ctx.partnerName() })));
       box.append(h('b', {}, mine ? (ctx.mySide() === 'moon' ? '🌙 ' : '☀️ ') + ctx.myName() : (ctx.mySide() === 'moon' ? '☀️ ' : '🌙 ') + ctx.partnerName()));
       if (mine) box.append(h('div', { class: 'row' },
         mode === 'now' && !img ? h('button', { onclick: snap }, 'Çek') : null,
@@ -195,7 +196,7 @@ export function createPhotos(ctx) {
     g.font = '600 30px "Pixelify Sans", monospace';
     g.fillText(`☀️ ${lName}`, 205, 470); g.fillText(`🌙 ${rName}`, 555, 470);
     g.font = '700 26px "Pixelify Sans", monospace'; g.fillStyle = '#ff4f7b';
-    g.fillText(mode === 'kid' ? 'Biz küçükken' : mode === 'then' ? 'Aynı anı, iki kalp' : fmtDate(now()), 380, 46);
+    g.fillText(mode === 'kid' ? t('Biz küçükken') : mode === 'then' ? t('Aynı anı, iki kalp') : fmtDate(now()), 380, 46);
     g.font = '18px "Pixelify Sans", monospace'; g.fillStyle = '#b8ad8c';
     g.fillText('Get Love Room', 380, 506);
     return c.toDataURL('image/jpeg', 0.85);
@@ -203,7 +204,7 @@ export function createPhotos(ctx) {
   async function saveStrip() {
     const img = await composeStrip();
     const mode = booth.mode || 'now';
-    await addToAlbum(img, mode === 'kid' ? 'Biz küçükken' : mode === 'then' ? 'Aynı anı' : 'Kabin · ' + fmtDate(now()));
+    await addToAlbum(img, mode === 'kid' ? t('Biz küçükken') : mode === 'then' ? t('Aynı anı') : t('Kabin') + ' · ' + fmtDate(now()));
     toast('Şerit albüme kaydedildi 📸');
     ctx.onAward?.();
   }

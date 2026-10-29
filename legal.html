@@ -16,7 +16,7 @@
   header { text-align: center; padding: 32px 16px 8px; }
   header img { width: 96px; mix-blend-mode: lighten; }
   h1, h2, h4, nav { font-family: 'Pixelify Sans', monospace; }
-  h1 { margin: 6px 0 0; letter-spacing: 2px; } h1 span { color: var(--sun); } h1 .get { font-size: .5em; color: var(--dim); vertical-align: middle; }
+  h1 { margin: 6px 0 0; letter-spacing: 2px; } h1 span { color: var(--sun); } h1 .get { color: #fff6d8; text-shadow: 0 0 14px rgba(252,223,75,.45); border-bottom: 3px solid var(--sun); }
   nav { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 12px 16px; position: sticky; top: 0; background: rgba(0,0,0,.85); backdrop-filter: blur(8px); z-index: 1; }
   nav a { color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
   nav a:hover { border-color: var(--sun); }
@@ -27,24 +27,28 @@
   a { color: var(--sun); }
   .muted { color: var(--dim); font-size: 13px; }
   footer { text-align: center; color: var(--dim); font-size: 13px; padding: 0 16px 32px; }
+  .langpick { display: block; margin: 10px auto 0; }
   .back { display: inline-block; margin-top: 8px; font-family: 'Pixelify Sans', monospace; }
 </style>
 </head>
 <body>
 <header>
   <img src="assets/loveroom-logo.webp" alt="">
-  <h1><small class="get">Get</small> Love <span>Room</span></h1>
-  <a class="back" href="./">← Eve dön</a>
+  <h1><span class="get">Get</span> Love <span>Room</span></h1>
+  <a class="back" href="./" data-t>← Eve dön</a>
 </header>
 <nav id="nav"></nav>
 <main id="main"></main>
-<footer>© 2026 Eclip Software &amp; Entertainment Company · Bekâr bir geliştiricinin elinden, çiftlere sevgiyle.</footer>
+<footer>© 2026 Eclip Software &amp; Entertainment Company · <span data-t>Bekâr bir geliştiricinin elinden, çiftlere sevgiyle.</span></footer>
 <script type="module">
+  import { initI18n, t, langPicker } from './js/i18n.js';
   import { LEGAL } from './js/legal.js';
+  await initI18n();
+  document.querySelector('header').append(langPicker());
   const nav = document.getElementById('nav'), main = document.getElementById('main');
   for (const d of LEGAL) {
-    nav.insertAdjacentHTML('beforeend', `<a href="#${d.id}">${d.title}</a>`);
-    main.insertAdjacentHTML('beforeend', `<section id="${d.id}"><h2>${d.title}</h2>${d.html}</section>`);
+    nav.insertAdjacentHTML('beforeend', `<a href="#${d.id}">${t(d.title)}</a>`);
+    main.insertAdjacentHTML('beforeend', `<section id="${d.id}"><h2>${t(d.title)}</h2>${d.html}</section>`);
   }
   if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
 </script>

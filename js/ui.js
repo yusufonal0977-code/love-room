@@ -1,8 +1,13 @@
 // Ortak arayüz parçaları: DOM yardımcısı, çizgi ikonlar, alt pencere (sheet), bildirim, fotoğraf sıkıştırma.
 
+import { t, locale } from './i18n.js';
+
 export const $ = (id) => document.getElementById(id);
 
-/** Küçük DOM üreticisi: h('button', {class:'x', onclick}, 'yazı', çocuk…) */
+/** HTML içindeki düz metin parçalarını çevirir (ikon + yazı düğmeleri için). */
+const trHtml = (html) => html.replace(/(^|>)([^<]+)(?=<|$)/g, (m, a, txt) => { const k = txt.trim(); return k && /[A-Za-zÇĞİÖŞÜçğıöşü]/.test(k) ? a + txt.replace(k, t(k)) : m; });
+
+/** Küçük DOM üreticisi: h('button', {class:'x', onclick}, 'yazı', çocuk…). Yazılar seçili dile çevrilir. */
 export function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs || {})) {
@@ -10,11 +15,12 @@ export function h(tag, attrs = {}, ...kids) {
     if (k.startsWith('on')) el[k] = v;
     else if (k === 'class') el.className = v;
     else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
-    else if (k === 'html') el.innerHTML = v;
+    else if (k === 'html') el.innerHTML = trHtml(v);
+    else if (k === 'title' || k === 'placeholder') el.setAttribute(k, t(v));
     else if (k in el && typeof v !== 'string') el[k] = v;
     else el.setAttribute(k, v === true ? '' : v);
   }
-  for (const c of kids.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(String(c)));
+  for (const c of kids.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(typeof c === 'string' ? t(c) : String(c)));
   return el;
 }
 
@@ -72,11 +78,11 @@ export const iconEl = (name, cls) => h('span', { class: 'icw', html: icon(name, 
 // ---------- Bildirim ----------
 let toastT;
 export function toast(msg, ms = 2800) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.style.opacity = 1;
+  const el = $('toast');
+  el.textContent = typeof msg === 'string' ? t(msg) : msg;
+  el.style.opacity = 1;
   clearTimeout(toastT);
-  toastT = setTimeout(() => (t.style.opacity = 0), ms);
+  toastT = setTimeout(() => (el.style.opacity = 0), ms);
 }
 
 // ---------- Alt pencere ----------
@@ -86,7 +92,7 @@ export function openSheet({ title, iconName, wide = false, onClose = null }) {
   closeSheet();
   const m = $('sheet');
   m.querySelector('.card').className = `card sheet${wide ? ' wide' : ''}`;
-  $('sheetTitle').innerHTML = (iconName ? icon(iconName) : '') + `<span>${esc(title)}</span>`;
+  $('sheetTitle').innerHTML = (iconName ? icon(iconName) : '') + `<span>${esc(t(title))}</span>`;
   const body = $('sheetBody');
   body.innerHTML = '';
   // Koşullu parçalar (cond ? el : null) metin olarak "null" yazmasın
@@ -141,5 +147,5 @@ export async function saveImage(dataUrl, name) {
   download(dataUrl, name);
 }
 
-export const fmtDate = (ms) => new Date(ms).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-export const fmtTime = (ms) => new Date(ms).toLocaleString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+export const fmtDate = (ms) => new Date(ms).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+export const fmtTime = (ms) => new Date(ms).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });

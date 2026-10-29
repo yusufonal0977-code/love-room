@@ -10,6 +10,7 @@ import { h, icon, openSheet, closeSheet, toast, esc } from '../ui.js';
 import { serverTimestamp, set, now } from '../fb.js';
 import { SPOTIFY_CLIENT_ID, APP_URL } from '../config.js';
 import { DECOR } from '../scenes.js';
+import { t } from '../i18n.js';
 
 const SCOPES = 'streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public';
 const KEY = 'lr.sp';
@@ -160,7 +161,7 @@ export function createSpotify(ctx) {
     render();
     if (!v) { if (prev) pauseHere(); return; }
     if (v.by === uid) return;
-    if (prev !== undefined && prev?.track !== v.track) toast(`🎵 ${v.trackName || v.name || 'Müzik'}${v.artist ? ' · ' + v.artist : ''}`);
+    if (prev !== undefined && prev?.track !== v.track) toast(`🎵 ${v.trackName || v.name || t('Müzik')}${v.artist ? ' · ' + v.artist : ''}`);
     if (!connected()) return;
     if (v.playing) playHere(v); else pauseHere();
   });
@@ -268,13 +269,13 @@ export function createSpotify(ctx) {
     };
     b.append(search, results);
     const listEl = (l) => h('button', { class: 'pl', onclick: () => choose(l) }, l.image ? h('img', { src: l.image, alt: '' }) : h('div', { class: 'npart', html: icon('music') }), h('span', {}, l.name));
-    if (partnerLists.length) b.append(h('small', {}, `${ctx.partnerName()}'in listeleri`), h('div', { class: 'pls' }, ...partnerLists.map(listEl)));
+    if (partnerLists.length) b.append(h('small', {}, t('{name} · listeleri', { name: ctx.partnerName() })), h('div', { class: 'pls' }, ...partnerLists.map(listEl)));
     b.append(h('small', {}, 'Senin listelerin'), h('div', { class: 'pls' }, ...myLists.map(listEl)));
     b.append(h('div', { class: 'row' },
       h('button', { onclick: makeShared }, 'Ortak liste oluştur'),
       h('button', { class: 'link', onclick: () => { saveTok(null); me = null; meTried = false; sdkPlayer?.disconnect(); sdkPlayer = null; sdkDevice = null; render(); } }, 'Spotify bağlantısını kes'),
     ));
-    b.append(h('p', { class: 'small' }, `${me.display_name || ''} olarak bağlı · ${sdkDevice ? 'bu sayfada çalıyor' : isMobile ? 'Spotify uygulamandan çalıyor' : 'oynatıcı hazırlanıyor…'}`));
+    b.append(h('p', { class: 'small' }, t('{name} olarak bağlı', { name: me.display_name || '' }) + ' · ' + t(sdkDevice ? 'bu sayfada çalıyor' : isMobile ? 'Spotify uygulamandan çalıyor' : 'oynatıcı hazırlanıyor…')));
   }
 
   function open() {

@@ -34,6 +34,10 @@ Alt çubuktaki **Birlikte** düğmesi her şeyi tek yerden açar.
 - **Dokunuşlar:** kalp, sarılma ve öpücük: aynı odadaysanız karakterin partnerine yürür, birbirinize dönüp sarılırsınız ya da öpüşürsünüz.
 - **Küçük pencere** modu ve **tam ekran** (telefonda "Ana Ekrana Ekle" ile uygulama gibi açılır).
 
+## Diller
+
+Türkçe, English, Español, Deutsch, Français, Português. İlk açılışta tarayıcının dili seçilir; giriş ekranının sağ üstünden ve Menü → Dil'den değiştirilir. Çeviriler `js/i18n/<dil>.js` içinde (anahtar: Türkçe kaynak metin). Hukuki metinler Türkçe ve İngilizce.
+
 ## Gizlilik
 
 İlk girişte Kullanım Koşulları, Gizlilik Politikası ve KVKK onayı alınır ([legal.html](legal.html)). Menü → *Verilerimi sil* hesabı ve ortak evi kalıcı olarak siler.

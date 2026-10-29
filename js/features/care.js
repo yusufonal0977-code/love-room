@@ -6,6 +6,7 @@
 import { h, icon, openSheet, toast } from '../ui.js';
 import { serverTimestamp, set, update, now } from '../fb.js';
 import { DECOR, bump } from '../scenes.js';
+import { t } from '../i18n.js';
 
 const HOUR = 3_600_000, DAY = 24 * HOUR;
 const clamp = (v) => Math.max(0, Math.min(100, Math.round(v)));
@@ -48,7 +49,7 @@ export function createCare(ctx) {
   async function care(kind) {
     const p = petNow();
     const gain = { food: 35, love: 30, play: 30 }[kind];
-    if (p[kind] >= 98) return toast(kind === 'food' ? `${p.name} tok 😺` : `${p.name} şu an yeterince ${kind === 'love' ? 'sevildi' : 'oynadı'} 😺`);
+    if (p[kind] >= 98) return toast(t(kind === 'food' ? '{name} tok 😺' : kind === 'love' ? '{name} şu an yeterince sevildi 😺' : '{name} şu an yeterince oynadı 😺', { name: p.name }));
     await set(live.ref('pet'), { name: p.name, food: p.food, love: p.love, play: p.play, [kind]: clamp(p[kind] + gain), xp: (p.xp || 0) + 1, at: serverTimestamp() });
     live.stat('pet');
     ctx.onPetCare?.(kind);
@@ -64,7 +65,7 @@ export function createCare(ctx) {
     name.onchange = () => update(live.ref('pet'), { name: name.value.trim() || 'Pamuk' });
     petBody.append(
       h('label', {}, 'Adı', name),
-      h('p', { class: 'small' }, `Seviye ${lv} · ${title(lv)} · ${p.xp || 0} bakım`),
+      h('p', { class: 'small' }, t('Seviye {lv} · {title} · {n} bakım', { lv, title: t(title(lv)), n: p.xp || 0 })),
       bar('Mama', p.food, '#ffc93c'), bar('Sevgi', p.love, '#ff7aa3'), bar('Oyun', p.play, '#8fd0ff'),
       h('div', { class: 'row' },
         h('button', { class: 'primary', onclick: () => care('food') }, 'Mama ver'),
@@ -101,7 +102,7 @@ export function createCare(ctx) {
     const before = stageOf(f.growth || 0);
     const growth = Math.min(100, (f.growth || 0) + 6 + (both ? 6 : 0));
     await update(live.ref('flower'), { growth, [`water/${uid}`]: serverTimestamp() });
-    toast(both ? 'İkiniz de suladınız, çiçek iki kat büyüdü 🌱💧' : `Suladın 💧 ${ctx.partnerName()} da sularsa daha hızlı büyür.`);
+    toast(both ? t('İkiniz de suladınız, çiçek iki kat büyüdü 🌱💧') : t('Suladın 💧 {name} da sularsa daha hızlı büyür.', { name: ctx.partnerName() }));
     if (stageOf(growth) === 3 && before < 3) { live.stat('blooms'); toast('Çiçeğiniz açtı! 🌸', 4000); }
   }
   function renderFlower() {
@@ -111,9 +112,9 @@ export function createCare(ctx) {
     const pu = ctx.partnerUid();
     flowerBody.innerHTML = '';
     flowerBody.append(
-      h('p', {}, ['Tohum', 'Filiz', 'Tomurcuk', 'Çiçek açtı 🌸'][st] + (DECOR.flower.wilt ? ' · susuz kaldı, boynunu büktü' : '')),
+      h('p', {}, t(['Tohum', 'Filiz', 'Tomurcuk', 'Çiçek açtı 🌸'][st]) + (DECOR.flower.wilt ? ' · ' + t('susuz kaldı, boynunu büktü') : '')),
       h('div', { class: 'meter big' }, h('i', { style: { width: (f.growth || 0) + '%', background: '#4fbf6a' } })),
-      h('p', { class: 'small' }, `Bugün: sen ${(f.water?.[uid] || 0) >= today ? 'suladın ✔' : 'sulamadın'} · ${ctx.partnerName()} ${pu && (f.water?.[pu] || 0) >= today ? 'suladı ✔' : 'sulamadı'}`),
+      h('p', { class: 'small' }, t('Bugün: sen {me} · {name} {them}', { me: t((f.water?.[uid] || 0) >= today ? 'suladın ✔' : 'sulamadın'), name: ctx.partnerName(), them: t(pu && (f.water?.[pu] || 0) >= today ? 'suladı ✔' : 'sulamadı') })),
       h('div', { class: 'row' },
         h('button', { class: 'primary', onclick: water }, 'Sula'),
         st === 3 ? h('button', { onclick: async () => { await set(live.ref('flower'), { growth: 0, water: {} }); toast('Yeni tohum ekildi 🌱'); } }, 'Yeni tohum ek') : null,
@@ -132,7 +133,7 @@ export function createCare(ctx) {
     const before = stats ? unlocked(stats) : null;
     stats = v || {};
     if (!before) return;
-    BADGES.filter((b) => unlocked(stats).has(b.id) && !before.has(b.id)).forEach((b) => { toast(`Yeni rozet: ${b.name} 🏅`, 4000); ctx.onBadge?.(b); });
+    BADGES.filter((b) => unlocked(stats).has(b.id) && !before.has(b.id)).forEach((b) => { toast(t('Yeni rozet: {name} 🏅', { name: t(b.name) }), 4000); ctx.onBadge?.(b); });
   });
   // Kâşif: bu cihazda gezilen odalar
   const visited = new Set(JSON.parse(localStorage.getItem('lr.rooms') || '["salon"]'));
@@ -145,7 +146,7 @@ export function createCare(ctx) {
   function openBadges() {
     const body = openSheet({ title: 'Rozetlerimiz', iconName: 'badge', wide: true });
     const got = unlocked(stats);
-    body.append(h('p', { class: 'small' }, `${got.size} / ${BADGES.length} rozet`),
+    body.append(h('p', { class: 'small' }, t('{n} / {total} rozet', { n: got.size, total: BADGES.length })),
       h('div', { class: 'badges' }, ...BADGES.map((b) => {
         const v = Math.min(b.n, stats?.[b.stat] || 0), ok = got.has(b.id);
         return h('div', { class: 'badge' + (ok ? ' ok' : '') },
