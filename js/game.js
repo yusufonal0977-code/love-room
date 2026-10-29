@@ -62,12 +62,13 @@ export function createGame(opts) {
     }
     const vw = innerWidth, vh = innerHeight, sw = W * scale, sh = H * scale;
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-    const focusX = cine ? TV[0] + TV[2] / 2 : me.x;
+    const focusX = cine ? TV[0] + TV[2] / 2 : Math.round(me.x);
     const tx = sw <= vw ? (vw - sw) / 2 : clamp(vw / 2 - focusX * scale, vw - sw, 0);
     // Kanepede TV'ye dönük oturunca kamera TV'yi de gösterecek şekilde yukarı kayar
-    const focusY = cine ? TV[1] + TV[3] / 2 : seatOf(me)?.pose === 'back' ? 64 : me.y - 24;
+    const focusY = cine ? TV[1] + TV[3] / 2 : seatOf(me)?.pose === 'back' ? 64 : Math.round(me.y) - 24;
     const ty = sh <= vh ? (vh - sh) / 2 : clamp((cine ? (vh - 80) / 2 : vh / 2) - focusY * scale, vh - sh, 0);
-    const k = cam.snap ? 1 : Math.min(1, dt * 4);
+    // Yürürken kamera karaktere kilitli (aynı tam piksel adımlarıyla kayar); durunca/geçişlerde yumuşak
+    const k = cam.snap || (me.moving && !cine && scale === targetScale) ? 1 : Math.min(1, dt * 4);
     cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; cam.snap = false;
     stage.style.transform = `translate(${Math.round(cam.x)}px, ${Math.round(cam.y)}px)`;
   }
@@ -415,7 +416,8 @@ export function createGame(opts) {
   function drawPerson(p, at) {
     const img = personImg(p, at?.face, at?.pose);
     const px = at ? at.x + (at.lean ? (at.face === 'right' ? at.lean : -at.lean) : 0) : p.x, py = at ? at.y : p.y;
-    const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + seatPad(p) - (at?.lift || 0));
+    // Önce konumu yuvarla, sonra yarım genişliği çıkar: tek genişlikli karede yuvarlama sağa-sola oynamasın
+    const x = Math.round(px) - (img.width >> 1), y = Math.round(py) - img.height + seatPad(p) - Math.round(at?.lift || 0);
     if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);
     if (!at?.pose) {
@@ -490,7 +492,8 @@ export function createGame(opts) {
   const el = (cls) => { const d = document.createElement('div'); d.className = cls; overlay.appendChild(d); return d; };
   const tagMe = el('tag'), tagP = el('tag'), prompt = el('prompt');
   const speech = { me: { el: el('speech'), until: 0 }, partner: { el: el('speech'), until: 0 } };
-  const place = (node, x, y) => { node.style.left = (x / W) * 100 + '%'; node.style.top = (y / H) * 100 + '%'; };
+  // Etiketler de tam piksele oturur: kamera tam piksel kaydığı için kesirli konum titreşirdi
+  const place = (node, x, y) => { node.style.left = (Math.round(x) / W) * 100 + '%'; node.style.top = (Math.round(y) / H) * 100 + '%'; };
   const voice = '<span class="voice"><i></i><i></i><i></i></span>';
   function updateOverlay() {
     place(tagMe, me.x, headY(me) - 9);

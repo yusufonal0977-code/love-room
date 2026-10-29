@@ -153,7 +153,8 @@ function step(side) {
     const split = lines.length >= 4 ? (lines[1] + lines[lines.length - 2]) / 2 : lines[1];
     for (let x = 0; x < out[0].length; x++) {
       if (side === 'L' ? x >= split : x <= split) continue;
-      out[h - 2][x] = g[h - 1][x];
+      out[h - 3][x] = g[h - 1][x]; // ayak iki satır yukarıda: adım belirgin olsun
+      out[h - 2][x] = '.';
       out[h - 1][x] = '.';
     }
     return out;
