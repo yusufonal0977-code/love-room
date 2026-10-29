@@ -394,28 +394,28 @@ export function createGame(opts) {
   const seatOf = (p) => (p.seat >= 0 ? layout(SCENES[p.scene] || scene()).seats[p.seat] : null);
   function personImg(p, face, pose) {
     const sp = characterSprites(p.look);
-    const f = (p.t * 6 | 0) % 2;
+    // Adım döngüsü: dur, sol ayak, dur, sağ ayak
+    const ph = (p.t * 8 | 0) % 4, f = ph === 1 ? '2' : ph === 3 ? '3' : '';
     const seat = seatOf(p);
     if (seat) return seat.pose === 'back' ? sp.sitBack : sp.sit;
     if (pose === 'kiss') return face === 'right' ? sp.kissR : sp.kissL;
     if (pose === 'hug') return face === 'right' ? sp.hugR : sp.hugL;
     const dir = face || p.dir, mv = !face && p.moving;
-    if (dir === 'up') return mv && f ? sp.up2 : sp.up;
-    if (dir === 'down') return mv && f ? sp.down2 : sp.down;
-    if (dir === 'right') return mv && f ? sp.side2 : sp.side;
-    return mv && f ? sp.side2L : sp.sideL;
+    const k = mv ? f : '';
+    if (dir === 'up') return sp['up' + k];
+    if (dir === 'down') return sp['down' + k];
+    if (dir === 'right') return sp['side' + k];
+    return sp['side' + k + 'L'];
   }
   // Oturan karakterin kesilmiş alt kenarı koltuğa oturur: önden oturuşta 2, arkadan (kanepe) -1 piksel pay
   const seatPad = (p) => { const s = seatOf(p); return s ? (s.pose === 'back' ? -1 : 2) : 1; };
-  // Yürürken her ikinci karede 1 piksel yukarı (tasarımda ayrı yürüme karesi yok)
-  const bob = (p) => (p.moving && p.seat < 0 && (p.t * 6 | 0) % 2 ? 1 : 0);
   // Çizim sırası: kanepede sırtı dönük oturan koltuğun arkasında, öne bakarak oturan koltuğun önünde kalır
   const sortY = (p) => { const s = seatOf(p); return !s ? p.y : s.pose === 'back' ? p.y - 6 : p.y + 12; };
   function headY(p) { return p.y - personImg(p).height + seatPad(p); }
   function drawPerson(p, at) {
     const img = personImg(p, at?.face, at?.pose);
     const px = at ? at.x + (at.lean ? (at.face === 'right' ? at.lean : -at.lean) : 0) : p.x, py = at ? at.y : p.y;
-    const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + seatPad(p) - (at?.lift || 0) - (at ? 0 : bob(p)));
+    const x = Math.round(px - img.width / 2), y = Math.round(py - img.height + seatPad(p) - (at?.lift || 0));
     if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);
     if (!at?.pose) {

@@ -143,18 +143,45 @@ function seated(g) {
   return keep;
 }
 
+/** Yürüme karesi: bir bacağın ayak çizgisi bir satır yukarı alınır (o ayak kalkmış gibi).
+ *  Bacaklar son satırın üstündeki satırdaki iç çizgiden ikiye ayrılır; side = 'L' sol, 'R' sağ bacak. */
+function step(side) {
+  return (g) => {
+    const out = g.map((r) => r.slice()), h = g.length;
+    const lines = g[h - 2].map((c, x) => (c === '#' ? x : -1)).filter((x) => x >= 0);
+    if (lines.length < 3) return out;
+    const split = lines.length >= 4 ? (lines[1] + lines[lines.length - 2]) / 2 : lines[1];
+    for (let x = 0; x < out[0].length; x++) {
+      if (side === 'L' ? x >= split : x <= split) continue;
+      out[h - 2][x] = g[h - 1][x];
+      out[h - 1][x] = '.';
+    }
+    return out;
+  };
+}
+
+/** Yandan yürüme: alt üç satır (ayaklar) bir piksel geri ya da ileri kayar. */
+function swing(dx) {
+  return (g) => g.map((r, y) => {
+    if (y < g.length - 3) return r.slice();
+    const out = r.map(() => '.');
+    r.forEach((c, x) => { if (c !== '.' && x + dx >= 0 && x + dx < r.length) out[x + dx] = c; });
+    return out;
+  });
+}
+
 const cache = new Map();
-/** Görünüme göre tüm yön karelerini üretir (önbellekli). Yürürken kare değişmez, karakter 1 px zıplar. */
+/** Görünüme göre tüm yön karelerini üretir (önbellekli). Duran kare çizimin aynısı; yürürken ayaklar sırayla kalkar. */
 export function characterSprites(look) {
   look = { ...DEFAULT_LOOK, ...(look || {}) };
   const key = JSON.stringify(look);
   if (cache.has(key)) return cache.get(key);
   const F = layers(look, 'front'), B = layers(look, 'back'), S = layers(look, 'side');
   const set = {};
-  set.down = set.down2 = paint(F, look);
-  set.up = set.up2 = paint(B, look);
-  set.side = set.side2 = paint(S, look);
-  set.sideL = set.side2L = mirror(set.side);
+  set.down = paint(F, look); set.down2 = paint(F, look, step('L')); set.down3 = paint(F, look, step('R'));
+  set.up = paint(B, look); set.up2 = paint(B, look, step('L')); set.up3 = paint(B, look, step('R'));
+  set.side = paint(S, look); set.side2 = paint(S, look, swing(-1)); set.side3 = paint(S, look, swing(1));
+  set.sideL = mirror(set.side); set.side2L = mirror(set.side2); set.side3L = mirror(set.side3);
   set.sit = paint(F, look, seated);
   set.sitBack = paint(B, look, seated);
   set.hugR = set.kissR = set.side;
