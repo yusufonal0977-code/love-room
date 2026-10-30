@@ -248,9 +248,23 @@ const PETS = {
     sit: ['..k.k.....', '..k.k.....', '..k.k.....', '.kkkkk....', '.kekek....', '.kknkk....', 'kkkkkkk...', 'kkkkkkkk..', 'kkwwkkkkw.', '.kk..kk...'],
     head: [[12, 1], [3, 1]],
   },
+  // Rakun: gri gövde, açık gri yüz, koyu göz maskesi içinde beyaz parıltı, halkalı kuyruk (t koyu halka)
+  raccoon: {
+    walk: [
+      ['..........k...k.', 'tt........kkkkk.', 'tt........mmlmm.', 'kk........emlme.', 'kkt.......llnll.', '.ttkkkkkkkkkkk..', '..kkkkkkkkkkkk..', '...kkllllllkkk..', '...kk.kk..kk.kk.', '...mm.mm..mm.mm.'],
+      ['..........k...k.', 'tt........kkkkk.', 'tt........mmlmm.', 'kk........emlme.', 'kkt.......llnll.', '.ttkkkkkkkkkkk..', '..kkkkkkkkkkkk..', '...kkllllllkkk..', '....kk.kk..kk.kk', '....mm.mm..mm.mm'],
+    ],
+    sit: ['..k...k...', '..kkkkk...', '..mmlmm...', '..emlme..t', '..llnll.tt', '.kkkkkkkkk', '.kklllkktt', '.kklllkk..', '.kkkkkkk..', '..mm.mm...'],
+    head: [[13, 1], [5, 1]],
+    pal: { e: '#ffffff', l: '#e4e7ec', m: '#3a3a40', t: '#3a3a40', n: '#2b1d16' },
+  },
 };
-export const PET_SPECIES = ['cat', 'dog', 'bunny'];
-export const PET_COLORS = ['#f0a050', '#3a3330', '#f4efe6', '#9a9aa6', '#c8742c', '#e8c9a0'];
+export const PET_SPECIES = ['cat', 'dog', 'bunny', 'raccoon'];
+// Siyah (Pascal) ve rakun grisi sona eklendi; eski renklerin sırası değişmesin
+export const PET_BLACK = '#1f1c24', PET_RACCOON = '#98a2ae';
+export const PET_COLORS = ['#f0a050', '#3a3330', '#f4efe6', '#9a9aa6', '#c8742c', '#e8c9a0', PET_BLACK, PET_RACCOON];
+/** Varsayılan ilk evcil hayvan: siyah kedi Pascal. */
+export const DEFAULT_PET = { name: 'Pascal', species: 'cat', color: PET_BLACK };
 /** Aksesuar: [ad, açılış seviyesi] */
 export const PET_ACC = [['none', 1], ['bow', 1], ['collar', 2], ['hat', 4], ['crown', 8]];
 const petCache = new Map();
@@ -258,7 +272,9 @@ export function petSprites(species = 'cat', color = PET_COLORS[0]) {
   const key = species + color;
   if (petCache.has(key)) return petCache.get(key);
   const d = PETS[species] || PETS.cat;
-  const pal = { k: color, D: shade(color, -0.3), e: '#2b1d16', n: '#2b1d16', w: '#fff1e2' };
+  const pal = { k: color, D: shade(color, -0.3), e: '#2b1d16', n: '#2b1d16', w: '#fff1e2', ...(d.pal || {}) };
+  // Siyah kedide koyu göz görünmez: sarı gözler, kömür grisi göğüs
+  if (color === PET_BLACK && !d.pal) Object.assign(pal, { e: '#f2d14a', n: '#6b6470', w: '#3b3642', D: '#120f16' });
   const right = d.walk.map((r) => sprite(r, pal));
   const set = { right, left: right.map(mirror), sit: sprite(d.sit, pal), head: d.head, w: right[0].width };
   petCache.set(key, set);

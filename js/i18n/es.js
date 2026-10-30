@@ -693,5 +693,10 @@ export default {
  "Kabarık": "Esponjoso",
  "Beden": "Cuerpo",
  "Kız": "Chica",
- "Erkek": "Chico"
+ "Erkek": "Chico",
+ "Rakun": "Mapache",
+ "{name} mamasını patileriyle yıkayıp yedi 🦝": "{name} lavó su comida con las patitas y comió 🦝",
+ "{name} kuyruğunu sarıp sokuldu 🦝": "{name} te rodeó con la cola y se acurrucó 🦝",
+ "{name} parlak bir şey buldu, saklıyor ✨": "{name} encontró algo brillante y lo esconde ✨",
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} está reluciente, ¡hasta el antifaz! 🫧"
 };

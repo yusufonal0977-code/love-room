@@ -693,5 +693,10 @@ export default {
  "Kabarık": "Volumoso",
  "Beden": "Corpo",
  "Kız": "Menina",
- "Erkek": "Menino"
+ "Erkek": "Menino",
+ "Rakun": "Guaxinim",
+ "{name} mamasını patileriyle yıkayıp yedi 🦝": "{name} lavou a comida com as patinhas e comeu 🦝",
+ "{name} kuyruğunu sarıp sokuldu 🦝": "{name} se enrolou com o rabo e se aconchegou 🦝",
+ "{name} parlak bir şey buldu, saklıyor ✨": "{name} achou algo brilhante e está escondendo ✨",
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} está brilhando, até a máscara 🫧"
 };

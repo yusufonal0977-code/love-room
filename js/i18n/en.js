@@ -693,5 +693,10 @@ export default {
  "Kabarık": "Fluffy",
  "Beden": "Body",
  "Kız": "Girl",
- "Erkek": "Boy"
+ "Erkek": "Boy",
+ "Rakun": "Raccoon",
+ "{name} mamasını patileriyle yıkayıp yedi 🦝": "{name} washed its food with its paws, then ate 🦝",
+ "{name} kuyruğunu sarıp sokuldu 🦝": "{name} curled its tail around you and snuggled 🦝",
+ "{name} parlak bir şey buldu, saklıyor ✨": "{name} found something shiny and is hiding it ✨",
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} is spotless, even the mask 🫧"
 };

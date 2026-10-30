@@ -693,5 +693,10 @@ export default {
  "Kabarık": "Fluffig",
  "Beden": "Körper",
  "Kız": "Mädchen",
- "Erkek": "Junge"
+ "Erkek": "Junge",
+ "Rakun": "Waschbär",
+ "{name} mamasını patileriyle yıkayıp yedi 🦝": "{name} hat das Futter mit den Pfoten gewaschen und gefressen 🦝",
+ "{name} kuyruğunu sarıp sokuldu 🦝": "{name} hat sich mit dem Schwanz an dich gekuschelt 🦝",
+ "{name} parlak bir şey buldu, saklıyor ✨": "{name} hat etwas Glänzendes gefunden und versteckt es ✨",
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} glänzt, sogar die Maske 🫧"
 };

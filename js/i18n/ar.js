@@ -693,5 +693,10 @@ export default {
  "Kabarık": "منفوش",
  "Beden": "الجسم",
  "Kız": "فتاة",
- "Erkek": "فتى"
+ "Erkek": "فتى",
+ "Rakun": "راكون",
+ "{name} mamasını patileriyle yıkayıp yedi 🦝": "غسل {name} طعامه بكفّيه ثم أكل 🦝",
+ "{name} kuyruğunu sarıp sokuldu 🦝": "لفّ {name} ذيله حولك واقترب منك 🦝",
+ "{name} parlak bir şey buldu, saklıyor ✨": "وجد {name} شيئًا لامعًا ويخبّئه ✨",
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} نظيف تمامًا، حتى قناعه 🫧"
 };

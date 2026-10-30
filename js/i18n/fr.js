@@ -693,5 +693,10 @@ export default {
  "Kabarık": "Bouffant",
  "Beden": "Silhouette",
  "Kız": "Fille",
- "Erkek": "Garçon"
+ "Erkek": "Garçon",
+ "Rakun": "Raton laveur",
+ "{name} mamasını patileriyle yıkayıp yedi 🦝": "{name} a lavé sa nourriture avec ses pattes avant de manger 🦝",
+ "{name} kuyruğunu sarıp sokuldu 🦝": "{name} s'est blotti contre toi en enroulant sa queue 🦝",
+ "{name} parlak bir şey buldu, saklıyor ✨": "{name} a trouvé un truc brillant et le cache ✨",
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} est tout propre, même son masque 🫧"
 };

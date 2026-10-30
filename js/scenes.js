@@ -18,7 +18,7 @@ export const DECOR = {
   music: false, // pikap dönüyor mu
   tvOn: false, // TV'de film/ekran var mı
   flower: { stage: 0, wilt: false },
-  pet: { species: 'cat', color: '#f0a050', acc: 'none', food: 80, love: 80, play: 80, clean: 80 },
+  pet: { species: 'cat', color: '#1f1c24', acc: 'none', food: 80, love: 80, play: 80, clean: 80 }, // varsayılan: siyah kedi Pascal
 };
 export const bump = () => DECOR.v++;
 

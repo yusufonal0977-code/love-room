@@ -6,7 +6,7 @@
 import { h, icon, openSheet, toast } from '../ui.js';
 import { serverTimestamp, set, update, now } from '../fb.js';
 import { DECOR, bump } from '../scenes.js';
-import { petSprites, drawPetAcc, PET_COLORS, PET_ACC } from '../art.js';
+import { petSprites, drawPetAcc, PET_COLORS, PET_ACC, PET_RACCOON, DEFAULT_PET } from '../art.js';
 import { t } from '../i18n.js';
 
 const HOUR = 3_600_000, DAY = 24 * HOUR;
@@ -39,18 +39,19 @@ export function createCare(ctx) {
   // Tür (kedi/köpek/tavşan), renk ve aksesuar seçilebilir; seviye arttıkça yeni aksesuarlar açılır.
   // live/{rid}/petCall = { x, y, scene, at }: "Yanıma çağır" deyince hayvanı simüle eden cihaz onu çağıranın odasına getirir.
   const petNow = () => {
-    const p = { name: t('Pamuk'), species: 'cat', color: PET_COLORS[0], acc: 'none', food: 80, love: 80, play: 80, clean: 80, at: now(), xp: 0, ...(pet || {}) };
+    const p = { ...DEFAULT_PET, acc: 'none', food: 80, love: 80, play: 80, clean: 80, at: now(), xp: 0, ...(pet || {}) };
     const hrs = Math.max(0, (now() - (p.at || now())) / HOUR);
     return { ...p, food: clamp(p.food - hrs * 4), love: clamp(p.love - hrs * 3), play: clamp(p.play - hrs * 3.5), clean: clamp((p.clean ?? 80) - hrs * 2) };
   };
   const level = (xp) => 1 + Math.floor((xp || 0) / 10);
   const title = (lv) => (lv >= 10 ? 'Ebeveynler' : lv >= 4 ? 'Pet arkadaşları' : 'Bakıcılar');
-  const SPECIES = { cat: 'Kedi', dog: 'Köpek', bunny: 'Tavşan' };
+  const SPECIES = { cat: 'Kedi', dog: 'Köpek', bunny: 'Tavşan', raccoon: 'Rakun' };
   const ACC = { none: 'Yok', bow: 'Fiyonk', collar: 'Tasma', hat: 'Şapka', crown: 'Taç' };
   const SAYS = {
     cat: { food: '{name} mırlayarak yedi 😺', love: '{name} sana sokuldu 😻', play: '{name} yün yumağının peşinde 🧶', clean: '{name} pırıl pırıl oldu 🫧' },
     dog: { food: '{name} kuyruğunu sallayarak yedi 🐶', love: '{name} seni yaladı 🥰', play: '{name} topu getirdi 🎾', clean: '{name} silkelendi, her yer su 💦' },
     bunny: { food: '{name} havucu kemirdi 🥕', love: '{name} burnunu oynattı 🐰', play: '{name} zıp zıp zıpladı ✨', clean: '{name} pamuk gibi oldu 🫧' },
+    raccoon: { food: '{name} mamasını patileriyle yıkayıp yedi 🦝', love: '{name} kuyruğunu sarıp sokuldu 🦝', play: '{name} parlak bir şey buldu, saklıyor ✨', clean: '{name} maskesi bile pırıl pırıl 🫧' },
   };
   function syncDecor() { const p = petNow(); Object.assign(DECOR.pet, { species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean }); }
   live.on('pet', (v) => { pet = v; syncDecor(); renderPet(); });
@@ -94,7 +95,7 @@ export function createCare(ctx) {
     const prog = ((p.xp || 0) % 10) * 10;
     petBody.innerHTML = '';
     const name = h('input', { value: p.name, maxLength: 14 });
-    name.onchange = () => update(live.ref('pet'), { name: name.value.trim() || t('Pamuk') });
+    name.onchange = () => update(live.ref('pet'), { name: name.value.trim() || DEFAULT_PET.name });
     const pick = (items, cur, onPick, render) => h('div', { class: 'opts' }, ...items.map((it) => {
       const b = render(it);
       if (it.value === cur) b.classList.add('sel');
@@ -117,7 +118,7 @@ export function createCare(ctx) {
         h('button', { onclick: call }, 'Yanıma çağır'),
       ),
       h('small', {}, 'Tür'),
-      pick(Object.entries(SPECIES).map(([value, label]) => ({ value, label })), p.species, (v) => update(live.ref('pet'), { species: v }), (it) => h('button', {}, it.label)),
+      pick(Object.entries(SPECIES).map(([value, label]) => ({ value, label })), p.species, (v) => update(live.ref('pet'), v === 'raccoon' && p.species !== 'raccoon' ? { species: v, color: PET_RACCOON } : { species: v }), (it) => h('button', {}, it.label)),
       h('small', {}, 'Renk'),
       pick(PET_COLORS.map((value) => ({ value })), p.color, (v) => update(live.ref('pet'), { color: v }), (it) => h('button', { class: 'sw', style: { background: it.value } })),
       h('small', {}, 'Aksesuar'),
