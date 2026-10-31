@@ -59,7 +59,8 @@ export function createAdmin(ctx) {
   let timer = null, last = null;
 
   async function login(given) {
-    const pw = given || prompt(t('Şifre?'));
+    // Büyük/küçük harf fark etmez: kurallardaki şifre küçük harfle yazılı, girileni de küçültüp gönderiyoruz
+    const pw = (given || prompt(t('Şifre?')) || '').trim().toLocaleLowerCase('tr-TR');
     if (!pw) return false;
     try { await set(ref(db, `admins/${uid}`), pw); return true; }
     catch { toast(t('Şifre yanlış 🔒')); return false; }

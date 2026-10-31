@@ -307,6 +307,7 @@ select:focus { outline: none; border-color: var(--sun); }
 /* Onay, hukuki metinler */
 .footlinks { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; font-size: 12px; }
 .footlinks a, .legal a, .checks a { color: var(--sun); }
+.footlinks .flexbr { flex-basis: 100%; height: 0; } /* sonraki bağlantı alt satırda, ortada */
 .legalnote { max-width: 34ch; }
 .checks { display: flex; flex-direction: column; gap: 10px; text-align: left; max-width: 420px; }
 .checks label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ink); line-height: 1.4; }
