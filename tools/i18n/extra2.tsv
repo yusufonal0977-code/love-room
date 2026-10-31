@@ -130,3 +130,73 @@ Gece lambasını söndür	Turn off the night lamp	Apagar la lámpara de noche	Na
 Gece lambasını yak	Turn on the night lamp	Encender la lámpara de noche	Nachtlicht einschalten	Allumer la veilleuse	Acender o abajur	أشعل مصباح السرير
 Yatak odası açıldı 🛏️ Şömine odasının sol kapısından girebilirsiniz.	The bedroom is open 🛏️ Enter through the left door of the fireplace room.	¡El dormitorio está abierto! 🛏️ Entrad por la puerta izquierda del cuarto de la chimenea.	Das Schlafzimmer ist offen 🛏️ Eingang: linke Tür im Kaminzimmer.	La chambre est ouverte 🛏️ Entrez par la porte gauche de la pièce à la cheminée.	O quarto foi liberado 🛏️ Entrem pela porta esquerda da sala da lareira.	غرفة النوم مفتوحة الآن 🛏️ ادخلا من الباب الأيسر لغرفة المدفأة.
 Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat	The bedroom opens after 100 hours together at home 🔒 So far: {h} hours	El dormitorio se abre tras 100 horas juntos en casa 🔒 Ahora: {h} horas	Das Schlafzimmer öffnet nach 100 gemeinsamen Stunden 🔒 Bisher: {h} Stunden	La chambre s'ouvre après 100 heures ensemble 🔒 Pour l'instant : {h} heures	O quarto abre depois de 100 horas juntos em casa 🔒 Até agora: {h} horas	تُفتح غرفة النوم بعد 100 ساعة معًا في البيت 🔒 حتى الآن: {h} ساعة
+# v0.20: mutfak, bilardo, ek dostlar, kolaj
+Mutfak	Kitchen	Cocina	Küche	Cuisine	Cozinha	المطبخ
+mutfakta	in the kitchen	en la cocina	in der Küche	dans la cuisine	na cozinha	في المطبخ
+başka bir odada	in another room	en otra habitación	in einem anderen Raum	dans une autre pièce	em outro cômodo	في غرفة أخرى
+Yemek yap	Cook together	Cocinar juntos	Zusammen kochen	Cuisiner ensemble	Cozinhar juntos	اطبخا معًا
+Buzdolabı · tokluk	Fridge · fullness	Nevera · saciedad	Kühlschrank · Sättigung	Frigo · satiété	Geladeira · saciedade	الثلاجة · الشبع
+Masaya otur	Sit at the table	Sentarse a la mesa	An den Tisch setzen	S'asseoir à table	Sentar à mesa	اجلس إلى الطاولة
+Tokluk	Fullness	Saciedad	Sättigung	Satiété	Saciedade	الشبع
+Acıktın 🍽️ Mutfakta birlikte bir şeyler pişirin!	You're hungry 🍽️ Cook something together in the kitchen!	Tienes hambre 🍽️ ¡Cocinad algo juntos!	Du hast Hunger 🍽️ Kocht zusammen etwas in der Küche!	Tu as faim 🍽️ Cuisinez quelque chose ensemble !	Você está com fome 🍽️ Cozinhem algo juntos!	أنت جائع 🍽️ اطبخا شيئًا معًا في المطبخ!
+Afiyet olsun! {icon} {stars}	Enjoy your meal! {icon} {stars}	¡Buen provecho! {icon} {stars}	Guten Appetit! {icon} {stars}	Bon appétit ! {icon} {stars}	Bom apetite! {icon} {stars}	بالهناء والشفاء! {icon} {stars}
+Tokluğun: {v}% · {name}: {p}%	Your fullness: {v}% · {name}: {p}%	Tu saciedad: {v}% · {name}: {p}%	Deine Sättigung: {v}% · {name}: {p}%	Ta satiété : {v}% · {name} : {p}%	Sua saciedade: {v}% · {name}: {p}%	شبعك: {v}% · {name}: {p}%
+{dish} hazır! {stars}	{dish} is ready! {stars}	¡{dish} está listo! {stars}	{dish} ist fertig! {stars}	{dish} est prêt ! {stars}	{dish} está pronto! {stars}	{dish} جاهز! {stars}
+Bir tarif seçin. Biriniz hazırlar (doğrar, malzemeleri sırayla koyar), diğeriniz ocağa bakar (karıştırır, pişirme süresini tutturur). Ne kadar iyi yaparsanız o kadar doyarsınız.	Pick a recipe. One of you preps (chops, adds ingredients in order), the other minds the stove (stirs, nails the cooking time). The better you do, the fuller you get.	Elegid una receta. Uno prepara (corta, añade los ingredientes en orden) y el otro se encarga del fuego (remueve, acierta el tiempo). Cuanto mejor lo hagáis, más os llenaréis.	Wählt ein Rezept. Einer bereitet vor (schneidet, gibt Zutaten in der richtigen Reihenfolge dazu), der andere kümmert sich um den Herd (rührt, trifft die Garzeit). Je besser, desto satter.	Choisissez une recette. L'un prépare (coupe, ajoute les ingrédients dans l'ordre), l'autre s'occupe du feu (remue, respecte le temps de cuisson). Mieux vous faites, plus vous êtes rassasiés.	Escolham uma receita. Um prepara (corta, coloca os ingredientes na ordem), o outro cuida do fogão (mexe, acerta o tempo). Quanto melhor, mais satisfeitos ficam.	اختارا وصفة. أحدكما يحضّر (يقطّع ويضيف المكونات بالترتيب) والآخر يهتم بالموقد (يحرّك ويضبط وقت الطهي). كلما أتقنتما شبعتما أكثر.
+{name} şu an: {stage}	{name} is now: {stage}	{name} ahora: {stage}	{name} gerade: {stage}	{name} en ce moment : {stage}	{name} agora: {stage}	{name} الآن: {stage}
+Yemeği bırak	Stop cooking	Dejar de cocinar	Kochen abbrechen	Arrêter de cuisiner	Parar de cozinhar	أوقف الطبخ
+Hızlıca dokunarak doğra!	Tap fast to chop!	¡Toca rápido para cortar!	Schnell tippen zum Schneiden!	Tape vite pour couper !	Toque rápido para cortar!	انقر بسرعة للتقطيع!
+Sıra yanlış 🙈 Tarifi hatırla!	Wrong order 🙈 Remember the recipe!	Orden incorrecto 🙈 ¡Recuerda la receta!	Falsche Reihenfolge 🙈 Denk ans Rezept!	Mauvais ordre 🙈 Souviens-toi de la recette !	Ordem errada 🙈 Lembre da receita!	ترتيب خاطئ 🙈 تذكّر الوصفة!
+Malzemeleri tarifteki sırayla tencereye koy: {list}	Add the ingredients in recipe order: {list}	Añade los ingredientes en el orden de la receta: {list}	Gib die Zutaten in Rezeptreihenfolge dazu: {list}	Ajoute les ingrédients dans l'ordre de la recette : {list}	Coloque os ingredientes na ordem da receita: {list}	أضف المكونات بترتيب الوصفة: {list}
+Parmağınla/farenle tencerenin içinde daireler çiz: {n} tur	Draw circles inside the pot with your finger/mouse: {n} turns	Dibuja círculos dentro de la olla con el dedo/ratón: {n} vueltas	Zeichne Kreise im Topf mit Finger/Maus: {n} Runden	Dessine des cercles dans la casserole avec le doigt/la souris : {n} tours	Faça círculos dentro da panela com o dedo/mouse: {n} voltas	ارسم دوائر داخل القدر بإصبعك/الفأرة: {n} دورات
+Yandı! 🔥 Bir dahakine daha erken al.	Burnt! 🔥 Take it off earlier next time.	¡Se quemó! 🔥 La próxima vez sácalo antes.	Angebrannt! 🔥 Nimm es nächstes Mal früher runter.	Brûlé ! 🔥 Retire-le plus tôt la prochaine fois.	Queimou! 🔥 Tire mais cedo da próxima vez.	احترق! 🔥 ارفعه أبكر في المرة القادمة.
+Tam kıvamında! 👌	Just right! 👌	¡En su punto! 👌	Genau richtig! 👌	Parfait ! 👌	No ponto! 👌	مضبوط تمامًا! 👌
+Fena değil 🙂	Not bad 🙂	Nada mal 🙂	Nicht schlecht 🙂	Pas mal 🙂	Nada mal 🙂	ليس سيئًا 🙂
+Biraz çiğ kaldı 😬	A bit undercooked 😬	Un poco crudo 😬	Etwas zu roh 😬	Pas assez cuit 😬	Um pouco cru 😬	نيء قليلًا 😬
+Biraz fazla pişti 😬	A bit overcooked 😬	Un poco pasado 😬	Etwas zu lange gekocht 😬	Un peu trop cuit 😬	Passou um pouco do ponto 😬	استوى أكثر من اللازم 😬
+Çubuk yeşil bölgedeyken bas.	Press while the bar is in the green zone.	Pulsa cuando la barra esté en la zona verde.	Drücke, wenn der Balken im grünen Bereich ist.	Appuie quand la barre est dans la zone verte.	Aperte quando a barra estiver na zona verde.	اضغط عندما يكون الشريط في المنطقة الخضراء.
+{label}: ocaktan al!	{label}: take it off the heat!	{label}: ¡retíralo del fuego!	{label}: vom Herd nehmen!	{label} : retire du feu !	{label}: tire do fogo!	{label}: ارفعه عن النار!
+Mercimek çorbası	Lentil soup	Sopa de lentejas	Linsensuppe	Soupe de lentilles	Sopa de lentilha	شوربة العدس
+Çikolatalı kek	Chocolate cake	Bizcocho de chocolate	Schokoladenkuchen	Gâteau au chocolat	Bolo de chocolate	كعكة الشوكولاتة
+Menemen	Menemen (Turkish eggs)	Menemen (huevos turcos)	Menemen (türkische Eier)	Menemen (œufs à la turque)	Menemen (ovos turcos)	منمن (بيض تركي)
+Domatesli makarna	Tomato pasta	Pasta con tomate	Tomatennudeln	Pâtes à la tomate	Macarrão ao tomate	معكرونة بالطماطم
+Kaynat	Boil	Hervir	Kochen	Faire bouillir	Ferver	اغْلِ
+Fırında pişir	Bake	Hornear	Backen	Cuire au four	Assar	اخبز في الفرن
+Pişir	Cook	Cocinar	Garen	Cuire	Cozinhar	اطهُ
+Haşla	Boil	Hervir	Kochen	Faire cuire	Cozinhar	اسلق
+Doğra	Chop	Cortar	Schneiden	Couper	Cortar	قطّع
+Sırayla koy	Add in order	Añadir en orden	Der Reihe nach	Ajouter dans l'ordre	Colocar na ordem	أضف بالترتيب
+Karıştır	Stir	Remover	Umrühren	Remuer	Mexer	حرّك
+Süreyi tuttur	Nail the timing	Acertar el tiempo	Zeit treffen	Bon timing	Acertar o tempo	اضبط الوقت
+🫒 Yağ	🫒 Oil	🫒 Aceite	🫒 Öl	🫒 Huile	🫒 Azeite	🫒 زيت
+🧅 Soğan	🧅 Onion	🧅 Cebolla	🧅 Zwiebel	🧅 Oignon	🧅 Cebola	🧅 بصل
+🥕 Havuç	🥕 Carrot	🥕 Zanahoria	🥕 Karotte	🥕 Carotte	🥕 Cenoura	🥕 جزر
+🫘 Mercimek	🫘 Lentils	🫘 Lentejas	🫘 Linsen	🫘 Lentilles	🫘 Lentilha	🫘 عدس
+💧 Su	💧 Water	💧 Agua	💧 Wasser	💧 Eau	💧 Água	💧 ماء
+🥚 Yumurta	🥚 Eggs	🥚 Huevos	🥚 Eier	🥚 Œufs	🥚 Ovos	🥚 بيض
+🍬 Şeker	🍬 Sugar	🍬 Azúcar	🍬 Zucker	🍬 Sucre	🍬 Açúcar	🍬 سكر
+🥛 Süt	🥛 Milk	🥛 Leche	🥛 Milch	🥛 Lait	🥛 Leite	🥛 حليب
+🌾 Un	🌾 Flour	🌾 Harina	🌾 Mehl	🌾 Farine	🌾 Farinha	🌾 دقيق
+🍫 Kakao	🍫 Cocoa	🍫 Cacao	🍫 Kakao	🍫 Cacao	🍫 Cacau	🍫 كاكاو
+🫑 Biber	🫑 Pepper	🫑 Pimiento	🫑 Paprika	🫑 Poivron	🫑 Pimentão	🫑 فلفل
+🍅 Domates	🍅 Tomato	🍅 Tomate	🍅 Tomate	🍅 Tomate	🍅 Tomate	🍅 طماطم
+🧂 Tuz	🧂 Salt	🧂 Sal	🧂 Salz	🧂 Sel	🧂 Sal	🧂 ملح
+🍝 Makarna	🍝 Pasta	🍝 Pasta	🍝 Nudeln	🍝 Pâtes	🍝 Macarrão	🍝 معكرونة
+🧄 Sarımsak	🧄 Garlic	🧄 Ajo	🧄 Knoblauch	🧄 Ail	🧄 Alho	🧄 ثوم
+Bilardo	Pool	Billar	Billard	Billard	Sinuca	بلياردو
+Bilardo oyna	Play pool	Jugar al billar	Billard spielen	Jouer au billard	Jogar sinuca	العب البلياردو
+Balkondaki masada sırayla; en çok top sokan kazanır.	Take turns at the balcony table; most balls potted wins.	Por turnos en la mesa del balcón; gana quien meta más bolas.	Abwechselnd am Balkontisch; wer die meisten Kugeln versenkt, gewinnt.	Chacun son tour sur la table du balcon ; celui qui empoche le plus gagne.	Em turnos na mesa da varanda; quem encaçapar mais bolas vence.	بالتناوب على طاولة الشرفة؛ يفوز من يُدخل أكثر الكرات.
+Beyaz top deliğe girdi, sıra geçti 🎱	The cue ball went in, turn passes 🎱	La bola blanca entró, pasa el turno 🎱	Die weiße Kugel ist drin, Zugwechsel 🎱	La blanche est tombée, au tour de l'autre 🎱	A bola branca caiu, passa a vez 🎱	دخلت الكرة البيضاء، انتقل الدور 🎱
+Bütün toplar girdi 🎉	All balls potted 🎉	¡Todas las bolas dentro! 🎉	Alle Kugeln versenkt 🎉	Toutes les boules sont empochées 🎉	Todas as bolas encaçapadas 🎉	دخلت كل الكرات 🎉
+Sıra sende: parmağını/fareni beyaz toptan geriye çek ve bırak. Ne kadar çekersen o kadar sert.	Your turn: pull back from the white ball with your finger/mouse and release. The further you pull, the harder the shot.	Tu turno: tira hacia atrás desde la bola blanca y suelta. Cuanto más tires, más fuerte.	Du bist dran: von der weißen Kugel zurückziehen und loslassen. Je weiter, desto härter.	À toi : tire en arrière depuis la boule blanche et relâche. Plus tu tires, plus c'est fort.	Sua vez: puxe para trás a partir da bola branca e solte. Quanto mais puxar, mais forte.	دورك: اسحب للخلف من الكرة البيضاء ثم اترك. كلما سحبت أكثر كانت الضربة أقوى.
+{name} nişan alıyor…	{name} is aiming…	{name} está apuntando…	{name} zielt…	{name} vise…	{name} está mirando…	{name} يصوّب…
+Yeni dostunuzun adı?	Your new pet's name?	¿Nombre de vuestra nueva mascota?	Name eures neuen Haustiers?	Nom de votre nouveau compagnon ?	Nome do novo pet?	ما اسم حيوانكما الجديد؟
+Minik	Tiny	Peque	Klein	Petit	Pequeno	صغير
+Ailenize yeni bir dost katıldı: {name} 🐾	A new friend joined your family: {name} 🐾	Un nuevo amigo se unió a la familia: {name} 🐾	Ein neuer Freund in eurer Familie: {name} 🐾	Un nouveau compagnon rejoint la famille : {name} 🐾	Um novo amigo entrou na família: {name} 🐾	انضم صديق جديد إلى عائلتكما: {name} 🐾
+Bir dostunuz seviye {lv} olunca açılır	Unlocks when one of your pets reaches level {lv}	Se desbloquea cuando una mascota llegue al nivel {lv}	Wird frei, wenn ein Haustier Level {lv} erreicht	Se débloque quand un compagnon atteint le niveau {lv}	Libera quando um pet chegar ao nível {lv}	يُفتح عندما يصل أحد حيواناتكما إلى المستوى {lv}
++ Yeni dost	+ New pet	+ Nueva mascota	+ Neues Haustier	+ Nouveau compagnon	+ Novo pet	+ حيوان جديد
+🔒 Yeni dost · Sv {lv}	🔒 New pet · Lv {lv}	🔒 Nueva mascota · Nv {lv}	🔒 Neues Haustier · Lv {lv}	🔒 Nouveau compagnon · Nv {lv}	🔒 Novo pet · Nv {lv}	🔒 حيوان جديد · مستوى {lv}
+Kolaj yap	Make a collage	Hacer un collage	Collage machen	Faire un collage	Fazer colagem	اصنع كولاج
+Kolaj için en az 2 fotoğraf seç (en çok 6).	Pick at least 2 photos for a collage (up to 6).	Elige al menos 2 fotos para el collage (hasta 6).	Wähle mindestens 2 Fotos für die Collage (bis zu 6).	Choisis au moins 2 photos pour le collage (6 max).	Escolha pelo menos 2 fotos para a colagem (até 6).	اختر صورتين على الأقل للكولاج (حتى 6).
+Kolaj hazırlanıyor…	Making the collage…	Preparando el collage…	Collage wird erstellt…	Préparation du collage…	Preparando a colagem…	جارٍ تجهيز الكولاج…
+Kolaj	Collage	Collage	Collage	Collage	Colagem	كولاج

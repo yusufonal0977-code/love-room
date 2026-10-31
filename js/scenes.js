@@ -355,6 +355,13 @@ const balkon = makeScene({
       R(g, 35, 103, 2, 2, '#ffffff');
       R(g, 16, 112, 3, 4, C.woodD); R(g, 53, 112, 3, 4, C.woodD);
     } },
+    { id: 'pool', movable: true, y: 132, hit: [70, 104, 54, 30], block: [72, 114, 50, 18], draw(g) { // bilardo masası
+      R(g, 72, 110, 50, 18, '#6b3e22'); R(g, 74, 112, 46, 14, '#2f8f5a'); R(g, 75, 113, 44, 12, '#3fa86a');
+      for (const [x, y] of [[74, 112], [96, 112], [118, 112], [74, 124], [96, 124], [118, 124]]) R(g, x, y, 2, 2, '#1a1210');
+      R(g, 82, 118, 2, 2, '#ffffff'); R(g, 106, 116, 2, 2, '#ffc93c'); R(g, 108, 119, 2, 2, '#e0473f'); R(g, 106, 121, 2, 2, '#5b8def');
+      R(g, 79, 108, 30, 1, '#e0b25a'); // isteka
+      R(g, 74, 128, 3, 4, C.woodD); R(g, 117, 128, 3, 4, C.woodD);
+    } },
     { id: 'flower', movable: true, y: 126, hit: [158, 92, 26, 36], block: [162, 120, 16, 6], draw(g, { t }) { drawFlower(g, 170, 126, t); } },
     { id: 'plant', movable: true, y: 134, hit: [180, 102, 12, 34], block: [178, 128, 12, 6], draw(g) { plant(g, 184, 134, false); } },
   ],
@@ -365,6 +372,7 @@ const balkon = makeScene({
     { id: 'sky', x: 60, y: 78, hit: [0, 0, W, 56], label: () => 'Gökyüzüne bak' },
     { id: 'lights', x: 140, y: 78, hit: [0, 4, W, 12], label: (st) => (st.lights ? 'Işıkları söndür' : 'Işıkları yak') },
     { id: 'foos', prop: 'foos', x: 36, y: 124, hit: [12, 90, 48, 28], label: () => 'Langırt oyna' },
+    { id: 'pool', prop: 'pool', x: 97, y: 104, hit: [70, 104, 54, 30], label: () => 'Bilardo oyna' },
     { id: 'flower', prop: 'flower', x: 156, y: 130, hit: [158, 92, 26, 36], label: () => 'Çiçeğimiz' },
   ],
   seats: [{ x: 84, y: 84, group: 'bench' }, { x: 108, y: 84, group: 'bench' }],
@@ -425,6 +433,7 @@ const hobi = makeScene({
     R(g, 66, 92, 60, 26, '#ff5d8f'); R(g, 62, 96, 68, 18, '#ff5d8f'); R(g, 70, 96, 52, 18, '#ffc93c'); R(g, 76, 100, 40, 10, '#ff7a59');
     // Alt kapı (salona)
     R(g, 82, 138, 28, 6, '#c9a36b'); R(g, 80, 140, 32, 4, C.woodD);
+    sideDoor(g, 'right', col.wall); // mutfağa
   },
   dyn(g, { st }) {
     R(g, 106, 30, 6, 4, st.desk ? '#ffe08a' : '#d6c08f'); R(g, 108, 34, 2, 10, C.metal);
@@ -442,7 +451,10 @@ const hobi = makeScene({
     { id: 'plantL', movable: true, y: 128, hit: [8, 102, 20, 28], block: [10, 122, 16, 6], draw(g) { plant(g, 18, 128, false); } },
   ],
   blocks: [[0, 0, W, 54], [4, 54, 38, 12], [56, 54, 36, 12], [90, 54, 44, 10], [140, 54, 48, 14]],
-  doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 171, y: 64, dir: 'down' } }],
+  doors: [
+    { x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 171, y: 64, dir: 'down' } },
+    { x: 182, y: 84, w: 6, h: 26, to: 'mutfak', spawn: { x: 16, y: 100, dir: 'right' } },
+  ],
   spots: [
     { id: 'wardrobe', x: 24, y: 70, hit: [4, 10, 38, 56], label: () => 'Gardırop · dekor dolabı' },
     { id: 'desk', x: 112, y: 68, hit: [92, 28, 42, 36], label: (st) => (st.desk ? 'Masa lambasını söndür' : 'Masa lambasını yak') },
@@ -509,7 +521,82 @@ const yatak = makeScene({
   ],
 });
 
-export const SCENES = { salon, somine, balkon, hobi, yatak };
+/** Mutfak: tezgah, ocak (birlikte yemek yapma), buzdolabı, lavabo ve iki kişilik yemek masası. Sol kapı → hobi köşesi. */
+const mutfak = makeScene({
+  id: 'mutfak',
+  name: 'Mutfak',
+  colors: { wall: '#fff0d6', accent: '#ffd9a8', floor: '#d9c3a0', motif: 'stripes' },
+  draw(g, col) {
+    wallpaper(g, col.wall, col.accent, col.motif);
+    // Fayans duvar (tezgah arkası)
+    R(g, 0, 22, W, 28, '#ffffff'); for (let y = 22; y < 50; y += 7) for (let x = (y / 7) % 2 ? 0 : 7; x < W; x += 14) R(g, x, y, 7, 7, '#e8f4f7');
+    tileFloor(g, WALL, col.floor, shade(col.floor, -0.08));
+    // Üst dolaplar
+    R(g, 40, 4, 110, 16, '#5b8def'); for (let x = 42; x < 148; x += 27) { R(g, x, 6, 25, 12, '#7aa4f5'); R(g, x + 11, 15, 3, 1, C.gold); }
+    // Tezgah: lavabo, ocak, fırın
+    R(g, 34, 44, 150, 22, '#5b8def'); R(g, 34, 42, 150, 4, '#e8e2d6'); R(g, 34, 46, 150, 1, '#c8c0b0');
+    for (let x = 38; x < 180; x += 24) { R(g, x, 50, 22, 14, '#7aa4f5'); R(g, x + 9, 52, 4, 1, C.gold); }
+    R(g, 44, 42, 22, 5, '#b8c4cc'); R(g, 46, 43, 18, 3, '#8fd0ff'); R(g, 54, 36, 2, 7, '#9aa3ad'); R(g, 54, 36, 6, 2, '#9aa3ad'); // lavabo
+    R(g, 96, 40, 34, 6, '#2e2e3a'); for (const x of [100, 118]) { R(g, x, 41, 8, 4, '#4a4752'); } // ocak
+    R(g, 98, 50, 30, 14, '#2e2e3a'); R(g, 100, 52, 26, 8, '#5a5560'); R(g, 102, 53, 22, 6, '#ffb36b'); // fırın camı
+    // Buzdolabı
+    R(g, 150, 10, 30, 56, '#e8f4f7'); R(g, 150, 10, 30, 2, '#ffffff'); R(g, 150, 30, 30, 1, '#b8c4cc'); R(g, 174, 16, 2, 10, '#9aa3ad'); R(g, 174, 34, 2, 14, '#9aa3ad');
+    R(g, 156, 14, 5, 5, '#ff5d8f'); R(g, 163, 18, 5, 4, '#ffc93c'); // magnetler
+    // Masa örtüsü (yemek masası ön planda çizilir)
+    sideDoor(g, 'left', col.wall);
+    R(g, 8, 4, 24, 26, C.woodD); R(g, 10, 6, 20, 22, '#5ec2ff'); // küçük pencere
+  },
+  dyn(g, { t, hour }) {
+    drawSky(g, 10, 6, 20, 22, hour, t); R(g, 19, 6, 2, 22, C.woodD);
+    if (DECOR.cooking) { // ocakta tencere + buhar
+      R(g, 99, 34, 12, 7, '#9aa3ad'); R(g, 100, 34, 10, 2, '#b8c4cc');
+      for (let i = 0; i < 3; i++) R(g, 101 + i * 4, 30 - ((t * 2 + i) % 2 | 0) * 3, 1, 3, 'rgba(255,255,255,0.7)');
+    }
+  },
+  props: [
+    { id: 'table', movable: true, y: 112, hit: [72, 88, 48, 26], block: [76, 96, 40, 14], draw(g) {
+      R(g, 74, 94, 44, 14, '#ff7a59'); R(g, 74, 94, 44, 2, '#ffa58a'); for (let x = 76; x < 116; x += 8) R(g, x, 96, 4, 4, '#fff3dc');
+      R(g, 78, 108, 3, 4, C.woodD); R(g, 111, 108, 3, 4, C.woodD);
+      R(g, 84, 96, 8, 4, '#ffffff'); R(g, 100, 96, 8, 4, '#ffffff'); // tabaklar
+    } },
+    { id: 'plant', movable: true, y: 134, hit: [168, 100, 20, 36], block: [170, 128, 16, 6], draw(g) { plant(g, 178, 134, true); } },
+  ],
+  blocks: [[0, 0, W, 54], [34, 54, 150, 14]],
+  doors: [{ x: 4, y: 84, w: 6, h: 26, to: 'hobi', spawn: { x: 176, y: 100, dir: 'left' } }],
+  spots: [
+    { id: 'cook', x: 113, y: 72, hit: [90, 30, 46, 38], label: () => 'Yemek yap' },
+    { id: 'fridge', x: 165, y: 72, hit: [148, 8, 34, 60], label: () => 'Buzdolabı · tokluk' },
+    { id: 'sit', group: 'table', prop: 'table', x: 96, y: 120, hit: [72, 88, 48, 26], label: () => 'Masaya otur' },
+  ],
+  seats: [{ x: 82, y: 104, group: 'table', prop: 'table' }, { x: 110, y: 104, group: 'table', prop: 'table' }],
+  lights: () => [{ x: 113, y: 40, r: 40, a: 0.6, color: '255,210,150' }, { x: 20, y: 18, r: 28, a: 0.5, color: '200,220,255' }],
+});
+
+/** Admin odası: yalnızca şifreyle girilir (menü). Duvardaki büyük TV yalnızca istatistik gösterir. Alt kapı → salon. */
+const admin = makeScene({
+  id: 'admin',
+  name: 'Admin odası',
+  colors: { wall: '#1b1f3a', accent: '#232850', floor: '#2a2d40', motif: 'dots' },
+  draw(g, col) {
+    wallpaper(g, col.wall, col.accent, col.motif);
+    tileFloor(g, WALL, col.floor, shade(col.floor, 0.06));
+    R(g, 36, 3, 120, 46, '#0a0c16'); R(g, 38, 5, 116, 42, '#141830'); R(g, 92, 49, 8, 4, C.metal); // TV
+    R(g, 160, 12, 24, 52, '#2e2e3a'); for (let y = 16; y < 60; y += 6) R(g, 162, y, 20, 4, '#3a3a48'); // sunucu dolabı
+    R(g, 8, 56, 44, 10, '#3a3f5c'); R(g, 8, 56, 44, 2, '#5a6080'); R(g, 14, 48, 14, 8, '#0a0c16'); R(g, 15, 49, 12, 6, '#2f9e8f'); // masa + monitör
+    R(g, 82, 138, 28, 6, '#c9a36b'); R(g, 80, 140, 32, 4, C.woodD); // alt kapı
+  },
+  dyn(g, { t }) {
+    for (let y = 16; y < 60; y += 6) for (let i = 0; i < 3; i++) R(g, 164 + i * 5, y + 1, 2, 2, (Math.sin(t * 3 + y + i * 2) > 0 ? ['#4fbf6a', '#fcdf4b', '#ff5d8f'][i] : '#1a1a24'));
+  },
+  props: [],
+  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12]],
+  doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
+  spots: [{ id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'İstatistikler' }],
+  seats: [],
+  lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }],
+});
+
+export const SCENES = { salon, somine, balkon, hobi, yatak, mutfak, admin };
 export const DEFAULT_STATE = { lamp: true, tv: false, fire: true, lights: true, desk: true, bedlamp: true };
 
 // ---------- Yerleşim (taşınan eşyalar + dekor dahil) ----------

@@ -348,7 +348,7 @@ export function createGame(opts) {
     cat.t += dt;
     const who = cat.follow === 'partner' && partner.shown ? partner : me;
     // Takip ettiği kişi başka odaya geçtiyse kısa süre sonra kapıdan o da gelir
-    if (who.scene && who.scene !== cat.scene) {
+    if (who.scene && who.scene !== cat.scene && who.scene !== 'admin') { // gizli admin odasına gelmez
       cat.away += dt;
       if (cat.away > 1.2) {
         cat.away = 0; cat.scene = who.scene; cat.sit = false; cat.target = null; cat.wait = 0.6;
@@ -442,6 +442,12 @@ export function createGame(opts) {
     if (!at?.pose) {
       const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
       ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
+      // Acıktıysa başının yanında tabak balonu
+      if ((opts.hungerOf?.(p === me ? 'me' : 'partner') ?? 100) < 25) {
+        const bx = Math.round(px + 7), by = Math.round(y - 4 + Math.sin(performance.now() / 300));
+        R(ctx, bx, by, 9, 7, '#fff6e8'); R(ctx, bx + 1, by + 7, 2, 1, '#fff6e8');
+        R(ctx, bx + 2, by + 2, 5, 3, '#ffc93c'); R(ctx, bx + 3, by + 3, 3, 1, '#ff7a59');
+      }
     }
   }
   /** Sarılma kolu: omuzdan partnerin sırtına uzanan kıyafet renginde kol, ucunda el. */
@@ -462,6 +468,15 @@ export function createGame(opts) {
     const img = cat.sit ? sp.sit : (cat.dir > 0 ? sp.right : sp.left)[cat.target ? (cat.t * 6 | 0) % 2 : 0];
     const x0 = Math.round(cat.x - img.width / 2), y0 = Math.round(cat.y - img.height + 1);
     R(ctx, cat.x - 7, cat.y - 1, 14, 2, 'rgba(30,15,5,0.3)');
+    // Ek dostlar ilk dostun peşinden yürür: arkasında sıra olurlar, o oturunca onlar da oturur
+    (DECOR.extraPets || []).forEach((q, i) => {
+      const s2 = petSprites(q.species, q.color);
+      const im = cat.sit ? s2.sit : (cat.dir > 0 ? s2.right : s2.left)[cat.target ? ((cat.t * 6 | 0) + i + 1) % 2 : 0];
+      const ex = Math.round(cat.x - (cat.dir > 0 ? 1 : -1) * (13 + i * 12) - im.width / 2), ey = Math.round(cat.y - 3 - (i % 2) * 2 - im.height + 1);
+      R(ctx, ex + im.width / 2 - 6, ey + im.height - 1, 12, 2, 'rgba(30,15,5,0.3)');
+      ctx.drawImage(im, ex, ey);
+      if (q.acc && q.acc !== 'none') { const [hx, hy] = cat.sit ? s2.head[1] : s2.head[0]; drawPetAcc(ctx, q.acc, ex + (cat.sit || cat.dir > 0 ? hx : im.width - 1 - hx), ey + hy); }
+    });
     ctx.drawImage(img, x0, y0);
     if (pet.acc && pet.acc !== 'none') {
       const [hx, hy] = cat.sit ? sp.head[1] : sp.head[0];

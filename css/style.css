@@ -280,6 +280,7 @@ button.spotify { background: #1db954; border-color: #1db954; color: #04130a; box
 .mem button.up { border-color: #fff6; }
 .mem button .ic { width: 32px; height: 32px; margin: 0; }
 .foos { width: 100%; aspect-ratio: 5 / 3; border-radius: 10px; touch-action: none; border: 6px solid #7a4426; }
+.foos.pool { aspect-ratio: 400 / 220; border: 0; }
 .foos-score { font-size: 1.15em; font-weight: 800; margin: 0 0 6px; }
 .foos-kick { min-width: 140px; font-size: 1.1em; touch-action: none; user-select: none; }
 
@@ -397,3 +398,15 @@ body.viewer #inviteChip { background: var(--sun); color: #1a1608; font-weight: 7
 /* Dar ekranda 9 düğme sığsın */
 @media (max-width: 420px) { #bar { gap: 2px; padding: 4px; } #bar button { width: 34px; height: 38px; border-radius: 11px; } #bar .sep { display: none; } .ic { width: 19px; height: 19px; } }
 @media (max-width: 340px) { #bar button { width: 29px; height: 36px; border-radius: 9px; } #bar .ic { width: 17px; height: 17px; } }
+
+/* Mutfak */
+.foos.counter { aspect-ratio: 2 / 1; border: 0; }
+.cookarea { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.cookarea .row.center { justify-content: center; }
+button.big { font-size: 20px; padding: 14px 22px; }
+.cookbar { position: relative; width: 100%; height: 22px; background: #2a2418; border: 2px solid var(--line); border-radius: 8px; overflow: hidden; }
+.cookbar .zone { position: absolute; top: 0; bottom: 0; background: rgba(79, 191, 106, .55); }
+.cookbar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255, 140, 60, .75); }
+.shake { animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }

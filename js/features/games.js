@@ -23,6 +23,7 @@ export function createGames(ctx) {
       h('button', { class: 'tile', onclick: openXox }, h('b', {}, 'XOX'), h('small', {}, 'Klasik üçlü; sıra sizde.')),
       h('button', { class: 'tile', onclick: openMem }, h('b', {}, 'Hafıza'), h('small', {}, 'Kartları eşleştir, en çok çifti bulan kazanır.')),
       h('button', { class: 'tile', onclick: openFoos }, h('b', {}, 'Langırt'), h('small', {}, 'Balkondaki masada gerçek zamanlı maç (5 golde biter).')),
+      h('button', { class: 'tile', onclick: openPool }, h('b', {}, 'Bilardo'), h('small', {}, 'Balkondaki masada sırayla; en çok top sokan kazanır.')),
     );
   }
 
@@ -307,5 +308,129 @@ export function createGames(ctx) {
     }, 500);
   }
 
-  return { openHub, openXox, openMem, openFoos };
+  // ---------- Bilardo ----------
+  // Sırayla oynanır. Vuran cihaz vuruşu (açı, güç, başlangıç konumları) yazar; iki cihaz da aynı simülasyonu oynatır,
+  // vuruş bitince vuran sonucu (toplar, sıra, skor) yazar. Top sokan tekrar vurur; beyaz top girerse sıra geçer.
+  // Bütün renkli toplar girince en çok top sokan kazanır. Partner yoksa tek başına antrenman.
+  // live/{rid}/games/pool = { balls: [[x,y,in]], turn, score: {uid: n}, shot: {a, p, by, n, from}, n }
+  const PW = 400, PH = 220, PR = 8, POCKETS = [[14, 14], [200, 8], [386, 14], [14, 206], [200, 212], [386, 206]];
+  const BALL_COLS = ['#ffffff', '#ffc93c', '#5b8def', '#e0473f', '#9b6bff', '#ff7a59', '#3fb7a4', '#26160f'];
+  const rack = () => {
+    const b = [[100, 110, 0]];
+    let i = 1;
+    for (let col = 0; col < 3 && i < 8; col++) for (let r = 0; r <= col + 1 && i < 8; r++) b.push([270 + col * 15, 110 - (col + 1) * 8.5 + r * 17, 0]), i++;
+    return b.slice(0, 8);
+  };
+  /** Belirlenimci simülasyon: her adımda dt sabit; iki cihazda aynı sonucu verir. onStep(çizim için) isteğe bağlı. */
+  function simulate(from, a, p, onFrame) {
+    const balls = from.map(([x, y, inn]) => ({ x, y, vx: 0, vy: 0, in: !!inn }));
+    balls[0].vx = Math.cos(a) * p; balls[0].vy = Math.sin(a) * p;
+    const potted = [];
+    const frames = [];
+    for (let step = 0; step < 3000; step++) {
+      let moving = false;
+      for (const b of balls) {
+        if (b.in) continue;
+        b.x += b.vx / 120; b.y += b.vy / 120;
+        b.vx *= 0.988; b.vy *= 0.988;
+        if (Math.hypot(b.vx, b.vy) < 4) b.vx = b.vy = 0; else moving = true;
+        if (b.x < 14 + PR) { b.x = 14 + PR; b.vx = Math.abs(b.vx) * 0.85; }
+        if (b.x > PW - 14 - PR) { b.x = PW - 14 - PR; b.vx = -Math.abs(b.vx) * 0.85; }
+        if (b.y < 14 + PR) { b.y = 14 + PR; b.vy = Math.abs(b.vy) * 0.85; }
+        if (b.y > PH - 14 - PR) { b.y = PH - 14 - PR; b.vy = -Math.abs(b.vy) * 0.85; }
+        if (POCKETS.some(([px, py]) => Math.hypot(b.x - px, b.y - py) < 15)) { b.in = true; b.vx = b.vy = 0; potted.push(balls.indexOf(b)); }
+      }
+      for (let i = 0; i < balls.length; i++) for (let j = i + 1; j < balls.length; j++) {
+        const A = balls[i], B = balls[j];
+        if (A.in || B.in) continue;
+        const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy);
+        if (d >= PR * 2 || d === 0) continue;
+        const nx = dx / d, ny = dy / d, over = (PR * 2 - d) / 2;
+        A.x -= nx * over; A.y -= ny * over; B.x += nx * over; B.y += ny * over;
+        const rel = (A.vx - B.vx) * nx + (A.vy - B.vy) * ny;
+        if (rel <= 0) continue;
+        A.vx -= rel * nx; A.vy -= rel * ny; B.vx += rel * nx; B.vy += rel * ny;
+      }
+      if (step % 2 === 0) frames.push(balls.map((b) => [b.x, b.y, b.in ? 1 : 0]));
+      if (!moving) break;
+    }
+    const end = balls.map((b) => [Math.round(b.x * 10) / 10, Math.round(b.y * 10) / 10, b.in ? 1 : 0]);
+    return { end, potted, frames };
+  }
+  function openPool() {
+    body = openSheet({ title: 'Bilardo', iconName: 'game', wide: true, onClose: close });
+    const canvas = h('canvas', { width: PW, height: PH, class: 'foos pool' });
+    const info = h('p', { class: 'center foos-score' }), hint = h('p', { class: 'small center' });
+    body.append(info, canvas, h('div', { class: 'row' }, h('button', { onclick: () => newGame() }, 'Yeni oyun')), hint);
+    const g = canvas.getContext('2d');
+    let st = null, anim = null, aim = null, lastShot = 0, raf = 0;
+    const duo = () => !!(ctx.partnerOnline() && ctx.partnerUid());
+    const nameOf = (u) => (u === uid ? ctx.myName() : ctx.partnerName());
+    const myTurn = () => st && !st.over && (!duo() || st.turn === uid);
+    function newGame() { set(live.ref('games/pool'), { balls: rack(), turn: uid, score: null, shot: null, over: false, n: 0 }); }
+    stopSub = onValue(live.ref('games/pool'), (s) => {
+      st = s.val();
+      if (!st) return;
+      const sh = st.shot;
+      if (sh && sh.n > lastShot) {
+        lastShot = sh.n;
+        const r = simulate(sh.from, sh.a, sh.p);
+        anim = { frames: r.frames, i: 0 };
+        if (sh.by === uid) { // vuran sonucu yazar
+          const scored = r.potted.filter((k) => k > 0).length, foul = r.potted.includes(0);
+          const end = r.end.map((b, k) => (k === 0 && b[2] ? [100, 110, 0] : b)); // beyaz top girdiyse başa döner
+          const score = { ...(st.score || {}) }; score[uid] = (score[uid] || 0) + scored;
+          const over = end.slice(1).every((b) => b[2]);
+          const next = !duo() || (scored && !foul) ? uid : ctx.partnerUid();
+          setTimeout(() => update(live.ref('games/pool'), { balls: end, score, turn: next, over, shot: null }), Math.max(300, r.frames.length * 16));
+          if (foul) toast(t('Beyaz top deliğe girdi, sıra geçti 🎱'));
+          if (over && duo() && (score[uid] || 0) > (score[ctx.partnerUid()] || 0)) live.stat('wins');
+        }
+      } else if (!sh) anim = null;
+      if (!sh && (st.n || 0) > lastShot) lastShot = st.n;
+    });
+    const pos = (e) => { const r = canvas.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * PW, ((e.clientY - r.top) / r.height) * PH]; };
+    canvas.onpointerdown = (e) => { if (!myTurn() || anim) return; e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } aim = pos(e); };
+    canvas.onpointermove = (e) => { if (aim) aim = pos(e); };
+    canvas.onpointerup = () => {
+      if (!aim || !st) return;
+      const cue = st.balls[0], dx = cue[0] - aim[0], dy = cue[1] - aim[1], d = Math.hypot(dx, dy);
+      aim = null;
+      if (d < 6) return;
+      const n = (st.n || 0) + 1;
+      update(live.ref('games/pool'), { n, shot: { a: Math.atan2(dy, dx), p: Math.min(900, d * 7), by: uid, n, from: st.balls } });
+    };
+    function draw() {
+      raf = requestAnimationFrame(draw);
+      g.fillStyle = '#6b3e22'; g.fillRect(0, 0, PW, PH);
+      g.fillStyle = '#2f8f5a'; g.fillRect(12, 12, PW - 24, PH - 24);
+      g.fillStyle = '#3fa86a'; g.fillRect(16, 16, PW - 32, PH - 32);
+      g.fillStyle = '#1a1210'; for (const [x, y] of POCKETS) { g.beginPath(); g.arc(x, y, 12, 0, Math.PI * 2); g.fill(); }
+      if (!st) { info.textContent = ''; return; }
+      let balls = st.balls;
+      if (anim) { balls = anim.frames[Math.min(anim.i, anim.frames.length - 1)]; anim.i++; }
+      balls.forEach(([x, y, inn], k) => {
+        if (inn) return;
+        g.fillStyle = 'rgba(0,0,0,0.3)'; g.beginPath(); g.arc(x + 2, y + 2, PR, 0, Math.PI * 2); g.fill();
+        g.fillStyle = BALL_COLS[k]; g.beginPath(); g.arc(x, y, PR, 0, Math.PI * 2); g.fill();
+        g.fillStyle = 'rgba(255,255,255,0.6)'; g.fillRect(x - 3, y - 4, 2, 2);
+      });
+      if (aim && !anim) { // isteka: parmağı beyaz toptan geriye çek
+        const [cx, cy] = st.balls[0], dx = cx - aim[0], dy = cy - aim[1], d = Math.hypot(dx, dy) || 1;
+        g.strokeStyle = 'rgba(255,255,255,0.55)'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + (dx / d) * 160, cy + (dy / d) * 160); g.stroke(); g.setLineDash([]);
+        g.strokeStyle = '#e0b25a'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx - (dx / d) * (12 + Math.min(d, 120) * 0.4), cy - (dy / d) * (12 + Math.min(d, 120) * 0.4)); g.lineTo(cx - (dx / d) * 150, cy - (dy / d) * 150); g.stroke(); g.lineWidth = 1;
+      }
+      const sc = st.score || {};
+      const pu2 = ctx.partnerUid();
+      info.textContent = duo() ? `🎱 ${ctx.myName()} ${sc[uid] || 0} – ${sc[pu2] || 0} ${ctx.partnerName()}` : `🎱 ${ctx.myName()} ${sc[uid] || 0}`;
+      hint.textContent = st.over ? ((sc[uid] || 0) === (sc[pu2] || 0) || !duo() ? t('Bütün toplar girdi 🎉') : (sc[uid] || 0) > (sc[pu2] || 0) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: ctx.partnerName() }))
+        : myTurn() ? t('Sıra sende: parmağını/fareni beyaz toptan geriye çek ve bırak. Ne kadar çekersen o kadar sert.') : t('{name} nişan alıyor…', { name: nameOf(st.turn) });
+    }
+    draw();
+    const oldStop = stopSub;
+    stopSub = () => { oldStop(); cancelAnimationFrame(raf); };
+    setTimeout(() => { if (body && !st) newGame(); }, 600);
+  }
+
+  return { openHub, openXox, openMem, openFoos, openPool };
 }

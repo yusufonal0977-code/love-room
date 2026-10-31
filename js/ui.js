@@ -123,6 +123,14 @@ export function pickImage() {
     i.click();
   });
 }
+/** Birden fazla görsel seçtirir (kolaj için). */
+export function pickImages() {
+  return new Promise((resolve) => {
+    const i = h('input', { type: 'file', accept: 'image/*', multiple: true });
+    i.onchange = () => resolve([...i.files]);
+    i.click();
+  });
+}
 /** Görseli küçültüp JPEG dataURL yapar (veritabanında az yer kaplasın). */
 export async function compressImage(src, max = 360, q = 0.78) {
   const img = await loadImg(src instanceof Blob ? URL.createObjectURL(src) : src);

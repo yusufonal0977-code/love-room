@@ -1,6 +1,7 @@
 // Ortak sorumluluklar: evcil dostumuz (mama, sevgi, oyun, temizlik), balkondaki çiçeğimiz ve rozetler.
 //
 // live/{rid}/pet    = { name, species, color, acc, food, love, play, clean, at, xp }   değerler zamanla azalır
+// live/{rid}/pets/{n} = aynı yapı; ek dostlar (n = 2, 3, 4). n dost varken en yüksek seviye 5·n olunca bir sonraki açılır.
 // live/{rid}/flower = { growth, water: {uid: zaman}, blooms }
 // live/{rid}/stats  = sayaçlar (rozetler bunlardan hesaplanır)
 import { h, icon, openSheet, toast } from '../ui.js';
@@ -33,13 +34,17 @@ export const BADGES = [
 
 export function createCare(ctx) {
   const { live, uid } = ctx;
-  let pet = null, flower = null, stats = null, petBody = null, flowerBody = null;
+  let pet = null, extra = {}, cur = 1, flower = null, stats = null, petBody = null, flowerBody = null;
+  const MAX_PETS = 4;
+  const refOf = (i) => (i === 1 ? 'pet' : `pets/${i}`);
+  const rawOf = (i) => (i === 1 ? pet : extra[i]);
+  const petIds = () => [1, ...Object.keys(extra).map(Number).filter((n) => extra[n]).sort((a, b) => a - b)];
 
   // ---------- Evcil dostumuz ----------
   // Tür (kedi/köpek/tavşan), renk ve aksesuar seçilebilir; seviye arttıkça yeni aksesuarlar açılır.
   // live/{rid}/petCall = { x, y, scene, at }: "Yanıma çağır" deyince hayvanı simüle eden cihaz onu çağıranın odasına getirir.
-  const petNow = () => {
-    const p = { ...DEFAULT_PET, acc: 'none', food: 80, love: 80, play: 80, clean: 80, at: now(), xp: 0, ...(pet || {}) };
+  const petNow = (i = 1) => {
+    const p = { ...DEFAULT_PET, acc: 'none', food: 80, love: 80, play: 80, clean: 80, at: now(), xp: 0, ...(rawOf(i) || {}) };
     const hrs = Math.max(0, (now() - (p.at || now())) / HOUR);
     return { ...p, food: clamp(p.food - hrs * 4), love: clamp(p.love - hrs * 3), play: clamp(p.play - hrs * 3.5), clean: clamp((p.clean ?? 80) - hrs * 2) };
   };
@@ -53,15 +58,31 @@ export function createCare(ctx) {
     bunny: { food: '{name} havucu kemirdi 🥕', love: '{name} burnunu oynattı 🐰', play: '{name} zıp zıp zıpladı ✨', clean: '{name} pamuk gibi oldu 🫧' },
     raccoon: { food: '{name} mamasını patileriyle yıkayıp yedi 🦝', love: '{name} kuyruğunu sarıp sokuldu 🦝', play: '{name} parlak bir şey buldu, saklıyor ✨', clean: '{name} maskesi bile pırıl pırıl 🫧' },
   };
-  function syncDecor() { const p = petNow(); Object.assign(DECOR.pet, { species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean }); }
+  function syncDecor() {
+    const p = petNow(); Object.assign(DECOR.pet, { species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean });
+    DECOR.extraPets = petIds().slice(1).map((i) => { const q = petNow(i); return { species: q.species, color: q.color, acc: q.acc }; });
+  }
   live.on('pet', (v) => { pet = v; syncDecor(); renderPet(); });
+  live.on('pets', (v) => { extra = v || {}; if (!rawOf(cur) && cur !== 1) cur = 1; syncDecor(); renderPet(); });
+  // Yeni dost: n dost varken en yüksek seviye 5·n olmalı
+  const nextNeed = () => 5 * petIds().length;
+  const canAdopt = () => petIds().length < MAX_PETS && Math.max(...petIds().map((i) => level(petNow(i).xp))) >= nextNeed();
+  async function adopt() {
+    const n = Math.max(...petIds()) + 1;
+    const used = petIds().map((i) => petNow(i).species);
+    const species = Object.keys(SPECIES).find((s) => !used.includes(s)) || 'cat';
+    const name = (prompt(t('Yeni dostunuzun adı?')) || '').trim().slice(0, 14) || t('Minik');
+    await set(live.ref(refOf(n)), { name, species, color: species === 'raccoon' ? PET_RACCOON : PET_COLORS[n % PET_COLORS.length], acc: 'none', food: 80, love: 80, play: 80, clean: 80, xp: 0, at: serverTimestamp() });
+    cur = n; toast(t('Ailenize yeni bir dost katıldı: {name} 🐾', { name }), 4000);
+  }
   live.on('petCall', (v) => { if (v && ctx.game.petSim && now() - (v.at || 0) < 8000) ctx.game.petCome(v.x, v.y, v.scene, 'partner'); });
   setInterval(syncDecor, 30_000);
 
-  const save = (p, extra = {}) => set(live.ref('pet'), { name: p.name, species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean, xp: p.xp || 0, at: serverTimestamp(), ...extra });
+  const save = (p, more = {}) => set(live.ref(refOf(cur)), { name: p.name, species: p.species, color: p.color, acc: p.acc, food: p.food, love: p.love, play: p.play, clean: p.clean, xp: p.xp || 0, at: serverTimestamp(), ...more });
 
-  async function care(kind) {
-    const p = petNow();
+  async function care(kind, i = cur) {
+    cur = i;
+    const p = petNow(i);
     const gain = { food: 35, love: 30, play: 30, clean: 40 }[kind];
     if (p[kind] >= 98) return toast(t(kind === 'food' ? '{name} tok 😺' : kind === 'love' ? '{name} şu an yeterince sevildi 😺' : kind === 'clean' ? '{name} zaten tertemiz ✨' : '{name} şu an yeterince oynadı 😺', { name: p.name }));
     const before = level(p.xp);
@@ -91,11 +112,17 @@ export function createCare(ctx) {
   }
   function renderPet() {
     if (!petBody || !document.body.contains(petBody)) return;
-    const p = petNow(), lv = level(p.xp);
+    const p = petNow(cur), lv = level(p.xp), R = refOf(cur);
     const prog = ((p.xp || 0) % 10) * 10;
     petBody.innerHTML = '';
     const name = h('input', { value: p.name, maxLength: 14 });
-    name.onchange = () => update(live.ref('pet'), { name: name.value.trim() || DEFAULT_PET.name });
+    name.onchange = () => update(live.ref(R), { name: name.value.trim() || DEFAULT_PET.name });
+    // Dostlar arasında geçiş + yeni dost
+    const ids = petIds();
+    petBody.append(h('div', { class: 'tabs' },
+      ...ids.map((i) => h('button', { class: i === cur ? 'sel' : '', onclick: () => { cur = i; renderPet(); } }, petNow(i).name)),
+      ids.length < MAX_PETS ? h('button', { disabled: !canAdopt(), title: t('Bir dostunuz seviye {lv} olunca açılır', { lv: nextNeed() }), onclick: adopt }, canAdopt() ? t('+ Yeni dost') : t('🔒 Yeni dost · Sv {lv}', { lv: nextNeed() })) : null,
+    ));
     const pick = (items, cur, onPick, render) => h('div', { class: 'opts' }, ...items.map((it) => {
       const b = render(it);
       if (it.value === cur) b.classList.add('sel');
@@ -118,11 +145,11 @@ export function createCare(ctx) {
         h('button', { onclick: call }, 'Yanıma çağır'),
       ),
       h('small', {}, 'Tür'),
-      pick(Object.entries(SPECIES).map(([value, label]) => ({ value, label })), p.species, (v) => update(live.ref('pet'), v === 'raccoon' && p.species !== 'raccoon' ? { species: v, color: PET_RACCOON } : { species: v }), (it) => h('button', {}, it.label)),
+      pick(Object.entries(SPECIES).map(([value, label]) => ({ value, label })), p.species, (v) => update(live.ref(R), v === 'raccoon' && p.species !== 'raccoon' ? { species: v, color: PET_RACCOON } : { species: v }), (it) => h('button', {}, it.label)),
       h('small', {}, 'Renk'),
-      pick(PET_COLORS.map((value) => ({ value })), p.color, (v) => update(live.ref('pet'), { color: v }), (it) => h('button', { class: 'sw', style: { background: it.value } })),
+      pick(PET_COLORS.map((value) => ({ value })), p.color, (v) => update(live.ref(R), { color: v }), (it) => h('button', { class: 'sw', style: { background: it.value } })),
       h('small', {}, 'Aksesuar'),
-      pick(PET_ACC.map(([value, need]) => ({ value, label: ACC[value], locked: lv < need ? need : 0 })), p.acc, (v) => update(live.ref('pet'), { acc: v }), (it) => h('button', {}, t(it.label) + (it.locked ? ' 🔒' : ''))),
+      pick(PET_ACC.map(([value, need]) => ({ value, label: ACC[value], locked: lv < need ? need : 0 })), p.acc, (v) => update(live.ref(R), { acc: v }), (it) => h('button', {}, t(it.label) + (it.locked ? ' 🔒' : ''))),
       h('p', { class: 'small' }, 'Değerler zamanla azalır. İkiniz de bakabilirsiniz; acıkınca, sıkılınca ya da kirlenince başının üstünde balon çıkar. Geceleri kıvrılıp uyur.'),
     );
   }

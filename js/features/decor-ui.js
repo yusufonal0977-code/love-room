@@ -52,7 +52,7 @@ export function createDecorUI(ctx) {
     const r = roomId || room || game.me.scene;
     const body = openSheet({ title: 'Evi düzenle', iconName: 'paint', wide: true, onClose: () => (room = null) });
     room = r; // önceki pencerenin kapanışı odayı sıfırlar; o yüzden açtıktan sonra
-    body.append(h('div', { class: 'rooms' }, ...Object.values(SCENES).map((sc) => h('button', { class: sc.id === scene() ? 'sel' : '', onclick: () => open(tab, sc.id) }, sc.name))));
+    body.append(h('div', { class: 'rooms' }, ...Object.values(SCENES).filter((sc) => sc.id !== 'admin').map((sc) => h('button', { class: sc.id === scene() ? 'sel' : '', onclick: () => open(tab, sc.id) }, sc.name))));
     body.append(h('div', { class: 'tabs' },
       h('button', { class: tab === 'shop' ? 'sel' : '', onclick: () => open('shop') }, 'Dekor dolabı'),
       h('button', { class: tab === 'paint' ? 'sel' : '', onclick: () => open('paint') }, 'Boya'),

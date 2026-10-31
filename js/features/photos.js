@@ -3,7 +3,7 @@
 // live/{rid}/frames/{çerçeve} = { img, by, at }        (tablodaki foto; sahnede piksel haliyle görünür)
 // live/{rid}/album/{id}       = { img, title, by, at }  (kabin şeritleri ve eklenen anılar)
 // live/{rid}/booth           = { mode, slots: {uid: img}, shot: {at, by} }
-import { h, icon, openSheet, closeSheet, toast, pickImage, compressImage, loadImg, saveImage, fmtDate } from '../ui.js';
+import { h, icon, openSheet, closeSheet, toast, pickImage, pickImages, compressImage, loadImg, saveImage, fmtDate } from '../ui.js';
 import { get, limitToLast, push, query, remove, serverTimestamp, set, now } from '../fb.js';
 import { DECOR, SCENES, bump } from '../scenes.js';
 import { t } from '../i18n.js';
@@ -46,8 +46,38 @@ export function createPhotos(ctx) {
         closeSheet(); toast('Tabloya asıldı 🖼️');
       } }),
       h('button', { onclick: () => openAlbum((img) => set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() }).then(() => toast('Tabloya asıldı 🖼️'))) }, 'Albümden seç'),
+      h('button', { html: `${icon('album')} Kolaj yap`, onclick: async () => {
+        const files = (await pickImages()).slice(0, 6);
+        if (files.length < 2) return toast(t('Kolaj için en az 2 fotoğraf seç (en çok 6).'));
+        toast(t('Kolaj hazırlanıyor…'));
+        const img = await collage(files, f.w / f.h);
+        await set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp(), parts: files.length });
+        if (confirm(t('Albüme de eklensin mi?'))) addToAlbum(img, t('Kolaj'));
+        closeSheet(); toast('Tabloya asıldı 🖼️');
+      } }),
       cur ? h('button', { class: 'link', onclick: () => { remove(live.ref(`frames/${id}`)); closeSheet(); } }, 'Çerçeveyi boşalt') : null,
     ));
+  }
+
+  /** Kolaj: fotoğrafları çerçevenin en-boy oranında tek bir resimde birleştirir (tabloda tek fotoğraf gibi durur).
+   *  Düzen: 2 → yan yana, 3 → solda büyük + sağda iki, 4 → 2×2, 5-6 → 3×2. Aralarında ince krem çizgi. */
+  async function collage(files, ratio) {
+    const imgs = await Promise.all(files.map((f) => loadImg(URL.createObjectURL(f))));
+    const Wc = 720, Hc = Math.round(Wc / ratio), gap = 6;
+    const c = h('canvas', { width: Wc, height: Hc }), g = c.getContext('2d');
+    g.fillStyle = '#fff6e6'; g.fillRect(0, 0, Wc, Hc);
+    const n = imgs.length, cells = [];
+    if (n === 2) cells.push([0, 0, 0.5, 1], [0.5, 0, 0.5, 1]);
+    else if (n === 3) cells.push([0, 0, 0.6, 1], [0.6, 0, 0.4, 0.5], [0.6, 0.5, 0.4, 0.5]);
+    else if (n === 4) cells.push([0, 0, 0.5, 0.5], [0.5, 0, 0.5, 0.5], [0, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5]);
+    else for (let i = 0; i < 6; i++) cells.push([(i % 3) / 3, Math.floor(i / 3) / 2, 1 / 3, 0.5]);
+    imgs.forEach((img, i) => {
+      const [cx, cy, cw, ch] = cells[i] || cells[cells.length - 1];
+      const x = cx * Wc + gap / 2, y = cy * Hc + gap / 2, w = cw * Wc - gap, hh = ch * Hc - gap;
+      const s = Math.max(w / img.width, hh / img.height), sw = w / s, sh = hh / s; // ortadan kırp
+      g.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, x, y, w, hh);
+    });
+    return c.toDataURL('image/jpeg', 0.82);
   }
 
   // ---------- Albüm ----------

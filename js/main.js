@@ -19,6 +19,8 @@ import { createPip } from './features/pip.js';
 import { createChat } from './features/chat.js';
 import { createShare } from './features/share.js';
 import { createShowcase } from './features/showcase.js';
+import { createKitchen } from './features/kitchen.js';
+import { createAdmin, trackActivity } from './features/admin.js';
 import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
 import { auth, db, get, ref, remove } from './fb.js';
 import { initI18n, t, lang, locale, langPicker } from './i18n.js';
@@ -43,7 +45,7 @@ document.addEventListener('click', (e) => {
 
 const show = (id) => { ['gate', 'consent', 'setup', 'invite', 'hello', 'world'].forEach((s) => ($(s).hidden = s !== id)); $('langCorner').hidden = id === 'world'; };
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const SCENE_AT = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde', yatak: 'yatak odasında' };
+const SCENE_AT = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde', yatak: 'yatak odasında', mutfak: 'mutfakta', admin: 'başka bir odada' };
 const sideIcon = (s) => (s === 'moon' ? '🌙' : '☀️');
 
 // Davet kodu adresten okunur (?davet=...); giriş sonrası kullanılmak üzere saklanır.
@@ -317,7 +319,7 @@ async function enterWorld(rid, fresh = false) {
     onRel: (t) => { $('relChip').textContent = t; $('relChip').hidden = !t; },
     onFrame: null,
   };
-  let decor = null, care = null;
+  let decor = null, care = null, kitchen = null, adminRoom = null;
 
   // Yatak odası: evde birlikte 100 saat (6000 dk) geçirince açılır. Sayaç live/{rid}/stats/minutes;
   // ikiniz de açıksanız yalnızca ev sahibi sayar (süre iki kez sayılmasın). Yerelde ?yatak ile hemen açılır.
@@ -357,7 +359,8 @@ async function enterWorld(rid, fresh = false) {
     },
     onFrame: () => { tv?.place(); ctx.onFrame?.(); },
     onSpot: (id, s) => spot(id, s),
-    onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); },
+    onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); },
+    hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     canEnter: (to) => to !== 'yatak' || bedOpen(),
     onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız 💞')); },
@@ -382,6 +385,9 @@ async function enterWorld(rid, fresh = false) {
   createChat(ctx);
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
+  kitchen = createKitchen(ctx);
+  adminRoom = createAdmin(ctx);
+  const activityTick = trackActivity(user.uid);
 
   // Hata ayıklama için konsoldan erişim: window.__lr
   window.__lr = { game, get presence() { return presence; }, get partnerProfile() { return partnerProfile; }, get room() { return room.data; }, call, ctx };
@@ -404,6 +410,10 @@ async function enterWorld(rid, fresh = false) {
       clock: () => life.openClock(),
       diary: () => life.openDiary(),
       foos: () => games.openFoos(),
+      cook: () => kitchen.open(),
+      fridge: () => kitchen.open(),
+      admintv: () => adminRoom.openTv(),
+      pool: () => games.openPool(),
       flower: () => care.openFlower(),
       easel: () => draw.open(),
       booth: () => photos.openBooth(),
@@ -511,6 +521,12 @@ async function enterWorld(rid, fresh = false) {
   $('inviteChip').onclick = $('menuBtn').onclick;
   $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı 💌')); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
+  // Gizli admin girişi: menü başlığına 2 sn içinde 5 kez dokun
+  let adminTaps = [];
+  $('menu').querySelector('h3').onclick = () => {
+    const n = Date.now(); adminTaps = [...adminTaps.filter((x) => n - x < 2000), n];
+    if (adminTaps.length >= 5) { adminTaps = []; $('menu').hidden = true; adminRoom.enter(); }
+  };
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
 
   // ---------- Verilerimi sil ----------
@@ -532,7 +548,7 @@ async function enterWorld(rid, fresh = false) {
   async function deleteEverything() {
     toast(t('Siliniyor…'), 8000);
     call.setPartner(null);
-    clearInterval(minuteTick); game.stop(); live.leave();
+    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); game.stop(); live.leave();
     const r = room.data;
     const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
     if (sc) await remove(ref(db, `showcase/${sc}`)).catch(() => {});

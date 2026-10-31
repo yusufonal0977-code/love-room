@@ -1,6 +1,7 @@
 {
   "rules": {
     "users": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
       "$uid": {
         ".read": "auth != null",
         ".write": "auth != null && auth.uid === $uid"
@@ -13,6 +14,7 @@
       }
     },
     "rooms": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
       "$rid": {
         ".read": "auth != null && (data.child('a').val() === auth.uid || data.child('b').val() === auth.uid || !data.child('b').exists())",
         ".write": "auth != null && !newData.exists() && (data.child('a').val() === auth.uid || data.child('b').val() === auth.uid)",
@@ -37,6 +39,29 @@
       "$id": {
         ".read": true,
         ".write": "auth != null && ((newData.exists() && (root.child('rooms').child(newData.child('rid').val()).child('a').val() === auth.uid || root.child('rooms').child(newData.child('rid').val()).child('b').val() === auth.uid) && (!data.exists() || data.child('rid').val() === newData.child('rid').val())) || (!newData.exists() && (root.child('rooms').child(data.child('rid').val()).child('a').val() === auth.uid || root.child('rooms').child(data.child('rid').val()).child('b').val() === auth.uid)))"
+      }
+    },
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && newData.val() === '__ADMIN_SIFRE__'"
+      }
+    },
+    "metrics": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "active": {
+        "$day": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      },
+      "online": {
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.isNumber()"
+        }
       }
     }
   }
