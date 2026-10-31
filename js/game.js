@@ -244,7 +244,7 @@ export function createGame(opts) {
   canvas.addEventListener('pointercancel', () => edit && editUp());
 
   // ---------- Güncelleme ----------
-  let lastSent = 0, dirty = true;
+  let lastSent = 0, dirty = true, lockedAt = 0;
   function changed() { dirty = true; }
   function report(now) {
     if (!dirty && now - lastSent < 2000) return;
@@ -288,7 +288,16 @@ export function createGame(opts) {
     changed();
     // Kapı
     const door = scene().doors.find((d) => me.x >= d.x && me.x <= d.x + d.w && me.y >= d.y && me.y <= d.y + d.h);
-    if (door && !fadeTo && (byKeys || me.doorIntent === door)) { fadeTo = door; fade = 0; me.doorIntent = null; }
+    if (door && !fadeTo && (byKeys || me.doorIntent === door)) {
+      me.doorIntent = null;
+      if (opts.canEnter?.(door.to) === false) {
+        // Kilitli oda: kapıdan geri it, uyarıyı en fazla 3 sn'de bir göster
+        if (door.h > door.w) me.x += me.x < W / 2 ? 8 : -8; else me.y += me.y < H / 2 ? 8 : -8;
+        me.target = null; me.path = [];
+        const n = performance.now();
+        if (n - lockedAt > 3000) { lockedAt = n; opts.onLocked?.(door.to); }
+      } else { fadeTo = door; fade = 0; }
+    }
   }
 
   function stepFade(dt) {
@@ -398,7 +407,7 @@ export function createGame(opts) {
     // Adım döngüsü: dur, sol ayak, dur, sağ ayak
     const ph = (p.t * 8 | 0) % 4, f = ph === 1 ? '2' : ph === 3 ? '3' : '';
     const seat = seatOf(p);
-    if (seat) return seat.pose === 'back' ? sp.sitBack : sp.sit;
+    if (seat) return seat.pose === 'lie' ? sp.lie : seat.pose === 'back' ? sp.sitBack : sp.sit;
     if (pose === 'kiss') return face === 'right' ? sp.kissR : sp.kissL;
     if (pose === 'hug') return face === 'right' ? sp.hugR : sp.hugL;
     const dir = face || p.dir, mv = !face && p.moving;
@@ -409,9 +418,10 @@ export function createGame(opts) {
     return sp['side' + k + 'L'];
   }
   // Oturan karakterin kesilmiş alt kenarı koltuğa oturur: önden oturuşta 2, arkadan (kanepe) -1 piksel pay
-  const seatPad = (p) => { const s = seatOf(p); return s ? (s.pose === 'back' ? -1 : 2) : 1; };
-  // Çizim sırası: kanepede sırtı dönük oturan koltuğun arkasında, öne bakarak oturan koltuğun önünde kalır
-  const sortY = (p) => { const s = seatOf(p); return !s ? p.y : s.pose === 'back' ? p.y - 6 : p.y + 12; };
+  const seatPad = (p) => { const s = seatOf(p); return s ? (s.pose === 'back' ? -1 : s.pose === 'lie' ? 0 : 2) : 1; };
+  // Çizim sırası: kanepede sırtı dönük oturan koltuğun arkasında, öne bakarak oturan koltuğun önünde kalır;
+  // yatakta uzanan yorganın altında kalır
+  const sortY = (p) => { const s = seatOf(p); return !s ? p.y : s.pose === 'back' ? p.y - 6 : s.pose === 'lie' ? p.y - 30 : p.y + 12; };
   function headY(p) { return p.y - personImg(p).height + seatPad(p); }
   function drawPerson(p, at) {
     const img = personImg(p, at?.face, at?.pose);
@@ -420,6 +430,15 @@ export function createGame(opts) {
     const x = Math.round(px) - (img.width >> 1), y = Math.round(py) - img.height + seatPad(p) - Math.round(at?.lift || 0);
     if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);
+    if (seatOf(p)?.pose === 'lie') { // uyuyor: başın üstünde yükselen z'ler
+      const k = performance.now() / 1000;
+      for (let i = 0; i < 3; i++) {
+        const ph = (k * 0.5 + i / 3) % 1, zx = Math.round(px + 6 + ph * 6 + i), zy = Math.round(y - 2 - ph * 14);
+        ctx.globalAlpha = 1 - ph; R(ctx, zx, zy, 3, 1, '#e9d8f0'); R(ctx, zx + 1, zy + 1, 1, 1, '#e9d8f0'); R(ctx, zx, zy + 2, 3, 1, '#e9d8f0');
+      }
+      ctx.globalAlpha = 1;
+      return;
+    }
     if (!at?.pose) {
       const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
       ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
@@ -564,7 +583,7 @@ export function createGame(opts) {
     step(dt); stepFade(dt); stepPartner(dt); stepCat(dt); stepParts(dt); report(nowMs);
     const sc = scene(), l = lay();
     const hours = opts.getHours();
-    const info = { st: opts.getShared(), t, ...hours, night: nightLevel(hours.hour) * (sc.outdoor ? 0.85 : 1) };
+    const info = { st: opts.getShared(), t, ...hours, night: Math.max(nightLevel(hours.hour) * (sc.outdoor ? 0.85 : 1), sc.dim || 0) };
     lastNight = info.night;
     ctx.drawImage(sc.bg, 0, 0);
     sc.dyn?.(ctx, info);

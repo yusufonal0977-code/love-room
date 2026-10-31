@@ -255,6 +255,7 @@ const somine = makeScene({
     // Odun sepeti
     R(g, 54, 58, 14, 10, '#c9a36b'); R(g, 55, 54, 3, 5, '#7a4a2a'); R(g, 59, 53, 3, 6, '#8a5a36'); R(g, 63, 54, 3, 5, '#7a4a2a');
     sideDoor(g, 'right', col.wall);
+    sideDoor(g, 'left', col.wall); // yatak odasına (100 saat birlikte geçirince açılır)
   },
   dyn(g, { st, t, hour }) {
     // Saat: gerçek saat
@@ -277,7 +278,10 @@ const somine = makeScene({
     { id: 'plant', movable: true, y: 128, hit: [18, 94, 24, 36], block: [20, 122, 20, 6], draw(g) { plant(g, 30, 128, true); } },
   ],
   blocks: [[0, 0, W, 54], [0, 54, 34, 12], [52, 52, 18, 18], [68, 54, 56, 14]],
-  doors: [{ x: 182, y: 84, w: 6, h: 26, to: 'salon', spawn: { x: 16, y: 96, dir: 'right' } }],
+  doors: [
+    { x: 182, y: 84, w: 6, h: 26, to: 'salon', spawn: { x: 16, y: 96, dir: 'right' } },
+    { x: 4, y: 84, w: 6, h: 26, to: 'yatak', spawn: { x: 176, y: 100, dir: 'left' } },
+  ],
   spots: [
     { id: 'fire', x: 96, y: 74, hit: [70, 10, 52, 58], label: (st) => (st.fire ? 'Ateşi söndür' : 'Ateşi yak') },
     { id: 'sit', group: 'armchair', prop: 'armchair', x: 162, y: 94, hit: [146, 58, 34, 32], label: () => 'Berjere otur' },
@@ -450,8 +454,63 @@ const hobi = makeScene({
   lights: ({ st }) => [st.desk && { x: 109, y: 36, r: 52, a: 0.9, color: '255,200,120' }, { x: 174, y: 30, r: 30, a: 0.7, color: '255,220,150' }],
 });
 
-export const SCENES = { salon, somine, balkon, hobi };
-export const DEFAULT_STATE = { lamp: true, tv: false, fire: true, lights: true, desk: true };
+/** Yatak odası: birlikte 100 saat geçirince açılır (main.js). Çift kişilik yatak, iki komidin ve gece lambaları;
+ *  ışık hep loş. Yatağa uzanan karakterin yalnızca başı yastıkta görünür, yorgan üstünü örter (AFK / uyku). Sağ kapı → şömine odası. */
+const nightstand = (g, x) => {
+  R(g, x, 50, 20, 14, C.woodD); R(g, x + 1, 50, 18, 2, C.woodL); R(g, x + 2, 54, 16, 4, C.wood); R(g, x + 9, 55, 2, 1, C.gold);
+  R(g, x + 2, 59, 16, 4, C.wood); R(g, x + 9, 60, 2, 1, C.gold); R(g, x + 1, 64, 2, 2, C.woodD); R(g, x + 17, 64, 2, 2, C.woodD);
+  R(g, x + 9, 44, 2, 6, C.metal); R(g, x + 6, 49, 8, 1, C.metal); // lamba ayağı (abajur canlı çizilir)
+};
+const yatak = makeScene({
+  id: 'yatak',
+  name: 'Yatak odası',
+  colors: { wall: '#3b3566', accent: '#4a4380', floor: '#7a5a46', motif: 'dots' },
+  dim: 0.45,
+  draw(g, col) {
+    wallpaper(g, col.wall, col.accent, col.motif);
+    wainscot(g, shade(col.wall, -0.2), '#c9a36b');
+    woodFloor(g, col.floor);
+    // Pencere (gece gökyüzü canlı çizilir), tül perde
+    R(g, 150, 8, 28, 26, C.woodD); R(g, 152, 10, 24, 22, '#141a3d');
+    R(g, 146, 6, 6, 34, '#e9d8f0'); R(g, 176, 6, 6, 34, '#e9d8f0'); R(g, 144, 4, 40, 2, C.metal);
+    // Yatak başlığı + çarşaf + yastıklar
+    R(g, 62, 26, 68, 28, C.woodD); R(g, 64, 28, 64, 24, '#6b4a8a'); for (let x = 70; x < 126; x += 8) R(g, x, 32, 4, 16, '#7d5a9e');
+    R(g, 62, 50, 68, 54, C.woodD); R(g, 64, 50, 64, 52, '#f4efe6');
+    R(g, 68, 52, 24, 11, '#ffffff'); R(g, 100, 52, 24, 11, '#ffffff'); R(g, 68, 61, 24, 2, '#e3dccf'); R(g, 100, 61, 24, 2, '#e3dccf');
+    nightstand(g, 40); nightstand(g, 132);
+    // Kilim (yatağın ayak ucu)
+    R(g, 58, 112, 76, 18, '#e9d8f0'); R(g, 60, 114, 72, 14, '#8a6fb0'); R(g, 64, 117, 64, 8, '#b39ddb');
+    sideDoor(g, 'right', col.wall);
+  },
+  dyn(g, { st, t, hour }) {
+    drawSky(g, 152, 10, 24, 22, hour, t); R(g, 163, 10, 2, 22, C.woodD);
+    for (const x of [40, 132]) { R(g, x + 4, 38, 12, 7, st.bedlamp ? '#ffcf8a' : '#b8a48a'); R(g, x + 5, 38, 10, 1, st.bedlamp ? '#fff1c8' : '#cbb89c'); }
+  },
+  props: [
+    { id: 'blanket', y: 106, draw(g) { // yorgan: uzananların gövdesini örter
+      R(g, 64, 66, 64, 36, '#c4566c'); R(g, 64, 66, 64, 4, '#f4efe6'); R(g, 64, 70, 64, 1, '#a8445a');
+      for (let x = 70; x < 126; x += 12) for (let y = 76; y < 100; y += 10) R(g, x, y, 3, 3, '#d97a8c');
+      R(g, 62, 102, 68, 6, C.woodD); R(g, 62, 102, 68, 1, C.woodL); R(g, 62, 108, 3, 3, C.woodD); R(g, 127, 108, 3, 3, C.woodD);
+    } },
+    { id: 'plant', movable: true, y: 134, hit: [8, 100, 20, 36], block: [10, 128, 16, 6], draw(g) { plant(g, 18, 134, true); } },
+  ],
+  blocks: [[0, 0, W, 54], [38, 48, 24, 20], [130, 48, 24, 20], [60, 48, 72, 62]],
+  doors: [{ x: 182, y: 84, w: 6, h: 26, to: 'somine', spawn: { x: 16, y: 96, dir: 'right' } }],
+  spots: [
+    { id: 'sit', group: 'bed', x: 96, y: 114, hit: [62, 26, 68, 84], label: () => 'Yatağa uzan' },
+    { id: 'bedlamp', x: 50, y: 74, hit: [38, 36, 24, 32], label: (st) => (st.bedlamp ? 'Gece lambasını söndür' : 'Gece lambasını yak') },
+    { id: 'bedlamp', x: 142, y: 74, hit: [130, 36, 24, 32], label: (st) => (st.bedlamp ? 'Gece lambasını söndür' : 'Gece lambasını yak') },
+  ],
+  seats: [{ x: 80, y: 70, pose: 'lie', group: 'bed' }, { x: 112, y: 70, pose: 'lie', group: 'bed' }],
+  lights: ({ st }) => [
+    st.bedlamp && { x: 50, y: 42, r: 46, a: 0.85, color: '255,170,90' },
+    st.bedlamp && { x: 142, y: 42, r: 46, a: 0.85, color: '255,170,90' },
+    { x: 164, y: 20, r: 22, a: 0.4, color: '170,180,255' },
+  ],
+});
+
+export const SCENES = { salon, somine, balkon, hobi, yatak };
+export const DEFAULT_STATE = { lamp: true, tv: false, fire: true, lights: true, desk: true, bedlamp: true };
 
 // ---------- Yerleşim (taşınan eşyalar + dekor dahil) ----------
 const shift = (b, dx, dy) => [b[0] + dx, b[1] + dy, b[2], b[3]];

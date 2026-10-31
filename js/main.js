@@ -43,7 +43,7 @@ document.addEventListener('click', (e) => {
 
 const show = (id) => { ['gate', 'consent', 'setup', 'invite', 'hello', 'world'].forEach((s) => ($(s).hidden = s !== id)); $('langCorner').hidden = id === 'world'; };
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const SCENE_AT = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde' };
+const SCENE_AT = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde', yatak: 'yatak odasında' };
 const sideIcon = (s) => (s === 'moon' ? '🌙' : '☀️');
 
 // Davet kodu adresten okunur (?davet=...); giriş sonrası kullanılmak üzere saklanır.
@@ -319,6 +319,20 @@ async function enterWorld(rid, fresh = false) {
   };
   let decor = null, care = null;
 
+  // Yatak odası: evde birlikte 100 saat (6000 dk) geçirince açılır. Sayaç live/{rid}/stats/minutes;
+  // ikiniz de açıksanız yalnızca ev sahibi sayar (süre iki kez sayılmasın). Yerelde ?yatak ile hemen açılır.
+  const BED_MIN = 6000;
+  let minutes = null;
+  const bedOpen = () => (minutes ?? 0) >= BED_MIN || (params.has('yatak') && location.hostname === 'localhost');
+  live.on('stats', (v) => {
+    const m = v?.minutes || 0;
+    if (minutes !== null && minutes < BED_MIN && m >= BED_MIN) toast(t('Yatak odası açıldı 🛏️ Şömine odasının sol kapısından girebilirsiniz.'), 6000);
+    minutes = m;
+  });
+  const minuteTick = setInterval(() => {
+    if (document.visibilityState === 'visible' && (!partnerP() || isHost())) live.stat('minutes');
+  }, 60_000);
+
   game = createGame({
     canvas: $('c'), overlay: ov, stage: $('stage'),
     look: profile.look ?? DEFAULT_LOOK, side: profile.side ?? 'sun', name: profile.name,
@@ -344,6 +358,8 @@ async function enterWorld(rid, fresh = false) {
     onFrame: () => { tv?.place(); ctx.onFrame?.(); },
     onSpot: (id, s) => spot(id, s),
     onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); },
+    canEnter: (to) => to !== 'yatak' || bedOpen(),
+    onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız 💞')); },
     onToast: toast,
     blockInput: () => !!document.querySelector('.modal:not([hidden])'),
@@ -377,6 +393,7 @@ async function enterWorld(rid, fresh = false) {
       tv: () => tv.open(),
       music: () => spotify.open(),
       lamp: () => toggle('lamp'),
+      bedlamp: () => toggle('bedlamp'),
       fire: () => toggle('fire'),
       lights: () => toggle('lights'),
       desk: () => toggle('desk'),
@@ -515,7 +532,7 @@ async function enterWorld(rid, fresh = false) {
   async function deleteEverything() {
     toast(t('Siliniyor…'), 8000);
     call.setPartner(null);
-    game.stop(); live.leave();
+    clearInterval(minuteTick); game.stop(); live.leave();
     const r = room.data;
     const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
     if (sc) await remove(ref(db, `showcase/${sc}`)).catch(() => {});

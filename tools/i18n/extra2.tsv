@@ -122,3 +122,11 @@ Rakun	Raccoon	Mapache	Waschbär	Raton laveur	Guaxinim	راكون
 # v0.18: girişte karakter seçimi
 Karakterini seç	Choose your character	Elige tu personaje	Wähle deine Figur	Choisis ton personnage	Escolha seu personagem	اختر شخصيتك
 Önce karakterini seç: kız mı erkek mi?	Choose your character first: girl or boy?	Primero elige tu personaje: ¿chica o chico?	Wähle zuerst deine Figur: Mädchen oder Junge?	Choisis d'abord ton personnage : fille ou garçon ?	Escolha seu personagem primeiro: menina ou menino?	اختر شخصيتك أولًا: فتاة أم فتى؟
+# v0.19: yatak odası
+Yatak odası	Bedroom	Dormitorio	Schlafzimmer	Chambre	Quarto	غرفة النوم
+yatak odasında	in the bedroom	en el dormitorio	im Schlafzimmer	dans la chambre	no quarto	في غرفة النوم
+Yatağa uzan	Lie down in bed	Acostarse en la cama	Ins Bett legen	S'allonger sur le lit	Deitar na cama	استلقِ على السرير
+Gece lambasını söndür	Turn off the night lamp	Apagar la lámpara de noche	Nachtlicht ausschalten	Éteindre la veilleuse	Apagar o abajur	أطفئ مصباح السرير
+Gece lambasını yak	Turn on the night lamp	Encender la lámpara de noche	Nachtlicht einschalten	Allumer la veilleuse	Acender o abajur	أشعل مصباح السرير
+Yatak odası açıldı 🛏️ Şömine odasının sol kapısından girebilirsiniz.	The bedroom is open 🛏️ Enter through the left door of the fireplace room.	¡El dormitorio está abierto! 🛏️ Entrad por la puerta izquierda del cuarto de la chimenea.	Das Schlafzimmer ist offen 🛏️ Eingang: linke Tür im Kaminzimmer.	La chambre est ouverte 🛏️ Entrez par la porte gauche de la pièce à la cheminée.	O quarto foi liberado 🛏️ Entrem pela porta esquerda da sala da lareira.	غرفة النوم مفتوحة الآن 🛏️ ادخلا من الباب الأيسر لغرفة المدفأة.
+Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat	The bedroom opens after 100 hours together at home 🔒 So far: {h} hours	El dormitorio se abre tras 100 horas juntos en casa 🔒 Ahora: {h} horas	Das Schlafzimmer öffnet nach 100 gemeinsamen Stunden 🔒 Bisher: {h} Stunden	La chambre s'ouvre après 100 heures ensemble 🔒 Pour l'instant : {h} heures	O quarto abre depois de 100 horas juntos em casa 🔒 Até agora: {h} horas	تُفتح غرفة النوم بعد 100 ساعة معًا في البيت 🔒 حتى الآن: {h} ساعة

@@ -218,6 +218,7 @@ export function characterSprites(look) {
   set.sideL = mirror(set.side); set.side2L = mirror(set.side2); set.side3L = mirror(set.side3);
   set.sit = paint(F, look, seated);
   set.sitBack = paint(B, look, seated);
+  set.lie = paint(F, look, (g) => g.slice(0, 18)); // yatakta: yalnızca baş ve omuz yastıkta görünür, gövde yorganın altında
   set.hugR = set.kissR = set.side;
   set.hugL = set.kissL = set.sideL;
   const main = CHAR_DATA.outfits[look.outfit] ? Object.entries(CHAR_DATA.outfits[look.outfit].pal).find(([k]) => k.startsWith('back:'))?.[1] : null;

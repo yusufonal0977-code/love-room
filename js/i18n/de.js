@@ -700,5 +700,12 @@ export default {
  "{name} parlak bir şey buldu, saklıyor ✨": "{name} hat etwas Glänzendes gefunden und versteckt es ✨",
  "{name} maskesi bile pırıl pırıl 🫧": "{name} glänzt, sogar die Maske 🫧",
  "Karakterini seç": "Wähle deine Figur",
- "Önce karakterini seç: kız mı erkek mi?": "Wähle zuerst deine Figur: Mädchen oder Junge?"
+ "Önce karakterini seç: kız mı erkek mi?": "Wähle zuerst deine Figur: Mädchen oder Junge?",
+ "Yatak odası": "Schlafzimmer",
+ "yatak odasında": "im Schlafzimmer",
+ "Yatağa uzan": "Ins Bett legen",
+ "Gece lambasını söndür": "Nachtlicht ausschalten",
+ "Gece lambasını yak": "Nachtlicht einschalten",
+ "Yatak odası açıldı 🛏️ Şömine odasının sol kapısından girebilirsiniz.": "Das Schlafzimmer ist offen 🛏️ Eingang: linke Tür im Kaminzimmer.",
+ "Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat": "Das Schlafzimmer öffnet nach 100 gemeinsamen Stunden 🔒 Bisher: {h} Stunden"
 };

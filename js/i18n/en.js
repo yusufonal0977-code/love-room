@@ -700,5 +700,12 @@ export default {
  "{name} parlak bir şey buldu, saklıyor ✨": "{name} found something shiny and is hiding it ✨",
  "{name} maskesi bile pırıl pırıl 🫧": "{name} is spotless, even the mask 🫧",
  "Karakterini seç": "Choose your character",
- "Önce karakterini seç: kız mı erkek mi?": "Choose your character first: girl or boy?"
+ "Önce karakterini seç: kız mı erkek mi?": "Choose your character first: girl or boy?",
+ "Yatak odası": "Bedroom",
+ "yatak odasında": "in the bedroom",
+ "Yatağa uzan": "Lie down in bed",
+ "Gece lambasını söndür": "Turn off the night lamp",
+ "Gece lambasını yak": "Turn on the night lamp",
+ "Yatak odası açıldı 🛏️ Şömine odasının sol kapısından girebilirsiniz.": "The bedroom is open 🛏️ Enter through the left door of the fireplace room.",
+ "Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat": "The bedroom opens after 100 hours together at home 🔒 So far: {h} hours"
 };
