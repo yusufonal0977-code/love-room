@@ -75,11 +75,25 @@ async function boot() {
 }
 
 // ---------- Giriş ----------
+// Başlangıç karakteri girişte seçilen bedene göre (site Arapçaysa kız karakter başörtülü çizilir, bkz. art.js)
+const START_LOOK = {
+  f: { ...DEFAULT_LOOK, body: 'f', hair: 'long', outfit: ['nordicPink', 'tee', 'cardiganBeige'][Math.floor(Math.random() * 3)] },
+  m: { ...DEFAULT_LOOK, body: 'm', shirt: Math.floor(Math.random() * SHIRT.length) },
+};
+let startBody = null;
 function showGate() {
   show('gate');
   if (inviteCode) $('gateNote').textContent = t('Partnerin seni bekliyor 💌 Giriş yap ve odaya gel.');
+  const btns = [...document.querySelectorAll('#bodyPick button')];
+  for (const b of btns) {
+    const s = characterSprites(START_LOOK[b.dataset.body]).down, c = b.querySelector('canvas');
+    c.width = s.width; c.height = s.height; c.getContext('2d').drawImage(s, 0, 0);
+    b.onclick = () => { startBody = b.dataset.body; btns.forEach((x) => x.classList.toggle('on', x === b)); $('gateErr').textContent = ''; };
+  }
 }
+const needBody = () => !startBody && (($('gateErr').textContent = t('Önce karakterini seç: kız mı erkek mi?')), true);
 $('googleBtn').onclick = async () => {
+  if (needBody()) return;
   try { const r = await loginGoogle(); await afterLogin(r.user); }
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }
 };
@@ -88,6 +102,7 @@ $('nameIn').addEventListener('keydown', (e) => e.key === 'Enter' && guest());
 async function guest() {
   const name = $('nameIn').value.trim();
   if (!name) { $('nameIn').focus(); return; }
+  if (needBody()) return;
   try { const r = await loginGuest(); await afterLogin(r.user, name); }
   catch (e) { $('gateErr').textContent = t('Giriş yapılamadı. İnternet bağlantını kontrol et.'); console.warn(e); }
 }
@@ -97,7 +112,7 @@ async function afterLogin(u, guestName) {
   profile = await getProfile(u.uid).catch((e) => { console.warn(e); return null; });
   if (!profile) {
     const name = guestName || u.displayName?.split(' ')[0] || t('Sevgili');
-    profile = { name, look: { ...DEFAULT_LOOK, shirt: Math.floor(Math.random() * SHIRT.length) }, side: 'sun', tz, lang };
+    profile = { name, look: { ...START_LOOK[startBody || 'm'] }, side: 'sun', tz, lang };
     await saveProfile(u.uid, profile);
   } else if (profile.tz !== tz || profile.lang !== lang) saveProfile(u.uid, { tz, lang });
   if ((profile.consent?.v || 0) < LEGAL_VERSION) await askConsent();

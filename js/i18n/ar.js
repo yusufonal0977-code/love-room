@@ -698,5 +698,7 @@ export default {
  "{name} mamasını patileriyle yıkayıp yedi 🦝": "غسل {name} طعامه بكفّيه ثم أكل 🦝",
  "{name} kuyruğunu sarıp sokuldu 🦝": "لفّ {name} ذيله حولك واقترب منك 🦝",
  "{name} parlak bir şey buldu, saklıyor ✨": "وجد {name} شيئًا لامعًا ويخبّئه ✨",
- "{name} maskesi bile pırıl pırıl 🫧": "{name} نظيف تمامًا، حتى قناعه 🫧"
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} نظيف تمامًا، حتى قناعه 🫧",
+ "Karakterini seç": "اختر شخصيتك",
+ "Önce karakterini seç: kız mı erkek mi?": "اختر شخصيتك أولًا: فتاة أم فتى؟"
 };

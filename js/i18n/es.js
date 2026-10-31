@@ -698,5 +698,7 @@ export default {
  "{name} mamasını patileriyle yıkayıp yedi 🦝": "{name} lavó su comida con las patitas y comió 🦝",
  "{name} kuyruğunu sarıp sokuldu 🦝": "{name} te rodeó con la cola y se acurrucó 🦝",
  "{name} parlak bir şey buldu, saklıyor ✨": "{name} encontró algo brillante y lo esconde ✨",
- "{name} maskesi bile pırıl pırıl 🫧": "{name} está reluciente, ¡hasta el antifaz! 🫧"
+ "{name} maskesi bile pırıl pırıl 🫧": "{name} está reluciente, ¡hasta el antifaz! 🫧",
+ "Karakterini seç": "Elige tu personaje",
+ "Önce karakterini seç: kız mı erkek mi?": "Primero elige tu personaje: ¿chica o chico?"
 };
