@@ -780,5 +780,10 @@ export default {
  "Dinçlik": "النشاط",
  "Dinlendin ✨ Enerjin tamamen doldu.": "ارتحت ✨ طاقتك ممتلئة.",
  "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "تشعر بالنعاس 😴 خذ قيلولة قصيرة في غرفة النوم.",
- "Bekarlar için": "للعزّاب"
+ "Bekarlar için": "للعزّاب",
+ "Şimdi Google ile ya da adınla giriş yap; evine girince admin odasına geçeceksin.": "سجّل الدخول الآن بحساب Google أو باسمك؛ عند دخول بيتك ستنتقل إلى غرفة الإدارة.",
+ "Admin odası 🛠️ Evine dönmek için alttaki kapıdan çık.": "غرفة الإدارة 🛠️ اخرج من الباب السفلي للعودة إلى بيتك.",
+ "Evime dön": "عُد إلى بيتي",
+ "Partnerin çevrimiçi değil; bota karşı oynuyorsun 🤖": "شريكك غير متصل؛ أنت تلعب ضد الروبوت 🤖",
+ "Balkondaki masada sırayla, partnerinle ya da botla; en çok top sokan kazanır.": "بالتناوب على طاولة الشرفة مع شريكك أو الروبوت؛ يفوز من يُدخل أكثر الكرات."
 };

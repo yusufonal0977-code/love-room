@@ -591,7 +591,10 @@ const admin = makeScene({
   props: [],
   blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12]],
   doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
-  spots: [{ id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'İstatistikler' }],
+  spots: [
+    { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'İstatistikler' },
+    { id: 'home', x: 96, y: 128, hit: [78, 126, 36, 18], label: () => 'Evime dön' },
+  ],
   seats: [],
   lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }],
 });

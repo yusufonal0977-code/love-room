@@ -780,5 +780,10 @@ export default {
  "Dinçlik": "Energia",
  "Dinlendin ✨ Enerjin tamamen doldu.": "Descansou ✨ Sua energia está cheia.",
  "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "Você está com sono 😴 Tire um cochilo no quarto.",
- "Bekarlar için": "Para solteiros"
+ "Bekarlar için": "Para solteiros",
+ "Şimdi Google ile ya da adınla giriş yap; evine girince admin odasına geçeceksin.": "Agora entre com o Google ou seu nome; ao chegar em casa você vai para a sala de admin.",
+ "Admin odası 🛠️ Evine dönmek için alttaki kapıdan çık.": "Sala de admin 🛠️ Saia pela porta de baixo para voltar para casa.",
+ "Evime dön": "Voltar para casa",
+ "Partnerin çevrimiçi değil; bota karşı oynuyorsun 🤖": "Seu par está offline; você joga contra o bot 🤖",
+ "Balkondaki masada sırayla, partnerinle ya da botla; en çok top sokan kazanır.": "Em turnos na mesa da varanda, com seu par ou o bot; quem encaçapar mais bolas vence."
 };

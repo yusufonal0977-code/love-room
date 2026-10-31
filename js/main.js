@@ -57,7 +57,7 @@ if (params.get('davet')) {
   history.replaceState(null, '', location.pathname);
 }
 
-let user = null, profile = null, spotifyReturn = null;
+let user = null, profile = null, spotifyReturn = null, pendingAdmin = null;
 
 async function boot() {
   await initI18n();
@@ -87,6 +87,14 @@ $('googleBtn').onclick = async () => {
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }
 };
 $('guestBtn').onclick = guest;
+// Giriş ekranındaki "Bekarlar için": şifreyi şimdi alır, giriş yapılıp eve girilince admin odasına götürür
+$('singlesGate').onclick = (e) => {
+  e.preventDefault();
+  const pw = prompt(t('Şifre?'));
+  if (!pw) return;
+  pendingAdmin = pw;
+  $('gateErr').textContent = t('Şimdi Google ile ya da adınla giriş yap; evine girince admin odasına geçeceksin.');
+};
 $('nameIn').addEventListener('keydown', (e) => e.key === 'Enter' && guest());
 async function guest() {
   const name = $('nameIn').value.trim();
@@ -417,6 +425,7 @@ async function enterWorld(rid, fresh = false) {
       cook: () => kitchen.open(),
       fridge: () => kitchen.open(),
       admintv: () => adminRoom.openTv(),
+      home: () => game.goto('salon', 96, 120),
       pool: () => games.openPool(),
       flower: () => care.openFlower(),
       easel: () => draw.open(),
@@ -527,6 +536,8 @@ async function enterWorld(rid, fresh = false) {
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
   // Gizli admin girişi: menünün alt bağlantılarındaki "Bekarlar için" → şifre → admin odası
   $('singlesLink').onclick = (e) => { e.preventDefault(); $('menu').hidden = true; adminRoom.enter(); };
+  // Giriş ekranından gelindiyse: giriş yapıp evine girince şifreyle admin odasına geçer
+  if (pendingAdmin) { const pw = pendingAdmin; pendingAdmin = null; setTimeout(() => adminRoom.enter(pw), 800); }
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
 
   // ---------- Verilerimi sil ----------

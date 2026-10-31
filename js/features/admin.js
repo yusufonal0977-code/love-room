@@ -58,8 +58,8 @@ export function createAdmin(ctx) {
   const { uid } = ctx;
   let timer = null, last = null;
 
-  async function login() {
-    const pw = prompt(t('Şifre?'));
+  async function login(given) {
+    const pw = given || prompt(t('Şifre?'));
     if (!pw) return false;
     try { await set(ref(db, `admins/${uid}`), pw); return true; }
     catch { toast(t('Şifre yanlış 🔒')); return false; }
@@ -98,10 +98,10 @@ export function createAdmin(ctx) {
     if (scene !== 'admin') { ctx.game.setPicture('admintv', 'admin', TV_RECT, null); return; }
     refresh(); timer = setInterval(refresh, 60_000);
   }
-  async function enter() {
-    if (!(await login())) return;
+  async function enter(pw) {
+    if (!(await login(pw))) return;
     ctx.game.goto('admin', 96, 118);
-    toast(t('Admin odası 🛠️'), 2000);
+    toast(t('Admin odası 🛠️ Evine dönmek için alttaki kapıdan çık.'), 4000);
   }
   function openTv() {
     const b = openSheet({ title: 'İstatistik', iconName: 'tv', wide: true });

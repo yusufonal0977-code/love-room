@@ -23,7 +23,7 @@ export function createGames(ctx) {
       h('button', { class: 'tile', onclick: openXox }, h('b', {}, 'XOX'), h('small', {}, 'Klasik üçlü; sıra sizde.')),
       h('button', { class: 'tile', onclick: openMem }, h('b', {}, 'Hafıza'), h('small', {}, 'Kartları eşleştir, en çok çifti bulan kazanır.')),
       h('button', { class: 'tile', onclick: openFoos }, h('b', {}, 'Langırt'), h('small', {}, 'Balkondaki masada gerçek zamanlı maç (5 golde biter).')),
-      h('button', { class: 'tile', onclick: openPool }, h('b', {}, 'Bilardo'), h('small', {}, 'Balkondaki masada sırayla; en çok top sokan kazanır.')),
+      h('button', { class: 'tile', onclick: openPool }, h('b', {}, 'Bilardo'), h('small', {}, 'Balkondaki masada sırayla, partnerinle ya da botla; en çok top sokan kazanır.')),
     );
   }
 
@@ -314,13 +314,35 @@ export function createGames(ctx) {
   // Bütün renkli toplar girince en çok top sokan kazanır. Partner yoksa tek başına antrenman.
   // live/{rid}/games/pool = { balls: [[x,y,in]], turn, score: {uid: n}, shot: {a, p, by, n, from}, n }
   const PW = 400, PH = 220, PR = 8, POCKETS = [[14, 14], [200, 8], [386, 14], [14, 206], [200, 212], [386, 206]];
-  const BALL_COLS = ['#ffffff', '#ffc93c', '#5b8def', '#e0473f', '#9b6bff', '#ff7a59', '#3fb7a4', '#26160f'];
+  // 0 beyaz, 1-7 düz, 8 siyah, 9-15 çizgili (aynı renkler)
+  const BALL_COLS = ['#ffffff', '#ffc93c', '#5b8def', '#e0473f', '#9b6bff', '#ff7a59', '#3fb7a4', '#9c3d2a', '#1a1210', '#ffc93c', '#5b8def', '#e0473f', '#9b6bff', '#ff7a59', '#3fb7a4', '#9c3d2a'];
+  // Standart üçgen dizilim: 5 sıra; 8 numara üçüncü sıranın ortasında, düz ve çizgili toplar karışık
+  const RACK_ORDER = [1, 9, 2, 10, 8, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15];
   const rack = () => {
-    const b = [[100, 110, 0]];
-    let i = 1;
-    for (let col = 0; col < 3 && i < 8; col++) for (let r = 0; r <= col + 1 && i < 8; r++) b.push([270 + col * 15, 110 - (col + 1) * 8.5 + r * 17, 0]), i++;
-    return b.slice(0, 8);
+    const b = Array(16), d = PR * 2 + 0.4;
+    b[0] = [100, 110, 0];
+    let k = 0;
+    for (let row = 0; row < 5; row++) for (let i = 0; i <= row; i++) b[RACK_ORDER[k++]] = [Math.round((290 + row * d * 0.866) * 10) / 10, Math.round((110 + (i - row / 2) * d) * 10) / 10, 0];
+    return b;
   };
+  /** Bot: bir top ve cebi seçip "hayalet top" noktasına nişan alır; biraz şaşırır ki hep sokmasın. */
+  function botShot(balls) {
+    const [cx, cy] = balls[0];
+    let best = null;
+    balls.forEach(([x, y, inn], k) => {
+      if (!k || inn) return;
+      for (const [px, py] of POCKETS) {
+        const tx = px - x, ty = py - y, tl = Math.hypot(tx, ty);
+        const gx = x - (tx / tl) * PR * 2, gy = y - (ty / tl) * PR * 2; // beyaz topun değmesi gereken nokta
+        const ax = gx - cx, ay = gy - cy, al = Math.hypot(ax, ay);
+        const cut = Math.abs(Math.atan2(ty, tx) - Math.atan2(ay, ax)) % (2 * Math.PI);
+        const cost = Math.min(cut, 2 * Math.PI - cut) * 120 + al * 0.3 + tl * 0.2;
+        if (!best || cost < best.cost) best = { cost, a: Math.atan2(ay, ax), d: al + tl };
+      }
+    });
+    if (!best) return { a: Math.random() * Math.PI * 2, p: 400 };
+    return { a: best.a + (Math.random() - 0.5) * 0.09, p: Math.min(900, 260 + best.d * 1.6) };
+  }
   /** Belirlenimci simülasyon: her adımda dt sabit; iki cihazda aynı sonucu verir. onStep(çizim için) isteğe bağlı. */
   function simulate(from, a, p, onFrame) {
     const balls = from.map(([x, y, inn]) => ({ x, y, vx: 0, vy: 0, in: !!inn }));
@@ -363,31 +385,47 @@ export function createGames(ctx) {
     const info = h('p', { class: 'center foos-score' }), hint = h('p', { class: 'small center' });
     body.append(info, canvas, h('div', { class: 'row' }, h('button', { onclick: () => newGame() }, 'Yeni oyun')), hint);
     const g = canvas.getContext('2d');
-    let st = null, anim = null, aim = null, lastShot = 0, raf = 0;
+    let st = null, anim = null, aim = null, lastShot = 0, raf = 0, botTimer = null;
+    // Partner çevrimiçiyse onunla, değilse bota karşı (bot hamlelerini bu cihaz yapar)
     const duo = () => !!(ctx.partnerOnline() && ctx.partnerUid());
-    const nameOf = (u) => (u === uid ? ctx.myName() : ctx.partnerName());
-    const myTurn = () => st && !st.over && (!duo() || st.turn === uid);
-    function newGame() { set(live.ref('games/pool'), { balls: rack(), turn: uid, score: null, shot: null, over: false, n: 0 }); }
+    const opp = () => (duo() ? ctx.partnerUid() : 'bot');
+    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot 🤖' : ctx.partnerName());
+    const myTurn = () => st && !st.over && st.turn === uid;
+    function newGame() { set(live.ref('games/pool'), { balls: rack(), turn: uid, opp: opp(), score: null, shot: null, over: false, n: 0 }); }
+    function shoot(by, a, p) {
+      const n = (st.n || 0) + 1;
+      update(live.ref('games/pool'), { n, shot: { a, p, by, n, from: st.balls } });
+    }
+    function botTurn() {
+      clearTimeout(botTimer);
+      if (!st || st.over || st.turn !== 'bot' || st.shot || duo()) return;
+      botTimer = setTimeout(() => { if (st && st.turn === 'bot' && !st.shot) { const b = botShot(st.balls); shoot('bot', b.a, b.p); } }, 1300);
+    }
     stopSub = onValue(live.ref('games/pool'), (s) => {
       st = s.val();
       if (!st) return;
+      // Eski sürümün 8 toplu masası ya da rakip değiştiyse (partner geldi/gitti) yeni oyun
+      if (st.balls?.length !== 16 || (!st.shot && st.opp && st.opp !== opp() && st.turn !== uid)) { newGame(); return; }
       const sh = st.shot;
       if (sh && sh.n > lastShot) {
         lastShot = sh.n;
         const r = simulate(sh.from, sh.a, sh.p);
         anim = { frames: r.frames, i: 0 };
-        if (sh.by === uid) { // vuran sonucu yazar
+        if (sh.by === uid || sh.by === 'bot') { // vuran (ya da botu yöneten bu cihaz) sonucu yazar
+          const who = sh.by, other = who === uid ? (st.opp || opp()) : uid;
           const scored = r.potted.filter((k) => k > 0).length, foul = r.potted.includes(0);
           const end = r.end.map((b, k) => (k === 0 && b[2] ? [100, 110, 0] : b)); // beyaz top girdiyse başa döner
-          const score = { ...(st.score || {}) }; score[uid] = (score[uid] || 0) + scored;
+          const score = { ...(st.score || {}) }; score[who] = (score[who] || 0) + scored;
           const over = end.slice(1).every((b) => b[2]);
-          const next = !duo() || (scored && !foul) ? uid : ctx.partnerUid();
+          const next = scored && !foul ? who : other;
           setTimeout(() => update(live.ref('games/pool'), { balls: end, score, turn: next, over, shot: null }), Math.max(300, r.frames.length * 16));
           if (foul) toast(t('Beyaz top deliğe girdi, sıra geçti 🎱'));
-          if (over && duo() && (score[uid] || 0) > (score[ctx.partnerUid()] || 0)) live.stat('wins');
+          const rival = who === uid ? other : who;
+          if (over && (score[uid] || 0) > (score[rival] || 0)) live.stat('wins');
         }
       } else if (!sh) anim = null;
       if (!sh && (st.n || 0) > lastShot) lastShot = st.n;
+      botTurn();
     });
     const pos = (e) => { const r = canvas.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * PW, ((e.clientY - r.top) / r.height) * PH]; };
     canvas.onpointerdown = (e) => { if (!myTurn() || anim) return; e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } aim = pos(e); };
@@ -397,8 +435,7 @@ export function createGames(ctx) {
       const cue = st.balls[0], dx = cue[0] - aim[0], dy = cue[1] - aim[1], d = Math.hypot(dx, dy);
       aim = null;
       if (d < 6) return;
-      const n = (st.n || 0) + 1;
-      update(live.ref('games/pool'), { n, shot: { a: Math.atan2(dy, dx), p: Math.min(900, d * 7), by: uid, n, from: st.balls } });
+      shoot(uid, Math.atan2(dy, dx), Math.min(900, d * 7));
     };
     function draw() {
       raf = requestAnimationFrame(draw);
@@ -413,6 +450,8 @@ export function createGames(ctx) {
         if (inn) return;
         g.fillStyle = 'rgba(0,0,0,0.3)'; g.beginPath(); g.arc(x + 2, y + 2, PR, 0, Math.PI * 2); g.fill();
         g.fillStyle = BALL_COLS[k]; g.beginPath(); g.arc(x, y, PR, 0, Math.PI * 2); g.fill();
+        if (k > 8) { g.fillStyle = '#fffaf0'; g.fillRect(x - PR + 2, y - PR + 2, PR * 2 - 4, 3); g.fillRect(x - PR + 2, y + PR - 5, PR * 2 - 4, 3); } // çizgili
+        if (k === 8) { g.fillStyle = '#fffaf0'; g.beginPath(); g.arc(x, y, 3, 0, Math.PI * 2); g.fill(); }
         g.fillStyle = 'rgba(255,255,255,0.6)'; g.fillRect(x - 3, y - 4, 2, 2);
       });
       if (aim && !anim) { // isteka: parmağı beyaz toptan geriye çek
@@ -421,15 +460,15 @@ export function createGames(ctx) {
         g.strokeStyle = '#e0b25a'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx - (dx / d) * (12 + Math.min(d, 120) * 0.4), cy - (dy / d) * (12 + Math.min(d, 120) * 0.4)); g.lineTo(cx - (dx / d) * 150, cy - (dy / d) * 150); g.stroke(); g.lineWidth = 1;
       }
       const sc = st.score || {};
-      const pu2 = ctx.partnerUid();
-      info.textContent = duo() ? `🎱 ${ctx.myName()} ${sc[uid] || 0} – ${sc[pu2] || 0} ${ctx.partnerName()}` : `🎱 ${ctx.myName()} ${sc[uid] || 0}`;
-      hint.textContent = st.over ? ((sc[uid] || 0) === (sc[pu2] || 0) || !duo() ? t('Bütün toplar girdi 🎉') : (sc[uid] || 0) > (sc[pu2] || 0) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: ctx.partnerName() }))
+      const o = st.opp || opp();
+      info.textContent = `🎱 ${ctx.myName()} ${sc[uid] || 0} – ${sc[o] || 0} ${nameOf(o)}`;
+      hint.textContent = st.over ? ((sc[uid] || 0) === (sc[o] || 0) ? t('Berabere 🤝') : (sc[uid] || 0) > (sc[o] || 0) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: nameOf(o) }))
         : myTurn() ? t('Sıra sende: parmağını/fareni beyaz toptan geriye çek ve bırak. Ne kadar çekersen o kadar sert.') : t('{name} nişan alıyor…', { name: nameOf(st.turn) });
     }
     draw();
     const oldStop = stopSub;
-    stopSub = () => { oldStop(); cancelAnimationFrame(raf); };
-    setTimeout(() => { if (body && !st) newGame(); }, 600);
+    stopSub = () => { oldStop(); cancelAnimationFrame(raf); clearTimeout(botTimer); };
+    setTimeout(() => { if (body && !st) newGame(); if (body && !duo()) toast(t('Partnerin çevrimiçi değil; bota karşı oynuyorsun 🤖')); }, 600);
   }
 
   return { openHub, openXox, openMem, openFoos, openPool };
