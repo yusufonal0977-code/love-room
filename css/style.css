@@ -341,8 +341,8 @@ h1 .get { color: var(--moon); font-size: 1em; text-shadow: 0 0 14px rgba(252, 22
 #bodyPick button { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 22px; }
 #bodyPick canvas { height: 72px; image-rendering: pixelated; }
 #bodyPick button.on { border-color: var(--sun); box-shadow: 0 0 14px rgba(252, 223, 75, .35); }
-#gate .row { width: min(100%, 340px); }
-#gate .row input { flex: 1; min-width: 0; width: auto; }
+#gate .row, #hello .row { width: min(100%, 340px); }
+#gate .row input, #hello .row input { flex: 1; min-width: 0; width: auto; }
 
 /* Arapça: sağdan sola. Oyun sahnesi ve koordinatlı katmanlar soldan sağa kalır. */
 html[dir=rtl] body, html[dir=rtl] button, html[dir=rtl] input, html[dir=rtl] textarea, html[dir=rtl] select { font-family: 'Tajawal', 'Pixelify Sans', sans-serif; }

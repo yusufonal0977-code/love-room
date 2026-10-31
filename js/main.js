@@ -41,7 +41,7 @@ document.addEventListener('click', (e) => {
   openLegal(a.getAttribute('href').slice(1));
 });
 
-const show = (id) => { ['gate', 'consent', 'setup', 'invite', 'world'].forEach((s) => ($(s).hidden = s !== id)); $('langCorner').hidden = id === 'world'; };
+const show = (id) => { ['gate', 'consent', 'setup', 'invite', 'hello', 'world'].forEach((s) => ($(s).hidden = s !== id)); $('langCorner').hidden = id === 'world'; };
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const SCENE_AT = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde' };
 const sideIcon = (s) => (s === 'moon' ? '🌙' : '☀️');
@@ -75,25 +75,11 @@ async function boot() {
 }
 
 // ---------- Giriş ----------
-// Başlangıç karakteri girişte seçilen bedene göre (site Arapçaysa kız karakter başörtülü çizilir, bkz. art.js)
-const START_LOOK = {
-  f: { ...DEFAULT_LOOK, body: 'f', hair: 'long', outfit: ['nordicPink', 'tee', 'cardiganBeige'][Math.floor(Math.random() * 3)] },
-  m: { ...DEFAULT_LOOK, body: 'm', shirt: Math.floor(Math.random() * SHIRT.length) },
-};
-let startBody = null;
 function showGate() {
   show('gate');
   if (inviteCode) $('gateNote').textContent = t('Partnerin seni bekliyor 💌 Giriş yap ve odaya gel.');
-  const btns = [...document.querySelectorAll('#bodyPick button')];
-  for (const b of btns) {
-    const s = characterSprites(START_LOOK[b.dataset.body]).down, c = b.querySelector('canvas');
-    c.width = s.width; c.height = s.height; c.getContext('2d').drawImage(s, 0, 0);
-    b.onclick = () => { startBody = b.dataset.body; btns.forEach((x) => x.classList.toggle('on', x === b)); $('gateErr').textContent = ''; };
-  }
 }
-const needBody = () => !startBody && (($('gateErr').textContent = t('Önce karakterini seç: kız mı erkek mi?')), true);
 $('googleBtn').onclick = async () => {
-  if (needBody()) return;
   try { const r = await loginGoogle(); await afterLogin(r.user); }
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }
 };
@@ -102,7 +88,6 @@ $('nameIn').addEventListener('keydown', (e) => e.key === 'Enter' && guest());
 async function guest() {
   const name = $('nameIn').value.trim();
   if (!name) { $('nameIn').focus(); return; }
-  if (needBody()) return;
   try { const r = await loginGuest(); await afterLogin(r.user, name); }
   catch (e) { $('gateErr').textContent = t('Giriş yapılamadı. İnternet bağlantını kontrol et.'); console.warn(e); }
 }
@@ -112,7 +97,7 @@ async function afterLogin(u, guestName) {
   profile = await getProfile(u.uid).catch((e) => { console.warn(e); return null; });
   if (!profile) {
     const name = guestName || u.displayName?.split(' ')[0] || t('Sevgili');
-    profile = { name, look: { ...START_LOOK[startBody || 'm'] }, side: 'sun', tz, lang };
+    profile = { name, look: { ...DEFAULT_LOOK, shirt: Math.floor(Math.random() * SHIRT.length) }, side: 'sun', tz, lang };
     await saveProfile(u.uid, profile);
   } else if (profile.tz !== tz || profile.lang !== lang) saveProfile(u.uid, { tz, lang });
   if ((profile.consent?.v || 0) < LEGAL_VERSION) await askConsent();
@@ -190,8 +175,41 @@ function showInvite(inv, code) {
   $('declineBtn').onclick = () => (profile.roomId ? enterWorld(profile.roomId) : (($('setupName').textContent = profile.name), show('setup')));
 }
 
+// ---------- Karakter (odaya ilk girişten önce, bir kez) ----------
+// Herkes adını yazar ve kız/erkek seçer; başlangıç görünümü buna göre. Site Arapçaysa kız karakter başörtülü çizilir (art.js).
+const START_LOOK = {
+  f: { ...DEFAULT_LOOK, body: 'f', hair: 'long', outfit: ['nordicPink', 'tee', 'cardiganBeige'][Math.floor(Math.random() * 3)] },
+  m: { ...DEFAULT_LOOK, body: 'm', shirt: Math.floor(Math.random() * SHIRT.length) },
+};
+function askCharacter() {
+  show('hello');
+  $('helloName').value = profile.name || '';
+  let body = null;
+  const btns = [...document.querySelectorAll('#bodyPick button')];
+  for (const b of btns) {
+    const s = characterSprites(START_LOOK[b.dataset.body]).down, c = b.querySelector('canvas');
+    c.width = s.width; c.height = s.height; c.getContext('2d').drawImage(s, 0, 0);
+    b.onclick = () => { body = b.dataset.body; btns.forEach((x) => x.classList.toggle('on', x === b)); $('helloErr').textContent = ''; };
+  }
+  return new Promise((resolve) => {
+    $('helloBtn').onclick = async () => {
+      const name = $('helloName').value.trim();
+      if (!name) { $('helloName').focus(); return; }
+      if (!body) { $('helloErr').textContent = t('Önce karakterini seç: kız mı erkek mi?'); return; }
+      // Önceden giyindirilmiş aynı bedenli karakter korunur; beden değiştiyse başlangıç görünümü
+      const look = profile.look?.body === body ? profile.look : START_LOOK[body];
+      $('helloBtn').disabled = true;
+      await saveProfile(user.uid, { name, look, picked: true }).catch((e) => console.warn(e));
+      Object.assign(profile, { name, look, picked: true });
+      $('helloBtn').disabled = false;
+      resolve();
+    };
+  });
+}
+
 // ---------- Dünya ----------
 async function enterWorld(rid, fresh = false) {
+  if (!profile.picked) await askCharacter();
   show('world');
   const room = { data: await getRoom(rid) };
   let shared = { ...DEFAULT_STATE }, presence = {}, partnerProfile = null, catPos = null;

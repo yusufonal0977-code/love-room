@@ -77,11 +77,6 @@
   <img class="logo" src="assets/loveroom-logo.webp" alt="Get Love Room">
   <h1><span class="get">Get</span> Love <span>Room</span></h1>
   <p data-t id="gateNote">Kilometreler arada, aynı odadayız.</p>
-  <p data-t class="small">Karakterini seç</p>
-  <div id="bodyPick">
-    <button type="button" data-body="f"><canvas></canvas><span data-t>Kız</span></button>
-    <button type="button" data-body="m"><canvas></canvas><span data-t>Erkek</span></button>
-  </div>
   <button id="googleBtn" class="primary"><span class="g">G</span> <span data-t>Google ile gir</span></button>
   <div data-t class="or">ya da</div>
   <div class="row">
@@ -127,6 +122,19 @@
   <p data-t>Önce ikinize ait küçük bir ev kuralım. Partnerin, sana vereceğim davet linkiyle gelecek.</p>
   <button data-t id="createBtn" class="primary">Evimizi kur ✨</button>
   <button data-t id="logoutBtn1" class="link">Farklı hesapla gir</button>
+</section>
+
+<!-- Karakter: odaya ilk girişten önce ad + beden -->
+<section id="hello" class="screen" hidden>
+  <img class="logo sm" src="assets/loveroom-logo.webp" alt="">
+  <h2 data-t>Karakterini seç</h2>
+  <div class="row"><input id="helloName" data-tp maxlength="14" placeholder="Adın" autocomplete="off"></div>
+  <div id="bodyPick">
+    <button type="button" data-body="f"><canvas></canvas><span data-t>Kız</span></button>
+    <button type="button" data-body="m"><canvas></canvas><span data-t>Erkek</span></button>
+  </div>
+  <p class="small" id="helloErr"></p>
+  <button data-t id="helloBtn" class="primary">Odaya gir 💞</button>
 </section>
 
 <!-- Davet kabul -->
