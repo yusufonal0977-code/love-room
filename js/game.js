@@ -140,7 +140,7 @@ export function createGame(opts) {
   }
   function doSpot(s) {
     if (s.id === 'sit') return sitDown(s.group);
-    if (s.id === 'cat') { fx('💗', cat.x, cat.y - 10); cat.sit = true; cat.wait = 3; }
+    if (s.id === 'cat') { burst(cat.x, cat.y - 10, 3, false); cat.sit = true; cat.wait = 3; }
     opts.onSpot?.(s.id, s);
   }
   function interact() {
@@ -153,7 +153,7 @@ export function createGame(opts) {
     const seats = lay().seats;
     const taken = partner.shown && partner.scene === me.scene ? partner.seat : -1;
     const free = seats.findIndex((s, i) => s.group === group && i !== taken);
-    if (free < 0) return opts.onToast?.(t('Burada yer yok 🙂'));
+    if (free < 0) return opts.onToast?.(t('Burada yer yok'));
     const s = seats[free];
     me.seat = free; me.x = s.x; me.y = s.y; me.dir = s.pose === 'back' ? 'up' : 'down'; me.target = null; me.path = [];
     changed();
@@ -354,7 +354,7 @@ export function createGame(opts) {
         cat.away = 0; cat.scene = who.scene; cat.sit = false; cat.target = null; cat.wait = 0.6;
         const p = catNear(who, 14) || { x: who.x, y: who.y };
         cat.x = p.x; cat.y = p.y;
-        if (who === me) fx('🐾', cat.x, cat.y - 10);
+        if (who === me) burst(cat.x, cat.y - 10, 2, false);
       }
     } else cat.away = 0;
     // Eşyanın içinde kaldıysa (ilk konum, taşınan mobilya) yanımıza çıkar
@@ -716,7 +716,7 @@ export function createGame(opts) {
     approach(cb) {
       const side = me.x < partner.x ? -1 : 1;
       const tx = partner.x + side * 12, ty = partner.y;
-      walkTo(blocked(tx, ty) ? partner.x - side * 12 : tx, ty, () => (together() ? cb() : opts.onToast?.(t('Yanına ulaşamadım 🙂'))));
+      walkTo(blocked(tx, ty) ? partner.x - side * 12 : tx, ty, () => (together() ? cb() : opts.onToast?.(t('Yanına ulaşamadım'))));
     },
     /** Belirli bir sahneye/noktaya ışınla (aktivite menüsünden). */
     goto(sceneId, x, y) { if (me.scene !== sceneId) { me.scene = sceneId; opts.onSceneChange?.(sceneId); } me.seat = -1; me.x = x; me.y = y; me.target = null; me.path = []; cam.snap = true; changed(); },

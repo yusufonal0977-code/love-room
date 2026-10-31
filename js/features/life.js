@@ -131,8 +131,8 @@ export function createLife(ctx) {
       s ? h('div', { class: 'bigclock' },
         h('div', {}, h('b', {}, s.y), h('small', {}, 'yıl')), h('div', {}, h('b', {}, s.m), h('small', {}, t('ay'))), h('div', {}, h('b', {}, s.d), h('small', {}, 'gün')))
         : h('p', {}, 'Birlikte olduğunuz günü girin; saat ondan sonrasını saysın.'),
-      s ? h('p', { class: 'center' }, t('Toplam {n} gün.', { n: s.total.toLocaleString(locale) }) + ' ' + (s.toAnniv === 0 ? t('Bugün {n}. yıl dönümünüz! 🎉', { n: s.annivN }) : t('{n}. yıl dönümüne {d} gün.', { n: s.annivN, d: s.toAnniv }))) : null,
-      meetLeft != null && meetLeft >= 0 ? h('div', { class: 'meet' }, h('b', {}, meetLeft === 0 ? t('Bugün buluşuyorsunuz 💞') : t('{n} gün sonra buluşuyorsunuz ✈️', { n: meetLeft })), rel.meetNote ? h('small', {}, rel.meetNote) : null) : null,
+      s ? h('p', { class: 'center' }, t('Toplam {n} gün.', { n: s.total.toLocaleString(locale) }) + ' ' + (s.toAnniv === 0 ? t('Bugün {n}. yıl dönümünüz!', { n: s.annivN }) : t('{n}. yıl dönümüne {d} gün.', { n: s.annivN, d: s.toAnniv }))) : null,
+      meetLeft != null && meetLeft >= 0 ? h('div', { class: 'meet' }, h('b', {}, meetLeft === 0 ? t('Bugün buluşuyorsunuz') : t('{n} gün sonra buluşuyorsunuz', { n: meetLeft })), rel.meetNote ? h('small', {}, rel.meetNote) : null) : null,
       ctx.partnerTz() && ctx.partnerTz() !== tz ? h('p', { class: 'center small' }, t('Sende saat {mine} · {name} tarafında {theirs}', { mine: fmt(tz), name: ctx.partnerName(), theirs: fmt(ctx.partnerTz()) })) : null,
     );
     const year = new Date(now()).getFullYear();
@@ -143,7 +143,7 @@ export function createLife(ctx) {
       h('div', { class: 'field' }, h('b', {}, 'Sevgili olduğumuz gün'), h('small', {}, 'İlişkinizin başladığı tarih. Gün sayacı ve yıl dönümü buna göre hesaplanır.'), sinceIn),
       h('div', { class: 'field' }, h('b', {}, 'Bir sonraki buluşmamız'), h('small', {}, 'Yüz yüze görüşeceğiniz gün; geri sayım üst çubukta görünür.'), meetIn),
       noteIn,
-      h('button', { class: 'primary', onclick: async () => { await update(live.ref('rel'), { since: sinceIn.value || null, meet: meetIn.value || null, meetNote: noteIn.value.trim() || null }); toast('Kaydedildi ⏳'); openClock(); } }, 'Kaydet'),
+      h('button', { class: 'primary', onclick: async () => { await update(live.ref('rel'), { since: sinceIn.value || null, meet: meetIn.value || null, meetNote: noteIn.value.trim() || null }); toast('Kaydedildi'); openClock(); } }, 'Kaydet'),
     );
   }
 
@@ -168,7 +168,7 @@ export function createLife(ctx) {
         await push(live.ref('diary'), { by: uid, name: ctx.myName(), side: ctx.mySide(), text: body_, at: serverTimestamp(), ...(tab === 'letter' ? { openAt: parseDay(date.value) } : {}) });
         live.stat('diary');
         text.value = '';
-        toast(tab === 'diary' ? 'Günlüğe yazıldı ✍️' : 'Mektup mühürlendi 💌');
+        toast(tab === 'diary' ? 'Günlüğe yazıldı' : 'Mektup mühürlendi');
       } }),
       list);
     stop = onValue(query(live.ref('diary'), limitToLast(150)), (snap) => {
@@ -180,7 +180,7 @@ export function createLife(ctx) {
       shown.forEach((x) => {
         const locked = x.openAt && x.openAt > now();
         list.append(h('article', { class: x.side === 'moon' ? 'moon' : 'sun' },
-          h('header', {}, h('b', {}, `${x.side === 'moon' ? '🌙' : '☀️'} ${x.name || ''}`), h('small', {}, x.openAt ? (locked ? t('{date} günü açılacak', { date: fmtDate(x.openAt) }) : t('{date} yazıldı', { date: fmtDate(x.at || now()) })) : fmtTime(x.at || now()))),
+          h('header', {}, h('b', {}, `${x.name || ''}`), h('small', {}, x.openAt ? (locked ? t('{date} günü açılacak', { date: fmtDate(x.openAt) }) : t('{date} yazıldı', { date: fmtDate(x.at || now()) })) : fmtTime(x.at || now()))),
           locked ? h('p', { class: 'locked', html: `${icon('lock')} Mühürlü mektup` }) : h('p', {}, x.text),
           x.by === uid ? h('button', { class: 'link', onclick: () => confirm(t('Silinsin mi?')) && remove(live.ref(`diary/${x.key}`)) }, 'sil') : null,
         ));
@@ -192,8 +192,8 @@ export function createLife(ctx) {
   live.on('jar', (v) => {
     const prev = jar;
     jar = v;
-    if (v && prev && v.q === prev.q && v.answers && ctx.partnerUid() && v.answers[ctx.partnerUid()] && !prev.answers?.[ctx.partnerUid()]) toast(t('{name} kavanoz sorusunu cevapladı 🫙', { name: ctx.partnerName() }));
-    if (v && prev !== undefined && prev?.q !== v.q && v.by !== uid) toast(t('{name} kavanozdan bir soru çekti 🫙', { name: ctx.partnerName() }));
+    if (v && prev && v.q === prev.q && v.answers && ctx.partnerUid() && v.answers[ctx.partnerUid()] && !prev.answers?.[ctx.partnerUid()]) toast(t('{name} kavanoz sorusunu cevapladı', { name: ctx.partnerName() }));
+    if (v && prev !== undefined && prev?.q !== v.q && v.by !== uid) toast(t('{name} kavanozdan bir soru çekti', { name: ctx.partnerName() }));
     renderJar();
   });
   live.on('jarUsed', (v) => (jarUsed = v || {}));
@@ -225,8 +225,8 @@ export function createLife(ctx) {
     } else {
       b.append(
         h('div', { class: 'answers' },
-          h('article', {}, h('b', {}, `${ctx.mySide() === 'moon' ? '🌙' : '☀️'} ${ctx.myName()}`), h('p', {}, mine)),
-          h('article', {}, h('b', {}, `${ctx.mySide() === 'moon' ? '☀️' : '🌙'} ${ctx.partnerName()}`), h('p', {}, theirs))),
+          h('article', {}, h('b', {}, `${ctx.myName()}`), h('p', {}, mine)),
+          h('article', {}, h('b', {}, `${ctx.partnerName()}`), h('p', {}, theirs))),
       );
     }
     b.append(h('div', { class: 'row' }, h('button', { onclick: draw }, mine && theirs ? 'Yeni soru' : 'Başka soru'), h('button', { class: 'link', onclick: openLog }, 'Eski cevaplarımız')));

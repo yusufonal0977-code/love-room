@@ -14,7 +14,7 @@ export function mediaError(e, what) {
   const n = e?.name || '';
   what = t(what);
   if (!window.isSecureContext) return t('{what} sadece https adresinde çalışır.', { what });
-  if (n === 'NotAllowedError' || n === 'SecurityError') return t('{what} izni verilmedi. Adres çubuğundaki kilit 🔒 simgesinden izin verip sayfayı yenile.', { what });
+  if (n === 'NotAllowedError' || n === 'SecurityError') return t('{what} izni verilmedi. Adres çubuğundaki kilit simgesinden izin verip sayfayı yenile.', { what });
   if (n === 'NotFoundError' || n === 'OverconstrainedError') return t('{what} bulunamadı.', { what });
   if (n === 'NotReadableError' || n === 'AbortError') return t('{what} başka bir uygulama tarafından kullanılıyor (Zoom, Discord vb. kapat).', { what });
   return t('{what} açılamadı.', { what });

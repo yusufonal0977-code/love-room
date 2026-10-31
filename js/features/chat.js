@@ -6,7 +6,8 @@ import { h, icon, toast, $, fmtTime } from '../ui.js';
 import { limitToLast, onChildAdded, push, query, serverTimestamp, now } from '../fb.js';
 import { t } from '../i18n.js';
 
-const QUICK = ['❤️', '😂', '🥺', '😘', '🫶', '😴'];
+// Hızlı mesajlar (emoji yerine kısa sözler)
+const QUICK = ['Seni seviyorum', 'Özledim', 'Haha', 'Günaydın', 'İyi geceler', 'Neredesin?'];
 
 export function createChat(ctx) {
   const { live, uid, game } = ctx;
@@ -18,7 +19,7 @@ export function createChat(ctx) {
   const panel = h('div', { id: 'chatPanel', class: 'chatpanel', hidden: true },
     h('div', { class: 'chathead' }, h('b', {}, t('Oda sohbeti')), h('button', { class: 'x', title: 'Kapat', html: icon('close'), onclick: () => toggle(false) })),
     list,
-    h('div', { class: 'quick' }, ...QUICK.map((e) => h('button', { onclick: () => send(e) }, e))),
+    h('div', { class: 'quick' }, ...QUICK.map((e) => h('button', { onclick: () => send(t(e)) }, t(e)))),
     h('form', { class: 'chatform', onsubmit: (e) => { e.preventDefault(); send(input.value); } }, input, h('button', { class: 'primary', title: 'Gönder', html: icon('send') })),
   );
   document.body.append(panel);
@@ -47,7 +48,7 @@ export function createChat(ctx) {
     const mine = m.by === uid;
     list.append(h('div', { class: 'msg ' + (mine ? 'me' : 'them') },
       h('p', { dir: 'auto' }, document.createTextNode(m.text)), // kullanıcı metni çevrilmez
-      h('small', {}, `${m.side === 'moon' ? '🌙' : '☀️'} ${m.name || ''} · ${fmtTime(m.at || now())}`)));
+      h('small', {}, `${m.name || ''} · ${fmtTime(m.at || now())}`)));
     if (open) list.scrollTop = list.scrollHeight;
     // Yeni mesaj (sayfa açıldıktan sonra gelenler): başın üstünde balon, kapalıysa bildirim
     if ((m.at || 0) < joinedAt - 2000) return;

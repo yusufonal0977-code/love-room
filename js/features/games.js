@@ -23,7 +23,7 @@ export function createGames(ctx) {
       h('button', { class: 'tile', onclick: openXox }, h('b', {}, 'XOX'), h('small', {}, 'Klasik üçlü; sıra sizde.')),
       h('button', { class: 'tile', onclick: openMem }, h('b', {}, 'Hafıza'), h('small', {}, 'Kartları eşleştir, en çok çifti bulan kazanır.')),
       h('button', { class: 'tile', onclick: openFoos }, h('b', {}, 'Langırt'), h('small', {}, 'Balkondaki masada gerçek zamanlı maç (5 golde biter).')),
-      h('button', { class: 'tile', onclick: openPool }, h('b', {}, 'Bilardo'), h('small', {}, 'Balkondaki masada sırayla, partnerinle ya da botla; en çok top sokan kazanır.')),
+      h('button', { class: 'tile', onclick: openPool }, h('b', {}, 'Bilardo'), h('small', {}, 'Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.')),
     );
   }
 
@@ -37,7 +37,7 @@ export function createGames(ctx) {
       if (!g) { body.append(h('button', { class: 'primary', onclick: () => newXox() }, 'Oyunu başlat')); return; }
       const mark = (u) => (u === g.x ? 'X' : 'O');
       const myTurn = g.turn === uid && !g.win;
-      body.append(h('p', { class: 'center' }, g.win ? (g.win === 'draw' ? t('Berabere 🤝') : (g.win === 'x') === (g.x === uid) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: ctx.partnerName() })) : myTurn ? t('Sıra sende ({mark})', { mark: mark(uid) }) : t('{name} düşünüyor…', { name: ctx.partnerName() })));
+      body.append(h('p', { class: 'center' }, g.win ? (g.win === 'draw' ? t('Berabere') : (g.win === 'x') === (g.x === uid) ? t('Kazandın') : t('{name} kazandı', { name: ctx.partnerName() })) : myTurn ? t('Sıra sende ({mark})', { mark: mark(uid) }) : t('{name} düşünüyor…', { name: ctx.partnerName() })));
       const grid = h('div', { class: 'xox' });
       [...g.b].forEach((c, i) => grid.append(h('button', {
         class: (c === 'x' ? 'x' : c === 'o' ? 'o' : '') + (g.line?.includes?.(i) ? ' win' : ''),
@@ -73,7 +73,7 @@ export function createGames(ctx) {
       const finished = Object.keys(done).length === 16;
       const sc = g.score || {};
       body.append(h('p', { class: 'center' }, finished
-        ? ((sc[uid] || 0) === (sc[pu()] || 0) ? t('Berabere 🤝') : (sc[uid] || 0) > (sc[pu()] || 0) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: ctx.partnerName() }))
+        ? ((sc[uid] || 0) === (sc[pu()] || 0) ? t('Berabere') : (sc[uid] || 0) > (sc[pu()] || 0) ? t('Kazandın') : t('{name} kazandı', { name: ctx.partnerName() }))
         : g.turn === uid ? t('Sıra sende: iki kart aç') : t('{name} oynuyor…', { name: ctx.partnerName() })),
       h('p', { class: 'center small' }, `${ctx.myName()} ${sc[uid] || 0} · ${sc[pu()] || 0} ${ctx.partnerName()}`));
       const grid = h('div', { class: 'mem' });
@@ -119,7 +119,7 @@ export function createGames(ctx) {
     body = openSheet({ title: 'Langırt', iconName: 'game', wide: true, onClose: close });
     const canvas = h('canvas', { width: FW, height: FH, class: 'foos' });
     const info = h('p', { class: 'center foos-score' });
-    const kickBtn = h('button', { class: 'primary foos-kick', onpointerdown: (e) => { e.preventDefault(); kick(); } }, 'Vur! ⚡');
+    const kickBtn = h('button', { class: 'primary foos-kick', onpointerdown: (e) => { e.preventDefault(); kick(); } }, 'Vur!');
     const hint = h('p', { class: 'small center' });
     body.append(info, canvas, h('div', { class: 'row' }, kickBtn, h('button', { onclick: () => newMatch() }, 'Yeni maç')), hint);
     const g = canvas.getContext('2d');
@@ -141,7 +141,7 @@ export function createGames(ctx) {
         ball = { x: b.x + b.vx * dt, y: b.y + b.vy * dt, vx: b.vx, vy: b.vy, go: b.go || 0 };
       }
       // Gol olunca iki ekranda da "GOL!" yazısı
-      if (prev && goals(st) > goals(prev)) flash = { text: t('GOL! ⚽'), until: performance.now() + 1100 };
+      if (prev && goals(st) > goals(prev)) flash = { text: t('GOL!'), until: performance.now() + 1100 };
     });
 
     function sendBall() {
@@ -247,7 +247,7 @@ export function createGames(ctx) {
       if (m !== mode) {
         hint.textContent = t(R.meLeft ? 'Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).' : 'Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).');
         if (mode && R.auth) newMatch(); // partner masaya geldi/gitti: yeni maç
-        if (m === 'bot' && mode) toast(t('Partnerin masada değil; bota karşı oynuyorsun 🤖'));
+        if (m === 'bot' && mode) toast(t('Partnerin masada değil; bota karşı oynuyorsun'));
         mode = m;
       }
       if (keys.w || keys.arrowup) setY(myY - 300 * dt);
@@ -290,25 +290,28 @@ export function createGames(ctx) {
         g.strokeText(text, 200, 132); g.fillStyle = col; g.fillText(text, 200, 132);
       };
       const sc = st?.score || {};
-      const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot 🤖' : ctx.partnerName());
+      const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : ctx.partnerName());
       if (st && st.run === false) {
         const w = (sc[R.L] || 0) >= WIN ? R.L : R.R;
-        big(w === uid ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: nameOf(w) }), '#fcdf4b');
+        big(w === uid ? t('Kazandın') : t('{name} kazandı', { name: nameOf(w) }), '#fcdf4b');
       } else if (flash && performance.now() < flash.until) big(flash.text, '#fcdf4b');
       else if (ball.go && now() < ball.go) big(String(Math.ceil((ball.go - now()) / 450)));
-      info.textContent = `🔴 ${nameOf(R.L)} ${sc[R.L] || 0} – ${sc[R.R] || 0} ${nameOf(R.R)} 🔵`;
+      info.textContent = `${nameOf(R.L)} ${sc[R.L] || 0} – ${sc[R.R] || 0} ${nameOf(R.R)}`;
     }
     tick();
     // Topu bu cihaz yönetiyorsa ve süren maç yoksa başlat
     setTimeout(() => {
       if (!body) return;
       const R = roles();
-      if (R.opp === 'bot') toast(t('Partnerin masada değil; bota karşı oynuyorsun 🤖'));
+      if (R.opp === 'bot') toast(t('Partnerin masada değil; bota karşı oynuyorsun'));
       if (R.auth && (!st?.run || !st?.ball)) newMatch();
     }, 500);
   }
 
-  // ---------- Bilardo ----------
+  // ---------- Bilardo (klasik 8 top) ----------
+  // Kurallar: açık masada ilk sokulan top oyuncunun grubunu belirler (1-7 düz, 9-15 çizgili). Önce kendi grubuna değmek
+  // gerekir; beyaz topu sokmak, hiçbir topa değmemek ya da önce rakip gruba/8'e değmek fauldür (sıra geçer, beyaz başa döner).
+  // Kendi grubundan top sokan tekrar vurur. 8 en son sokulur: grubunu bitirip faulsüz sokan kazanır, erken ya da faulle sokan kaybeder.
   // Sırayla oynanır. Vuran cihaz vuruşu (açı, güç, başlangıç konumları) yazar; iki cihaz da aynı simülasyonu oynatır,
   // vuruş bitince vuran sonucu (toplar, sıra, skor) yazar. Top sokan tekrar vurur; beyaz top girerse sıra geçer.
   // Bütün renkli toplar girince en çok top sokan kazanır. Partner yoksa tek başına antrenman.
@@ -326,11 +329,16 @@ export function createGames(ctx) {
     return b;
   };
   /** Bot: bir top ve cebi seçip "hayalet top" noktasına nişan alır; biraz şaşırır ki hep sokmasın. */
-  function botShot(balls) {
+  const groupOf = (k) => (k >= 1 && k <= 7 ? 'solid' : k >= 9 ? 'stripe' : k === 8 ? 'eight' : null);
+  const groupLeft = (balls, grp) => balls.filter(([, , inn], k) => !inn && groupOf(k) === grp).length;
+  /** Oyuncunun şu an hedefleyebileceği toplar: grubu yoksa 8 dışı hepsi, grubu bittiyse 8, yoksa kendi grubu. */
+  const targets = (balls, grp) => (k) => (!grp ? k !== 8 && k > 0 : groupLeft(balls, grp) === 0 ? k === 8 : groupOf(k) === grp);
+  function botShot(balls, grp) {
     const [cx, cy] = balls[0];
+    const ok = targets(balls, grp);
     let best = null;
     balls.forEach(([x, y, inn], k) => {
-      if (!k || inn) return;
+      if (!k || inn || !ok(k)) return;
       for (const [px, py] of POCKETS) {
         const tx = px - x, ty = py - y, tl = Math.hypot(tx, ty);
         const gx = x - (tx / tl) * PR * 2, gy = y - (ty / tl) * PR * 2; // beyaz topun değmesi gereken nokta
@@ -349,6 +357,7 @@ export function createGames(ctx) {
     balls[0].vx = Math.cos(a) * p; balls[0].vy = Math.sin(a) * p;
     const potted = [];
     const frames = [];
+    let first = null; // beyazın ilk değdiği top
     for (let step = 0; step < 3000; step++) {
       let moving = false;
       for (const b of balls) {
@@ -367,6 +376,7 @@ export function createGames(ctx) {
         if (A.in || B.in) continue;
         const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy);
         if (d >= PR * 2 || d === 0) continue;
+        if (first === null && i === 0) first = j;
         const nx = dx / d, ny = dy / d, over = (PR * 2 - d) / 2;
         A.x -= nx * over; A.y -= ny * over; B.x += nx * over; B.y += ny * over;
         const rel = (A.vx - B.vx) * nx + (A.vy - B.vy) * ny;
@@ -377,7 +387,7 @@ export function createGames(ctx) {
       if (!moving) break;
     }
     const end = balls.map((b) => [Math.round(b.x * 10) / 10, Math.round(b.y * 10) / 10, b.in ? 1 : 0]);
-    return { end, potted, frames };
+    return { end, potted, frames, first };
   }
   function openPool() {
     body = openSheet({ title: 'Bilardo', iconName: 'game', wide: true, onClose: close });
@@ -389,9 +399,9 @@ export function createGames(ctx) {
     // Partner çevrimiçiyse onunla, değilse bota karşı (bot hamlelerini bu cihaz yapar)
     const duo = () => !!(ctx.partnerOnline() && ctx.partnerUid());
     const opp = () => (duo() ? ctx.partnerUid() : 'bot');
-    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot 🤖' : ctx.partnerName());
+    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : ctx.partnerName());
     const myTurn = () => st && !st.over && st.turn === uid;
-    function newGame() { set(live.ref('games/pool'), { balls: rack(), turn: uid, opp: opp(), score: null, shot: null, over: false, n: 0 }); }
+    function newGame() { set(live.ref('games/pool'), { v: 8, balls: rack(), turn: uid, opp: opp(), grp: null, win: null, shot: null, over: false, n: 0 }); }
     function shoot(by, a, p) {
       const n = (st.n || 0) + 1;
       update(live.ref('games/pool'), { n, shot: { a, p, by, n, from: st.balls } });
@@ -399,13 +409,13 @@ export function createGames(ctx) {
     function botTurn() {
       clearTimeout(botTimer);
       if (!st || st.over || st.turn !== 'bot' || st.shot || duo()) return;
-      botTimer = setTimeout(() => { if (st && st.turn === 'bot' && !st.shot) { const b = botShot(st.balls); shoot('bot', b.a, b.p); } }, 1300);
+      botTimer = setTimeout(() => { if (st && st.turn === 'bot' && !st.shot) { const b = botShot(st.balls, st.grp?.bot); shoot('bot', b.a, b.p); } }, 1300);
     }
     stopSub = onValue(live.ref('games/pool'), (s) => {
       st = s.val();
       if (!st) return;
       // Eski sürümün 8 toplu masası ya da rakip değiştiyse (partner geldi/gitti) yeni oyun
-      if (st.balls?.length !== 16 || (!st.shot && st.opp && st.opp !== opp() && st.turn !== uid)) { newGame(); return; }
+      if (st.balls?.length !== 16 || st.v !== 8 || (!st.shot && st.opp && st.opp !== opp() && st.turn !== uid)) { newGame(); return; }
       const sh = st.shot;
       if (sh && sh.n > lastShot) {
         lastShot = sh.n;
@@ -413,15 +423,23 @@ export function createGames(ctx) {
         anim = { frames: r.frames, i: 0 };
         if (sh.by === uid || sh.by === 'bot') { // vuran (ya da botu yöneten bu cihaz) sonucu yazar
           const who = sh.by, other = who === uid ? (st.opp || opp()) : uid;
-          const scored = r.potted.filter((k) => k > 0).length, foul = r.potted.includes(0);
-          const end = r.end.map((b, k) => (k === 0 && b[2] ? [100, 110, 0] : b)); // beyaz top girdiyse başa döner
-          const score = { ...(st.score || {}) }; score[who] = (score[who] || 0) + scored;
-          const over = end.slice(1).every((b) => b[2]);
-          const next = scored && !foul ? who : other;
-          setTimeout(() => update(live.ref('games/pool'), { balls: end, score, turn: next, over, shot: null }), Math.max(300, r.frames.length * 16));
-          if (foul) toast(t('Beyaz top deliğe girdi, sıra geçti 🎱'));
-          const rival = who === uid ? other : who;
-          if (over && (score[uid] || 0) > (score[rival] || 0)) live.stat('wins');
+          const grp = { ...(st.grp || {}) }, mine = grp[who];
+          const pots = r.potted.filter((k) => k > 0 && k !== 8);
+          const cleared = mine && groupLeft(sh.from, mine) === 0; // vuruştan önce grubu bitmiş miydi
+          // Faul nedeni
+          let why = r.potted.includes(0) ? t('beyaz top deliğe girdi.') : r.first === null ? t('hiçbir topa değmedi.')
+            : !targets(sh.from, mine)(r.first) ? (r.first === 8 && !cleared ? t('8 numaralı top en son sokulur; önce kendi grubunu bitir.') : t('önce kendi grubuna değmeliydin.')) : null;
+          // Açık masa: ilk sokulan top grubu belirler (faulsüz)
+          if (!mine && !why && pots.length) { const gg = groupOf(pots[0]); grp[who] = gg; grp[other] = gg === 'solid' ? 'stripe' : 'solid'; }
+          const end = r.end.map((b, k) => (k === 0 && b[2] ? [100, 110, 0] : b)); // faulde beyaz başa döner
+          let win = null;
+          if (r.potted.includes(8)) win = cleared && !why ? who : other; // 8: grubunu bitirip faulsüz sokan kazanır, değilse kaybeder
+          const ownPot = pots.some((k) => groupOf(k) === grp[who]);
+          const next = !why && ownPot ? who : other;
+          setTimeout(() => update(live.ref('games/pool'), { balls: end, grp, turn: win ? st.turn : next, win, over: !!win, shot: null }), Math.max(300, r.frames.length * 16));
+          if (win) toast(win === who ? t('8 numarayı soktu, oyunu kazandı: {name}', { name: nameOf(who) }) : t('8 numara erken girdi, oyunu kaybetti: {name}', { name: nameOf(who) }), 4000);
+          else if (why) toast(t('Faul: {why} Sıra geçti, beyaz top başa döndü.', { why }), 3500);
+          if (win === uid) live.stat('wins');
         }
       } else if (!sh) anim = null;
       if (!sh && (st.n || 0) > lastShot) lastShot = st.n;
@@ -459,16 +477,17 @@ export function createGames(ctx) {
         g.strokeStyle = 'rgba(255,255,255,0.55)'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + (dx / d) * 160, cy + (dy / d) * 160); g.stroke(); g.setLineDash([]);
         g.strokeStyle = '#e0b25a'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx - (dx / d) * (12 + Math.min(d, 120) * 0.4), cy - (dy / d) * (12 + Math.min(d, 120) * 0.4)); g.lineTo(cx - (dx / d) * 150, cy - (dy / d) * 150); g.stroke(); g.lineWidth = 1;
       }
-      const sc = st.score || {};
-      const o = st.opp || opp();
-      info.textContent = `🎱 ${ctx.myName()} ${sc[uid] || 0} – ${sc[o] || 0} ${nameOf(o)}`;
-      hint.textContent = st.over ? ((sc[uid] || 0) === (sc[o] || 0) ? t('Berabere 🤝') : (sc[uid] || 0) > (sc[o] || 0) ? t('Kazandın 🎉') : t('{name} kazandı 🎉', { name: nameOf(o) }))
-        : myTurn() ? t('Sıra sende: parmağını/fareni beyaz toptan geriye çek ve bırak. Ne kadar çekersen o kadar sert.') : t('{name} nişan alıyor…', { name: nameOf(st.turn) });
+      const o = st.opp || opp(), grp = st.grp || {};
+      const label = (u) => (grp[u] ? `${t(grp[u] === 'solid' ? 'Düzler' : 'Çizgililer')}, ${t('kalan {n}', { n: groupLeft(st.balls, grp[u]) })}` : '');
+      info.textContent = `${ctx.myName()}${grp[uid] ? ' (' + label(uid) + ')' : ''}  –  ${nameOf(o)}${grp[o] ? ' (' + label(o) + ')' : ''}`;
+      hint.textContent = st.over ? (st.win === uid ? t('Kazandın') : t('{name} kazandı', { name: nameOf(st.win) }))
+        : myTurn() ? (grp[uid] ? t('Sıra sende ({group}): beyaz toptan geriye çek ve bırak.', { group: t(grp[uid] === 'solid' ? 'Düzler' : 'Çizgililer') }) : t('Açık masa: ilk sokan grubunu seçer') + ' · ' + t('Sıra sende: parmağını/fareni beyaz toptan geriye çek ve bırak. Ne kadar çekersen o kadar sert.'))
+        : t('{name} nişan alıyor…', { name: nameOf(st.turn) });
     }
     draw();
     const oldStop = stopSub;
     stopSub = () => { oldStop(); cancelAnimationFrame(raf); clearTimeout(botTimer); };
-    setTimeout(() => { if (body && !st) newGame(); if (body && !duo()) toast(t('Partnerin çevrimiçi değil; bota karşı oynuyorsun 🤖')); }, 600);
+    setTimeout(() => { if (body && !st) newGame(); if (body && !duo()) toast(t('Partnerin çevrimiçi değil; bota karşı oynuyorsun')); }, 600);
   }
 
   return { openHub, openXox, openMem, openFoos, openPool };

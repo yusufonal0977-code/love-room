@@ -43,9 +43,9 @@ export function createPhotos(ctx) {
         const img = await compressImage(file, 720);
         await set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() });
         if (confirm(t('Albüme de eklensin mi?'))) addToAlbum(img, t(f.scene));
-        closeSheet(); toast('Tabloya asıldı 🖼️');
+        closeSheet(); toast('Tabloya asıldı');
       } }),
-      h('button', { onclick: () => openAlbum((img) => set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() }).then(() => toast('Tabloya asıldı 🖼️'))) }, 'Albümden seç'),
+      h('button', { onclick: () => openAlbum((img) => set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() }).then(() => toast('Tabloya asıldı'))) }, 'Albümden seç'),
       h('button', { html: `${icon('album')} Kolaj yap`, onclick: async () => {
         const files = (await pickImages()).slice(0, 6);
         if (files.length < 2) return toast(t('Kolaj için en az 2 fotoğraf seç (en çok 6).'));
@@ -53,7 +53,7 @@ export function createPhotos(ctx) {
         const img = await collage(files, f.w / f.h);
         await set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp(), parts: files.length });
         if (confirm(t('Albüme de eklensin mi?'))) addToAlbum(img, t('Kolaj'));
-        closeSheet(); toast('Tabloya asıldı 🖼️');
+        closeSheet(); toast('Tabloya asıldı');
       } }),
       cur ? h('button', { class: 'link', onclick: () => { remove(live.ref(`frames/${id}`)); closeSheet(); } }, 'Çerçeveyi boşalt') : null,
     ));
@@ -150,7 +150,7 @@ export function createPhotos(ctx) {
     const tick = () => {
       const cd = boothBody?.querySelector('.countdown');
       const left = Math.ceil((at - now()) / 1000);
-      if (cd) cd.textContent = left > 0 ? left : '📸';
+      if (cd) cd.textContent = left > 0 ? left : '';
       if (left > 0) shotTimer = setTimeout(tick, 200);
       else { snap(); setTimeout(() => { const c2 = boothBody?.querySelector('.countdown'); if (c2) c2.textContent = ''; }, 600); }
     };
@@ -177,7 +177,7 @@ export function createPhotos(ctx) {
       if (img) box.append(h('img', { src: img, alt: '' }));
       else if (mine && mode === 'now') { const v = h('video', { class: 'live', playsInline: true, muted: true, autoplay: true }); box.append(v); startCam(v).catch(() => box.append(h('p', { class: 'small' }, 'Kamera açılamadı'))); }
       else box.append(h('div', { class: 'empty' }, mine ? 'Senin fotoğrafın' : t('{name} bekleniyor…', { name: ctx.partnerName() })));
-      box.append(h('b', {}, mine ? (ctx.mySide() === 'moon' ? '🌙 ' : '☀️ ') + ctx.myName() : (ctx.mySide() === 'moon' ? '☀️ ' : '🌙 ') + ctx.partnerName()));
+      box.append(h('b', {}, mine ? ctx.myName() : ctx.partnerName()));
       if (mine) box.append(h('div', { class: 'row' },
         mode === 'now' && !img ? h('button', { onclick: snap }, 'Çek') : null,
         h('button', { onclick: async () => { const f = await pickImage(); if (f) set(live.ref(`booth/slots/${uid}`), await compressImage(f, 480, 0.8)); } }, 'Yükle'),
@@ -224,7 +224,7 @@ export function createPhotos(ctx) {
     put(left, 40, -0.035); put(right, 390, 0.035);
     g.fillStyle = '#3a2418'; g.textAlign = 'center';
     g.font = '600 30px "Pixelify Sans", monospace';
-    g.fillText(`☀️ ${lName}`, 205, 470); g.fillText(`🌙 ${rName}`, 555, 470);
+    g.fillText(`${lName}`, 205, 470); g.fillText(`${rName}`, 555, 470);
     g.font = '700 26px "Pixelify Sans", monospace'; g.fillStyle = '#ff4f7b';
     g.fillText(mode === 'kid' ? t('Biz küçükken') : mode === 'then' ? t('Aynı anı, iki kalp') : fmtDate(now()), 380, 46);
     g.font = '18px "Pixelify Sans", monospace'; g.fillStyle = '#b8ad8c';
@@ -235,7 +235,7 @@ export function createPhotos(ctx) {
     const img = await composeStrip();
     const mode = booth.mode || 'now';
     await addToAlbum(img, mode === 'kid' ? t('Biz küçükken') : mode === 'then' ? t('Aynı anı') : t('Kabin') + ' · ' + fmtDate(now()));
-    toast('Şerit albüme kaydedildi 📸');
+    toast('Şerit albüme kaydedildi');
     ctx.onAward?.();
   }
 

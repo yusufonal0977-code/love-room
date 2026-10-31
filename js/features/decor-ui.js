@@ -37,7 +37,7 @@ export function createDecorUI(ctx) {
   async function place(type) {
     const it = CATALOG[type];
     const count = Object.keys(DECOR.items[scene()] || {}).length;
-    if (count >= 24) return toast('Bu oda yeterince dolu 🙂 Önce bir şey kaldır.');
+    if (count >= 24) return toast('Bu oda yeterince dolu. Önce bir şey kaldır.');
     const here = scene() === game.me.scene;
     const wall = it.wall && !SCENES[scene()].outdoor; // balkonda duvar yok: yere konur
     const x = Math.round(here ? Math.max(14, Math.min(178, game.me.x + (Math.random() * 20 - 10))) : 60 + Math.random() * 72);

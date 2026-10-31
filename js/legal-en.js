@@ -13,7 +13,7 @@ export const LEGAL_EN = [
     html: `
 <p><b>Get Love Room</b> is a small pixel home for couples who live miles apart. Walk around the same room, sit side by side on the sofa and watch a movie, listen to the same song, look at two different skies together from the balcony.</p>
 <p>Get Love Room is made by <b>${COMPANY}</b>. Eclip is a tiny team, not a big company: a handful of people doing work they love.</p>
-<p>A small confession: the developer who built this home is <b>single</b> right now. So every sofa, every mug and every shared flower in Get Love Room was built for someone else. If he ever moves into a Love Room of his own, we'll talk the cat into looking after him too; until then, your home is our favourite home. 🙂</p>
+<p>A small confession: the developer who built this home is <b>single</b> right now. So every sofa, every mug and every shared flower in Get Love Room was built for someone else. If he ever moves into a Love Room of his own, we'll talk the cat into looking after him too; until then, your home is our favourite home.</p>
 <p>How we work, in short:</p>
 <ul>
   <li>No ads, we don't sell your data, and we don't use tracking analytics.</li>

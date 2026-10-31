@@ -11,27 +11,27 @@ import { t } from '../i18n.js';
 import { DECOR } from '../scenes.js';
 
 export const RECIPES = {
-  corba: { name: 'Mercimek çorbası', icon: '🍲', col: '#e0a040', stages: [
-    { k: 'chop', who: 'A', items: ['🧅 Soğan', '🥕 Havuç'], taps: 6 },
-    { k: 'order', who: 'A', items: ['🫒 Yağ', '🧅 Soğan', '🥕 Havuç', '🫘 Mercimek', '💧 Su'] },
+  corba: { name: 'Mercimek çorbası', col: '#e0a040', stages: [
+    { k: 'chop', who: 'A', items: ['Soğan', 'Havuç'], taps: 6 },
+    { k: 'order', who: 'A', items: ['Yağ', 'Soğan', 'Havuç', 'Mercimek', 'Su'] },
     { k: 'stir', who: 'B', turns: 5 },
     { k: 'time', who: 'B', label: 'Kaynat', zone: [6, 8] },
   ] },
-  kek: { name: 'Çikolatalı kek', icon: '🍰', col: '#7a4a2a', stages: [
-    { k: 'order', who: 'A', items: ['🥚 Yumurta', '🍬 Şeker', '🥛 Süt', '🌾 Un', '🍫 Kakao'] },
+  kek: { name: 'Çikolatalı kek', col: '#7a4a2a', stages: [
+    { k: 'order', who: 'A', items: ['Yumurta', 'Şeker', 'Süt', 'Un', 'Kakao'] },
     { k: 'stir', who: 'B', turns: 6 },
     { k: 'time', who: 'B', label: 'Fırında pişir', zone: [7, 9] },
   ] },
-  menemen: { name: 'Menemen', icon: '🍳', col: '#e0473f', stages: [
-    { k: 'chop', who: 'A', items: ['🫑 Biber', '🍅 Domates'], taps: 5 },
-    { k: 'order', who: 'A', items: ['🫒 Yağ', '🫑 Biber', '🍅 Domates', '🥚 Yumurta'] },
+  menemen: { name: 'Menemen', col: '#e0473f', stages: [
+    { k: 'chop', who: 'A', items: ['Biber', 'Domates'], taps: 5 },
+    { k: 'order', who: 'A', items: ['Yağ', 'Biber', 'Domates', 'Yumurta'] },
     { k: 'stir', who: 'B', turns: 3 },
     { k: 'time', who: 'B', label: 'Pişir', zone: [4, 6] },
   ] },
-  makarna: { name: 'Domatesli makarna', icon: '🍝', col: '#ffc93c', stages: [
-    { k: 'order', who: 'A', items: ['💧 Su', '🧂 Tuz', '🍝 Makarna'] },
+  makarna: { name: 'Domatesli makarna', col: '#ffc93c', stages: [
+    { k: 'order', who: 'A', items: ['Su', 'Tuz', 'Makarna'] },
     { k: 'time', who: 'B', label: 'Haşla', zone: [5, 7] },
-    { k: 'chop', who: 'A', items: ['🍅 Domates', '🧄 Sarımsak'], taps: 5 },
+    { k: 'chop', who: 'A', items: ['Domates', 'Sarımsak'], taps: 5 },
     { k: 'stir', who: 'B', turns: 4 },
   ] },
 };
@@ -44,7 +44,7 @@ export function createKitchen(ctx) {
   const myHunger = () => hunger[uid] ?? 100;
   const chip = h('span', { class: 'chip hunger', title: t('Tokluk') });
   document.querySelector('#top .chips')?.prepend(chip);
-  const showChip = () => { const v = Math.round(myHunger()); chip.textContent = `🍽️ ${v}%`; chip.classList.toggle('warn', v < 25); };
+  const showChip = () => { const v = Math.round(myHunger()); chip.textContent = `${t('Tokluk')} ${v}%`; chip.classList.toggle('warn', v < 25); };
 
   live.on('hunger', (v) => { hunger = v || {}; showChip(); });
   // Evde geçen her dakika acıkırsın (sekme açıkken)
@@ -53,7 +53,7 @@ export function createKitchen(ctx) {
     if (document.visibilityState !== 'visible') return;
     const v = Math.max(0, myHunger() - 0.4);
     set(live.ref(`hunger/${uid}`), Math.round(v * 10) / 10);
-    if (v < 25 && !warned) { warned = true; toast(t('Acıktın 🍽️ Mutfakta birlikte bir şeyler pişirin!'), 5000); }
+    if (v < 25 && !warned) { warned = true; toast(t('Acıktın. Mutfakta birlikte bir şeyler pişirin!'), 5000); }
     if (v >= 25) warned = false;
   }, 60_000);
 
@@ -68,7 +68,7 @@ export function createKitchen(ctx) {
       const gain = 40 + (cook.stars || 1) * 15;
       set(live.ref(`hunger/${uid}`), Math.min(100, myHunger() + gain));
       if (cook.A === uid) live.stat('meals');
-      toast(t('Afiyet olsun! {icon} {stars}', { icon: RECIPES[cook.r]?.icon || '🍽️', stars: '⭐'.repeat(cook.stars || 1) }), 4500);
+      toast(t('Afiyet olsun! {n}/3 yıldız', { n: cook.stars || 1 }), 4500);
     }
     // Yalnızca ilerleme değiştiyse ekranı baştan kurma (oynayanın mini oyunu sıfırlanmasın), çubuğu güncelle
     const key = cook ? `${cook.at}|${cook.s}|${cook.done}` : '';
@@ -117,9 +117,10 @@ export function createKitchen(ctx) {
     g.strokeStyle = '#8a5a36'; g.lineWidth = 5; g.beginPath(); g.moveTo(310 + Math.cos(stirAngle) * 10, 100 + Math.sin(stirAngle) * 10); g.lineTo(310 + Math.cos(stirAngle) * 46, 100 + Math.sin(stirAngle) * 46); g.stroke(); g.lineWidth = 1;
     // Buhar
     if (c && !c.done && fill > 0.3) { g.fillStyle = 'rgba(255,255,255,0.5)'; const k = performance.now() / 400; for (let i = 0; i < 3; i++) g.fillRect(290 + i * 18, 40 - ((k + i) % 2) * 12, 6, 10); }
-    if (c?.done) { g.font = '64px serif'; g.textAlign = 'center'; g.fillText(rec.icon, 310, 122); }
-    g.font = '28px serif'; g.textAlign = 'center';
-    if (c && !c.done) { const st = rec.stages[c.s]; (st.items || []).slice(0, 3).forEach((it, i) => g.fillText(it.split(' ')[0], 90, 82 + i * 34)); }
+    g.textAlign = 'center'; g.font = '600 16px "Pixelify Sans", monospace';
+    if (c?.done) { g.fillStyle = '#fff6e8'; g.fillText(t(rec.name), 310, 104); }
+    // Kesme tahtasında bu aşamanın malzemeleri (yazıyla)
+    if (c && !c.done) { const st = rec.stages[c.s]; g.fillStyle = '#3a2418'; (st.items || []).slice(0, 5).forEach((it, i) => g.fillText(t(it), 90, 70 + i * 20)); }
   }
 
   function render() {
@@ -134,14 +135,14 @@ export function createKitchen(ctx) {
     const c = cook;
     if (!c || c.done) {
       drawCounter(g, c);
-      if (c?.done) body.append(h('p', { class: 'center' }, t('{dish} hazır! {stars}', { dish: t(RECIPES[c.r].name), stars: '⭐'.repeat(c.stars || 1) })));
+      if (c?.done) body.append(h('p', { class: 'center' }, t('{dish} hazır! {n}/3 yıldız', { dish: t(RECIPES[c.r].name), n: c.stars || 1 })));
       body.append(h('p', { class: 'small center' }, t('Bir tarif seçin. Biriniz hazırlar (doğrar, malzemeleri sırayla koyar), diğeriniz ocağa bakar (karıştırır, pişirme süresini tutturur). Ne kadar iyi yaparsanız o kadar doyarsınız.')),
-        h('div', { class: 'opts recipes' }, ...Object.entries(RECIPES).map(([id, r]) => h('button', { class: 'tile', onclick: () => start(id) }, h('b', {}, `${r.icon} ${t(r.name)}`), h('small', {}, r.stages.map((s) => t(STAGE_NAME[s.k])).join(' → '))))));
+        h('div', { class: 'opts recipes' }, ...Object.entries(RECIPES).map(([id, r]) => h('button', { class: 'tile', onclick: () => start(id) }, h('b', {}, t(r.name)), h('small', {}, r.stages.map((s) => t(STAGE_NAME[s.k])).join(' → '))))));
       return;
     }
     const rec = RECIPES[c.r], st = rec.stages[c.s];
     const who = st.who === 'A' ? c.A : c.B, mine = who === uid;
-    body.append(h('p', { class: 'center' }, `${rec.icon} ${t(rec.name)} · ${c.s + 1}/${rec.stages.length} · ${t(STAGE_NAME[st.k])}`));
+    body.append(h('p', { class: 'center' }, `${t(rec.name)} · ${c.s + 1}/${rec.stages.length} · ${t(STAGE_NAME[st.k])}`));
     const area = h('div', { class: 'cookarea' });
     body.append(area, h('button', { class: 'link', onclick: () => set(live.ref('cook'), null) }, 'Yemeği bırak'));
     let stirA = 0;
@@ -156,7 +157,7 @@ export function createKitchen(ctx) {
     if (st.k === 'chop') { // her malzemeye N kez dokun
       let i = 0, n = 0;
       const btn = h('button', { class: 'primary big' });
-      const show = () => { btn.textContent = `🔪 ${t(st.items[i])} (${n}/${st.taps})`; };
+      const show = () => { btn.textContent = `${t(st.items[i])} (${n}/${st.taps})`; };
       btn.onclick = () => {
         n++; if (n >= st.taps) { i++; n = 0; }
         sendProg((i * st.taps + n) / (st.items.length * st.taps));
@@ -173,7 +174,7 @@ export function createKitchen(ctx) {
         const b = h('button', {}, t(it));
         b.onclick = () => {
           if (it === st.items[next]) { b.disabled = true; b.classList.add('sel'); next++; sendProg(next / st.items.length); if (next === st.items.length) finishStage(Math.max(0, 2 - mistakes)); }
-          else { mistakes++; b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); toast(t('Sıra yanlış 🙈 Tarifi hatırla!'), 1500); }
+          else { mistakes++; b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); toast(t('Sıra yanlış. Tarifi hatırla!'), 1500); }
         };
         row.append(b);
       });
@@ -201,14 +202,14 @@ export function createKitchen(ctx) {
         const s = (performance.now() - t0) / 1000;
         bar.querySelector('i').style.width = Math.min(100, (s / TIME_MAX) * 100) + '%';
         sendProg(Math.min(1, s / TIME_MAX));
-        if (s >= TIME_MAX) { done = true; toast(t('Yandı! 🔥 Bir dahakine daha erken al.'), 2500); finishStage(0); return; }
+        if (s >= TIME_MAX) { done = true; toast(t('Yandı! Bir dahakine daha erken al.'), 2500); finishStage(0); return; }
         setTimeout(step, 50);
       };
       btn.onclick = () => {
         if (done) return; done = true;
         const s = (performance.now() - t0) / 1000, [lo, hi] = st.zone;
         const pts = s >= lo && s <= hi ? 2 : s >= lo - 1 && s <= hi + 1 ? 1 : 0;
-        toast(pts === 2 ? t('Tam kıvamında! 👌') : pts === 1 ? t('Fena değil 🙂') : s < lo ? t('Biraz çiğ kaldı 😬') : t('Biraz fazla pişti 😬'), 2000);
+        toast(pts === 2 ? t('Tam kıvamında!') : pts === 1 ? t('Fena değil') : s < lo ? t('Biraz çiğ kaldı') : t('Biraz fazla pişti'), 2000);
         finishStage(pts);
       };
       area.append(h('p', { class: 'small center' }, t('Çubuk yeşil bölgedeyken bas.')), bar, btn);

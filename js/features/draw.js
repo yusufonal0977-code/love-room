@@ -81,7 +81,7 @@ export function createDraw(ctx) {
     body.append(sw, canvas, h('div', { class: 'row wrap' },
       h('button', { onclick: () => { const k = mine.pop(); if (k) remove(live.ref(`draw/${k}`)); } }, 'Geri al'),
       h('button', { onclick: () => { if (confirm(t('Tuval ikiniz için de temizlensin mi?'))) { remove(r); mine = []; } } }, 'Temizle'),
-      h('button', { class: 'primary', html: `${icon('album')} Albüme kaydet`, onclick: async () => { await ctx.photos.addToAlbum(canvas.toDataURL('image/jpeg', 0.85), t('Birlikte çizdik')); toast('Resim albüme kaydedildi 🎨'); } }),
+      h('button', { class: 'primary', html: `${icon('album')} Albüme kaydet`, onclick: async () => { await ctx.photos.addToAlbum(canvas.toDataURL('image/jpeg', 0.85), t('Birlikte çizdik')); toast('Resim albüme kaydedildi'); } }),
     ), h('p', { class: 'small' }, 'Beyaz renk silgi gibi çalışır. Çizdiğiniz resim hobi köşesindeki şövalede durur.'));
   }
 

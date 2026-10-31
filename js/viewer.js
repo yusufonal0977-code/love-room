@@ -24,7 +24,7 @@ export async function runViewer(id) {
   repaint();
   const shared = { ...DEFAULT_STATE, ...(snap.state || {}), tv: false };
   const owners = snap.owners || [];
-  const names = owners.map((o) => `${o.side === 'moon' ? '🌙' : '☀️'} ${o.name}`).join(' & ');
+  const names = owners.map((o) => `${o.name}`).join(' & ');
 
   // Üst çubuk: kimin evi + kendi evini kur
   $('roomName').textContent = t('{names} · evi', { names });
@@ -32,7 +32,7 @@ export async function runViewer(id) {
   $('connDot').hidden = true;
   const cta = $('inviteChip');
   cta.hidden = false;
-  cta.textContent = t('Kendi evini kur ✨');
+  cta.textContent = t('Kendi evini kur');
   cta.onclick = () => (location.href = APP_URL);
   $('bar').hidden = true;
 
@@ -51,7 +51,7 @@ export async function runViewer(id) {
     micOff: () => false,
     onSpot(id) {
       if (id === 'lamp' || id === 'fire' || id === 'lights' || id === 'desk') { shared[id] = !shared[id]; return; }
-      toast(t('Bu bir vitrin evi. Kendi evini kurunca hepsi senin olur ✨'), 3500);
+      toast(t('Bu bir vitrin evi. Kendi evini kurunca hepsi senin olur'), 3500);
     },
     onSceneChange: (s) => toast(t(SCENES[s].name), 1400),
     onToast: toast,
@@ -62,7 +62,7 @@ export async function runViewer(id) {
     const img = snap.frames?.[f.id];
     if (img) { DECOR.frames[f.id] = true; game.setPicture('frame:' + f.id, sc.id, [f.x, f.y, f.w, f.h], img); }
   }
-  toast(t('{names} seni evlerine davet etti 💞 Gezmek için dokun ya da yürü.', { names }), 5000);
+  toast(t('{names} seni evlerine davet etti. Gezmek için dokun ya da yürü.', { names }), 5000);
   window.__lr = { game, snap };
   return true;
 }

@@ -14,7 +14,7 @@ export function createSleep(ctx, { enabled, lying }) {
   document.querySelector('#top .chips')?.prepend(chip);
   const show = () => {
     chip.hidden = !enabled();
-    const v = Math.round(mine()); chip.textContent = `😴 ${v}%`; chip.classList.toggle('warn', v < 20);
+    const v = Math.round(mine()); chip.textContent = `${t('Dinçlik')} ${v}%`; chip.classList.toggle('warn', v < 20);
   };
   live.on('energy', (v) => { energy = v || {}; show(); });
   const save = (v) => { v = Math.round(Math.max(0, Math.min(100, v)) * 10) / 10; if (v !== sent) { sent = v; set(live.ref(`energy/${uid}`), v); } };
@@ -27,13 +27,13 @@ export function createSleep(ctx, { enabled, lying }) {
     if (before >= 100) return;
     const v = Math.min(100, before + 4);
     energy[uid] = v; save(v); show();
-    if (v >= 100) toast(t('Dinlendin ✨ Enerjin tamamen doldu.'), 3000);
+    if (v >= 100) toast(t('Dinlendin. Enerjin tamamen doldu.'), 3000);
   }, 5000);
   const drain = setInterval(() => {
     if (!enabled() || lying() || document.visibilityState !== 'visible') return;
     const v = Math.max(0, mine() - 0.28);
     energy[uid] = v; save(v); show();
-    if (v < 20 && !warned) { warned = true; toast(t('Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.'), 5000); }
+    if (v < 20 && !warned) { warned = true; toast(t('Uykun geldi. Yatak odasında kısa bir şekerleme yapabilirsin.'), 5000); }
     if (v >= 20) warned = false;
   }, 60_000);
 

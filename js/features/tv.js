@@ -201,7 +201,7 @@ export function createTV(ctx) {
   live.on('tv', (v) => {
     const prev = state;
     state = v;
-    if (v && prev !== undefined && prev?.src !== v.src && v.by !== uid) toast(t('{name} TV\'de bir şey açtı 📺', { name: ctx.partnerName() }));
+    if (v && prev !== undefined && prev?.src !== v.src && v.by !== uid) toast(t('{name} TV\'de bir şey açtı', { name: ctx.partnerName() }));
     if (v?.wait && v.wait !== uid && prev?.wait !== v.wait) toast(t('{name} tarafında video yükleniyor, birlikte bekliyorsunuz…', { name: ctx.partnerName() }), 3500);
     if (v?.count && v.count !== prev?.count) countdown(v.count);
     applyState();
@@ -227,7 +227,7 @@ export function createTV(ctx) {
     }
     if (tick % 3 === 0) set(live.ref(`tvPos/${uid}`), { pos: +current().toFixed(2), at: now() });
     const pu = ctx.partnerUid(), pp = pu && positions[pu];
-    if (state.wait) cSync.textContent = t('⏳ Bekleniyor…');
+    if (state.wait) cSync.textContent = t('Bekleniyor…');
     else if (pp && state.playing && now() - pp.at < 10_000) {
       const theirs = pp.pos + (now() - pp.at) / 1000, diff = Math.abs(theirs - current());
       cSync.textContent = diff < 1 ? t('● Senkron') : t('↻ {n} sn fark, düzeltiliyor', { n: diff.toFixed(1) });

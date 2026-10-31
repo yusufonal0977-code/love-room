@@ -19,7 +19,7 @@ export function createShare(ctx) {
 
   const names = () => {
     const meMoon = ctx.mySide() === 'moon';
-    const a = `☀️ ${meMoon ? ctx.partnerName() : ctx.myName()}`, b = `🌙 ${meMoon ? ctx.myName() : ctx.partnerName()}`;
+    const a = `${meMoon ? ctx.partnerName() : ctx.myName()}`, b = `${meMoon ? ctx.myName() : ctx.partnerName()}`;
     return `${a}  &  ${b}`;
   };
 
@@ -27,17 +27,17 @@ export function createShare(ctx) {
   const KINDS = {
     room: { label: 'Evimiz', async make() {
       const src = game.canvas;
-      return { title: t('Bizim küçük evimiz'), sub: names(), image: src, pixel: true, caption: t('Kilometreler arada, aynı odadayız 💞') };
+      return { title: t('Bizim küçük evimiz'), sub: names(), image: src, pixel: true, caption: t('Kilometreler arada, aynı odadayız') };
     } },
     days: { label: 'Gün sayacı', async make() {
       const s = ctx.life.since();
       if (!s) return { error: t('Önce İlişki saatinden sevgili olduğunuz günü girin.') };
-      return { title: t('Birlikte'), big: String(s.total), sub: t('gündür sevgiliyiz 💞'), sub2: names(), caption: t('Birlikte {n}. günümüz 💞', { n: s.total }) };
+      return { title: t('Birlikte'), big: String(s.total), sub: t('gündür sevgiliyiz'), sub2: names(), caption: t('Birlikte {n}. günümüz', { n: s.total }) };
     } },
     jar: { label: 'Kavanoz cevabı', async make() {
       const j = ctx.life.jarNow();
       if (!j) return { error: t('Önce ikiniz de kavanozdaki bir soruyu cevaplayın.') };
-      return { title: t('Soru kavanozu'), quote: t(j.q), answers: [[ctx.myName(), j.mine], [ctx.partnerName(), j.theirs]], caption: t('Birbirimize sorduk 🫙') };
+      return { title: t('Soru kavanozu'), quote: t(j.q), answers: [[ctx.myName(), j.mine], [ctx.partnerName(), j.theirs]], caption: t('Birbirimize sorduk') };
     } },
     pet: { label: 'Evcil dostumuz', async make() {
       const p = ctx.care.petNow();
@@ -48,22 +48,22 @@ export function createShare(ctx) {
       const img = sp.right[0], x0 = Math.round(20 - img.width / 2), y0 = 24 - img.height;
       g.drawImage(img, x0, y0);
       if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1]);
-      return { title: t('Evcil dostumuz'), image: c, pixel: true, transparent: true, sub: p.name, sub2: names(), caption: t('Ailemizin minik üyesi: {name} 🐾', { name: p.name }) };
+      return { title: t('Evcil dostumuz'), image: c, pixel: true, transparent: true, sub: p.name, sub2: names(), caption: t('Ailemizin minik üyesi: {name}', { name: p.name }) };
     } },
     badges: { label: 'Rozetlerimiz', async make() {
       const list = ctx.care.unlockedBadges();
       if (!list.length) return { error: t('Henüz rozetiniz yok. Birlikte vakit geçirdikçe açılır.') };
-      return { title: t('Rozetlerimiz'), badges: list.slice(0, 9), sub2: names(), caption: t('{n} rozet topladık 🏅', { n: list.length }) };
+      return { title: t('Rozetlerimiz'), badges: list.slice(0, 9), sub2: names(), caption: t('{n} rozet topladık', { n: list.length }) };
     } },
     photo: { label: 'Son fotoğrafımız', async make() {
       const it = await ctx.photos.latest();
       if (!it) return { error: t('Albüm boş. Önce kabinde bir şerit çekin.') };
-      return { title: it.title || t('Bir anımız'), image: await loadImg(it.img), sub2: names(), caption: t('Uzaktan ama birlikte 📸') };
+      return { title: it.title || t('Bir anımız'), image: await loadImg(it.img), sub2: names(), caption: t('Uzaktan ama birlikte') };
     } },
     drawing: { label: 'Çizimimiz', async make() {
       const d = ctx.draw.snapshot();
       if (!d) return { error: t('Şövale boş. Önce birlikte bir şey çizin.') };
-      return { title: t('Birlikte çizdik'), image: await loadImg(d), framed: true, sub2: names(), caption: t('İki kişilik bir resim 🎨') };
+      return { title: t('Birlikte çizdik'), image: await loadImg(d), framed: true, sub2: names(), caption: t('İki kişilik bir resim') };
     } },
   };
 

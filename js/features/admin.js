@@ -63,7 +63,7 @@ export function createAdmin(ctx) {
     const pw = (given || prompt(t('Şifre?')) || '').trim().toLocaleLowerCase('tr-TR');
     if (!pw) return false;
     try { await set(ref(db, `admins/${uid}`), pw); return true; }
-    catch { toast(t('Şifre yanlış 🔒')); return false; }
+    catch { toast(t('Şifre yanlış')); return false; }
   }
 
   async function stats() {
@@ -102,7 +102,7 @@ export function createAdmin(ctx) {
   async function enter(pw) {
     if (!(await login(pw))) return;
     ctx.game.goto('admin', 96, 118);
-    toast(t('Admin odası 🛠️ Evine dönmek için alttaki kapıdan çık.'), 4000);
+    toast(t('Admin odası. Evine dönmek için alttaki kapıdan çık.'), 4000);
   }
   function openTv() {
     const b = openSheet({ title: 'İstatistik', iconName: 'tv', wide: true });

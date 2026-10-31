@@ -39,7 +39,7 @@ export function createShowcase(ctx) {
     id = newId;
     await navigator.clipboard?.writeText(link()).catch(() => {});
     live.stat('showcases');
-    toast(t('Vitrin linki hazır ve kopyalandı 🏠'), 3500);
+    toast(t('Vitrin linki hazır ve kopyalandı'), 3500);
     open();
   }
 

@@ -37,7 +37,7 @@ function openLegal(id) {
     h('a', { class: 'small', href: `legal.html#${doc.id}`, target: '_blank', rel: 'noopener' }, t('Ayrı sayfada aç')),
   );
 }
-// Pencereleri kapatma (✕, boşluğa dokunma, Esc): giriş ekranında da çalışsın diye en başta bağlanır
+// Pencereleri kapatma (, boşluğa dokunma, Esc): giriş ekranında da çalışsın diye en başta bağlanır
 document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
 document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
 addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
@@ -51,7 +51,6 @@ document.addEventListener('click', (e) => {
 const show = (id) => { ['gate', 'consent', 'setup', 'invite', 'hello', 'world'].forEach((s) => ($(s).hidden = s !== id)); $('langCorner').hidden = id === 'world'; };
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const SCENE_AT = { salon: 'salonda', somine: 'şömine başında', balkon: 'balkonda', hobi: 'hobi köşesinde', yatak: 'yatak odasında', mutfak: 'mutfakta', admin: 'başka bir odada' };
-const sideIcon = (s) => (s === 'moon' ? '🌙' : '☀️');
 
 // Davet kodu adresten okunur (?davet=...); giriş sonrası kullanılmak üzere saklanır.
 const params = new URLSearchParams(location.search);
@@ -84,7 +83,7 @@ async function boot() {
 // ---------- Giriş ----------
 function showGate() {
   show('gate');
-  if (inviteCode) $('gateNote').textContent = t('Partnerin seni bekliyor 💌 Giriş yap ve odaya gel.');
+  if (inviteCode) $('gateNote').textContent = t('Partnerin seni bekliyor. Giriş yap ve odaya gel.');
 }
 $('googleBtn').onclick = async () => {
   try { const r = await loginGoogle(); await afterLogin(r.user); }
@@ -174,12 +173,12 @@ function showInvite(inv, code) {
   show('invite');
   const who = inv.inviter?.name ?? t('Partnerin');
   if (inv.full) {
-    $('inviteTitle').textContent = t('Bu oda dolu 💔');
+    $('inviteTitle').textContent = t('Bu oda dolu');
     $('inviteText').textContent = t('{name} başka biriyle zaten aynı odada.', { name: who });
     $('acceptBtn').hidden = true;
   } else {
     $('inviteTitle').innerHTML = t('{name} seni odasına çağırıyor', { name: `<span>${esc(who)}</span>` });
-    $('inviteText').textContent = t(inv.inviter?.side === 'moon' ? 'Sen güneş ☀️ olacaksın. Kabul edince aynı evdesiniz.' : 'Sen ay 🌙 olacaksın. Kabul edince aynı evdesiniz.');
+    $('inviteText').textContent = t(inv.inviter?.side === 'moon' ? 'Sen güneş olacaksın. Kabul edince aynı evdesiniz.' : 'Sen ay olacaksın. Kabul edince aynı evdesiniz.');
     $('acceptBtn').hidden = false;
   }
   $('acceptBtn').onclick = async () => {
@@ -260,7 +259,7 @@ async function enterWorld(rid, fresh = false) {
       const before = partnerUid();
       room.data = r;
       const p = partnerUid();
-      if (p && p !== before) { live.watchProfile(p, (pp) => (partnerProfile = pp)); toast(t('Partnerin eve katıldı 💞')); }
+      if (p && p !== before) { live.watchProfile(p, (pp) => (partnerProfile = pp)); toast(t('Partnerin eve katıldı')); }
       updateTop();
     },
     onPresence(map) {
@@ -269,7 +268,7 @@ async function enterWorld(rid, fresh = false) {
       const now_ = partnerP();
       if (!!now_ !== !!was) {
         call?.setPartner(now_ ? partnerUid() : null);
-        if (now_ && partnerProfile) toast(t('{name} geldi {icon} Sesli sohbet açık', { name: partnerProfile.name, icon: sideIcon(partnerProfile.side) }));
+        if (now_ && partnerProfile) toast(t('{name} geldi. Sesli sohbet açık', { name: partnerProfile.name }));
       }
       if (!!now_?.screen !== !!was?.screen) tv?.setScreen(now_?.screen ? call.remote.screen : call?.screenStream || null);
       updateTop();
@@ -281,7 +280,7 @@ async function enterWorld(rid, fresh = false) {
       const who = v.from === user.uid ? 'me' : 'partner';
       if (v.kind === 'hug' || v.kind === 'kiss') {
         if (!game.emote(v.kind)) game.hearts(who);
-        if (who === 'partner') toast(t(v.kind === 'hug' ? '{name} sana sarıldı 🤗' : '{name} seni öptü 💋', { name: pName() }));
+        if (who === 'partner') toast(t(v.kind === 'hug' ? '{name} sana sarıldı' : '{name} seni öptü', { name: pName() }));
       } else game.hearts(who);
     },
     onSignal: (m) => call?.onSignal(m),
@@ -341,7 +340,7 @@ async function enterWorld(rid, fresh = false) {
   const bedOpen = () => (minutes ?? 0) >= BED_MIN || (params.has('yatak') && location.hostname === 'localhost');
   live.on('stats', (v) => {
     const m = v?.minutes || 0;
-    if (minutes !== null && minutes < BED_MIN && m >= BED_MIN) toast(t('Yatak odası açıldı 🛏️ Şömine odasının sol kapısından girebilirsiniz.'), 6000);
+    if (minutes !== null && minutes < BED_MIN && m >= BED_MIN) toast(t('Yatak odası açıldı. Şömine odasının sol kapısından girebilirsiniz.'), 6000);
     minutes = m;
   });
   const minuteTick = setInterval(() => {
@@ -376,8 +375,8 @@ async function enterWorld(rid, fresh = false) {
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
     canEnter: (to) => to !== 'yatak' || bedOpen(),
-    onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
-    onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız 💞')); },
+    onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır. Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
+    onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız')); },
     onToast: toast,
     blockInput: () => !!document.querySelector('.modal:not([hidden])'),
     onDecorSelect: (s) => decor?.onSelect(s),
@@ -445,7 +444,7 @@ async function enterWorld(rid, fresh = false) {
       sky() {
         const fmt = (z) => new Date(now()).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: z });
         const pn = partnerProfile?.name;
-        toast(pn && partnerProfile?.tz ? t('Sende {mine} · {name} tarafında {theirs}', { mine: `${fmt(tz)} ${sideIcon(profile.side)}`, name: pn, theirs: `${fmt(partnerProfile.tz)} ${sideIcon(partnerProfile.side)}` }) : t('Saat {time}', { time: fmt(tz) }), 4000);
+        toast(pn && partnerProfile?.tz ? t('Sende {mine} · {name} tarafında {theirs}', { mine: fmt(tz), name: pn, theirs: fmt(partnerProfile.tz) }) : t('Saat {time}', { time: fmt(tz) }), 4000);
       },
     };
     actions[id]?.();
@@ -459,7 +458,7 @@ async function enterWorld(rid, fresh = false) {
     $('status').textContent = !partnerUid()
       ? t('Partnerin henüz gelmedi')
       : p
-        ? `${sideIcon(partnerProfile?.side)} ${name ?? ''} ${t(SCENE_AT[p.scene] ?? '')}`
+        ? `${name ?? ''} ${t(SCENE_AT[p.scene] ?? '')}`
         : t('{name} çevrimdışı', { name: name ?? t('Partnerin') });
     updateConn();
   }
@@ -484,7 +483,7 @@ async function enterWorld(rid, fresh = false) {
       st.route ? row('Yol', st.route, true) : null,
       h('div', { class: 'row wrap' },
         h('button', { class: 'primary', onclick: async () => { await call.getMic(); call.reconnect(); tryPlay(); toast(t('Yeniden bağlanılıyor…')); closeSheet(); } }, t('Yeniden bağlan')),
-        h('button', { onclick: () => { tryPlay(); toast(t('Ses açıldı 🔊')); } }, t('Sesi aç')),
+        h('button', { onclick: () => { tryPlay(); toast(t('Ses açıldı')); } }, t('Sesi aç')),
       ),
       h('p', { class: 'small' }, t('Ses gelmiyorsa: iki taraf da sayfaya bir kez dokunsun, mikrofona izin verilsin. Kulaklık kullanmak yankıyı önler.')),
     );
@@ -513,7 +512,7 @@ async function enterWorld(rid, fresh = false) {
     if (!call.canShareScreen) return tv.open();
     const on = await call.toggleScreen(); setBtn('screenBtn', on); live.setPresence({ screen: on });
     tv.setScreen(on ? call.screenStream : partnerP()?.screen ? call.remote.screen : null);
-    if (on) { toast(t('Ekranın salondaki TV\'de 📺')); if (game.me.scene !== 'salon') tv.cinema(true); }
+    if (on) { toast(t('Ekranın salondaki TV\'de')); if (game.me.scene !== 'salon') tv.cinema(true); }
   };
   $('heartBtn').onclick = () => live.react('heart');
   const touch = (kind) => {
@@ -522,7 +521,7 @@ async function enterWorld(rid, fresh = false) {
     if (game.near()) return go();
     // Aynı odadaysanız karakterin partnerine yürür, varınca sarılır/öper
     if (game.sameRoom() && partnerP()?.seat < 0) return game.approach(go);
-    toast(t(kind === 'hug' ? 'Sarılmak için aynı odaya git 🤗' : 'Öpmek için aynı odaya git 💋'));
+    toast(t(kind === 'hug' ? 'Sarılmak için aynı odaya git' : 'Öpmek için aynı odaya git'));
   };
   $('hugBtn').onclick = () => touch('hug');
   $('kissBtn').onclick = () => touch('kiss');
@@ -536,7 +535,7 @@ async function enterWorld(rid, fresh = false) {
   $('zoomBtn').onclick = () => { game.setZoom(game.zoom === 'cover' ? 'contain' : 'cover'); $('menu').hidden = true; };
   $('fullBtn').onclick = fullscreen;
   $('inviteChip').onclick = $('menuBtn').onclick;
-  $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı 💌')); };
+  $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı')); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
   // Gizli admin girişi: menünün alt bağlantılarındaki "Bekarlar için" → şifre → admin odası
   $('singlesLink').onclick = (e) => { e.preventDefault(); $('menu').hidden = true; adminRoom.enter(); };
@@ -577,7 +576,7 @@ async function enterWorld(rid, fresh = false) {
       else throw e;
     }
     localStorage.clear(); sessionStorage.clear();
-    alert(t('Tüm verilerin silindi. Get Love Room’u denediğin için teşekkürler 💛'));
+    alert(t('Tüm verilerin silindi. Get Love Room’u denediğin için teşekkürler'));
     location.href = location.pathname;
   }
 
@@ -617,7 +616,7 @@ async function enterWorld(rid, fresh = false) {
   if (fresh) setTimeout(() => $('menuBtn').onclick(), 600);
   if (spotifyReturn) {
     if (spotifyReturn.error) toast(spotifyReturn.error, 6000);
-    else { toast(t('Spotify bağlandı 🎵')); }
+    else { toast(t('Spotify bağlandı')); }
     if (sessionStorage.getItem('lr.sp.back')) { sessionStorage.removeItem('lr.sp.back'); setTimeout(() => spotify.open(), 500); }
   }
 
@@ -646,7 +645,7 @@ async function enterWorld(rid, fresh = false) {
         box.appendChild(b);
       });
     };
-    opts('edSide', 'Güneş mi ay mı?', [{ label: '☀️ Güneş', value: 'sun' }, { label: '🌙 Ay', value: 'moon' }], () => side, (v) => (side = v));
+    opts('edSide', 'Güneş mi ay mı?', [{ label: 'Güneş', value: 'sun' }, { label: 'Ay', value: 'moon' }], () => side, (v) => (side = v));
     look.body = bodyOf(look);
     opts('edBody', 'Beden', [{ label: 'Kız', value: 'f' }, { label: 'Erkek', value: 'm' }], () => look.body, (v) => (look.body = v));
     opts('edHair', 'Saç', HAIR_STYLES.map((x) => ({ label: { short: 'Kısa', spiky: 'Kirpi', long: 'Uzun', bob: 'Küt', bowl: 'Kâse', round: 'Kabarık', none: 'Saçsız' }[x], value: x })), () => look.hair, (v) => (look.hair = v));
@@ -665,7 +664,7 @@ async function enterWorld(rid, fresh = false) {
       game.setLook(look, side, name);
       live.setPresence({ name });
       $('editor').hidden = true;
-      toast(t('Karakterin güncellendi ✨'));
+      toast(t('Karakterin güncellendi'));
     };
   }
 }

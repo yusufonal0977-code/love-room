@@ -17,7 +17,7 @@ const LEGAL_TR = [
     html: `
 <p><b>Get Love Room</b>, aralarında kilometreler olan çiftler için küçük, piksel bir ev. Aynı odada yürüyün, kanepede yan yana oturup film izleyin, aynı şarkıyı dinleyin, balkonda iki farklı gökyüzüne birlikte bakın.</p>
 <p>Get Love Room'u <b>${COMPANY}</b> yapıyor. Eclip küçük bir ekip; büyük bir şirket değil, sevdiği işi yapan bir avuç insan.</p>
-<p>Küçük bir itiraf: bu evi kuran geliştirici şu an <b>bekâr</b>. Yani Get Love Room'daki her kanepe, her kupa, her ortak çiçek başkaları için kuruldu. Bir gün kendi Get Love Room'una taşınırsa kediyi ona da bakmaya ikna edeceğiz; o zamana kadar sizin eviniz bizim en sevdiğimiz ev. 🙂</p>
+<p>Küçük bir itiraf: bu evi kuran geliştirici şu an <b>bekâr</b>. Yani Get Love Room'daki her kanepe, her kupa, her ortak çiçek başkaları için kuruldu. Bir gün kendi Get Love Room'una taşınırsa kediyi ona da bakmaya ikna edeceğiz; o zamana kadar sizin eviniz bizim en sevdiğimiz ev.</p>
 <p>Nasıl çalıştığımızı kısaca:</p>
 <ul>
   <li>Reklam yok, verilerinizi satmıyoruz, sizi takip eden analiz araçları kullanmıyoruz.</li>

@@ -67,17 +67,17 @@
 377	days	días	Tage	jours	dias
 378	Enter the day you got together; the clock counts from there.	Introduce el día en que empezasteis; el reloj contará desde ahí.	Gib den Tag ein, an dem ihr zusammengekommen seid; die Uhr zählt ab dann.	Indique le jour où vous vous êtes mis ensemble ; l'horloge compte à partir de là.	Informe o dia em que começaram a namorar; o relógio conta a partir dele.
 379	{n} days in total.	{n} días en total.	Insgesamt {n} Tage.	{n} jours au total.	{n} dias no total.
-380	Today is anniversary #{n}! 🎉	¡Hoy es vuestro {n}º aniversario! 🎉	Heute ist euer {n}. Jahrestag! 🎉	C'est votre {n}e anniversaire aujourd'hui ! 🎉	Hoje é o {n}º aniversário de vocês! 🎉
+380	Today is anniversary #{n}!	¡Hoy es vuestro {n}º aniversario!	Heute ist euer {n}. Jahrestag!	C'est votre {n}e anniversaire aujourd'hui !	Hoje é o {n}º aniversário de vocês!
 381	{d} days until anniversary #{n}.	Faltan {d} días para vuestro {n}º aniversario.	Noch {d} Tage bis zu eurem {n}. Jahrestag.	Plus que {d} jours avant votre {n}e anniversaire.	Faltam {d} dias para o {n}º aniversário.
-382	You meet today 💞	Hoy os veis 💞	Heute seht ihr euch 💞	Vous vous voyez aujourd'hui 💞	Vocês se encontram hoje 💞
-383	You meet in {n} days ✈️	Os veis en {n} días ✈️	In {n} Tagen seht ihr euch ✈️	Vous vous voyez dans {n} jours ✈️	Vocês se encontram em {n} dias ✈️
+382	You meet today	Hoy os veis	Heute seht ihr euch	Vous vous voyez aujourd'hui	Vocês se encontram hoje
+383	You meet in {n} days	Os veis en {n} días	In {n} Tagen seht ihr euch	Vous vous voyez dans {n} jours	Vocês se encontram em {n} dias
 385	It's {mine} for you · {theirs} for {name}	Para ti son las {mine} · para {name} las {theirs}	Bei dir {mine} · bei {name} {theirs}	Chez toi {mine} · chez {name} {theirs}	Aí são {mine} · para {name} são {theirs}
 386	Where? (e.g. Paris, by the river)	¿Dónde? (p. ej. Madrid, el Retiro)	Wo? (z. B. Berlin, an der Spree)	Où ? (ex. Paris, au bord de la Seine)	Onde? (ex.: Lisboa, no Tejo)
 387	The day we got together	El día que empezamos	Der Tag, an dem wir zusammenkamen	Le jour où on s'est mis ensemble	O dia em que começamos a namorar
 388	The day your relationship started. The day counter and anniversaries are based on it.	El día en que empezó vuestra relación. El contador y los aniversarios se basan en él.	Der Tag, an dem eure Beziehung begann. Tageszähler und Jahrestage richten sich danach.	Le jour où votre relation a commencé. Le compteur et les anniversaires s'en servent.	O dia em que o relacionamento começou. O contador e os aniversários se baseiam nele.
 389	Our next meeting	Nuestro próximo encuentro	Unser nächstes Treffen	Nos prochaines retrouvailles	Nosso próximo encontro
 390	The day you'll see each other in person; the countdown shows in the top bar.	El día en que os veréis en persona; la cuenta atrás aparece arriba.	Der Tag, an dem ihr euch seht; der Countdown erscheint oben.	Le jour où vous vous verrez en vrai ; le compte à rebours s'affiche en haut.	O dia em que vão se ver pessoalmente; a contagem aparece no topo.
-391	Saved ⏳	Guardado ⏳	Gespeichert ⏳	Enregistré ⏳	Salvo ⏳
+391	Saved	Guardado	Gespeichert	Enregistré	Salvo
 392	Save	Guardar	Speichern	Enregistrer	Salvar
 393	Letter to the future	Carta al futuro	Brief an die Zukunft	Lettre au futur	Carta para o futuro
 394	Something on your mind today… (you can both read it)	Algo que te ronda hoy… (lo podéis leer los dos)	Etwas, das dir heute im Kopf ist… (ihr könnt es beide lesen)	Quelque chose qui te trotte dans la tête aujourd'hui… (vous pouvez le lire tous les deux)	Algo que ficou na sua cabeça hoje… (os dois podem ler)
@@ -87,15 +87,15 @@
 398	Seal the letter	Sellar la carta	Brief versiegeln	Sceller la lettre	Selar a carta
 399	Choose the opening day	Elige el día de apertura	Wähle den Öffnungstag	Choisis le jour d'ouverture	Escolha o dia de abertura
 400	The opening day must be in the future	El día de apertura debe ser futuro	Der Öffnungstag muss in der Zukunft liegen	Le jour d'ouverture doit être dans le futur	O dia de abertura precisa ser no futuro
-401	Written in the diary ✍️	Escrito en el diario ✍️	Ins Tagebuch geschrieben ✍️	Écrit dans le journal ✍️	Escrito no diário ✍️
-402	Letter sealed 💌	Carta sellada 💌	Brief versiegelt 💌	Lettre scellée 💌	Carta selada 💌
+401	Written in the diary	Escrito en el diario	Ins Tagebuch geschrieben	Écrit dans le journal	Escrito no diário
+402	Letter sealed	Carta sellada	Brief versiegelt	Lettre scellée	Carta selada
 403	Write the first page.	Escribid la primera página.	Schreibt die erste Seite.	Écrivez la première page.	Escrevam a primeira página.
 404	No letters yet.	Aún no hay cartas.	Noch keine Briefe.	Pas encore de lettres.	Ainda não há cartas.
 405	opens on {date}	se abre el {date}	öffnet sich am {date}	s'ouvre le {date}	abre em {date}
 406	written on {date}	escrita el {date}	geschrieben am {date}	écrite le {date}	escrita em {date}
 407	Delete it?	¿Borrarlo?	Löschen?	Supprimer ?	Excluir?
-408	{name} answered the jar question 🫙	{name} respondió la pregunta del tarro 🫙	{name} hat die Glas-Frage beantwortet 🫙	{name} a répondu à la question du bocal 🫙	{name} respondeu à pergunta do pote 🫙
-409	{name} drew a question from the jar 🫙	{name} sacó una pregunta del tarro 🫙	{name} hat eine Frage aus dem Glas gezogen 🫙	{name} a tiré une question du bocal 🫙	{name} tirou uma pergunta do pote 🫙
+408	{name} answered the jar question	{name} respondió la pregunta del tarro	{name} hat die Glas-Frage beantwortet	{name} a répondu à la question du bocal	{name} respondeu à pergunta do pote
+409	{name} drew a question from the jar	{name} sacó una pregunta del tarro	{name} hat eine Frage aus dem Glas gezogen	{name} a tiré une question du bocal	{name} tirou uma pergunta do pote
 410	There are {n} questions in the jar. One of you draws, you both answer: the answers open together once you've both written.	Hay {n} preguntas en el tarro. Uno saca una, los dos respondéis: las respuestas se revelan juntas cuando ambos hayáis escrito.	Im Glas sind {n} Fragen. Einer zieht, beide antworten: Die Antworten werden sichtbar, sobald ihr beide geschrieben habt.	Il y a {n} questions dans le bocal. L'un tire, vous répondez tous les deux : les réponses s'ouvrent quand vous avez écrit tous les deux.	Há {n} perguntas no pote. Um tira, os dois respondem: as respostas aparecem juntas quando os dois escreverem.
 411	Draw a question	Sacar una pregunta	Frage ziehen	Tirer une question	Tirar uma pergunta
 412	Your answer (shown once your partner answers too)	Tu respuesta (se verá cuando tu pareja también responda)	Deine Antwort (sichtbar, sobald dein Schatz auch antwortet)	Ta réponse (visible quand ton/ta partenaire aura répondu)	Sua resposta (aparece quando seu amor responder também)
@@ -112,7 +112,7 @@
 424	Undo	Deshacer	Rückgängig	Annuler	Desfazer
 425	Clear the canvas for both of you?	¿Borrar el lienzo para los dos?	Leinwand für euch beide leeren?	Effacer la toile pour vous deux ?	Limpar a tela para os dois?
 426	We drew together	Dibujamos juntos	Zusammen gezeichnet	Dessiné ensemble	Desenhamos juntos
-427	Drawing saved to album 🎨	Dibujo guardado en el álbum 🎨	Bild im Album gespeichert 🎨	Dessin enregistré dans l'album 🎨	Desenho salvo no álbum 🎨
+427	Drawing saved to album	Dibujo guardado en el álbum	Bild im Album gespeichert	Dessin enregistré dans l'album	Desenho salvo no álbum
 428	White works as an eraser. Your drawing stays on the easel in the hobby corner.	El blanco funciona como goma. Vuestro dibujo queda en el caballete del rincón de hobbies.	Weiß funktioniert als Radierer. Euer Bild bleibt auf der Staffelei in der Hobbyecke.	Le blanc sert de gomme. Votre dessin reste sur le chevalet du coin loisirs.	O branco funciona como borracha. O desenho fica no cavalete do cantinho dos hobbies.
 429	Save to album	Guardar en el álbum	Ins Album speichern	Enregistrer dans l'album	Salvar no álbum
 430	Caretaker	Cuidador	Pfleger	Soigneur	Cuidador
@@ -145,9 +145,9 @@
 457	Parents	Papás	Eltern	Parents	Pais
 458	Pet pals	Amigos de mascotas	Tierfreunde	Amis des bêtes	Amigos dos pets
 459	Caretakers	Cuidadores	Pfleger	Soigneurs	Cuidadores
-460	{name} is full 😺	{name} está lleno 😺	{name} ist satt 😺	{name} n'a plus faim 😺	{name} está cheio 😺
-461	{name} has had enough cuddles for now 😺	{name} ya tiene suficientes mimos 😺	{name} hat gerade genug Streicheleinheiten 😺	{name} a eu assez de câlins pour l'instant 😺	{name} já ganhou carinho suficiente 😺
-462	{name} has played enough for now 😺	{name} ya ha jugado bastante 😺	{name} hat gerade genug gespielt 😺	{name} a assez joué pour l'instant 😺	{name} já brincou o bastante 😺
+460	{name} is full	{name} está lleno	{name} ist satt	{name} n'a plus faim	{name} está cheio
+461	{name} has had enough cuddles for now	{name} ya tiene suficientes mimos	{name} hat gerade genug Streicheleinheiten	{name} a eu assez de câlins pour l'instant	{name} já ganhou carinho suficiente
+462	{name} has played enough for now	{name} ya ha jugado bastante	{name} hat gerade genug gespielt	{name} a assez joué pour l'instant	{name} já brincou o bastante
 463	Name	Nombre	Name	Nom	Nome
 464	Level {lv} · {title} · {n} care	Nivel {lv} · {title} · {n} cuidados	Level {lv} · {title} · {n} Pflege	Niveau {lv} · {title} · {n} soins	Nível {lv} · {title} · {n} cuidados
 465	Food	Comida	Futter	Repas	Comida
@@ -157,25 +157,25 @@
 469	Pet	Acariciar	Streicheln	Caresser	Fazer carinho
 470	Play	Jugar	Spielen	Jouer	Brincar
 471	Values drop over time. Both of you can take care; when the cat is hungry a bubble shows above its head.	Los valores bajan con el tiempo. Los dos podéis cuidarlo; cuando tiene hambre aparece un globo sobre su cabeza.	Die Werte sinken mit der Zeit. Ihr könnt euch beide kümmern; hat die Katze Hunger, erscheint eine Blase über ihrem Kopf.	Les valeurs baissent avec le temps. Vous pouvez tous deux vous en occuper ; quand le chat a faim, une bulle apparaît au-dessus de sa tête.	Os valores caem com o tempo. Os dois podem cuidar; quando o gato tem fome, aparece um balão sobre a cabeça.
-472	You watered it today 💧 Come back tomorrow.	Hoy ya la regaste 💧 Vuelve mañana.	Du hast heute schon gegossen 💧 Komm morgen wieder.	Tu l'as déjà arrosée aujourd'hui 💧 Reviens demain.	Você já regou hoje 💧 Volte amanhã.
-473	You both watered it, the flower grew twice as much 🌱💧	Las dos la regasteis, la flor creció el doble 🌱💧	Ihr habt beide gegossen, die Blume wächst doppelt 🌱💧	Vous l'avez arrosée tous les deux, elle pousse deux fois plus 🌱💧	Os dois regaram, a flor cresceu em dobro 🌱💧
-474	Watered 💧 If {name} waters too, it grows faster.	Regada 💧 Si {name} también la riega, crecerá más rápido.	Gegossen 💧 Wenn {name} auch gießt, wächst sie schneller.	Arrosée 💧 Si {name} arrose aussi, elle poussera plus vite.	Regada 💧 Se {name} também regar, cresce mais rápido.
-475	Your flower bloomed! 🌸	¡Vuestra flor ha florecido! 🌸	Eure Blume blüht! 🌸	Votre fleur a fleuri ! 🌸	A flor de vocês desabrochou! 🌸
+472	You watered it today. Come back tomorrow.	Hoy ya la regaste. Vuelve mañana.	Du hast heute schon gegossen. Komm morgen wieder.	Tu l'as déjà arrosée aujourd'hui. Reviens demain.	Você já regou hoje. Volte amanhã.
+473	You both watered it, the flower grew twice as much	Las dos la regasteis, la flor creció el doble	Ihr habt beide gegossen, die Blume wächst doppelt	Vous l'avez arrosée tous les deux, elle pousse deux fois plus	Os dois regaram, a flor cresceu em dobro
+474	Watered. If {name} waters too, it grows faster.	Regada. Si {name} también la riega, crecerá más rápido.	Gegossen. Wenn {name} auch gießt, wächst sie schneller.	Arrosée. Si {name} arrose aussi, elle poussera plus vite.	Regada. Se {name} também regar, cresce mais rápido.
+475	Your flower bloomed!	¡Vuestra flor ha florecido!	Eure Blume blüht!	Votre fleur a fleuri !	A flor de vocês desabrochou!
 476	Seed	Semilla	Samen	Graine	Semente
 477	Sprout	Brote	Keimling	Pousse	Broto
 478	Bud	Capullo	Knospe	Bouton	Botão
-479	In bloom 🌸	En flor 🌸	Blüht 🌸	En fleur 🌸	Florida 🌸
+479	In bloom	En flor	Blüht	En fleur	Florida
 480	thirsty, drooping	sedienta, decaída	durstig, lässt den Kopf hängen	assoiffée, elle penche	com sede, murchando
 482	Today: you {me} · {name} {them}	Hoy: tú {me} · {name} {them}	Heute: du {me} · {name} {them}	Aujourd'hui : toi {me} · {name} {them}	Hoje: você {me} · {name} {them}
-483	watered ✔	regaste ✔	gegossen ✔	arrosé ✔	regou ✔
+483	watered	regaste	gegossen	arrosé	regou
 484	not watered	sin regar	nicht gegossen	pas arrosé	não regou
-485	watered ✔	regó ✔	gegossen ✔	a arrosé ✔	regou ✔
+485	watered	regó	gegossen	a arrosé	regou
 486	not watered	sin regar	nicht gegossen	pas arrosé	não regou
 487	Water	Regar	Gießen	Arroser	Regar
-488	New seed planted 🌱	Nueva semilla plantada 🌱	Neuer Samen gepflanzt 🌱	Nouvelle graine plantée 🌱	Nova semente plantada 🌱
+488	New seed planted	Nueva semilla plantada	Neuer Samen gepflanzt	Nouvelle graine plantée	Nova semente plantada
 489	Plant a new seed	Plantar nueva semilla	Neuen Samen pflanzen	Planter une nouvelle graine	Plantar nova semente
 490	Each of you can water once a day. Water on the same day and it grows twice as fast; skip 3 days and it wilts.	Cada uno puede regar una vez al día. Si regáis el mismo día crece el doble; si pasan 3 días sin agua, se marchita.	Jeder kann einmal am Tag gießen. Gießt ihr am selben Tag, wächst sie doppelt; 3 Tage ohne Wasser und sie welkt.	Chacun peut arroser une fois par jour. Le même jour, elle pousse deux fois plus ; 3 jours sans eau et elle fane.	Cada um pode regar uma vez por dia. Regando no mesmo dia, cresce em dobro; 3 dias sem água e ela murcha.
-491	New badge: {name} 🏅	Nueva insignia: {name} 🏅	Neues Abzeichen: {name} 🏅	Nouveau badge : {name} 🏅	Nova conquista: {name} 🏅
+491	New badge: {name}	Nueva insignia: {name}	Neues Abzeichen: {name}	Nouveau badge : {name}	Nova conquista: {name}
 492	Our badges	Nuestras insignias	Unsere Abzeichen	Nos badges	Nossas conquistas
 493	{n} / {total} badges	{n} / {total} insignias	{n} / {total} Abzeichen	{n} / {total} badges	{n} / {total} conquistas
 495	The classic three-in-a-row; your move.	El clásico tres en raya; os toca.	Der Klassiker; ihr seid dran.	Le grand classique ; à vous de jouer.	O clássico de sempre; sua vez.
@@ -184,9 +184,9 @@
 498	Foosball	Futbolín	Kicker	Baby-foot	Pebolim
 499	A real-time match at the balcony table (first to 5 goals).	Partido en tiempo real en la mesa del balcón (gana quien llegue a 5).	Echtzeit-Match am Balkontisch (wer zuerst 5 Tore hat).	Match en temps réel sur la table du balcon (premier à 5 buts).	Partida em tempo real na mesa da varanda (quem fizer 5 gols).
 500	Start the game	Empezar partida	Spiel starten	Lancer la partie	Começar o jogo
-501	Draw 🤝	Empate 🤝	Unentschieden 🤝	Égalité 🤝	Empate 🤝
-502	You won 🎉	Has ganado 🎉	Du hast gewonnen 🎉	Tu as gagné 🎉	Você venceu 🎉
-503	{name} won 🎉	{name} ha ganado 🎉	{name} hat gewonnen 🎉	{name} a gagné 🎉	{name} venceu 🎉
+501	Draw	Empate	Unentschieden	Égalité	Empate
+502	You won	Has ganado	Du hast gewonnen	Tu as gagné	Você venceu
+503	{name} won	{name} ha ganado	{name} hat gewonnen	{name} a gagné	{name} venceu
 504	Your turn ({mark})	Te toca ({mark})	Du bist dran ({mark})	À toi ({mark})	Sua vez ({mark})
 505	{name} is thinking…	{name} está pensando…	{name} überlegt…	{name} réfléchit…	{name} está pensando…
 507	New game	Nueva partida	Neues Spiel	Nouvelle partie	Novo jogo
@@ -198,8 +198,8 @@
 514	Slide your finger/mouse up and down or use W/S to move your rods. You're on the left (red).	Desliza el dedo/ratón arriba y abajo o usa W/S para mover tus barras. Estás a la izquierda (rojo).	Wisch mit Finger/Maus hoch und runter oder nutze W/S für deine Stangen. Du bist links (rot).	Glisse ton doigt/ta souris de haut en bas ou utilise W/S pour bouger tes barres. Tu es à gauche (rouge).	Deslize o dedo/mouse para cima e para baixo ou use W/S para mover suas barras. Você está à esquerda (vermelho).
 515	Slide your finger/mouse up and down or use W/S to move your rods. You're on the right (blue).	Desliza el dedo/ratón arriba y abajo o usa W/S para mover tus barras. Estás a la derecha (azul).	Wisch mit Finger/Maus hoch und runter oder nutze W/S für deine Stangen. Du bist rechts (blau).	Glisse ton doigt/ta souris de haut en bas ou utilise W/S pour bouger tes barres. Tu es à droite (bleu).	Deslize o dedo/mouse para cima e para baixo ou use W/S para mover suas barras. Você está à direita (azul).
 517	Match over!	¡Fin del partido!	Spiel vorbei!	Match terminé !	Fim de jogo!
-518	Your partner's away, so you're playing a bot 🤖	Tu pareja no está, juegas contra un bot 🤖	Dein Schatz ist nicht da, du spielst gegen einen Bot 🤖	Ton/ta partenaire est absent(e), tu joues contre un bot 🤖	Seu amor não está, você joga contra um bot 🤖
-519	This room is full enough 🙂 Remove something first.	Esta habitación ya está bastante llena 🙂 Quita algo primero.	Das Zimmer ist voll genug 🙂 Entferne zuerst etwas.	Cette pièce est déjà bien remplie 🙂 Retire d'abord quelque chose.	Este cômodo já está cheio 🙂 Tire algo primeiro.
+518	Your partner's away, so you're playing a bot	Tu pareja no está, juegas contra un bot	Dein Schatz ist nicht da, du spielst gegen einen Bot	Ton/ta partenaire est absent(e), tu joues contre un bot	Seu amor não está, você joga contra um bot
+519	This room is full enough. Remove something first.	Esta habitación ya está bastante llena. Quita algo primero.	Das Zimmer ist voll genug. Entferne zuerst etwas.	Cette pièce est déjà bien remplie. Retire d'abord quelque chose.	Este cômodo já está cheio. Tire algo primeiro.
 520	{item} → {room}. To move it, use "Move items".	{item} → {room}. Para cambiarlo de sitio, usa "Mover objetos".	{item} → {room}. Zum Verschieben „Dinge verschieben“ nutzen.	{item} → {room}. Pour le déplacer, utilise « Déplacer les objets ».	{item} → {room}. Para mudar de lugar, use "Mover itens".
 521	Paint	Pintura	Farbe	Peinture	Pintura
 522	Pick a room above; the item goes into that room (next to you if you're there). Wall items hang on the wall.	Elige una habitación arriba; el objeto irá allí (a tu lado si estás en ella). Los objetos de pared se cuelgan.	Wähle oben ein Zimmer; der Gegenstand kommt dorthin (neben dich, wenn du dort bist). Wanddeko hängt an der Wand.	Choisis une pièce en haut ; l'objet y sera placé (à côté de toi si tu y es). Les objets muraux s'accrochent au mur.	Escolha um cômodo acima; o item vai para lá (ao seu lado se você estiver nele). Itens de parede ficam pendurados.
@@ -257,9 +257,9 @@
 574	I don't accept, sign out	No acepto, cerrar sesión	Ich lehne ab, abmelden	Je refuse, me déconnecter	Não aceito, sair
 575	Welcome,	Bienvenido/a,	Willkommen,	Bienvenue,	Boas-vindas,
 576	First, let's set up a little home for you two. Your partner will join with the invite link I'll give you.	Primero, montemos una casita para los dos. Tu pareja vendrá con el enlace de invitación que te daré.	Lass uns zuerst ein kleines Zuhause für euch einrichten. Dein Schatz kommt über den Einladungslink, den ich dir gebe.	D'abord, créons une petite maison pour vous deux. Ton/ta partenaire viendra avec le lien d'invitation que je vais te donner.	Primeiro, vamos montar uma casinha para vocês. Seu amor vai entrar pelo link de convite que vou te dar.
-577	Set up our home ✨	Crear nuestro hogar ✨	Unser Zuhause einrichten ✨	Créer notre maison ✨	Criar nossa casa ✨
+577	Set up our home	Crear nuestro hogar	Unser Zuhause einrichten	Créer notre maison	Criar nossa casa
 578	Sign in with another account	Entrar con otra cuenta	Mit anderem Konto anmelden	Se connecter avec un autre compte	Entrar com outra conta
-579	Enter the room 💞	Entrar en la habitación 💞	Ins Zimmer gehen 💞	Entrer dans la pièce 💞	Entrar no quarto 💞
+579	Enter the room	Entrar en la habitación	Ins Zimmer gehen	Entrer dans la pièce	Entrar no quarto
 580	Cancel	Cancelar	Abbrechen	Annuler	Cancelar
 581	Our Home	Nuestro hogar	Unser Zuhause	Notre maison	Nossa casa
 582	Invite your partner	Invita a tu pareja	Deinen Schatz einladen	Inviter ton/ta partenaire	Convidar seu amor
