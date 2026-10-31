@@ -442,6 +442,12 @@ export function createGame(opts) {
     if (!at?.pose) {
       const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
       ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
+      // Uykusu geldiyse başının solunda Zz balonu
+      if (opts.sleepyOf?.(p === me ? 'me' : 'partner')) {
+        const bx = Math.round(px - 16), by = Math.round(y - 4 + Math.sin(performance.now() / 350));
+        R(ctx, bx, by, 9, 7, '#e9d8f0'); R(ctx, bx + 6, by + 7, 2, 1, '#e9d8f0');
+        R(ctx, bx + 2, by + 2, 5, 1, '#6b4a8a'); R(ctx, bx + 4, by + 3, 1, 1, '#6b4a8a'); R(ctx, bx + 2, by + 4, 5, 1, '#6b4a8a');
+      }
       // Acıktıysa başının yanında tabak balonu
       if ((opts.hungerOf?.(p === me ? 'me' : 'partner') ?? 100) < 25) {
         const bx = Math.round(px + 7), by = Math.round(y - 4 + Math.sin(performance.now() / 300));

@@ -776,5 +776,8 @@ export default {
  "Kolaj yap": "اصنع كولاج",
  "Kolaj için en az 2 fotoğraf seç (en çok 6).": "اختر صورتين على الأقل للكولاج (حتى 6).",
  "Kolaj hazırlanıyor…": "جارٍ تجهيز الكولاج…",
- "Kolaj": "كولاج"
+ "Kolaj": "كولاج",
+ "Dinçlik": "النشاط",
+ "Dinlendin ✨ Enerjin tamamen doldu.": "ارتحت ✨ طاقتك ممتلئة.",
+ "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "تشعر بالنعاس 😴 خذ قيلولة قصيرة في غرفة النوم."
 };

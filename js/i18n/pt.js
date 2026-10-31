@@ -776,5 +776,8 @@ export default {
  "Kolaj yap": "Fazer colagem",
  "Kolaj için en az 2 fotoğraf seç (en çok 6).": "Escolha pelo menos 2 fotos para a colagem (até 6).",
  "Kolaj hazırlanıyor…": "Preparando a colagem…",
- "Kolaj": "Colagem"
+ "Kolaj": "Colagem",
+ "Dinçlik": "Energia",
+ "Dinlendin ✨ Enerjin tamamen doldu.": "Descansou ✨ Sua energia está cheia.",
+ "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "Você está com sono 😴 Tire um cochilo no quarto."
 };

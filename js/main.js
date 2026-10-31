@@ -20,6 +20,7 @@ import { createChat } from './features/chat.js';
 import { createShare } from './features/share.js';
 import { createShowcase } from './features/showcase.js';
 import { createKitchen } from './features/kitchen.js';
+import { createSleep } from './features/sleep.js';
 import { createAdmin, trackActivity } from './features/admin.js';
 import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
 import { auth, db, get, ref, remove } from './fb.js';
@@ -319,7 +320,7 @@ async function enterWorld(rid, fresh = false) {
     onRel: (t) => { $('relChip').textContent = t; $('relChip').hidden = !t; },
     onFrame: null,
   };
-  let decor = null, care = null, kitchen = null, adminRoom = null;
+  let decor = null, care = null, kitchen = null, adminRoom = null, sleep = null;
 
   // Yatak odası: evde birlikte 100 saat (6000 dk) geçirince açılır. Sayaç live/{rid}/stats/minutes;
   // ikiniz de açıksanız yalnızca ev sahibi sayar (süre iki kez sayılmasın). Yerelde ?yatak ile hemen açılır.
@@ -361,6 +362,7 @@ async function enterWorld(rid, fresh = false) {
     onSpot: (id, s) => spot(id, s),
     onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
+    sleepyOf: (who) => !!sleep?.sleepy(who),
     canEnter: (to) => to !== 'yatak' || bedOpen(),
     onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır 🔒 Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız 💞')); },
@@ -386,6 +388,8 @@ async function enterWorld(rid, fresh = false) {
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
   kitchen = createKitchen(ctx);
+  // Uyku ihtiyacı yalnızca yatak odası açıldıktan sonra; yatakta uzanınca dolar
+  sleep = createSleep(ctx, { enabled: bedOpen, lying: () => game.me.scene === 'yatak' && game.me.seat >= 0 });
   adminRoom = createAdmin(ctx);
   const activityTick = trackActivity(user.uid);
 
@@ -548,7 +552,7 @@ async function enterWorld(rid, fresh = false) {
   async function deleteEverything() {
     toast(t('Siliniyor…'), 8000);
     call.setPartner(null);
-    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); game.stop(); live.leave();
+    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); sleep.stop(); game.stop(); live.leave();
     const r = room.data;
     const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
     if (sc) await remove(ref(db, `showcase/${sc}`)).catch(() => {});
