@@ -10,6 +10,7 @@
 import { h, openSheet, toast, loadImg } from '../ui.js';
 import { db, get, ref, set, remove, onValue, onDisconnect, serverTimestamp, now } from '../fb.js';
 import { createRoulette } from './roulette.js';
+import { createMatches } from './matches.js';
 import { t, locale } from '../i18n.js';
 
 const DAY = 86_400_000;
@@ -28,33 +29,37 @@ export function trackActivity(uid) {
   return setInterval(ping, 60_000);
 }
 
-/** TV görüntüsü: koyu ekran, büyük sayılar, son 7 günün aktif kullanıcı çubukları. */
+/** TV görüntüsü: sunucu konsolu. Siyah zemin, yeşil tek aralıklı yazı, birkaç sade satır ve son 7 günün çubukları. */
 export function statsScreen(s) {
   const c = h('canvas', { width: 896, height: 320 }), g = c.getContext('2d');
-  g.fillStyle = '#0d1020'; g.fillRect(0, 0, 896, 320);
-  g.fillStyle = '#fcdf4b'; g.font = '700 26px "Pixelify Sans", monospace'; g.textAlign = 'left';
-  g.fillText('GET LOVE ROOM · ' + t('İstatistik'), 24, 40);
-  g.fillStyle = '#8a90b0'; g.font = '18px "Pixelify Sans", monospace'; g.textAlign = 'right';
-  g.fillText(new Date(s.at).toLocaleString(locale), 872, 40);
-  const box = (x, y, label, val, sub, col) => {
-    g.fillStyle = '#171b33'; g.fillRect(x, y, 200, 104);
-    g.textAlign = 'left'; g.fillStyle = '#8a90b0'; g.font = '17px "Pixelify Sans", monospace'; g.fillText(label, x + 14, y + 26);
-    g.fillStyle = col; g.font = '700 44px "Pixelify Sans", monospace'; g.fillText(String(val), x + 14, y + 72);
-    g.fillStyle = '#c8cce0'; g.font = '15px "Pixelify Sans", monospace'; g.fillText(sub, x + 14, y + 94);
+  const GREEN = '#39ff88', DIM = '#1f7a4a', AMBER = '#ffcf5a', F = '"Pixelify Sans", monospace';
+  g.fillStyle = '#020604'; g.fillRect(0, 0, 896, 320);
+  for (let y = 0; y < 320; y += 4) { g.fillStyle = 'rgba(57,255,136,0.035)'; g.fillRect(0, y, 896, 2); } // tarama çizgileri
+  g.textAlign = 'left'; g.font = `600 22px ${F}`; g.fillStyle = GREEN;
+  g.fillText('GLR-SRV-01  //  ' + t('sistem durumu'), 28, 40);
+  g.fillStyle = DIM; g.textAlign = 'right'; g.font = `18px ${F}`; g.fillText(new Date(s.at).toLocaleString(locale), 868, 40);
+  g.fillStyle = DIM; g.fillRect(28, 54, 840, 2);
+  const line = (y, label, val, col = GREEN) => {
+    g.textAlign = 'left'; g.font = `20px ${F}`; g.fillStyle = DIM; g.fillText('> ' + label, 28, y);
+    const w = g.measureText('> ' + label).width;
+    g.fillText('.'.repeat(Math.max(2, Math.floor((330 - w) / 7))), 36 + w, y);
+    g.textAlign = 'right'; g.font = `700 24px ${F}`; g.fillStyle = col; g.fillText(String(val), 420, y);
   };
-  box(24, 62, t('Şu an çevrimiçi'), s.online, t('son 2 dakika'), '#4fbf6a');
-  box(236, 62, t('Bugün aktif'), s.activeToday, t('Bu hafta: {n}', { n: s.activeWeek }), '#5ec2ff');
-  box(448, 62, t('Odalar'), s.rooms, t('{n} çift · bugün +{d} · hafta +{w}', { n: s.couples, d: s.roomsToday, w: s.roomsWeek }), '#ff7aa3');
-  box(660, 62, t('Kullanıcılar'), s.users, t('bugün +{d} · hafta +{w}', { d: s.usersToday, w: s.usersWeek }), '#ffc93c');
-  // Son 7 gün: günlük aktif kullanıcı
-  g.fillStyle = '#8a90b0'; g.font = '16px "Pixelify Sans", monospace'; g.textAlign = 'left'; g.fillText(t('Son 7 gün · günlük aktif kullanıcı'), 24, 196);
+  line(92, t('çevrimiçi'), s.online, AMBER);
+  line(128, t('bugün aktif'), s.activeToday);
+  line(164, t('hafta aktif'), s.activeWeek);
+  line(200, t('çift / oda'), `${s.couples} / ${s.rooms}`);
+  line(236, t('kullanıcı'), s.users);
+  line(272, t('yeni bugün'), `+${s.usersToday} / +${s.roomsToday}`);
+  // Sağ: son 7 gün, yalnızca çubuklar
+  g.textAlign = 'left'; g.font = `18px ${F}`; g.fillStyle = DIM; g.fillText(t('aktif · son 7 gün'), 480, 92);
   const max = Math.max(1, ...s.perDay.map(([, v]) => v));
   s.perDay.forEach(([d, v], i) => {
-    const x = 24 + i * 122, bh = Math.round((v / max) * 80);
-    g.fillStyle = i === 6 ? '#fcdf4b' : '#5b8def'; g.fillRect(x, 290 - bh, 96, bh);
-    g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.font = '700 16px "Pixelify Sans", monospace'; g.fillText(String(v), x + 48, 284 - bh);
-    g.fillStyle = '#8a90b0'; g.font = '14px "Pixelify Sans", monospace'; g.fillText(d.slice(5), x + 48, 312);
+    const x = 480 + i * 56, bh = Math.max(2, Math.round((v / max) * 150));
+    g.fillStyle = i === 6 ? AMBER : GREEN; g.globalAlpha = i === 6 ? 1 : 0.75; g.fillRect(x, 270 - bh, 36, bh); g.globalAlpha = 1;
+    g.fillStyle = DIM; g.font = `14px ${F}`; g.textAlign = 'center'; g.fillText(d.slice(8), x + 18, 292);
   });
+  g.fillStyle = GREEN; g.fillRect(28, 296, 12, 4); // imleç
   return c.toDataURL('image/png');
 }
 
@@ -62,6 +67,7 @@ export function createAdmin(ctx) {
   const { uid } = ctx;
   let timer = null, last = null;
   const roulette = createRoulette(ctx);
+  const matches = createMatches();
 
   // ---------- Ortak oda: diğer adminlerin konumu ----------
   const meRef = ref(db, `admin/presence/${uid}`);
@@ -157,11 +163,8 @@ export function createAdmin(ctx) {
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
   }
-  /** Masadaki bilgisayar: kullanıcının seçtiği görseli olduğu gibi gösterir. */
-  function openPc() {
-    const b = openSheet({ title: 'Bilgisayar', iconName: 'screen', wide: true });
-    b.append(h('img', { class: 'bigphoto pcshot', src: 'assets/admin-pc.webp', alt: '' }));
-  }
+  /** Masadaki bilgisayar: günün maçları ve bahis oranları (matches.js). */
+  const openPc = () => matches.open();
   async function enter(pw) {
     if (!(await login(pw))) return;
     ctx.game.goto('admin', 96, 118);

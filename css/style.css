@@ -411,7 +411,6 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .shake { animation: shake .35s; }
 @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
-.bigphoto.pcshot { background: #000; border-radius: 6px; }
 
 /* Admin odası: kasa tablosu (odada hep görünür) ve rulet */
 .casino-board { position: fixed; left: 10px; bottom: 92px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
@@ -437,3 +436,19 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .roulette.closed .rtable, .roulette.closed .rrow { opacity: .55; }
 
 body:has(.modal:not([hidden])) .casino-board { display: none; } /* pencere açıkken kasa tablosu gizlenir */
+
+/* Admin bilgisayarı: konsol görünümlü maç listesi */
+.pcsheet .pc { background: #020604; color: #39ff88; border: 1.5px solid #1f7a4a; border-radius: 8px; padding: 12px; font-family: 'Pixelify Sans', monospace; display: flex; flex-direction: column; gap: 8px; }
+.pcsheet .pc input { background: #06140c; color: #39ff88; border-color: #1f7a4a; }
+.pcsheet .pchead { display: flex; justify-content: space-between; align-items: center; color: #ffcf5a; }
+.pcsheet .pchead .link { color: #39ff88; }
+.pcsheet .pcdays { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
+.pcsheet .pcdays button { flex: none; scroll-snap-align: center; background: #06140c; color: #39ff88; border-color: #1f7a4a; font-size: 13px; padding: 6px 10px; }
+.pcsheet .pcdays button.sel { background: #39ff88; color: #020604; border-color: #39ff88; }
+.pcsheet section { display: flex; flex-direction: column; gap: 2px; }
+.pcsheet section b { color: #ffcf5a; margin-top: 4px; }
+.pcsheet .pcrow { display: grid; grid-template-columns: 48px 1fr 46px 46px 46px; gap: 6px; font-size: 13px; padding: 3px 0; border-bottom: 1px dashed #123d26; }
+.pcsheet .pcrow.pchd { color: #1f7a4a; border: 0; }
+.pcsheet .pcrow .tm { color: #1f7a4a; }
+.pcsheet .odd { text-align: right; color: #e8fff2; }
+.pcsheet small { color: #1f7a4a; }

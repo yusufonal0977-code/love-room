@@ -89,6 +89,12 @@
             ".write": "auth != null && root.child('admins').child(auth.uid).exists() && !data.exists() && newData.isNumber() && newData.val() >= 0 && newData.val() <= 36"
           }
         }
+      },
+      "config": {
+        ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      },
+      "matches": {
+        ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
       }
     }
   }

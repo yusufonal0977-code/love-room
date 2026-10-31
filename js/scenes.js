@@ -589,6 +589,9 @@ const admin = makeScene({
   },
   dyn(g, { t }) {
     for (let y = 16; y < 60; y += 6) for (let i = 0; i < 3; i++) R(g, 164 + i * 5, y + 1, 2, 2, (Math.sin(t * 3 + y + i * 2) > 0 ? ['#4fbf6a', '#fcdf4b', '#ff5d8f'][i] : '#1a1a24'));
+    // Masadaki bilgisayar hep açık: maç listesi gibi akan yeşil satırlar
+    R(g, 15, 49, 12, 6, '#020604');
+    for (let i = 0; i < 3; i++) { const w = 3 + ((i * 5 + (t * 2 | 0)) % 7); R(g, 16, 50 + i * 2, w, 1, i === 0 ? '#ffcf5a' : '#39ff88'); R(g, 24, 50 + i * 2, 2, 1, '#1f7a4a'); }
   },
   props: [
     { id: 'roulette', y: 128, draw(g, { t }) { // rulet masası: ahşap kenar, yeşil çuha, solda çark, sağda sayı alanı
@@ -601,9 +604,10 @@ const admin = makeScene({
       R(g, 124, 126, 3, 3, C.woodD); R(g, 181, 126, 3, 3, C.woodD);
     } },
     { id: 'chair', y: 106, draw(g) { // bilgisayar koltuğu (TV'ye dönük; oturanın sırtını örter)
-      R(g, 88, 84, 16, 16, '#26242c'); R(g, 89, 85, 14, 14, '#3a3a48'); R(g, 90, 86, 12, 2, '#55556a'); // sırtlık
-      R(g, 85, 94, 3, 6, '#26242c'); R(g, 104, 94, 3, 6, '#26242c'); // kolçaklar
-      R(g, 87, 100, 18, 3, '#26242c'); R(g, 95, 103, 2, 3, C.metal); // oturak + ayak
+      R(g, 87, 88, 18, 6, '#26242c'); R(g, 88, 89, 16, 4, '#3a3a48'); // oturak (TV tarafında)
+      R(g, 84, 88, 3, 8, '#26242c'); R(g, 105, 88, 3, 8, '#26242c'); // kolçaklar
+      R(g, 88, 92, 16, 12, '#26242c'); R(g, 89, 93, 14, 10, '#3a3a48'); R(g, 90, 94, 12, 2, '#55556a'); // sırtlık bize dönük: oturan TV'ye bakar
+      R(g, 95, 104, 2, 2, C.metal); // ayak
       R(g, 88, 106, 16, 1, C.metal); R(g, 87, 106, 2, 2, '#1a1a24'); R(g, 95, 106, 2, 2, '#1a1a24'); R(g, 103, 106, 2, 2, '#1a1a24'); // tekerlekler
     } },
   ],
