@@ -583,19 +583,30 @@ const admin = makeScene({
     R(g, 36, 3, 120, 46, '#0a0c16'); R(g, 38, 5, 116, 42, '#141830'); R(g, 92, 49, 8, 4, C.metal); // TV
     R(g, 160, 12, 24, 52, '#2e2e3a'); for (let y = 16; y < 60; y += 6) R(g, 162, y, 20, 4, '#3a3a48'); // sunucu dolabı
     R(g, 8, 56, 44, 10, '#3a3f5c'); R(g, 8, 56, 44, 2, '#5a6080'); R(g, 14, 48, 14, 8, '#0a0c16'); R(g, 15, 49, 12, 6, '#2f9e8f'); // masa + monitör
+    R(g, 30, 52, 10, 3, '#2e2e3a'); R(g, 31, 52, 8, 1, '#4a4752'); // klavye
+    R(g, 3, 7, 30, 38, '#0a0c16'); R(g, 4, 8, 28, 36, '#000000'); // Eclip tabelası (logo ve ad canlı resim olarak üstüne gelir)
     R(g, 82, 138, 28, 6, '#c9a36b'); R(g, 80, 140, 32, 4, C.woodD); // alt kapı
   },
   dyn(g, { t }) {
     for (let y = 16; y < 60; y += 6) for (let i = 0; i < 3; i++) R(g, 164 + i * 5, y + 1, 2, 2, (Math.sin(t * 3 + y + i * 2) > 0 ? ['#4fbf6a', '#fcdf4b', '#ff5d8f'][i] : '#1a1a24'));
   },
-  props: [],
-  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12]],
+  props: [
+    { id: 'chair', y: 106, draw(g) { // bilgisayar koltuğu (TV'ye dönük; oturanın sırtını örter)
+      R(g, 88, 84, 16, 16, '#26242c'); R(g, 89, 85, 14, 14, '#3a3a48'); R(g, 90, 86, 12, 2, '#55556a'); // sırtlık
+      R(g, 85, 94, 3, 6, '#26242c'); R(g, 104, 94, 3, 6, '#26242c'); // kolçaklar
+      R(g, 87, 100, 18, 3, '#26242c'); R(g, 95, 103, 2, 3, C.metal); // oturak + ayak
+      R(g, 88, 106, 16, 1, C.metal); R(g, 87, 106, 2, 2, '#1a1a24'); R(g, 95, 106, 2, 2, '#1a1a24'); R(g, 103, 106, 2, 2, '#1a1a24'); // tekerlekler
+    } },
+  ],
+  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10]],
   doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
   spots: [
     { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'İstatistikler' },
     { id: 'home', x: 96, y: 128, hit: [78, 126, 36, 18], label: () => 'Evime dön' },
+    { id: 'sit', group: 'chair', x: 96, y: 114, hit: [84, 82, 24, 26], label: () => 'Koltuğa otur' },
+    { id: 'pc', x: 30, y: 72, hit: [6, 46, 48, 22], label: () => 'Bilgisayar' },
   ],
-  seats: [],
+  seats: [{ x: 96, y: 101, pose: 'back', group: 'chair' }],
   lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }],
 });
 

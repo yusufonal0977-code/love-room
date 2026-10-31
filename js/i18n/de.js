@@ -805,5 +805,7 @@ export default {
  "8 numara erken girdi, oyunu kaybetti: {name}": "Die 8 fiel zu früh, verloren: {name}",
  "Sıra sende ({group}): beyaz toptan geriye çek ve bırak.": "Du bist dran ({group}): von der Weißen zurückziehen und loslassen.",
  "kalan {n}": "noch {n}",
- "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "Klassisches 8-Ball: einer Volle, einer Halbe; die 8 zuletzt. Mit Partner oder Bot."
+ "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "Klassisches 8-Ball: einer Volle, einer Halbe; die 8 zuletzt. Mit Partner oder Bot.",
+ "Koltuğa otur": "Auf den Stuhl setzen",
+ "Bilgisayar": "Computer"
 };

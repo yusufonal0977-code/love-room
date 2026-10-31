@@ -805,5 +805,7 @@ export default {
  "8 numara erken girdi, oyunu kaybetti: {name}": "A 8 caiu cedo demais, perdeu: {name}",
  "Sıra sende ({group}): beyaz toptan geriye çek ve bırak.": "Sua vez ({group}): puxe a partir da branca e solte.",
  "kalan {n}": "faltam {n}",
- "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "8-ball clássico: um fica com as lisas, o outro com as listradas; a 8 por último. Com seu par ou o bot."
+ "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "8-ball clássico: um fica com as lisas, o outro com as listradas; a 8 por último. Com seu par ou o bot.",
+ "Koltuğa otur": "Sentar na cadeira",
+ "Bilgisayar": "Computador"
 };

@@ -805,5 +805,7 @@ export default {
  "8 numara erken girdi, oyunu kaybetti: {name}": "دخلت الكرة 8 مبكرًا، خسر: {name}",
  "Sıra sende ({group}): beyaz toptan geriye çek ve bırak.": "دورك ({group}): اسحب من الكرة البيضاء ثم اترك.",
  "kalan {n}": "متبقٍ {n}",
- "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "بلياردو 8 الكلاسيكي: واحد للصلبة والآخر للمخططة؛ والكرة 8 أخيرًا. مع شريكك أو الروبوت."
+ "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "بلياردو 8 الكلاسيكي: واحد للصلبة والآخر للمخططة؛ والكرة 8 أخيرًا. مع شريكك أو الروبوت.",
+ "Koltuğa otur": "اجلس على الكرسي",
+ "Bilgisayar": "الحاسوب"
 };

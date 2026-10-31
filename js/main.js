@@ -428,6 +428,7 @@ async function enterWorld(rid, fresh = false) {
       cook: () => kitchen.open(),
       fridge: () => kitchen.open(),
       admintv: () => adminRoom.openTv(),
+      pc: () => adminRoom.openPc(),
       home: () => game.goto('salon', 96, 120),
       pool: () => games.openPool(),
       flower: () => care.openFlower(),

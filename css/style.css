@@ -411,3 +411,4 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .shake { animation: shake .35s; }
 @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
+.bigphoto.pcshot { background: #000; border-radius: 6px; }

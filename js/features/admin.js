@@ -5,13 +5,14 @@
 // Sayaçlar (her kullanıcı kendi kaydını yazar, yalnızca adminler okur):
 //   metrics/active/{YYYY-MM-DD}/{uid} = true   o gün evine giren kullanıcılar (UTC günü)
 //   metrics/online/{uid} = zaman               son 2 dakikada görülenler = şu an çevrimiçi
-import { h, openSheet, toast } from '../ui.js';
+import { h, openSheet, toast, loadImg } from '../ui.js';
 import { db, get, ref, set, serverTimestamp, now } from '../fb.js';
 import { t, locale } from '../i18n.js';
 
 const DAY = 86_400_000;
 const dayKey = (ms) => new Date(ms).toISOString().slice(0, 10);
 export const TV_RECT = [40, 6, 112, 40];
+const SIGN_RECT = [4, 8, 28, 36]; // TV'nin solundaki Eclip tabelası
 
 /** Her kullanıcı için: bugün aktif + çevrimiçi kaydı (kurallar yoksa sessizce geçer). */
 export function trackActivity(uid) {
@@ -94,10 +95,28 @@ export function createAdmin(ctx) {
     catch (e) { console.warn(e); toast(t('İstatistikler okunamadı. Veritabanı kurallarını güncelledin mi?'), 5000); }
   }
   /** Odaya girince TV dakikada bir yenilenir; çıkınca durur. */
+  /** Şirket tabelası: siyah zeminde Eclip logosu, altında adı (marka renkleri). */
+  let sign = null;
+  async function drawSign() {
+    if (sign) return sign;
+    const logo = await loadImg('assets/eclip-logo.webp');
+    const c = h('canvas', { width: 280, height: 360 }), g = c.getContext('2d');
+    g.fillStyle = '#000'; g.fillRect(0, 0, 280, 360);
+    g.drawImage(logo, 30, 14, 220, 220);
+    g.textAlign = 'center'; g.fillStyle = '#fcdf4b'; g.font = '700 50px "Pixelify Sans", monospace'; g.fillText('ECLIP', 140, 286);
+    g.fillStyle = '#fff6d8'; g.font = '17px "Pixelify Sans", monospace'; g.fillText('SOFTWARE &', 140, 318); g.fillText('ENTERTAINMENT', 140, 340);
+    return (sign = c.toDataURL('image/png'));
+  }
   function onScene(scene) {
     clearInterval(timer); timer = null;
-    if (scene !== 'admin') { ctx.game.setPicture('admintv', 'admin', TV_RECT, null); return; }
+    if (scene !== 'admin') { ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); return; }
+    drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
+  }
+  /** Masadaki bilgisayar: kullanıcının seçtiği görseli olduğu gibi gösterir. */
+  function openPc() {
+    const b = openSheet({ title: 'Bilgisayar', iconName: 'screen', wide: true });
+    b.append(h('img', { class: 'bigphoto pcshot', src: 'assets/admin-pc.webp', alt: '' }));
   }
   async function enter(pw) {
     if (!(await login(pw))) return;
@@ -109,5 +128,5 @@ export function createAdmin(ctx) {
     b.append(last ? h('img', { class: 'bigphoto', src: last, alt: '' }) : h('p', {}, t('Yükleniyor…')), h('button', { onclick: async () => { await refresh(); b.querySelector('img')?.setAttribute('src', last); } }, 'Yenile'));
   }
 
-  return { enter, onScene, openTv };
+  return { enter, onScene, openTv, openPc };
 }

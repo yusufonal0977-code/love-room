@@ -805,5 +805,7 @@ export default {
  "8 numara erken girdi, oyunu kaybetti: {name}": "The 8-ball went in too early, lost the game: {name}",
  "Sıra sende ({group}): beyaz toptan geriye çek ve bırak.": "Your turn ({group}): pull back from the cue ball and release.",
  "kalan {n}": "{n} left",
- "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "Classic 8-ball: one takes solids, the other stripes; the 8 goes last. With your partner or the bot."
+ "Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya da botla.": "Classic 8-ball: one takes solids, the other stripes; the 8 goes last. With your partner or the bot.",
+ "Koltuğa otur": "Sit in the chair",
+ "Bilgisayar": "Computer"
 };
