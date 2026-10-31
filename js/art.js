@@ -1,5 +1,6 @@
 // Piksel art yardımcıları ve karakter/evcil hayvan sprite'ları.
 import { CHAR_DATA } from './char-data.js';
+import { lang } from './i18n.js';
 // Her şey koddan üretilir: satır dizileri + palet → otomatik dış hatlı küçük canvas'lar.
 
 export const OUT = '#26160f';
@@ -50,6 +51,36 @@ const LEGACY_HAIR = { bun: 'short' };
 const HEIGHT = { f: 29, m: 31 };
 const BLUSH_AT = { front: [[12, 4], [12, 13]], side: [[12, 10]], back: [] }; // kel kafa koordinatı (satır, sütun)
 const BLUSH = '#ef9090';
+// Başörtüsü: site Arapça açıldığında kız karakterler saç yerine bunu takar. Uzun saç çiziminden türetildi
+// (yüz çerçevesi aynı, ayrım çizgisi yok); çene altından omuzlara inen bir örtüyle biter. Renk saç rengi seçiminden.
+const HIJAB = {
+  blush: '#ed908d',
+  views: {
+    front: { ax: 7, dy: 0, rows: [
+      '_____############_____', '____#HHHHHHHHHHHH#____', '___#HHHHHHHHHHHHHH#___', '__#HHHHHHHHHHHHHHHH#__',
+      '__#HHHHHHHHHHHHHHHH#__', '_#HHHHHHH####HHHHHHH#_', '_#HHHHHH#SSSS#HHHHHH#_', '#HHHHHH#SSSSSS#HHHHHH#',
+      '#HHHH##SSSSSSSS##HHHH#', '#HHH#SSSSSSSSSSSS#HHH#', '#HHH#S###SSSS###S#HHH#', '#HHH#SS##SSSS##SS#HHH#',
+      '#HHH#SaSSSSSSSSaS#HHH#', '#HHHH#SSSS##SSSS#HHHH#', '#HHHHH#SSSSSSSS#HHHHH#', '#HHHHHH##SSSS##HHHHHH#',
+      '.#HHHHHHHHHHHHHHHHHH#.', '..#HHHHHHHHHHHHHHHH#..', '...##HHHHHHHHHHHH##...', '.....############.....',
+    ] },
+    side: { ax: 8, dy: 0, rows: [
+      '____############___', '___#HHHHHHHHHHHH#__', '__#HHHHHHHHHHHHHH#_', '_#HHHHHHHHHHHHHHHH#',
+      '#HHHHHHHHHHHHHHHHH#', '#HHHHHHHHHHHHHHHHH#', '#HHHHHHHHHHHHHH###_', '#HHHHHHHHHHHHH#SS#_',
+      '#HHHHHHHHHHH##SSS#_', '#HHHHHHHHHH#SSSSS#_', '#HHHHHHHHH#S###SSS#', '#HHHHHHHHH#SS##SSS#',
+      '#HHHHHHHHH#SaSSSSS#', '#HHHHHHHH#SSSSS#S#_', '#HHHHHHH#SSSSSSS#__', '#HHHHHHH#SS#####___',
+      '#HHHHHHHHHHHHH#....', '.#HHHHHHHHHHHH#....', '..##HHHHHHHH##.....', '....########.......',
+    ] },
+    back: { ax: 7, dy: 0, rows: [
+      '_____############_____', '____#HHHHHHHHHHHH#____', '___#HHHHHHHHHHHHHH#___', '__#HHHHHHHHHHHHHHHH#__',
+      '__#HHHHHHHHHHHHHHHH#__', '_#HHHHHHHHHHHHHHHHHH#_', '_#HHHHHHHHHHHHHHHHHH#_',
+      ...Array(9).fill('#HHHHHHHHHHHHHHHHHHHH#'),
+      '#HHHHHHHHHHHHHHHHHHHH#', '.#HHHHHHHHHHHHHHHHHH#.', '..##HHHHHHHHHHHHHH##..', '....##############....',
+    ] },
+  },
+};
+const SCARF = ['#3d3a5c', '#8b5e83', '#c58f6a', '#e8d3b0', '#c4566c', '#f1ece4']; // HAIR sırasıyla eşleşir
+const hijabOn = (look) => lang === 'ar' && bodyOf(look) === 'f';
+
 /** Kayıtlı bedeni yoksa eski profiller için tahmin: kız saçı ya da kız kıyafeti → kız. */
 export function bodyOf(look) {
   if (look?.body === 'f' || look?.body === 'm') return look.body;
@@ -88,8 +119,8 @@ function fitHeight(L, target) {
 function layers(look, view) {
   const outfit = CHAR_DATA.outfits[look.outfit] || CHAR_DATA.outfits.basic;
   const o = outfit.views[view];
-  const hairId = LEGACY_HAIR[look.hair] || look.hair;
-  const hair = hairId !== 'none' && CHAR_DATA.hairs[hairId] ? CHAR_DATA.hairs[hairId] : CHAR_DATA.hairs.short;
+  const hairId = hijabOn(look) ? 'hijab' : LEGACY_HAIR[look.hair] || look.hair;
+  const hair = hairId === 'hijab' ? HIJAB : hairId !== 'none' && CHAR_DATA.hairs[hairId] ? CHAR_DATA.hairs[hairId] : CHAR_DATA.hairs.short;
   const hv = hairId === 'none' ? null : hair.views[view];
   const ax = Math.max(o.ax, hv ? hv.ax : 0);
   const ox = ax - o.ax, hx = hv ? ax - hv.ax : 0;
@@ -121,7 +152,7 @@ function layers(look, view) {
 function paint(L, look, mapRow = (r) => r) {
   const skin = SKIN[look.skin] ?? SKIN[0];
   const col = {
-    '#': LINE, B: BLUSH, S: skin, P: PANTS[look.pants] ?? PANTS[0], C: SHIRT[look.shirt] ?? SHIRT[0], H: HAIR[look.hairColor] ?? HAIR[0],
+    '#': LINE, B: BLUSH, S: skin, P: PANTS[look.pants] ?? PANTS[0], C: SHIRT[look.shirt] ?? SHIRT[0], H: (L.hair === HIJAB ? SCARF : HAIR)[look.hairColor] ?? HAIR[0],
   };
   const rows = mapRow(L.g);
   const c = document.createElement('canvas');
