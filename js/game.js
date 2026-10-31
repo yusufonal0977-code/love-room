@@ -531,6 +531,7 @@ export function createGame(opts) {
   // ---------- HTML katmanı ----------
   const el = (cls) => { const d = document.createElement('div'); d.className = cls; overlay.appendChild(d); return d; };
   const tagMe = el('tag'), tagP = el('tag'), prompt = el('prompt');
+  const extraTags = new Map(); // ek karakterlerin isim etiketleri
   const speech = { me: { el: el('speech'), until: 0 }, partner: { el: el('speech'), until: 0 } };
   // Etiketler de tam piksele oturur: kamera tam piksel kaydığı için kesirli konum titreşirdi
   const place = (node, x, y) => { node.style.left = (Math.round(x) / W) * 100 + '%'; node.style.top = (Math.round(y) / H) * 100 + '%'; };
@@ -649,20 +650,30 @@ export function createGame(opts) {
       ents.push({ y: sortY(me), d: () => drawPerson(me, atMe) });
       if (pHere) ents.push({ y: sortY(partner) + (atP ? 0.1 : 0), d: () => drawPerson(partner, atP) });
     }
-    // Ek karakterler (vitrin evinde ev sahipleri kanepede oturur)
+    // Ek karakterler: vitrin evinde oturan ev sahipleri, ortak admin odasındaki diğer adminler (yürür, adı görünür)
+    const seenTags = new Set();
     for (const x of opts.getExtras?.() || []) {
       if (x.scene !== me.scene) continue;
-      ents.push({ y: x.pose === 'sit' ? x.y + 12 : x.y - 6, d: () => {
+      ents.push({ y: x.pose === 'sit' ? x.y + 12 : x.pose === 'back' ? x.y - 6 : x.y, d: () => {
         const sp = characterSprites(x.look);
-        const img = x.pose === 'back' ? sp.sitBack : x.pose === 'sit' ? sp.sit : sp.down;
+        const ph = ((x.t || 0) * 8 | 0) % 4, f = x.moving ? (ph === 1 ? '2' : ph === 3 ? '3' : '') : '';
+        const walk = x.dir === 'up' ? sp['up' + f] : x.dir === 'right' ? sp['side' + f] : x.dir === 'left' ? sp['side' + f + 'L'] : sp['down' + f];
+        const img = x.pose === 'back' ? sp.sitBack : x.pose === 'sit' ? sp.sit : walk;
         const yy = Math.round(x.y - img.height + (x.pose === 'back' ? -1 : x.pose ? 2 : 1));
+        if (!x.pose) R(ctx, x.x - 5, x.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
         ctx.drawImage(img, Math.round(x.x - img.width / 2), yy);
         const b = x.side === 'moon' ? MOON_BADGE : SUN_BADGE;
         ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);
+        if (x.id && x.name) { // isim etiketi
+          let tg = extraTags.get(x.id);
+          if (!tg) { tg = el('tag'); extraTags.set(x.id, tg); }
+          tg.textContent = x.name; tg.style.display = ''; place(tg, x.x, yy - 8); seenTags.add(x.id);
+        }
       } });
     }
     if (cat.scene === me.scene) ents.push({ y: cat.y, d: drawCat });
     ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
+    for (const [id, tg] of extraTags) if (!seenTags.has(id)) { tg.remove(); extraTags.delete(id); } // giden adminlerin etiketi
     drawLighting(sc, info);
     parts.forEach((p) => { ctx.globalAlpha = Math.max(0, Math.min(1, (p.life - p.t) * 2)); ctx.drawImage(p.img, Math.round(p.x - p.img.width / 2), Math.round(p.y)); });
     ctx.globalAlpha = 1;

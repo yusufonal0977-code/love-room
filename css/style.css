@@ -412,3 +412,28 @@ button.big { font-size: 20px; padding: 14px 22px; }
 @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
 .bigphoto.pcshot { background: #000; border-radius: 6px; }
+
+/* Admin odası: kasa tablosu (odada hep görünür) ve rulet */
+.casino-board { position: fixed; left: 10px; bottom: 92px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
+.casino-board[hidden] { display: none; }
+.casino-board b { color: #fcdf4b; font-size: 13px; }
+.casino-board .row { display: flex; justify-content: space-between; gap: 12px; }
+.casino-board .row.me { color: #fcdf4b; }
+.casino-board small { color: #8a90b0; }
+.roulette .rtop { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.roulette .rwheel { width: 200px; height: 200px; }
+.roulette .rinfo { display: flex; flex-direction: column; gap: 6px; min-width: 200px; flex: 1; }
+.roulette .rstatus { font-weight: 700; color: #fcdf4b; }
+.roulette .rtable { display: grid; grid-template-columns: repeat(14, 1fr); gap: 2px; margin-top: 10px; }
+.roulette .rtable .zero { grid-row: span 3; }
+.roulette .rrow { display: flex; gap: 2px; margin-top: 2px; }
+.roulette .rrow .rcell { flex: 1; }
+.roulette .rcell { position: relative; padding: 8px 0; min-width: 0; font-size: 13px; border-radius: 4px; border: 1px solid #2f6b47; background: #1f8a4c; color: #fff6e8; }
+.roulette .rcell.red { background: #c8323c; }
+.roulette .rcell.black { background: #1a1a22; }
+.roulette .rcell.out { background: #176b3a; }
+.roulette .rchip { position: absolute; right: 1px; top: 1px; font-style: normal; font-size: 9px; padding: 0 3px; border-radius: 6px; background: #fcdf4b; color: #1a1608; }
+.roulette .rchipbtn.sel { background: #fcdf4b; border-color: #fcdf4b; color: #1a1608; font-weight: 700; }
+.roulette.closed .rtable, .roulette.closed .rrow { opacity: .55; }
+
+body:has(.modal:not([hidden])) .casino-board { display: none; } /* pencere açıkken kasa tablosu gizlenir */

@@ -591,6 +591,15 @@ const admin = makeScene({
     for (let y = 16; y < 60; y += 6) for (let i = 0; i < 3; i++) R(g, 164 + i * 5, y + 1, 2, 2, (Math.sin(t * 3 + y + i * 2) > 0 ? ['#4fbf6a', '#fcdf4b', '#ff5d8f'][i] : '#1a1a24'));
   },
   props: [
+    { id: 'roulette', y: 128, draw(g, { t }) { // rulet masası: ahşap kenar, yeşil çuha, solda çark, sağda sayı alanı
+      R(g, 122, 104, 64, 22, '#5a3420'); R(g, 124, 106, 60, 18, '#1f8a4c'); R(g, 124, 106, 60, 1, '#3fae6a');
+      R(g, 127, 108, 14, 14, '#3a2214'); R(g, 128, 109, 12, 12, '#c8323c'); R(g, 130, 111, 8, 8, '#1a1a22'); R(g, 132, 113, 4, 4, '#c9a36b');
+      const k = (t * 3 | 0) % 4; R(g, 128 + [1, 9, 9, 1][k], 109 + [1, 1, 9, 9][k], 2, 2, '#ffffff'); // dönen top
+      for (let c = 0; c < 8; c++) for (let r = 0; r < 3; r++) R(g, 145 + c * 4, 108 + r * 5, 3, 4, (c + r) % 2 ? '#c8323c' : '#1a1a22');
+      R(g, 143, 108, 1, 14, '#e8f4f7'); R(g, 145, 123, 32, 1, '#e8f4f7');
+      R(g, 166, 120, 3, 2, '#fcdf4b'); R(g, 170, 119, 3, 2, '#5b8def'); R(g, 174, 120, 3, 2, '#ff7a59'); // fişler
+      R(g, 124, 126, 3, 3, C.woodD); R(g, 181, 126, 3, 3, C.woodD);
+    } },
     { id: 'chair', y: 106, draw(g) { // bilgisayar koltuğu (TV'ye dönük; oturanın sırtını örter)
       R(g, 88, 84, 16, 16, '#26242c'); R(g, 89, 85, 14, 14, '#3a3a48'); R(g, 90, 86, 12, 2, '#55556a'); // sırtlık
       R(g, 85, 94, 3, 6, '#26242c'); R(g, 104, 94, 3, 6, '#26242c'); // kolçaklar
@@ -598,16 +607,17 @@ const admin = makeScene({
       R(g, 88, 106, 16, 1, C.metal); R(g, 87, 106, 2, 2, '#1a1a24'); R(g, 95, 106, 2, 2, '#1a1a24'); R(g, 103, 106, 2, 2, '#1a1a24'); // tekerlekler
     } },
   ],
-  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10]],
+  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18]],
   doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
   spots: [
     { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'İstatistikler' },
     { id: 'home', x: 96, y: 128, hit: [78, 126, 36, 18], label: () => 'Evime dön' },
     { id: 'sit', group: 'chair', x: 96, y: 114, hit: [84, 82, 24, 26], label: () => 'Koltuğa otur' },
     { id: 'pc', x: 30, y: 72, hit: [6, 46, 48, 22], label: () => 'Bilgisayar' },
+    { id: 'roulette', x: 154, y: 98, hit: [120, 100, 68, 30], label: () => 'Rulet oyna' },
   ],
   seats: [{ x: 96, y: 101, pose: 'back', group: 'chair' }],
-  lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }],
+  lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }, { x: 154, y: 112, r: 40, a: 0.7, color: '255,210,140' }],
 });
 
 export const SCENES = { salon, somine, balkon, hobi, yatak, mutfak, admin };

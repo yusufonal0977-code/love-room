@@ -2,11 +2,14 @@
 //
 // Giriş: menünün alt bağlantılarındaki "Bekarlar için" → şifre. Şifre kodda değil, veritabanı kurallarındadır:
 // admins/{uid} yalnızca doğru şifre yazılırsa kabul edilir. Şifreyi bilen herkes admin olabilir.
+// Tek ortak oda: şifreyi giren herkes aynı admin odasında buluşur (her çiftin evinden girilir ama konumlar ortaktır).
+//   admin/presence/{uid} = { x, y, dir, moving, seat, name, look, side, ts }   odadaki adminler (çıkınca/kopunca silinir)
 // Sayaçlar (her kullanıcı kendi kaydını yazar, yalnızca adminler okur):
 //   metrics/active/{YYYY-MM-DD}/{uid} = true   o gün evine giren kullanıcılar (UTC günü)
 //   metrics/online/{uid} = zaman               son 2 dakikada görülenler = şu an çevrimiçi
 import { h, openSheet, toast, loadImg } from '../ui.js';
-import { db, get, ref, set, serverTimestamp, now } from '../fb.js';
+import { db, get, ref, set, remove, onValue, onDisconnect, serverTimestamp, now } from '../fb.js';
+import { createRoulette } from './roulette.js';
 import { t, locale } from '../i18n.js';
 
 const DAY = 86_400_000;
@@ -58,6 +61,45 @@ export function statsScreen(s) {
 export function createAdmin(ctx) {
   const { uid } = ctx;
   let timer = null, last = null;
+  const roulette = createRoulette(ctx);
+
+  // ---------- Ortak oda: diğer adminlerin konumu ----------
+  const meRef = ref(db, `admin/presence/${uid}`);
+  let others = {}, stopPres = null, sendTimer = null, lastSent = '';
+  const shown = new Map(); // uid -> yumuşatılmış konum
+  function startPresence() {
+    stopPres?.();
+    onDisconnect(meRef).remove().catch(() => {});
+    stopPres = onValue(ref(db, 'admin/presence'), (sn) => { others = sn.val() || {}; delete others[uid]; }, () => {});
+    const send = () => {
+      const m = ctx.game.me;
+      if (m.scene !== 'admin') return;
+      const p = { x: Math.round(m.x), y: Math.round(m.y), dir: m.dir, moving: !!m.moving, seat: m.seat, name: ctx.myName(), look: ctx.myLook(), side: ctx.mySide() };
+      const key = JSON.stringify(p);
+      if (key !== lastSent) { lastSent = key; set(meRef, { ...p, ts: serverTimestamp() }).catch(() => {}); }
+    };
+    sendTimer = setInterval(send, 120);
+  }
+  function stopPresence() {
+    clearInterval(sendTimer); sendTimer = null; stopPres?.(); stopPres = null; others = {}; shown.clear(); lastSent = '';
+    remove(meRef).catch(() => {});
+  }
+  /** Oyunun her karede çizdiği ek karakterler: odadaki diğer adminler (partner zaten kendi kanalından çizilir). */
+  let lastT = performance.now();
+  function extras() {
+    const n = performance.now(), dt = Math.min(0.1, (n - lastT) / 1000); lastT = n;
+    const out = [];
+    for (const [id, p] of Object.entries(others)) {
+      if (!p || id === ctx.partnerUid()) continue;
+      let q = shown.get(id);
+      if (!q || Math.hypot(q.x - p.x, q.y - p.y) > 60) { q = { x: p.x, y: p.y, t: 0 }; shown.set(id, q); }
+      q.x += (p.x - q.x) * Math.min(1, dt * 10); q.y += (p.y - q.y) * Math.min(1, dt * 10);
+      if (p.moving) q.t += dt;
+      const seat = p.seat >= 0;
+      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name });
+    }
+    return out;
+  }
 
   async function login(given) {
     // Büyük/küçük harf fark etmez: kurallardaki şifre küçük harfle yazılı, girileni de küçültüp gönderiyoruz
@@ -109,7 +151,9 @@ export function createAdmin(ctx) {
   }
   function onScene(scene) {
     clearInterval(timer); timer = null;
-    if (scene !== 'admin') { ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); return; }
+    roulette.onScene(scene);
+    if (scene !== 'admin') { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); return; }
+    startPresence();
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
   }
@@ -128,5 +172,5 @@ export function createAdmin(ctx) {
     b.append(last ? h('img', { class: 'bigphoto', src: last, alt: '' }) : h('p', {}, t('Yükleniyor…')), h('button', { onclick: async () => { await refresh(); b.querySelector('img')?.setAttribute('src', last); } }, 'Yenile'));
   }
 
-  return { enter, onScene, openTv, openPc };
+  return { enter, onScene, openTv, openPc, extras, openRoulette: () => roulette.open(), stop: () => { stopPresence(); roulette.stop(); } };
 }

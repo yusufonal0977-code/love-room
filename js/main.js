@@ -374,6 +374,7 @@ async function enterWorld(rid, fresh = false) {
     onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
+    getExtras: () => adminRoom?.extras() || [],
     canEnter: (to) => to !== 'yatak' || bedOpen(),
     onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır. Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız')); },
@@ -429,6 +430,7 @@ async function enterWorld(rid, fresh = false) {
       fridge: () => kitchen.open(),
       admintv: () => adminRoom.openTv(),
       pc: () => adminRoom.openPc(),
+      roulette: () => adminRoom.openRoulette(),
       home: () => game.goto('salon', 96, 120),
       pool: () => games.openPool(),
       flower: () => care.openFlower(),
@@ -563,7 +565,7 @@ async function enterWorld(rid, fresh = false) {
   async function deleteEverything() {
     toast(t('Siliniyor…'), 8000);
     call.setPartner(null);
-    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); sleep.stop(); game.stop(); live.leave();
+    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); sleep.stop(); adminRoom.stop(); game.stop(); live.leave();
     const r = room.data;
     const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
     if (sc) await remove(ref(db, `showcase/${sc}`)).catch(() => {});

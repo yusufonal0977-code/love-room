@@ -63,6 +63,33 @@
           ".validate": "newData.isNumber()"
         }
       }
+    },
+    "admin": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "presence": {
+        "$uid": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists() && auth.uid === $uid"
+        }
+      },
+      "coins": {
+        "$uid": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists() && auth.uid === $uid"
+        }
+      },
+      "roulette": {
+        "bets": {
+          "$round": {
+            "$uid": {
+              ".write": "auth != null && root.child('admins').child(auth.uid).exists() && auth.uid === $uid"
+            }
+          }
+        },
+        "results": {
+          "$round": {
+            ".write": "auth != null && root.child('admins').child(auth.uid).exists() && !data.exists() && newData.isNumber() && newData.val() >= 0 && newData.val() <= 36"
+          }
+        }
+      }
     }
   }
 }

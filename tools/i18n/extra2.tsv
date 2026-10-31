@@ -236,3 +236,28 @@ Klasik 8 top: biri düzleri, biri çizgilileri sokar; 8 en son. Partnerinle ya d
 # v0.24: admin odası
 Koltuğa otur	Sit in the chair	Sentarse en la silla	Auf den Stuhl setzen	S'asseoir sur la chaise	Sentar na cadeira	اجلس على الكرسي
 Bilgisayar	Computer	Ordenador	Computer	Ordinateur	Computador	الحاسوب
+# v0.25: ortak admin odası, rulet
+Rulet	Roulette	Ruleta	Roulette	Roulette	Roleta	الروليت
+Rulet oyna	Play roulette	Jugar a la ruleta	Roulette spielen	Jouer à la roulette	Jogar roleta	العب الروليت
+Kasa	Bank	Caja	Kasse	Caisse	Caixa	الخزنة
+Rulet: bahisler açık, {s} sn	Roulette: bets open, {s}s	Ruleta: apuestas abiertas, {s} s	Roulette: Einsätze offen, {s} s	Roulette : mises ouvertes, {s} s	Roleta: apostas abertas, {s} s	الروليت: الرهانات مفتوحة، {s} ث
+Rulet: çark dönüyor	Roulette: wheel spinning	Ruleta: la rueda gira	Roulette: Rad dreht sich	Roulette : la roue tourne	Roleta: a roda está girando	الروليت: العجلة تدور
+Rulet: sonuç {n}	Roulette: result {n}	Ruleta: resultado {n}	Roulette: Ergebnis {n}	Roulette : résultat {n}	Roleta: resultado {n}	الروليت: النتيجة {n}
+Son sonuç: {n}	Last result: {n}	Último resultado: {n}	Letztes Ergebnis: {n}	Dernier résultat : {n}	Último resultado: {n}	آخر نتيجة: {n}
+Kazandın: {n} fiş	You won: {n} chips	Ganaste: {n} fichas	Gewonnen: {n} Chips	Tu as gagné : {n} jetons	Você ganhou: {n} fichas	ربحت: {n} رقاقة
+Bu tur kaybettin. Sonuç: {n}	You lost this round. Result: {n}	Perdiste esta ronda. Resultado: {n}	Diese Runde verloren. Ergebnis: {n}	Manche perdue. Résultat : {n}	Você perdeu esta rodada. Resultado: {n}	خسرت هذه الجولة. النتيجة: {n}
+Bahisler kapandı, bir sonraki turu bekle.	Bets are closed, wait for the next round.	Apuestas cerradas, espera la siguiente ronda.	Einsätze geschlossen, warte auf die nächste Runde.	Mises fermées, attends la prochaine manche.	Apostas encerradas, espere a próxima rodada.	أُغلقت الرهانات، انتظر الجولة التالية.
+Yeterli fişin yok.	Not enough chips.	No tienes fichas suficientes.	Nicht genug Chips.	Pas assez de jetons.	Fichas insuficientes.	ليست لديك رقاقات كافية.
+Fişin: {n}	Your chips: {n}	Tus fichas: {n}	Deine Chips: {n}	Tes jetons : {n}	Suas fichas: {n}	رقاقاتك: {n}
+Bahislerimi geri al	Take back my bets	Retirar mis apuestas	Meine Einsätze zurücknehmen	Reprendre mes mises	Retirar minhas apostas	استرجع رهاناتي
+Fişim bitti: 500 fiş al	Out of chips: take 500	Sin fichas: toma 500	Keine Chips mehr: 500 nehmen	Plus de jetons : prends-en 500	Sem fichas: pegue 500	نفدت رقاقاتك: خذ 500
+Son sonuçlar: {list}	Last results: {list}	Últimos resultados: {list}	Letzte Ergebnisse: {list}	Derniers résultats : {list}	Últimos resultados: {list}	آخر النتائج: {list}
+Bu turun bahisleri: {list}	Bets this round: {list}	Apuestas de esta ronda: {list}	Einsätze dieser Runde: {list}	Mises de la manche : {list}	Apostas desta rodada: {list}	رهانات هذه الجولة: {list}
+Çift	Even	Par	Gerade	Pair	Par	زوجي
+Tek	Odd	Impar	Ungerade	Impair	Ímpar	فردي
+Kırmızı	Red	Rojo	Rot	Rouge	Vermelho	أحمر
+Siyah	Black	Negro	Schwarz	Noir	Preto	أسود
+Bahisler açık: {s} sn	Bets open: {s}s	Apuestas abiertas: {s} s	Einsätze offen: {s} s	Mises ouvertes : {s} s	Apostas abertas: {s} s	الرهانات مفتوحة: {s} ث
+Çark dönüyor…	The wheel is spinning…	La rueda gira…	Das Rad dreht sich…	La roue tourne…	A roda está girando…	العجلة تدور…
+Sonuç: {n}	Result: {n}	Resultado: {n}	Ergebnis: {n}	Résultat : {n}	Resultado: {n}	النتيجة: {n}
+Sayıya 35 katı, renk/tek-çift/yarım 1 katı, düzine ve sütun 2 katı kazandırır. Sanal fişle oynanır; gerçek para yoktur.	A number pays 35 to 1, colour/odd-even/halves 1 to 1, dozens and columns 2 to 1. Played with virtual chips; no real money.	Un número paga 35 a 1, color/par-impar/mitades 1 a 1, docenas y columnas 2 a 1. Se juega con fichas virtuales; sin dinero real.	Eine Zahl zahlt 35:1, Farbe/Gerade-Ungerade/Hälften 1:1, Dutzende und Kolonnen 2:1. Mit virtuellen Chips; kein echtes Geld.	Un numéro paie 35 contre 1, couleur/pair-impair/moitiés 1 contre 1, douzaines et colonnes 2 contre 1. Jetons virtuels ; pas d'argent réel.	Um número paga 35 para 1, cor/par-ímpar/metades 1 para 1, dúzias e colunas 2 para 1. Fichas virtuais; sem dinheiro real.	الرقم يربح 35 ضعفًا، واللون/الفردي-الزوجي/النصفان ضعفًا واحدًا، والدزينة والعمود ضعفين. اللعب برقاقات افتراضية؛ لا مال حقيقي.
