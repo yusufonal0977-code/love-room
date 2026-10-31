@@ -779,5 +779,6 @@ export default {
  "Kolaj": "كولاج",
  "Dinçlik": "النشاط",
  "Dinlendin ✨ Enerjin tamamen doldu.": "ارتحت ✨ طاقتك ممتلئة.",
- "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "تشعر بالنعاس 😴 خذ قيلولة قصيرة في غرفة النوم."
+ "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "تشعر بالنعاس 😴 خذ قيلولة قصيرة في غرفة النوم.",
+ "Bekarlar için": "للعزّاب"
 };

@@ -779,5 +779,6 @@ export default {
  "Kolaj": "Collage",
  "Dinçlik": "Energy",
  "Dinlendin ✨ Enerjin tamamen doldu.": "You are rested ✨ Your energy is full.",
- "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "You are sleepy 😴 Take a short nap in the bedroom."
+ "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "You are sleepy 😴 Take a short nap in the bedroom.",
+ "Bekarlar için": "For singles"
 };

@@ -525,12 +525,8 @@ async function enterWorld(rid, fresh = false) {
   $('inviteChip').onclick = $('menuBtn').onclick;
   $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı 💌')); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
-  // Gizli admin girişi: menü başlığına 2 sn içinde 5 kez dokun
-  let adminTaps = [];
-  $('menu').querySelector('h3').onclick = () => {
-    const n = Date.now(); adminTaps = [...adminTaps.filter((x) => n - x < 2000), n];
-    if (adminTaps.length >= 5) { adminTaps = []; $('menu').hidden = true; adminRoom.enter(); }
-  };
+  // Gizli admin girişi: menünün alt bağlantılarındaki "Bekarlar için" → şifre → admin odası
+  $('singlesLink').onclick = (e) => { e.preventDefault(); $('menu').hidden = true; adminRoom.enter(); };
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
 
   // ---------- Verilerimi sil ----------

@@ -1,6 +1,6 @@
 // Admin odası: şifreyle girilen gizli istatistik odası. TV'de günlük/haftalık sayılar.
 //
-// Giriş: menüdeki "Bizim Ev" başlığına 2 sn içinde 5 kez dokun → şifre. Şifre kodda değil, veritabanı kurallarındadır:
+// Giriş: menünün alt bağlantılarındaki "Bekarlar için" → şifre. Şifre kodda değil, veritabanı kurallarındadır:
 // admins/{uid} yalnızca doğru şifre yazılırsa kabul edilir. Şifreyi bilen herkes admin olabilir.
 // Sayaçlar (her kullanıcı kendi kaydını yazar, yalnızca adminler okur):
 //   metrics/active/{YYYY-MM-DD}/{uid} = true   o gün evine giren kullanıcılar (UTC günü)

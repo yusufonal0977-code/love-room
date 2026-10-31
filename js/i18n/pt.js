@@ -779,5 +779,6 @@ export default {
  "Kolaj": "Colagem",
  "Dinçlik": "Energia",
  "Dinlendin ✨ Enerjin tamamen doldu.": "Descansou ✨ Sua energia está cheia.",
- "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "Você está com sono 😴 Tire um cochilo no quarto."
+ "Uykun geldi 😴 Yatak odasında kısa bir şekerleme yapabilirsin.": "Você está com sono 😴 Tire um cochilo no quarto.",
+ "Bekarlar için": "Para solteiros"
 };
