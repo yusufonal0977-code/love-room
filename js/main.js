@@ -37,6 +37,10 @@ function openLegal(id) {
     h('a', { class: 'small', href: `legal.html#${doc.id}`, target: '_blank', rel: 'noopener' }, t('Ayrı sayfada aç')),
   );
 }
+// Pencereleri kapatma (✕, boşluğa dokunma, Esc): giriş ekranında da çalışsın diye en başta bağlanır
+document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
+document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
+addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
 document.addEventListener('click', (e) => {
   const a = e.target.closest?.('a[href^="#"]');
   if (!a || !legalById(a.getAttribute('href').slice(1))) return;
@@ -576,9 +580,6 @@ async function enterWorld(rid, fresh = false) {
     alert(t('Tüm verilerin silindi. Get Love Room’u denediğin için teşekkürler 💛'));
     location.href = location.pathname;
   }
-  document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
-  document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
-  addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
 
   function fullscreen() {
     $('menu').hidden = true;
