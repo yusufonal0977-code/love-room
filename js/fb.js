@@ -3,6 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import {
   getAuth,
   GoogleAuthProvider,
+  linkWithPopup,
   onAuthStateChanged,
   signInAnonymously,
   signInWithPopup,
@@ -41,6 +42,8 @@ export const now = () => Date.now() + offset;
 
 export const loginGoogle = () => signInWithPopup(auth, new GoogleAuthProvider());
 export const loginGuest = () => signInAnonymously(auth);
+/** İsimle açılmış hesabı Google'a bağlar: kullanıcı kimliği aynı kalır, ev ve tüm veriler yerinde durur. */
+export const linkGoogle = () => linkWithPopup(auth.currentUser, new GoogleAuthProvider());
 export const logout = () => signOut(auth);
 
 /** İlk oturum durumunu bekler (oturum tarayıcıda hatırlanır). */

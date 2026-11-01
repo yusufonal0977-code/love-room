@@ -893,5 +893,10 @@ export default {
  "{name} kazandı. Kazancın: {n} fiş": "{name} won. You get {n} chips",
  "{name} kazandı. Bu yarışı kaybettin.": "{name} won. You lost this race.",
  "Bu yarışın bahisleri: {list}": "Bets on this race: {list}",
- "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "The number by each horse shows how many times your stake comes back if it wins. Odds change every race. Played with virtual chips; no real money."
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "The number by each horse shows how many times your stake comes back if it wins. Odds change every race. Played with virtual chips; no real money.",
+ "Google hesabımı bağla": "Link my Google account",
+ "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "Your account only exists in this browser right now. If you link it, your home and data stay as they are, and you can sign in from other devices too.",
+ "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "Your account is now linked to Google. You can now sign in with Google on other devices too.",
+ "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "This Google account is already used by another Get Love Room account. Choose a different Google account.",
+ "Google hesabı bağlanamadı. Tekrar dene.": "Couldn't link the Google account. Try again."
 };

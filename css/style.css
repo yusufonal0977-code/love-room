@@ -491,3 +491,7 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .horses .hrow small { color: #fcdf4b; }
 .horses .hrow b { background: #fcdf4b; color: #1a1608; font-size: 11px; padding: 0 5px; border-radius: 6px; }
 .horses.closed .hlist { opacity: .55; }
+
+/* Menü: Google hesabını bağlama */
+#linkBox button { width: 100%; }
+#linkBox p { margin: 6px 0 0; }

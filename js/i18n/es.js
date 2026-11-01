@@ -893,5 +893,10 @@ export default {
  "{name} kazandı. Kazancın: {n} fiş": "Ganó {name}. Recibes {n} fichas",
  "{name} kazandı. Bu yarışı kaybettin.": "Ganó {name}. Perdiste esta carrera.",
  "Bu yarışın bahisleri: {list}": "Apuestas de esta carrera: {list}",
- "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "El número de cada caballo indica cuántas veces recuperas tu apuesta si gana. Las cuotas cambian en cada carrera. Fichas virtuales; sin dinero real."
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "El número de cada caballo indica cuántas veces recuperas tu apuesta si gana. Las cuotas cambian en cada carrera. Fichas virtuales; sin dinero real.",
+ "Google hesabımı bağla": "Vincular mi cuenta de Google",
+ "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "Ahora tu cuenta solo está en este navegador. Si la vinculas, tu casa y tus datos se quedan igual y también podrás entrar desde otros dispositivos.",
+ "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "Tu cuenta ya está vinculada a Google. Ahora también puedes entrar con Google desde otros dispositivos.",
+ "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "Esta cuenta de Google ya se usa en otra cuenta de Get Love Room. Elige otra cuenta de Google.",
+ "Google hesabı bağlanamadı. Tekrar dene.": "No se pudo vincular la cuenta de Google. Inténtalo de nuevo."
 };

@@ -1,5 +1,5 @@
 // Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
-import { firstUser, loginGoogle, loginGuest, logout, now } from './fb.js';
+import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
@@ -537,6 +537,7 @@ async function enterWorld(rid, fresh = false) {
   $('menuBtn').onclick = () => {
     $('inviteLink').textContent = `${APP_URL}?davet=${room.data?.info?.invite}`;
     $('menuInvite').hidden = !!partnerUid();
+    $('linkBox').hidden = !auth.currentUser?.isAnonymous;
     $('zoomBtn').textContent = t(game.zoom === 'cover' ? 'Görünüm: yakın (tüm odayı göster)' : 'Görünüm: tüm oda (yakınlaştır)');
     $('menu').hidden = false;
   };
@@ -550,6 +551,18 @@ async function enterWorld(rid, fresh = false) {
   // Giriş ekranından gelindiyse: giriş yapıp evine girince şifreyle admin odasına geçer
   if (pendingAdmin) { const pw = pendingAdmin; pendingAdmin = null; setTimeout(() => adminRoom.enter(pw), 800); }
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
+  $('linkGoogleBtn').onclick = async () => {
+    try {
+      await linkGoogle();
+      $('linkBox').hidden = true;
+      toast(t('Hesabın Google\'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.'), 5000);
+    } catch (e) {
+      console.warn(e);
+      if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+      if (e.code === 'auth/credential-already-in-use' || e.code === 'auth/email-already-in-use') toast(t('Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.'), 6000);
+      else toast(t('Google hesabı bağlanamadı. Tekrar dene.'), 4000);
+    }
+  };
 
   // ---------- Verilerimi sil ----------
   function confirmDelete() {

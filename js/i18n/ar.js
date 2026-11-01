@@ -893,5 +893,10 @@ export default {
  "{name} kazandı. Kazancın: {n} fiş": "فاز {name}. ربحت {n} رقاقة",
  "{name} kazandı. Bu yarışı kaybettin.": "فاز {name}. خسرت هذا السباق.",
  "Bu yarışın bahisleri: {list}": "رهانات هذا السباق: {list}",
- "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "يوضح الرقم بجانب كل حصان كم ضعفًا يعود من رهانك إذا فاز. تتغير الاحتمالات في كل سباق. رقاقات افتراضية؛ لا مال حقيقي."
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "يوضح الرقم بجانب كل حصان كم ضعفًا يعود من رهانك إذا فاز. تتغير الاحتمالات في كل سباق. رقاقات افتراضية؛ لا مال حقيقي.",
+ "Google hesabımı bağla": "ربط حسابي على Google",
+ "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "حسابك موجود الآن في هذا المتصفح فقط. إذا ربطته، سيبقى منزلك وبياناتك كما هي، ويمكنك الدخول من أجهزة أخرى أيضًا.",
+ "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "تم ربط حسابك بـ Google. يمكنك الآن الدخول عبر Google من أجهزة أخرى أيضًا.",
+ "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "حساب Google هذا مستخدم بالفعل في حساب آخر على Get Love Room. اختر حساب Google آخر.",
+ "Google hesabı bağlanamadı. Tekrar dene.": "تعذر ربط حساب Google. حاول مرة أخرى."
 };
