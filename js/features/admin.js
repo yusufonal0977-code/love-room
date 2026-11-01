@@ -16,6 +16,7 @@ import { createMatches } from './matches.js';
 import { createAdminVoice } from './adminvoice.js';
 import { createAdminTv } from './admintv.js';
 import { createPoolBets } from './poolbet.js';
+import { createHorses } from './horses.js';
 import { t, locale } from '../i18n.js';
 
 const DAY = 86_400_000;
@@ -74,6 +75,7 @@ export function createAdmin(ctx) {
   const api = {};
   const roulette = createRoulette(ctx);
   const poolBets = createPoolBets(ctx);
+  const horses = createHorses(ctx);
   const matches = createMatches();
   const voice = createAdminVoice(ctx);
   const said = {}; // uid -> { text, until } başın üstündeki sohbet balonu
@@ -189,6 +191,7 @@ export function createAdmin(ctx) {
   function onScene(scene) {
     clearInterval(timer); timer = null;
     roulette.onScene(scene);
+    horses.onScene(scene);
     if (scene === 'admin') poolBets.start(); else poolBets.stop();
     tv.onScene(scene);
     if (scene !== 'admin') { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); return; }
@@ -208,6 +211,6 @@ export function createAdmin(ctx) {
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); } });
+  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
   return api;
 }

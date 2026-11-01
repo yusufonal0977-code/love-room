@@ -598,6 +598,13 @@ const admin = makeScene({
   },
   props: [
     { id: 'pool', y: 96, draw(g) { poolTable(g, 118, 72); } }, // koltuğun sağında
+    { id: 'horses', y: 130, draw(g, { t }) { // mini at yarışı masası: toprak pist, kulvarlar, koşan atlar, bitiş çizgisi
+      R(g, 8, 104, 60, 22, '#5a3420'); R(g, 10, 106, 56, 18, '#2f8f5a'); R(g, 11, 108, 54, 14, '#c9a36b');
+      for (let i = 1; i < 3; i++) R(g, 11, 108 + i * 5 - 1, 54, 1, '#a8824f');
+      for (let y = 108; y < 122; y += 2) R(g, 60 + ((y / 2) % 2), y, 1, 2, '#fff6e8'); // bitiş
+      ['#c8742c', '#fcdf4b', '#5b8def'].forEach((c, i) => { const x = 13 + (((t * (6 + i * 2.3) + i * 11) % 42) | 0), y = 109 + i * 5; R(g, x, y, 4, 2, c); R(g, x + 3, y - 1, 2, 2, c); R(g, x, y + 2, 1, 1, '#26160f'); R(g, x + 3, y + 2, 1, 1, '#26160f'); });
+      R(g, 11, 126, 3, 3, C.woodD); R(g, 62, 126, 3, 3, C.woodD);
+    } },
     { id: 'roulette', y: 128, draw(g, { t }) { // rulet masası: ahşap kenar, yeşil çuha, solda çark, sağda sayı alanı
       R(g, 122, 104, 64, 22, '#5a3420'); R(g, 124, 106, 60, 18, '#1f8a4c'); R(g, 124, 106, 60, 1, '#3fae6a');
       R(g, 127, 108, 14, 14, '#3a2214'); R(g, 128, 109, 12, 12, '#c8323c'); R(g, 130, 111, 8, 8, '#1a1a22'); R(g, 132, 113, 4, 4, '#c9a36b');
@@ -615,7 +622,7 @@ const admin = makeScene({
       R(g, 88, 106, 16, 1, C.metal); R(g, 87, 106, 2, 2, '#1a1a24'); R(g, 95, 106, 2, 2, '#1a1a24'); R(g, 103, 106, 2, 2, '#1a1a24'); // tekerlekler
     } },
   ],
-  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18], [118, 78, 50, 18]],
+  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18], [118, 78, 50, 18], [8, 110, 60, 18]],
   doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
   spots: [
     { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'TV kumandası' },
@@ -624,9 +631,10 @@ const admin = makeScene({
     { id: 'pc', x: 30, y: 72, hit: [6, 46, 48, 22], label: () => 'Bilgisayar' },
     { id: 'roulette', x: 154, y: 100, hit: [120, 102, 68, 28], label: () => 'Rulet oyna' },
     { id: 'adminpool', x: 143, y: 72, hit: [116, 70, 54, 28], label: () => 'Bilardo oyna' },
+    { id: 'horses', x: 38, y: 100, hit: [6, 102, 64, 28], label: () => 'At yarışı' },
   ],
   seats: [{ x: 96, y: 101, pose: 'back', group: 'chair' }],
-  lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }, { x: 154, y: 112, r: 40, a: 0.7, color: '255,210,140' }],
+  lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }, { x: 154, y: 112, r: 40, a: 0.7, color: '255,210,140' }, { x: 38, y: 114, r: 32, a: 0.6, color: '255,210,140' }],
 });
 
 export const SCENES = { salon, somine, balkon, hobi, yatak, mutfak, admin };

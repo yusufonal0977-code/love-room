@@ -886,5 +886,12 @@ export default {
  "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "The game was cancelled, your bet came back: {n} chips",
  "Bilardo bahsini kazandın: {n} fiş": "You won the pool bet: {n} chips",
  "Bahsin geri geldi: {n} fiş": "Your bet came back: {n} chips",
- "Bilardo bahsini kaybettin.": "You lost the pool bet."
+ "Bilardo bahsini kaybettin.": "You lost the pool bet.",
+ "At yarışı": "Horse race",
+ "Atlar koşuyor…": "The horses are running…",
+ "Kazanan: {name}": "Winner: {name}",
+ "{name} kazandı. Kazancın: {n} fiş": "{name} won. You get {n} chips",
+ "{name} kazandı. Bu yarışı kaybettin.": "{name} won. You lost this race.",
+ "Bu yarışın bahisleri: {list}": "Bets on this race: {list}",
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "The number by each horse shows how many times your stake comes back if it wins. Odds change every race. Played with virtual chips; no real money."
 };

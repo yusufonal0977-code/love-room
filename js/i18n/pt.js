@@ -886,5 +886,12 @@ export default {
  "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "Jogo cancelado, sua aposta voltou: {n} fichas",
  "Bilardo bahsini kazandın: {n} fiş": "Você ganhou a aposta da sinuca: {n} fichas",
  "Bahsin geri geldi: {n} fiş": "Sua aposta voltou: {n} fichas",
- "Bilardo bahsini kaybettin.": "Você perdeu a aposta da sinuca."
+ "Bilardo bahsini kaybettin.": "Você perdeu a aposta da sinuca.",
+ "At yarışı": "Corrida de cavalos",
+ "Atlar koşuyor…": "Os cavalos estão correndo…",
+ "Kazanan: {name}": "Vencedor: {name}",
+ "{name} kazandı. Kazancın: {n} fiş": "{name} venceu. Você recebe {n} fichas",
+ "{name} kazandı. Bu yarışı kaybettin.": "{name} venceu. Você perdeu esta corrida.",
+ "Bu yarışın bahisleri: {list}": "Apostas desta corrida: {list}",
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "O número de cada cavalo mostra quantas vezes sua aposta volta se ele vencer. As odds mudam a cada corrida. Fichas virtuais; sem dinheiro real."
 };

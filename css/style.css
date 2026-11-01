@@ -422,7 +422,7 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .roulette .rtop { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center; }
 .roulette .rwheel { width: 200px; height: 200px; }
 .roulette .rinfo { display: flex; flex-direction: column; gap: 6px; min-width: 200px; flex: 1; }
-.roulette .rstatus { font-weight: 700; color: #fcdf4b; }
+.roulette .rstatus, .horses .rstatus { font-weight: 700; color: #fcdf4b; }
 .roulette .rtable { display: grid; grid-template-columns: repeat(14, 1fr); gap: 2px; margin-top: 10px; }
 .roulette .rtable .zero { grid-row: span 3; }
 .roulette .rrow { display: flex; gap: 2px; margin-top: 2px; }
@@ -432,7 +432,7 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .roulette .rcell.black { background: #1a1a22; }
 .roulette .rcell.out { background: #176b3a; }
 .roulette .rchip { position: absolute; right: 1px; top: 1px; font-style: normal; font-size: 9px; padding: 0 3px; border-radius: 6px; background: #fcdf4b; color: #1a1608; }
-.roulette .rchipbtn.sel, .poolbets .rchipbtn.sel { background: #fcdf4b; border-color: #fcdf4b; color: #1a1608; font-weight: 700; }
+.roulette .rchipbtn.sel, .poolbets .rchipbtn.sel, .horses .rchipbtn.sel { background: #fcdf4b; border-color: #fcdf4b; color: #1a1608; font-weight: 700; }
 .roulette.closed .rtable, .roulette.closed .rrow { opacity: .55; }
 
 body:has(.modal:not([hidden])) .casino-board, body:has(.modal:not([hidden])) .admintvbtns, body:has(.admscreen.full:not([hidden])) .admintvbtns, body:has(.admscreen.full:not([hidden])) .casino-board { display: none; } /* pencere açıkken kasa tablosu gizlenir */
@@ -480,3 +480,14 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .poolbets { margin-top: 10px; padding: 10px; border: 1px solid #2f6b47; border-radius: 8px; display: flex; flex-direction: column; gap: 6px; }
 .poolbets b { color: #fcdf4b; }
 .poolbets p { margin: 0; }
+
+/* Admin at yarışı */
+.horses .hrace { width: 100%; aspect-ratio: 480 / 216; border-radius: 8px; display: block; }
+.horses .hchips { justify-content: center; margin: 4px 0; }
+.horses .hlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; }
+.horses .hrow { display: flex; align-items: center; gap: 8px; padding: 8px 10px; font-size: 14px; }
+.horses .hrow i { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(255,255,255,.3); flex: none; }
+.horses .hrow span { flex: 1; text-align: left; }
+.horses .hrow small { color: #fcdf4b; }
+.horses .hrow b { background: #fcdf4b; color: #1a1608; font-size: 11px; padding: 0 5px; border-radius: 6px; }
+.horses.closed .hlist { opacity: .55; }

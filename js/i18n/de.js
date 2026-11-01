@@ -886,5 +886,12 @@ export default {
  "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "Spiel abgebrochen, dein Einsatz kam zurück: {n} Chips",
  "Bilardo bahsini kazandın: {n} fiş": "Billardwette gewonnen: {n} Chips",
  "Bahsin geri geldi: {n} fiş": "Dein Einsatz kam zurück: {n} Chips",
- "Bilardo bahsini kaybettin.": "Billardwette verloren."
+ "Bilardo bahsini kaybettin.": "Billardwette verloren.",
+ "At yarışı": "Pferderennen",
+ "Atlar koşuyor…": "Die Pferde laufen…",
+ "Kazanan: {name}": "Sieger: {name}",
+ "{name} kazandı. Kazancın: {n} fiş": "{name} hat gewonnen. Du bekommst {n} Chips",
+ "{name} kazandı. Bu yarışı kaybettin.": "{name} hat gewonnen. Du hast dieses Rennen verloren.",
+ "Bu yarışın bahisleri: {list}": "Einsätze in diesem Rennen: {list}",
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "Die Zahl bei jedem Pferd zeigt, wie oft dein Einsatz zurückkommt, wenn es gewinnt. Quoten ändern sich jedes Rennen. Virtuelle Chips; kein echtes Geld."
 };

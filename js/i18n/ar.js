@@ -886,5 +886,12 @@ export default {
  "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "أُلغيت اللعبة وعاد رهانك: {n} رقاقة",
  "Bilardo bahsini kazandın: {n} fiş": "ربحت رهان البلياردو: {n} رقاقة",
  "Bahsin geri geldi: {n} fiş": "عاد رهانك: {n} رقاقة",
- "Bilardo bahsini kaybettin.": "خسرت رهان البلياردو."
+ "Bilardo bahsini kaybettin.": "خسرت رهان البلياردو.",
+ "At yarışı": "سباق الخيل",
+ "Atlar koşuyor…": "الخيول تركض…",
+ "Kazanan: {name}": "الفائز: {name}",
+ "{name} kazandı. Kazancın: {n} fiş": "فاز {name}. ربحت {n} رقاقة",
+ "{name} kazandı. Bu yarışı kaybettin.": "فاز {name}. خسرت هذا السباق.",
+ "Bu yarışın bahisleri: {list}": "رهانات هذا السباق: {list}",
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "يوضح الرقم بجانب كل حصان كم ضعفًا يعود من رهانك إذا فاز. تتغير الاحتمالات في كل سباق. رقاقات افتراضية؛ لا مال حقيقي."
 };

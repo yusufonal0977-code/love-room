@@ -886,5 +886,12 @@ export default {
  "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "Partie annulée, ta mise t'est rendue : {n} jetons",
  "Bilardo bahsini kazandın: {n} fiş": "Tu as gagné le pari de billard : {n} jetons",
  "Bahsin geri geldi: {n} fiş": "Ta mise t'est rendue : {n} jetons",
- "Bilardo bahsini kaybettin.": "Tu as perdu le pari de billard."
+ "Bilardo bahsini kaybettin.": "Tu as perdu le pari de billard.",
+ "At yarışı": "Course de chevaux",
+ "Atlar koşuyor…": "Les chevaux courent…",
+ "Kazanan: {name}": "Gagnant : {name}",
+ "{name} kazandı. Kazancın: {n} fiş": "{name} a gagné. Tu reçois {n} jetons",
+ "{name} kazandı. Bu yarışı kaybettin.": "{name} a gagné. Tu as perdu cette course.",
+ "Bu yarışın bahisleri: {list}": "Mises de cette course : {list}",
+ "Atın üstündeki oran, kazanırsa yatırdığının kaç katının döneceğini gösterir. Her yarışta oranlar değişir. Sanal fişle oynanır; gerçek para yoktur.": "Le nombre à côté de chaque cheval indique combien de fois ta mise revient s'il gagne. Les cotes changent à chaque course. Jetons virtuels ; pas d'argent réel."
 };
