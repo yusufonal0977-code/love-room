@@ -531,7 +531,7 @@ export function createGame(opts) {
   // ---------- HTML katmanı ----------
   const el = (cls) => { const d = document.createElement('div'); d.className = cls; overlay.appendChild(d); return d; };
   const tagMe = el('tag'), tagP = el('tag'), prompt = el('prompt');
-  const extraTags = new Map(); // ek karakterlerin isim etiketleri
+  const extraTags = new Map(), extraSay = new Map(); // ek karakterlerin isim etiketleri ve sohbet balonları
   const speech = { me: { el: el('speech'), until: 0 }, partner: { el: el('speech'), until: 0 } };
   // Etiketler de tam piksele oturur: kamera tam piksel kaydığı için kesirli konum titreşirdi
   const place = (node, x, y) => { node.style.left = (Math.round(x) / W) * 100 + '%'; node.style.top = (Math.round(y) / H) * 100 + '%'; };
@@ -667,13 +667,16 @@ export function createGame(opts) {
         if (x.id && x.name) { // isim etiketi
           let tg = extraTags.get(x.id);
           if (!tg) { tg = el('tag'); extraTags.set(x.id, tg); }
-          tg.textContent = x.name; tg.style.display = ''; place(tg, x.x, yy - 8); seenTags.add(x.id);
+          tg.innerHTML = `${esc(x.name)}${x.talking ? voice : ''}`; tg.style.display = ''; place(tg, x.x, yy - 8); seenTags.add(x.id);
+          let sb = extraSay.get(x.id);
+          if (x.say) { if (!sb) { sb = el('speech'); extraSay.set(x.id, sb); } sb.textContent = x.say.length > 80 ? x.say.slice(0, 78) + '…' : x.say; sb.style.display = ''; place(sb, x.x, yy - 12); }
+          else if (sb) sb.style.display = 'none';
         }
       } });
     }
     if (cat.scene === me.scene) ents.push({ y: cat.y, d: drawCat });
     ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
-    for (const [id, tg] of extraTags) if (!seenTags.has(id)) { tg.remove(); extraTags.delete(id); } // giden adminlerin etiketi
+    for (const [id, tg] of extraTags) if (!seenTags.has(id)) { tg.remove(); extraTags.delete(id); extraSay.get(id)?.remove(); extraSay.delete(id); } // giden adminlerin etiketi
     drawLighting(sc, info);
     parts.forEach((p) => { ctx.globalAlpha = Math.max(0, Math.min(1, (p.life - p.t) * 2)); ctx.drawImage(p.img, Math.round(p.x - p.img.width / 2), Math.round(p.y)); });
     ctx.globalAlpha = 1;

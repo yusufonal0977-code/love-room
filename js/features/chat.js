@@ -39,6 +39,7 @@ export function createChat(ctx) {
     text = String(text || '').trim().slice(0, 300);
     if (!text) return;
     input.value = '';
+    if (ctx.adminRoom?.active()) { await ctx.adminRoom.sendChat(text); return; } // admin odasında: ortak admin sohbeti
     await push(live.ref('chat'), { by: uid, name: ctx.myName(), side: ctx.mySide(), text, at: serverTimestamp() });
   }
 
@@ -59,5 +60,16 @@ export function createChat(ctx) {
     }
   });
 
-  return { toggle, send };
+  /** Admin sohbetinden gelen mesaj: aynı listede "Admin" etiketiyle görünür. */
+  const seenAdmin = new Set();
+  function adminMessage(m) {
+    const key = `${m.by}|${m.at}|${m.text}`;
+    if (seenAdmin.has(key)) return; seenAdmin.add(key);
+    list.append(h('div', { class: 'msg admin ' + (m.by === uid ? 'me' : 'them') },
+      h('p', { dir: 'auto' }, document.createTextNode(m.text)),
+      h('small', {}, `${t('Admin')} · ${m.name || ''} · ${fmtTime(m.at || now())}`)));
+    if (open) list.scrollTop = list.scrollHeight;
+    else if (m.by !== uid && (m.at || 0) > joinedAt) { unread++; badge(); }
+  }
+  return { toggle, send, adminMessage };
 }

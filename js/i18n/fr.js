@@ -851,5 +851,6 @@ export default {
  "Bugün": "Aujourd'hui",
  "maçlar ve oranlar": "matchs et cotes",
  "Bu gün için maç yok.": "Pas de match ce jour-là.",
- "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Les cotes sont la moyenne des bookmakers européens. Dernière mise à jour : {at}"
+ "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Les cotes sont la moyenne des bookmakers européens. Dernière mise à jour : {at}",
+ "Admin": "Admin"
 };

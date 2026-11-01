@@ -396,13 +396,14 @@ async function enterWorld(rid, fresh = false) {
   decor = createDecorUI(ctx);
   const pip = createPip(ctx);
   Object.assign(ctx, { life, draw, care });
-  createChat(ctx);
+  ctx.chat = createChat(ctx);
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
   kitchen = createKitchen(ctx);
   // Uyku ihtiyacı yalnızca yatak odası açıldıktan sonra; yatakta uzanınca dolar
   sleep = createSleep(ctx, { enabled: bedOpen, lying: () => game.me.scene === 'yatak' && game.me.seat >= 0 });
   adminRoom = createAdmin(ctx);
+  ctx.adminRoom = adminRoom;
   const activityTick = trackActivity(user.uid);
 
   // Hata ayıklama için konsoldan erişim: window.__lr

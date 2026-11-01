@@ -95,6 +95,16 @@
       },
       "matches": {
         ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      },
+      "signal": {
+        "$to": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+        }
+      },
+      "chat": {
+        "$id": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists() && !data.exists() && newData.child('by').val() === auth.uid"
+        }
       }
     }
   }

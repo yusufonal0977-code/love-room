@@ -4,13 +4,16 @@
 // admins/{uid} yalnızca doğru şifre yazılırsa kabul edilir. Şifreyi bilen herkes admin olabilir.
 // Tek ortak oda: şifreyi giren herkes aynı admin odasında buluşur (her çiftin evinden girilir ama konumlar ortaktır).
 //   admin/presence/{uid} = { x, y, dir, moving, seat, name, look, side, ts }   odadaki adminler (çıkınca/kopunca silinir)
+//   admin/chat/{id}      = { by, name, text, at }   admin sohbeti (sohbet paneli odadayken buraya yazar)
+//   Ses: adminvoice.js (odadaki adminler birbirine doğrudan bağlanır)
 // Sayaçlar (her kullanıcı kendi kaydını yazar, yalnızca adminler okur):
 //   metrics/active/{YYYY-MM-DD}/{uid} = true   o gün evine giren kullanıcılar (UTC günü)
 //   metrics/online/{uid} = zaman               son 2 dakikada görülenler = şu an çevrimiçi
 import { h, openSheet, toast, loadImg } from '../ui.js';
-import { db, get, ref, set, remove, onValue, onDisconnect, serverTimestamp, now } from '../fb.js';
+import { db, get, ref, set, remove, push, onValue, onChildAdded, onDisconnect, query, limitToLast, serverTimestamp, now } from '../fb.js';
 import { createRoulette } from './roulette.js';
 import { createMatches } from './matches.js';
+import { createAdminVoice } from './adminvoice.js';
 import { t, locale } from '../i18n.js';
 
 const DAY = 86_400_000;
@@ -68,6 +71,9 @@ export function createAdmin(ctx) {
   let timer = null, last = null;
   const roulette = createRoulette(ctx);
   const matches = createMatches();
+  const voice = createAdminVoice(ctx);
+  const said = {}; // uid -> { text, until } başın üstündeki sohbet balonu
+  let stopChat = null;
 
   // ---------- Ortak oda: diğer adminlerin konumu ----------
   const meRef = ref(db, `admin/presence/${uid}`);
@@ -76,7 +82,18 @@ export function createAdmin(ctx) {
   function startPresence() {
     stopPres?.();
     onDisconnect(meRef).remove().catch(() => {});
-    stopPres = onValue(ref(db, 'admin/presence'), (sn) => { others = sn.val() || {}; delete others[uid]; }, () => {});
+    stopPres = onValue(ref(db, 'admin/presence'), (sn) => {
+      others = sn.val() || {}; delete others[uid];
+      voice.sync(Object.keys(others).filter((id) => id !== ctx.partnerUid())); // partnerle zaten evdeki aramadan konuşuluyor
+    }, () => {});
+    voice.join();
+    const since = now();
+    stopChat = onChildAdded(query(ref(db, 'admin/chat'), limitToLast(30)), (s) => {
+      const m = s.val(); if (!m?.text) return;
+      ctx.chat?.adminMessage(m);
+      if ((m.at || 0) < since - 2000) return;
+      if (m.by === uid) ctx.game.say('me', m.text); else said[m.by] = { text: m.text, until: performance.now() + 6000 };
+    }, () => {});
     const send = () => {
       const m = ctx.game.me;
       if (m.scene !== 'admin') return;
@@ -88,6 +105,7 @@ export function createAdmin(ctx) {
   }
   function stopPresence() {
     clearInterval(sendTimer); sendTimer = null; stopPres?.(); stopPres = null; others = {}; shown.clear(); lastSent = '';
+    stopChat?.(); stopChat = null; voice.leave();
     remove(meRef).catch(() => {});
   }
   /** Oyunun her karede çizdiği ek karakterler: odadaki diğer adminler (partner zaten kendi kanalından çizilir). */
@@ -102,7 +120,8 @@ export function createAdmin(ctx) {
       q.x += (p.x - q.x) * Math.min(1, dt * 10); q.y += (p.y - q.y) * Math.min(1, dt * 10);
       if (p.moving) q.t += dt;
       const seat = p.seat >= 0;
-      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name });
+      const sp = said[id] && said[id].until > n ? said[id].text : null;
+      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id) });
     }
     return out;
   }
@@ -175,5 +194,8 @@ export function createAdmin(ctx) {
     b.append(last ? h('img', { class: 'bigphoto', src: last, alt: '' }) : h('p', {}, t('Yükleniyor…')), h('button', { onclick: async () => { await refresh(); b.querySelector('img')?.setAttribute('src', last); } }, 'Yenile'));
   }
 
-  return { enter, onScene, openTv, openPc, extras, openRoulette: () => roulette.open(), stop: () => { stopPresence(); roulette.stop(); } };
+  /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
+  const active = () => !!stopPres;
+  const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
+  return { enter, onScene, openTv, openPc, extras, active, sendChat, openRoulette: () => roulette.open(), stop: () => { stopPresence(); roulette.stop(); } };
 }

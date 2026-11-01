@@ -851,5 +851,6 @@ export default {
  "Bugün": "Hoy",
  "maçlar ve oranlar": "partidos y cuotas",
  "Bu gün için maç yok.": "No hay partidos este día.",
- "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Las cuotas son la media de casas europeas. Última actualización: {at}"
+ "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Las cuotas son la media de casas europeas. Última actualización: {at}",
+ "Admin": "Admin"
 };

@@ -851,5 +851,6 @@ export default {
  "Bugün": "Hoje",
  "maçlar ve oranlar": "jogos e odds",
  "Bu gün için maç yok.": "Sem jogos neste dia.",
- "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Odds são a média de casas europeias. Última atualização: {at}"
+ "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Odds são a média de casas europeias. Última atualização: {at}",
+ "Admin": "Admin"
 };

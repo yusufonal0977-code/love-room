@@ -851,5 +851,6 @@ export default {
  "Bugün": "Heute",
  "maçlar ve oranlar": "Spiele und Quoten",
  "Bu gün için maç yok.": "An diesem Tag keine Spiele.",
- "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Quoten sind der Durchschnitt europäischer Buchmacher. Letztes Update: {at}"
+ "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Quoten sind der Durchschnitt europäischer Buchmacher. Letztes Update: {at}",
+ "Admin": "Admin"
 };

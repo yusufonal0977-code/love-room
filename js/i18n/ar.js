@@ -851,5 +851,6 @@ export default {
  "Bugün": "اليوم",
  "maçlar ve oranlar": "المباريات والاحتمالات",
  "Bu gün için maç yok.": "لا مباريات في هذا اليوم.",
- "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "الاحتمالات متوسط شركات المراهنات الأوروبية. آخر تحديث: {at}"
+ "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "الاحتمالات متوسط شركات المراهنات الأوروبية. آخر تحديث: {at}",
+ "Admin": "مشرف"
 };

@@ -413,7 +413,7 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
 
 /* Admin odası: kasa tablosu (odada hep görünür) ve rulet */
-.casino-board { position: fixed; left: 10px; bottom: 92px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
+.casino-board { position: fixed; right: 10px; top: 58px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
 .casino-board[hidden] { display: none; }
 .casino-board b { color: #fcdf4b; font-size: 13px; }
 .casino-board .row { display: flex; justify-content: space-between; gap: 12px; }
@@ -452,3 +452,5 @@ body:has(.modal:not([hidden])) .casino-board { display: none; } /* pencere açı
 .pcsheet .pcrow .tm { color: #1f7a4a; }
 .pcsheet .odd { text-align: right; color: #e8fff2; }
 .pcsheet small { color: #1f7a4a; }
+html[dir=rtl] .casino-board { right: auto; left: 10px; }
+.msg.admin small { color: #39ff88; }
