@@ -852,5 +852,18 @@ export default {
  "maçlar ve oranlar": "partidos y cuotas",
  "Bu gün için maç yok.": "No hay partidos este día.",
  "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Las cuotas son la media de casas europeas. Última actualización: {at}",
- "Admin": "Admin"
+ "Admin": "Admin",
+ "TV": "TV",
+ "TV kumandası": "Mando de la TV",
+ "Veri ekranı": "Pantalla de datos",
+ "Normal TV": "TV normal",
+ "Küçült": "Reducir",
+ "Büyüt": "Ampliar",
+ "Yeni sekmede aç": "Abrir en una pestaña nueva",
+ "Kanalı kapat": "Apagar el canal",
+ "Bu link geçerli görünmüyor.": "Este enlace no parece válido.",
+ "TV'de açıldı.": "Abierto en la TV.",
+ "Kanal yok. Kumandadan bir link yapıştır.": "Sin canal. Pega un enlace en el mando.",
+ "Link yapıştır (YouTube, video ya da site)": "Pega un enlace (YouTube, vídeo o sitio)",
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "La pantalla es la misma para todos en la sala. Algunos sitios no se abren dentro de otro; si queda en blanco, pulsa \"Abrir en una pestaña nueva\"."
 };

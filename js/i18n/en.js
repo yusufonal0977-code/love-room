@@ -852,5 +852,18 @@ export default {
  "maçlar ve oranlar": "matches and odds",
  "Bu gün için maç yok.": "No matches on this day.",
  "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Odds are the average of European bookmakers. Last update: {at}",
- "Admin": "Admin"
+ "Admin": "Admin",
+ "TV": "TV",
+ "TV kumandası": "TV remote",
+ "Veri ekranı": "Data screen",
+ "Normal TV": "Normal TV",
+ "Küçült": "Shrink",
+ "Büyüt": "Enlarge",
+ "Yeni sekmede aç": "Open in a new tab",
+ "Kanalı kapat": "Turn off the channel",
+ "Bu link geçerli görünmüyor.": "This link doesn't look valid.",
+ "TV'de açıldı.": "Opened on the TV.",
+ "Kanal yok. Kumandadan bir link yapıştır.": "No channel. Paste a link in the remote.",
+ "Link yapıştır (YouTube, video ya da site)": "Paste a link (YouTube, video or site)",
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "The screen is the same for everyone in the room. Some sites refuse to open inside another site; if the screen stays blank, press \"Open in a new tab\"."
 };

@@ -369,7 +369,7 @@ async function enterWorld(rid, fresh = false) {
       b.d.hidden = !(visible && has);
       if (!b.d.hidden) { b.d.style.left = (x / W) * 100 + '%'; b.d.style.top = (y / H) * 100 + '%'; }
     },
-    onFrame: () => { tv?.place(); ctx.onFrame?.(); },
+    onFrame: () => { tv?.place(); adminRoom?.placeTv(); ctx.onFrame?.(); },
     onSpot: (id, s) => spot(id, s),
     onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,

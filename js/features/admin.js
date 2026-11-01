@@ -14,6 +14,7 @@ import { db, get, ref, set, remove, push, onValue, onChildAdded, onDisconnect, q
 import { createRoulette } from './roulette.js';
 import { createMatches } from './matches.js';
 import { createAdminVoice } from './adminvoice.js';
+import { createAdminTv } from './admintv.js';
 import { t, locale } from '../i18n.js';
 
 const DAY = 86_400_000;
@@ -157,8 +158,15 @@ export function createAdmin(ctx) {
     };
   }
 
+  // Veri ekranı yalnızca TV veri modundayken duvarda görünür
+  const showStats = () => ctx.game.setPicture('admintv', 'admin', TV_RECT, tv.mode() === 'stats' && ctx.game.me.scene === 'admin' ? last : null);
+  const tv = createAdminTv(ctx, {
+    rect: TV_RECT,
+    onMode: () => showStats(),
+    statsSheet: (b) => b.append(last ? h('img', { class: 'bigphoto', src: last, alt: '' }) : h('p', {}, t('Yükleniyor…')), h('button', { onclick: refresh }, 'Yenile')),
+  });
   async function refresh() {
-    try { last = statsScreen(await stats()); ctx.game.setPicture('admintv', 'admin', TV_RECT, last); }
+    try { last = statsScreen(await stats()); showStats(); }
     catch (e) { console.warn(e); toast(t('İstatistikler okunamadı. Veritabanı kurallarını güncelledin mi?'), 5000); }
   }
   /** Odaya girince TV dakikada bir yenilenir; çıkınca durur. */
@@ -177,6 +185,7 @@ export function createAdmin(ctx) {
   function onScene(scene) {
     clearInterval(timer); timer = null;
     roulette.onScene(scene);
+    tv.onScene(scene);
     if (scene !== 'admin') { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); return; }
     startPresence();
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
@@ -189,13 +198,10 @@ export function createAdmin(ctx) {
     ctx.game.goto('admin', 96, 118);
     toast(t('Admin odası. Evine dönmek için alttaki kapıdan çık.'), 4000);
   }
-  function openTv() {
-    const b = openSheet({ title: 'İstatistik', iconName: 'tv', wide: true });
-    b.append(last ? h('img', { class: 'bigphoto', src: last, alt: '' }) : h('p', {}, t('Yükleniyor…')), h('button', { onclick: async () => { await refresh(); b.querySelector('img')?.setAttribute('src', last); } }, 'Yenile'));
-  }
+  const openTv = () => tv.open();
 
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  return { enter, onScene, openTv, openPc, extras, active, sendChat, voice, openRoulette: () => roulette.open(), stop: () => { stopPresence(); roulette.stop(); } };
+  return { enter, onScene, openTv, openPc, extras, active, sendChat, voice, openRoulette: () => roulette.open(), placeTv: () => tv.place(), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); } };
 }

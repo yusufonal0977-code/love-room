@@ -852,5 +852,18 @@ export default {
  "maçlar ve oranlar": "jogos e odds",
  "Bu gün için maç yok.": "Sem jogos neste dia.",
  "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Odds são a média de casas europeias. Última atualização: {at}",
- "Admin": "Admin"
+ "Admin": "Admin",
+ "TV": "TV",
+ "TV kumandası": "Controle da TV",
+ "Veri ekranı": "Tela de dados",
+ "Normal TV": "TV normal",
+ "Küçült": "Reduzir",
+ "Büyüt": "Ampliar",
+ "Yeni sekmede aç": "Abrir em nova aba",
+ "Kanalı kapat": "Desligar o canal",
+ "Bu link geçerli görünmüyor.": "Este link não parece válido.",
+ "TV'de açıldı.": "Aberto na TV.",
+ "Kanal yok. Kumandadan bir link yapıştır.": "Sem canal. Cole um link no controle.",
+ "Link yapıştır (YouTube, video ya da site)": "Cole um link (YouTube, vídeo ou site)",
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "A tela é a mesma para todos na sala. Alguns sites não abrem dentro de outro; se ficar em branco, aperte \"Abrir em nova aba\"."
 };

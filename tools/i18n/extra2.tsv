@@ -283,3 +283,18 @@ maçlar ve oranlar	matches and odds	partidos y cuotas	Spiele und Quoten	matchs e
 Bu gün için maç yok.	No matches on this day.	No hay partidos este día.	An diesem Tag keine Spiele.	Pas de match ce jour-là.	Sem jogos neste dia.	لا مباريات في هذا اليوم.
 Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}	Odds are the average of European bookmakers. Last update: {at}	Las cuotas son la media de casas europeas. Última actualización: {at}	Quoten sind der Durchschnitt europäischer Buchmacher. Letztes Update: {at}	Les cotes sont la moyenne des bookmakers européens. Dernière mise à jour : {at}	Odds são a média de casas europeias. Última atualização: {at}	الاحتمالات متوسط شركات المراهنات الأوروبية. آخر تحديث: {at}
 Admin	Admin	Admin	Admin	Admin	Admin	مشرف
+# v0.29: admin TV
+TV	TV	TV	TV	TV	TV	التلفاز
+TV kumandası	TV remote	Mando de la TV	TV-Fernbedienung	Télécommande	Controle da TV	جهاز التحكم
+Veri ekranı	Data screen	Pantalla de datos	Datenbildschirm	Écran de données	Tela de dados	شاشة البيانات
+Normal TV	Normal TV	TV normal	Normales TV	TV normale	TV normal	تلفاز عادي
+Küçült	Shrink	Reducir	Verkleinern	Réduire	Reduzir	تصغير
+Büyüt	Enlarge	Ampliar	Vergrößern	Agrandir	Ampliar	تكبير
+Yeni sekmede aç	Open in a new tab	Abrir en una pestaña nueva	In neuem Tab öffnen	Ouvrir dans un nouvel onglet	Abrir em nova aba	افتح في علامة تبويب جديدة
+Aç	Open	Abrir	Öffnen	Ouvrir	Abrir	افتح
+Kanalı kapat	Turn off the channel	Apagar el canal	Kanal ausschalten	Éteindre la chaîne	Desligar o canal	أغلق القناة
+Bu link geçerli görünmüyor.	This link doesn't look valid.	Este enlace no parece válido.	Dieser Link scheint ungültig zu sein.	Ce lien ne semble pas valide.	Este link não parece válido.	لا يبدو هذا الرابط صالحًا.
+TV'de açıldı.	Opened on the TV.	Abierto en la TV.	Auf dem TV geöffnet.	Ouvert sur la TV.	Aberto na TV.	فُتح على التلفاز.
+Kanal yok. Kumandadan bir link yapıştır.	No channel. Paste a link in the remote.	Sin canal. Pega un enlace en el mando.	Kein Kanal. Füge in der Fernbedienung einen Link ein.	Pas de chaîne. Colle un lien dans la télécommande.	Sem canal. Cole um link no controle.	لا توجد قناة. الصق رابطًا في جهاز التحكم.
+Link yapıştır (YouTube, video ya da site)	Paste a link (YouTube, video or site)	Pega un enlace (YouTube, vídeo o sitio)	Link einfügen (YouTube, Video oder Website)	Colle un lien (YouTube, vidéo ou site)	Cole um link (YouTube, vídeo ou site)	الصق رابطًا (YouTube أو فيديو أو موقع)
+Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa "Yeni sekmede aç"a bas.	The screen is the same for everyone in the room. Some sites refuse to open inside another site; if the screen stays blank, press "Open in a new tab".	La pantalla es la misma para todos en la sala. Algunos sitios no se abren dentro de otro; si queda en blanco, pulsa "Abrir en una pestaña nueva".	Der Bildschirm ist für alle im Raum gleich. Manche Websites lassen sich nicht in einer anderen öffnen; bleibt er leer, drücke "In neuem Tab öffnen".	L'écran est le même pour tous dans la pièce. Certains sites refusent de s'ouvrir dans un autre ; si l'écran reste vide, appuie sur "Ouvrir dans un nouvel onglet".	A tela é a mesma para todos na sala. Alguns sites não abrem dentro de outro; se ficar em branco, aperte "Abrir em nova aba".	الشاشة نفسها لكل من في الغرفة. بعض المواقع ترفض الفتح داخل موقع آخر؛ إذا بقيت الشاشة فارغة فاضغط "افتح في علامة تبويب جديدة".

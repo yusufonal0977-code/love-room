@@ -852,5 +852,18 @@ export default {
  "maçlar ve oranlar": "Spiele und Quoten",
  "Bu gün için maç yok.": "An diesem Tag keine Spiele.",
  "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "Quoten sind der Durchschnitt europäischer Buchmacher. Letztes Update: {at}",
- "Admin": "Admin"
+ "Admin": "Admin",
+ "TV": "TV",
+ "TV kumandası": "TV-Fernbedienung",
+ "Veri ekranı": "Datenbildschirm",
+ "Normal TV": "Normales TV",
+ "Küçült": "Verkleinern",
+ "Büyüt": "Vergrößern",
+ "Yeni sekmede aç": "In neuem Tab öffnen",
+ "Kanalı kapat": "Kanal ausschalten",
+ "Bu link geçerli görünmüyor.": "Dieser Link scheint ungültig zu sein.",
+ "TV'de açıldı.": "Auf dem TV geöffnet.",
+ "Kanal yok. Kumandadan bir link yapıştır.": "Kein Kanal. Füge in der Fernbedienung einen Link ein.",
+ "Link yapıştır (YouTube, video ya da site)": "Link einfügen (YouTube, Video oder Website)",
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Der Bildschirm ist für alle im Raum gleich. Manche Websites lassen sich nicht in einer anderen öffnen; bleibt er leer, drücke \"In neuem Tab öffnen\"."
 };

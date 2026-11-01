@@ -614,7 +614,7 @@ const admin = makeScene({
   blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18]],
   doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
   spots: [
-    { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'İstatistikler' },
+    { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'TV kumandası' },
     { id: 'home', x: 96, y: 128, hit: [78, 126, 36, 18], label: () => 'Evime dön' },
     { id: 'sit', group: 'chair', x: 96, y: 114, hit: [84, 82, 24, 26], label: () => 'Koltuğa otur' },
     { id: 'pc', x: 30, y: 72, hit: [6, 46, 48, 22], label: () => 'Bilgisayar' },

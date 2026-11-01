@@ -852,5 +852,18 @@ export default {
  "maçlar ve oranlar": "المباريات والاحتمالات",
  "Bu gün için maç yok.": "لا مباريات في هذا اليوم.",
  "Oranlar Avrupa bahis şirketlerinin ortalamasıdır, İddaa oranı değildir. Son güncelleme: {at}": "الاحتمالات متوسط شركات المراهنات الأوروبية. آخر تحديث: {at}",
- "Admin": "مشرف"
+ "Admin": "مشرف",
+ "TV": "التلفاز",
+ "TV kumandası": "جهاز التحكم",
+ "Veri ekranı": "شاشة البيانات",
+ "Normal TV": "تلفاز عادي",
+ "Küçült": "تصغير",
+ "Büyüt": "تكبير",
+ "Yeni sekmede aç": "افتح في علامة تبويب جديدة",
+ "Kanalı kapat": "أغلق القناة",
+ "Bu link geçerli görünmüyor.": "لا يبدو هذا الرابط صالحًا.",
+ "TV'de açıldı.": "فُتح على التلفاز.",
+ "Kanal yok. Kumandadan bir link yapıştır.": "لا توجد قناة. الصق رابطًا في جهاز التحكم.",
+ "Link yapıştır (YouTube, video ya da site)": "الصق رابطًا (YouTube أو فيديو أو موقع)",
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "الشاشة نفسها لكل من في الغرفة. بعض المواقع ترفض الفتح داخل موقع آخر؛ إذا بقيت الشاشة فارغة فاضغط \"افتح في علامة تبويب جديدة\"."
 };

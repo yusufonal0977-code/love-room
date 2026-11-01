@@ -413,7 +413,7 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
 
 /* Admin odası: kasa tablosu (odada hep görünür) ve rulet */
-.casino-board { position: fixed; right: 10px; top: 58px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
+.casino-board { position: fixed; right: 10px; top: 134px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
 .casino-board[hidden] { display: none; }
 .casino-board b { color: #fcdf4b; font-size: 13px; }
 .casino-board .row { display: flex; justify-content: space-between; gap: 12px; }
@@ -435,7 +435,7 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .roulette .rchipbtn.sel { background: #fcdf4b; border-color: #fcdf4b; color: #1a1608; font-weight: 700; }
 .roulette.closed .rtable, .roulette.closed .rrow { opacity: .55; }
 
-body:has(.modal:not([hidden])) .casino-board { display: none; } /* pencere açıkken kasa tablosu gizlenir */
+body:has(.modal:not([hidden])) .casino-board, body:has(.modal:not([hidden])) .admintvbtn, body:has(.admscreen.full:not([hidden])) .admintvbtn, body:has(.admscreen.full:not([hidden])) .casino-board { display: none; } /* pencere açıkken kasa tablosu gizlenir */
 
 /* Admin bilgisayarı: konsol görünümlü maç listesi */
 .pcsheet .pc { background: #020604; color: #39ff88; border: 1.5px solid #1f7a4a; border-radius: 8px; padding: 12px; font-family: 'Pixelify Sans', monospace; display: flex; flex-direction: column; gap: 8px; }
@@ -454,3 +454,20 @@ body:has(.modal:not([hidden])) .casino-board { display: none; } /* pencere açı
 .pcsheet small { color: #1f7a4a; }
 html[dir=rtl] .casino-board { right: auto; left: 10px; }
 .msg.admin small { color: #39ff88; }
+
+/* Admin TV: odadaki ekran, tam ekran ve geçiş tuşu */
+.admintvbtn { position: fixed; right: 10px; top: 92px; z-index: 15; padding: 6px 12px; font-size: 13px; background: #06140c; color: #39ff88; border-color: #1f7a4a; }
+.admintvbtn[hidden] { display: none; }
+html[dir=rtl] .admintvbtn { right: auto; left: 10px; }
+.admscreen { position: fixed; background: #000; overflow: hidden; pointer-events: none; }
+.admscreen[hidden] { display: none; }
+.admscreen-in { position: absolute; inset: 0; }
+.admscreen-in iframe, .admscreen-in video { width: 100%; height: 100%; border: 0; background: #000; object-fit: contain; }
+.admscreen-idle { color: #39ff88; font-size: 12px; text-align: center; margin: 0; padding: 8px; }
+.admscreen-bar { display: none; }
+.admscreen.full { pointer-events: auto; position: fixed; z-index: 40; }
+.admscreen.full .admscreen-in { inset: 44px 0 0 0; }
+.admscreen.full iframe { background: #fff; }
+.admscreen.full .admscreen-bar { display: flex; gap: 8px; justify-content: flex-end; padding: 6px 10px; background: #020604; }
+.admscreen.full .admscreen-bar button { padding: 4px 12px; font-size: 13px; }
+.admtv-now { word-break: break-all; }
