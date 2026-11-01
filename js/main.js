@@ -60,7 +60,7 @@ if (params.get('davet')) {
   history.replaceState(null, '', location.pathname);
 }
 
-let user = null, profile = null, spotifyReturn = null, pendingAdmin = null;
+let user = null, profile = null, spotifyReturn = null, pendingAdmin = null, beforeLogout = null;
 
 async function boot() {
   await initI18n();
@@ -167,7 +167,7 @@ $('createBtn').onclick = async () => {
   try { const rid = await createRoom(user.uid); profile.roomId = rid; await enterWorld(rid, true); }
   catch (e) { toast(t('Ev kurulamadı. İnternet bağlantını kontrol et.')); console.warn(e); $('createBtn').disabled = false; }
 };
-[$('logoutBtn'), $('logoutBtn1')].forEach((b) => (b.onclick = async () => { await logout(); location.reload(); }));
+[$('logoutBtn'), $('logoutBtn1')].forEach((b) => (b.onclick = async () => { await beforeLogout?.(); await logout(); location.reload(); }));
 
 function showInvite(inv, code) {
   show('invite');
@@ -405,6 +405,7 @@ async function enterWorld(rid, fresh = false) {
   sleep = createSleep(ctx, { enabled: bedOpen, lying: () => game.me.scene === 'yatak' && game.me.seat >= 0 });
   adminRoom = createAdmin(ctx);
   ctx.adminRoom = adminRoom;
+  beforeLogout = () => adminRoom.leave();
   const activityTick = trackActivity(user.uid);
 
   // Hata ayıklama için konsoldan erişim: window.__lr

@@ -82,15 +82,27 @@ export function createAdmin(ctx) {
   let stopChat = null;
 
   // ---------- Ortak oda: diğer adminlerin konumu ----------
-  const meRef = ref(db, `admin/presence/${uid}`);
-  let others = {}, stopPres = null, sendTimer = null, lastSent = '';
+  function meRef_() { return ref(db, `admin/presence/${uid}`); }
+  const meRef = meRef_();
+  let others = {}, stopPres = null, stopConn = null, sendTimer = null, freshTimer = null, lastSent = '', lastBeat = 0;
+  // Hayalet kalmasın: kopunca silme kaydı yalnızca bir kez çalışır, bu yüzden her bağlanışta yenilenir. Yine de kalan
+  // bir kayıt olursa (20 sn'de bir yenilenir) 90 sn'den eski olanlar odada gösterilmez.
+  const FRESH = 90_000, BEAT = 20_000;
+  const isFresh = (p) => typeof p?.ts === 'number' && now() - p.ts < FRESH;
+  const freshIds = () => Object.keys(others).filter((id) => isFresh(others[id]));
+  remove(meRef_()).catch(() => {}); // önceki oturumdan kalan kendi kaydım (admin değilse izin hatası, sorun değil)
   const shown = new Map(); // uid -> yumuşatılmış konum
   function startPresence() {
     stopPres?.();
-    onDisconnect(meRef).remove().catch(() => {});
+    stopConn?.();
+    stopConn = onValue(ref(db, '.info/connected'), (s) => {
+      if (!s.val()) return;
+      onDisconnect(meRef).remove().catch(() => {});
+      lastSent = ''; // bağlantı geldi: konumu yeniden yaz
+    });
     stopPres = onValue(ref(db, 'admin/presence'), (sn) => {
       others = sn.val() || {}; delete others[uid];
-      voice.sync(Object.keys(others)); // partnerin sesi kısık bağlanır (evdeki aramadan duyuluyor), yansıtmayı o da görsün
+      voice.sync(freshIds()); // partnerin sesi kısık bağlanır (evdeki aramadan duyuluyor), yansıtmayı o da görsün
     }, () => {});
     voice.join();
     const since = now();
@@ -105,22 +117,27 @@ export function createAdmin(ctx) {
       if (m.scene !== 'admin') return;
       const p = { x: Math.round(m.x), y: Math.round(m.y), dir: m.dir, moving: !!m.moving, seat: m.seat, name: ctx.myName(), look: ctx.myLook(), side: ctx.mySide(), cam: !!ctx.call?.camStream };
       const key = JSON.stringify(p);
-      if (key !== lastSent) { lastSent = key; set(meRef, { ...p, ts: serverTimestamp() }).catch(() => {}); }
+      if (key !== lastSent || Date.now() - lastBeat > BEAT) { lastSent = key; lastBeat = Date.now(); set(meRef, { ...p, ts: serverTimestamp() }).catch(() => {}); }
     };
     sendTimer = setInterval(send, 120);
+    freshTimer = setInterval(() => voice.sync(freshIds()), 5000); // kayıt eskiyince sesi de kes
   }
   function stopPresence() {
-    clearInterval(sendTimer); sendTimer = null; stopPres?.(); stopPres = null; others = {}; shown.clear(); lastSent = '';
+    clearInterval(sendTimer); sendTimer = null; clearInterval(freshTimer); freshTimer = null;
+    stopConn?.(); stopConn = null; stopPres?.(); stopPres = null; others = {}; shown.clear(); lastSent = '';
     stopChat?.(); stopChat = null; voice.leave();
-    remove(meRef).catch(() => {});
+    onDisconnect(meRef).cancel().catch(() => {});
+    return remove(meRef).catch(() => {});
   }
+  // Sayfa kapanırken kaydı hemen sil (geri dönülürse bağlantı yenilenince yeniden yazılır)
+  addEventListener('pagehide', () => { if (stopPres) { remove(meRef).catch(() => {}); lastSent = ''; } });
   /** Oyunun her karede çizdiği ek karakterler: odadaki diğer adminler (partner zaten kendi kanalından çizilir). */
   let lastT = performance.now();
   function extras() {
     const n = performance.now(), dt = Math.min(0.1, (n - lastT) / 1000); lastT = n;
     const out = [];
     for (const [id, p] of Object.entries(others)) {
-      if (!p || id === ctx.partnerUid()) continue;
+      if (!p || id === ctx.partnerUid() || !isFresh(p)) continue;
       let q = shown.get(id);
       if (!q || Math.hypot(q.x - p.x, q.y - p.y) > 60) { q = { x: p.x, y: p.y, t: 0 }; shown.set(id, q); }
       q.x += (p.x - q.x) * Math.min(1, dt * 10); q.y += (p.y - q.y) * Math.min(1, dt * 10);
@@ -211,6 +228,6 @@ export function createAdmin(ctx) {
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
+  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
   return api;
 }
