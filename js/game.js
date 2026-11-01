@@ -668,6 +668,9 @@ export function createGame(opts) {
           let tg = extraTags.get(x.id);
           if (!tg) { tg = el('tag'); extraTags.set(x.id, tg); }
           tg.innerHTML = `${esc(x.name)}${x.talking ? voice : ''}`; tg.style.display = ''; place(tg, x.x, yy - 8); seenTags.add(x.id);
+          // Kamerası açık adminin görüntü balonu başının üstünde
+          for (const b of overlay.querySelectorAll('.admincam')) if (b.dataset.id === x.id && b !== x.cam) b.style.display = 'none';
+          if (x.cam) { x.cam.dataset.id = x.id; if (x.cam.parentNode !== overlay) overlay.appendChild(x.cam); x.cam.style.display = ''; place(x.cam, x.x, yy - 12); }
           let sb = extraSay.get(x.id);
           if (x.say) { if (!sb) { sb = el('speech'); extraSay.set(x.id, sb); } sb.textContent = x.say.length > 80 ? x.say.slice(0, 78) + '…' : x.say; sb.style.display = ''; place(sb, x.x, yy - 12); }
           else if (sb) sb.style.display = 'none';
@@ -677,6 +680,7 @@ export function createGame(opts) {
     if (cat.scene === me.scene) ents.push({ y: cat.y, d: drawCat });
     ents.sort((a, b) => a.y - b.y).forEach((x) => x.d());
     for (const [id, tg] of extraTags) if (!seenTags.has(id)) { tg.remove(); extraTags.delete(id); extraSay.get(id)?.remove(); extraSay.delete(id); } // giden adminlerin etiketi
+    for (const b of overlay.querySelectorAll('.admincam')) if (!seenTags.has(b.dataset.id) || !(opts.getExtras?.() || []).some((x) => x.id === b.dataset.id && x.cam)) b.style.display = 'none';
     drawLighting(sc, info);
     parts.forEach((p) => { ctx.globalAlpha = Math.max(0, Math.min(1, (p.life - p.t) * 2)); ctx.drawImage(p.img, Math.round(p.x - p.img.width / 2), Math.round(p.y)); });
     ctx.globalAlpha = 1;

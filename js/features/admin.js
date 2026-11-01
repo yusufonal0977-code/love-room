@@ -97,7 +97,7 @@ export function createAdmin(ctx) {
     const send = () => {
       const m = ctx.game.me;
       if (m.scene !== 'admin') return;
-      const p = { x: Math.round(m.x), y: Math.round(m.y), dir: m.dir, moving: !!m.moving, seat: m.seat, name: ctx.myName(), look: ctx.myLook(), side: ctx.mySide() };
+      const p = { x: Math.round(m.x), y: Math.round(m.y), dir: m.dir, moving: !!m.moving, seat: m.seat, name: ctx.myName(), look: ctx.myLook(), side: ctx.mySide(), cam: !!ctx.call?.camStream };
       const key = JSON.stringify(p);
       if (key !== lastSent) { lastSent = key; set(meRef, { ...p, ts: serverTimestamp() }).catch(() => {}); }
     };
@@ -121,7 +121,7 @@ export function createAdmin(ctx) {
       if (p.moving) q.t += dt;
       const seat = p.seat >= 0;
       const sp = said[id] && said[id].until > n ? said[id].text : null;
-      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id) });
+      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id), cam: p.cam ? voice.camBubble(id) : null });
     }
     return out;
   }
@@ -197,5 +197,5 @@ export function createAdmin(ctx) {
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  return { enter, onScene, openTv, openPc, extras, active, sendChat, openRoulette: () => roulette.open(), stop: () => { stopPresence(); roulette.stop(); } };
+  return { enter, onScene, openTv, openPc, extras, active, sendChat, voice, openRoulette: () => roulette.open(), stop: () => { stopPresence(); roulette.stop(); } };
 }
