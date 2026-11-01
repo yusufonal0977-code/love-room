@@ -876,5 +876,15 @@ export default {
  "Yansıtmayı durdur": "Teilen beenden",
  "Ekran yansıtılamadı.": "Bildschirm konnte nicht geteilt werden.",
  "{name} ekranını yansıtıyor": "{name} teilt den Bildschirm",
- "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Bei YouTube und Videos wirken Pause und Spulen bei allen. Auf Websites surft jeder für sich; für genau dasselbe Bild nutze \"Meinen Bildschirm teilen\". Manche Websites öffnen sich nicht in einer anderen; bleibt es leer, drücke \"In neuem Tab öffnen\"."
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Bei YouTube und Videos wirken Pause und Spulen bei allen. Auf Websites surft jeder für sich; für genau dasselbe Bild nutze \"Meinen Bildschirm teilen\". Manche Websites öffnen sich nicht in einer anderen; bleibt es leer, drücke \"In neuem Tab öffnen\".",
+ "Bahis havuzu: {n} fiş": "Wettpool: {n} Chips",
+ "Bahsin: {name} için {n} fiş": "Dein Einsatz: {n} Chips auf {name}",
+ "{name} kazanır: {n} fiş": "{name} gewinnt: {n} Chips",
+ "Bahisler kapandı: ilk atış yapıldı.": "Einsätze geschlossen: der erste Stoß ist gespielt.",
+ "Oyun bitti, kazançlar dağıtıldı.": "Das Spiel ist vorbei, Gewinne wurden ausgezahlt.",
+ "Bu oyunda başka bir oyuncuya yatırdın.": "Du hast in diesem Spiel schon auf einen anderen Spieler gesetzt.",
+ "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "Spiel abgebrochen, dein Einsatz kam zurück: {n} Chips",
+ "Bilardo bahsini kazandın: {n} fiş": "Billardwette gewonnen: {n} Chips",
+ "Bahsin geri geldi: {n} fiş": "Dein Einsatz kam zurück: {n} Chips",
+ "Bilardo bahsini kaybettin.": "Billardwette verloren."
 };

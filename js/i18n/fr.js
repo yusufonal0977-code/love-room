@@ -876,5 +876,15 @@ export default {
  "Yansıtmayı durdur": "Arrêter le partage",
  "Ekran yansıtılamadı.": "Impossible de partager l'écran.",
  "{name} ekranını yansıtıyor": "{name} partage son écran",
- "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Sur YouTube et les vidéos, la pause et l'avance s'appliquent à tous. Sur les sites chacun navigue de son côté ; pour la même image, utilise \"Partager mon écran\". Certains sites ne s'ouvrent pas dans un autre ; si c'est vide, appuie sur \"Ouvrir dans un nouvel onglet\"."
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Sur YouTube et les vidéos, la pause et l'avance s'appliquent à tous. Sur les sites chacun navigue de son côté ; pour la même image, utilise \"Partager mon écran\". Certains sites ne s'ouvrent pas dans un autre ; si c'est vide, appuie sur \"Ouvrir dans un nouvel onglet\".",
+ "Bahis havuzu: {n} fiş": "Cagnotte : {n} jetons",
+ "Bahsin: {name} için {n} fiş": "Ta mise : {n} jetons sur {name}",
+ "{name} kazanır: {n} fiş": "{name} gagne : {n} jetons",
+ "Bahisler kapandı: ilk atış yapıldı.": "Mises fermées : le premier coup a été joué.",
+ "Oyun bitti, kazançlar dağıtıldı.": "La partie est terminée, les gains ont été versés.",
+ "Bu oyunda başka bir oyuncuya yatırdın.": "Tu as déjà misé sur un autre joueur dans cette partie.",
+ "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "Partie annulée, ta mise t'est rendue : {n} jetons",
+ "Bilardo bahsini kazandın: {n} fiş": "Tu as gagné le pari de billard : {n} jetons",
+ "Bahsin geri geldi: {n} fiş": "Ta mise t'est rendue : {n} jetons",
+ "Bilardo bahsini kaybettin.": "Tu as perdu le pari de billard."
 };

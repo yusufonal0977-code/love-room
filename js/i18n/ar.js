@@ -876,5 +876,15 @@ export default {
  "Yansıtmayı durdur": "أوقف المشاركة",
  "Ekran yansıtılamadı.": "تعذّرت مشاركة الشاشة.",
  "{name} ekranını yansıtıyor": "يشارك {name} شاشته",
- "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "في YouTube والفيديو ينعكس الإيقاف والتقديم على الجميع. في المواقع يتصفح كل شخص بنفسه؛ للصورة نفسها استخدم \"شارك شاشتي\". بعض المواقع لا تُفتح داخل موقع آخر؛ إذا بقيت فارغة فاضغط \"افتح في علامة تبويب جديدة\"."
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "في YouTube والفيديو ينعكس الإيقاف والتقديم على الجميع. في المواقع يتصفح كل شخص بنفسه؛ للصورة نفسها استخدم \"شارك شاشتي\". بعض المواقع لا تُفتح داخل موقع آخر؛ إذا بقيت فارغة فاضغط \"افتح في علامة تبويب جديدة\".",
+ "Bahis havuzu: {n} fiş": "مجموع الرهان: {n} رقاقة",
+ "Bahsin: {name} için {n} fiş": "رهانك: {n} رقاقة على {name}",
+ "{name} kazanır: {n} fiş": "يفوز {name}: {n} رقاقة",
+ "Bahisler kapandı: ilk atış yapıldı.": "أُغلقت الرهانات: تمت الضربة الأولى.",
+ "Oyun bitti, kazançlar dağıtıldı.": "انتهت اللعبة ووُزعت الأرباح.",
+ "Bu oyunda başka bir oyuncuya yatırdın.": "راهنت بالفعل على لاعب آخر في هذه اللعبة.",
+ "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "أُلغيت اللعبة وعاد رهانك: {n} رقاقة",
+ "Bilardo bahsini kazandın: {n} fiş": "ربحت رهان البلياردو: {n} رقاقة",
+ "Bahsin geri geldi: {n} fiş": "عاد رهانك: {n} رقاقة",
+ "Bilardo bahsini kaybettin.": "خسرت رهان البلياردو."
 };

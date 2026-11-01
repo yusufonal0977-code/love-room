@@ -876,5 +876,15 @@ export default {
  "Yansıtmayı durdur": "Dejar de compartir",
  "Ekran yansıtılamadı.": "No se pudo compartir la pantalla.",
  "{name} ekranını yansıtıyor": "{name} está compartiendo su pantalla",
- "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "En YouTube y vídeos, pausar y avanzar llega a todos. En sitios cada uno navega por su cuenta; para ver exactamente lo mismo usa \"Compartir mi pantalla\". Algunos sitios no se abren dentro de otro; si queda en blanco, pulsa \"Abrir en una pestaña nueva\"."
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "En YouTube y vídeos, pausar y avanzar llega a todos. En sitios cada uno navega por su cuenta; para ver exactamente lo mismo usa \"Compartir mi pantalla\". Algunos sitios no se abren dentro de otro; si queda en blanco, pulsa \"Abrir en una pestaña nueva\".",
+ "Bahis havuzu: {n} fiş": "Bote: {n} fichas",
+ "Bahsin: {name} için {n} fiş": "Tu apuesta: {n} fichas a {name}",
+ "{name} kazanır: {n} fiş": "Gana {name}: {n} fichas",
+ "Bahisler kapandı: ilk atış yapıldı.": "Apuestas cerradas: ya se hizo el primer tiro.",
+ "Oyun bitti, kazançlar dağıtıldı.": "La partida terminó, se pagaron las ganancias.",
+ "Bu oyunda başka bir oyuncuya yatırdın.": "Ya apostaste a otro jugador en esta partida.",
+ "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "Partida cancelada, recuperas tu apuesta: {n} fichas",
+ "Bilardo bahsini kazandın: {n} fiş": "Ganaste la apuesta de billar: {n} fichas",
+ "Bahsin geri geldi: {n} fiş": "Recuperas tu apuesta: {n} fichas",
+ "Bilardo bahsini kaybettin.": "Perdiste la apuesta de billar."
 };

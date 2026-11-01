@@ -5,7 +5,8 @@
 // live/{rid}/games/foos = { ball: {x,y,vx,vy,t}, rods: {uid: y}, score: {uid: n}, run, host }
 import { h, icon, openSheet, toast } from '../ui.js';
 import { db, ref as dbRef, onValue, set, update, now } from '../fb.js';
-import { t } from '../i18n.js';
+import { t, locale } from '../i18n.js';
+import { totals } from './poolbet.js';
 
 const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 const CARD_ICONS = ['heart', 'music', 'flower', 'paw', 'tv', 'book', 'jar', 'booth'];
@@ -400,10 +401,14 @@ export function createGames(ctx) {
     const info = h('p', { class: 'center foos-score' }), hint = h('p', { class: 'small center' });
     const joinBtn = h('button', { class: 'primary', hidden: true, onclick: () => update(poolRef, { opp: uid, [`names/${uid}`]: ctx.myName() }) }, 'Oyuna katıl');
     const botBtn = h('button', { hidden: true, onclick: () => update(poolRef, { opp: 'bot' }) }, 'Bota karşı');
+    const bets = admin ? ctx.adminRoom?.poolBets : null;
+    const betBox = h('div', { class: 'poolbets' });
+    let betChip = 50, betKey = '';
     body.append(info, canvas, h('div', { class: 'row' }, joinBtn, botBtn, h('button', { onclick: () => {
       if (admin && st?.opp && !st.over && st.host !== uid && st.opp !== uid && !confirm(t('Masada oyun sürüyor. Sıfırlansın mı?'))) return;
+      if (st && !st.over) bets?.finish(st.gid, 'void'); // yarıda kalan oyunun bahisleri iade
       newGame();
-    } }, 'Yeni oyun')), hint);
+    } }, 'Yeni oyun')), hint, admin ? betBox : null);
     const g = canvas.getContext('2d');
     let st = null, anim = null, aim = null, lastShot = 0, raf = 0, botTimer = null;
     // Partner çevrimiçiyse onunla, değilse bota karşı (bot hamlelerini bu cihaz yapar)
@@ -412,7 +417,7 @@ export function createGames(ctx) {
     const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : st?.names?.[u] || (admin ? '?' : ctx.partnerName()));
     const otherOf = (u) => (u === st.host ? st.opp : st.host);
     const myTurn = () => st && !st.over && st.opp && st.turn === uid;
-    function newGame() { set(poolRef, { v: 9, balls: rack(), turn: uid, host: uid, opp: admin ? null : opp(), names: { [uid]: ctx.myName() }, grp: null, win: null, shot: null, over: false, n: 0 }); }
+    function newGame() { set(poolRef, { v: 9, balls: rack(), turn: uid, host: uid, opp: admin ? null : opp(), names: { [uid]: ctx.myName() }, gid: admin ? Date.now().toString(36) + Math.random().toString(36).slice(2, 7) : null, grp: null, win: null, shot: null, over: false, n: 0 }); }
     function shoot(by, a, p) {
       const n = (st.n || 0) + 1;
       update(poolRef, { n, shot: { a, p, by, n, from: st.balls } });
@@ -452,6 +457,7 @@ export function createGames(ctx) {
           if (win) toast(win === who ? t('8 numarayı soktu, oyunu kazandı: {name}', { name: nameOf(who) }) : t('8 numara erken girdi, oyunu kaybetti: {name}', { name: nameOf(who) }), 4000);
           else if (why) toast(t('Faul: {why} Sıra geçti, beyaz top başa döndü.', { why }), 3500);
           if (win === uid) live.stat('wins');
+          if (win) bets?.finish(st.gid, win);
         }
       } else if (!sh) anim = null;
       if (!sh && (st.n || 0) > lastShot) lastShot = st.n;
@@ -467,8 +473,31 @@ export function createGames(ctx) {
       if (d < 6) return;
       shoot(uid, Math.atan2(dy, dx), Math.min(900, d * 7));
     };
+    /** Bahis paneli: ilk atışa kadar açık; oyuncular yalnızca kendilerine yatırır. */
+    function drawBets() {
+      if (!bets || !st?.gid) return;
+      const gid = st.gid, node = bets.node(gid), mine = bets.mine(gid), open = !st.over && !(st.n > 0);
+      const key = JSON.stringify([gid, st.host, st.opp, open, st.win, node, bets.coins(), betChip]);
+      if (key === betKey) return;
+      betKey = key;
+      const { by, pot } = totals(node), fmt = (n) => Math.round(n).toLocaleString(locale);
+      const players = [st.host, st.opp].filter(Boolean);
+      const isPlayer = players.includes(uid);
+      const odds = (p) => (by[p] ? (pot / by[p]).toFixed(2) + 'x' : '-');
+      betBox.innerHTML = '';
+      if (st.over && !node) { betBox.append(h('p', { class: 'small' }, t('Oyun bitti, kazançlar dağıtıldı.'))); return; }
+      betBox.append(h('b', {}, t('Bahis havuzu: {n} fiş', { n: fmt(pot) })),
+        h('p', { class: 'small' }, players.map((p) => `${nameOf(p)}: ${fmt(by[p] || 0)} (${odds(p)})`).join('  ·  ')),
+        mine ? h('p', { class: 'small' }, t('Bahsin: {name} için {n} fiş', { name: nameOf(mine.on), n: fmt(mine.amt) })) : '');
+      if (!open) { betBox.append(h('p', { class: 'small' }, st.over ? t('Oyun bitti, kazançlar dağıtıldı.') : t('Bahisler kapandı: ilk atış yapıldı.'))); return; }
+      const targets = players.filter((p) => (isPlayer ? p === uid : true) && (!mine || mine.on === p));
+      betBox.append(h('p', { class: 'small' }, t('Fişin: {n}', { n: fmt(bets.coins()) })),
+        h('div', { class: 'row wrap' }, ...[10, 50, 100, 500].map((c) => h('button', { class: 'rchipbtn' + (c === betChip ? ' sel' : ''), onclick: () => { betChip = c; drawBets(); } }, String(c)))),
+        h('div', { class: 'row wrap' }, ...targets.map((p) => h('button', { class: 'primary', onclick: () => bets.place(gid, p, betChip) }, t('{name} kazanır: {n} fiş', { name: nameOf(p), n: betChip })))));
+    }
     function draw() {
       raf = requestAnimationFrame(draw);
+      drawBets();
       g.fillStyle = '#6b3e22'; g.fillRect(0, 0, PW, PH);
       g.fillStyle = '#2f8f5a'; g.fillRect(12, 12, PW - 24, PH - 24);
       g.fillStyle = '#3fa86a'; g.fillRect(16, 16, PW - 32, PH - 32);

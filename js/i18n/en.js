@@ -876,5 +876,15 @@ export default {
  "Yansıtmayı durdur": "Stop sharing",
  "Ekran yansıtılamadı.": "Couldn't share the screen.",
  "{name} ekranını yansıtıyor": "{name} is sharing their screen",
- "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "On YouTube and videos, pausing and seeking reach everyone. On sites everyone browses separately; for the exact same picture use \"Share my screen\". Some sites won't open inside another site; if the screen stays blank, press \"Open in a new tab\"."
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "On YouTube and videos, pausing and seeking reach everyone. On sites everyone browses separately; for the exact same picture use \"Share my screen\". Some sites won't open inside another site; if the screen stays blank, press \"Open in a new tab\".",
+ "Bahis havuzu: {n} fiş": "Betting pool: {n} chips",
+ "Bahsin: {name} için {n} fiş": "Your bet: {n} chips on {name}",
+ "{name} kazanır: {n} fiş": "{name} wins: {n} chips",
+ "Bahisler kapandı: ilk atış yapıldı.": "Bets are closed: the first shot was played.",
+ "Oyun bitti, kazançlar dağıtıldı.": "The game is over, winnings were paid.",
+ "Bu oyunda başka bir oyuncuya yatırdın.": "You already bet on another player in this game.",
+ "Oyun iptal oldu, bahsin geri geldi: {n} fiş": "The game was cancelled, your bet came back: {n} chips",
+ "Bilardo bahsini kazandın: {n} fiş": "You won the pool bet: {n} chips",
+ "Bahsin geri geldi: {n} fiş": "Your bet came back: {n} chips",
+ "Bilardo bahsini kaybettin.": "You lost the pool bet."
 };
