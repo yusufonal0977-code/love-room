@@ -231,5 +231,10 @@ export function createRoulette(ctx) {
     else { clearInterval(tick); tick = null; }
   }
   function stop() { clearInterval(tick); subs.splice(0).forEach((u) => u()); board.remove(); }
-  return { open, onScene, stop };
+  /** Kasada tek başına en çok fişi olan (odada olmasa da). Eşitlikte taç kimsede olmaz. */
+  function leader() {
+    const list = Object.entries(coins).map(([id, v]) => [id, v?.coins || 0]).sort((a, b) => b[1] - a[1]);
+    return list.length && list[0][1] > 0 && (list.length === 1 || list[0][1] > list[1][1]) ? list[0][0] : null;
+  }
+  return { open, onScene, stop, leader };
 }

@@ -423,6 +423,13 @@ export function createGame(opts) {
   // yatakta uzanan yorganın altında kalır
   const sortY = (p) => { const s = seatOf(p); return !s ? p.y : s.pose === 'back' ? p.y - 6 : s.pose === 'lie' ? p.y - 30 : p.y + 12; };
   function headY(p) { return p.y - personImg(p).height + seatPad(p); }
+  /** Piksel taç: başın üstüne oturur (cx ortası, top başın üst kenarı). */
+  function drawCrown(cx, top) {
+    const G = '#fcdf4b', D = '#c9962a';
+    R(ctx, cx - 6, top - 5, 2, 3, G); R(ctx, cx - 1, top - 6, 2, 4, G); R(ctx, cx + 4, top - 5, 2, 3, G); // uçlar
+    R(ctx, cx - 6, top - 2, 12, 3, G); R(ctx, cx - 6, top + 1, 12, 1, D);
+    R(ctx, cx - 1, top - 1, 2, 2, '#e0473f'); R(ctx, cx - 5, top - 1, 1, 1, '#5b8def'); R(ctx, cx + 4, top - 1, 1, 1, '#5b8def'); // taşlar
+  }
   function drawPerson(p, at) {
     const img = personImg(p, at?.face, at?.pose);
     const px = at ? at.x + (at.lean ? (at.face === 'right' ? at.lean : -at.lean) : 0) : p.x, py = at ? at.y : p.y;
@@ -440,8 +447,11 @@ export function createGame(opts) {
       return;
     }
     if (!at?.pose) {
-      const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
-      ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
+      if (opts.hasCrown?.(p === me ? 'me' : 'partner')) drawCrown(Math.round(px), y); // kasanın lideri: rozet yerine taç
+      else {
+        const badge = p.side === 'moon' ? MOON_BADGE : SUN_BADGE;
+        ctx.drawImage(badge, Math.round(px - badge.width / 2), y - badge.height - 1);
+      }
       // Uykusu geldiyse başının solunda Zz balonu
       if (opts.sleepyOf?.(p === me ? 'me' : 'partner')) {
         const bx = Math.round(px - 16), by = Math.round(y - 4 + Math.sin(performance.now() / 350));
@@ -662,8 +672,11 @@ export function createGame(opts) {
         const yy = Math.round(x.y - img.height + (x.pose === 'back' ? -1 : x.pose ? 2 : 1));
         if (!x.pose) R(ctx, x.x - 5, x.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
         ctx.drawImage(img, Math.round(x.x - img.width / 2), yy);
-        const b = x.side === 'moon' ? MOON_BADGE : SUN_BADGE;
-        ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);
+        if (x.crown) drawCrown(Math.round(x.x), yy);
+        else {
+          const b = x.side === 'moon' ? MOON_BADGE : SUN_BADGE;
+          ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);
+        }
         if (x.id && x.name) { // isim etiketi
           let tg = extraTags.get(x.id);
           if (!tg) { tg = el('tag'); extraTags.set(x.id, tg); }

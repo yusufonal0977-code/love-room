@@ -71,6 +71,7 @@ export function statsScreen(s) {
 export function createAdmin(ctx) {
   const { uid } = ctx;
   let timer = null, last = null;
+  const api = {};
   const roulette = createRoulette(ctx);
   const poolBets = createPoolBets(ctx);
   const matches = createMatches();
@@ -124,7 +125,7 @@ export function createAdmin(ctx) {
       if (p.moving) q.t += dt;
       const seat = p.seat >= 0;
       const sp = said[id] && said[id].until > n ? said[id].text : null;
-      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id), cam: p.cam ? voice.camBubble(id) : null });
+      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id), cam: p.cam ? voice.camBubble(id) : null, crown: api.leader() === id });
     }
     return out;
   }
@@ -207,5 +208,6 @@ export function createAdmin(ctx) {
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  return { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), placeTv: () => tv.place(), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); } };
+  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); } });
+  return api;
 }
