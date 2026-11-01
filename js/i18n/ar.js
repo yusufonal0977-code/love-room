@@ -865,5 +865,6 @@ export default {
  "TV'de açıldı.": "فُتح على التلفاز.",
  "Kanal yok. Kumandadan bir link yapıştır.": "لا توجد قناة. الصق رابطًا في جهاز التحكم.",
  "Link yapıştır (YouTube, video ya da site)": "الصق رابطًا (YouTube أو فيديو أو موقع)",
- "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "الشاشة نفسها لكل من في الغرفة. بعض المواقع ترفض الفتح داخل موقع آخر؛ إذا بقيت الشاشة فارغة فاضغط \"افتح في علامة تبويب جديدة\"."
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "الشاشة نفسها لكل من في الغرفة. بعض المواقع ترفض الفتح داخل موقع آخر؛ إذا بقيت الشاشة فارغة فاضغط \"افتح في علامة تبويب جديدة\".",
+ "Kumanda": "جهاز التحكم"
 };

@@ -865,5 +865,6 @@ export default {
  "TV'de açıldı.": "Auf dem TV geöffnet.",
  "Kanal yok. Kumandadan bir link yapıştır.": "Kein Kanal. Füge in der Fernbedienung einen Link ein.",
  "Link yapıştır (YouTube, video ya da site)": "Link einfügen (YouTube, Video oder Website)",
- "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Der Bildschirm ist für alle im Raum gleich. Manche Websites lassen sich nicht in einer anderen öffnen; bleibt er leer, drücke \"In neuem Tab öffnen\"."
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Der Bildschirm ist für alle im Raum gleich. Manche Websites lassen sich nicht in einer anderen öffnen; bleibt er leer, drücke \"In neuem Tab öffnen\".",
+ "Kumanda": "Fernbedienung"
 };

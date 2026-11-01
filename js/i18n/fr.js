@@ -865,5 +865,6 @@ export default {
  "TV'de açıldı.": "Ouvert sur la TV.",
  "Kanal yok. Kumandadan bir link yapıştır.": "Pas de chaîne. Colle un lien dans la télécommande.",
  "Link yapıştır (YouTube, video ya da site)": "Colle un lien (YouTube, vidéo ou site)",
- "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "L'écran est le même pour tous dans la pièce. Certains sites refusent de s'ouvrir dans un autre ; si l'écran reste vide, appuie sur \"Ouvrir dans un nouvel onglet\"."
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "L'écran est le même pour tous dans la pièce. Certains sites refusent de s'ouvrir dans un autre ; si l'écran reste vide, appuie sur \"Ouvrir dans un nouvel onglet\".",
+ "Kumanda": "Télécommande"
 };

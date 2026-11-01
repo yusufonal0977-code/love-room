@@ -865,5 +865,6 @@ export default {
  "TV'de açıldı.": "Aberto na TV.",
  "Kanal yok. Kumandadan bir link yapıştır.": "Sem canal. Cole um link no controle.",
  "Link yapıştır (YouTube, video ya da site)": "Cole um link (YouTube, vídeo ou site)",
- "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "A tela é a mesma para todos na sala. Alguns sites não abrem dentro de outro; se ficar em branco, aperte \"Abrir em nova aba\"."
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "A tela é a mesma para todos na sala. Alguns sites não abrem dentro de outro; se ficar em branco, aperte \"Abrir em nova aba\".",
+ "Kumanda": "Controle"
 };

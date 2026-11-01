@@ -865,5 +865,6 @@ export default {
  "TV'de açıldı.": "Opened on the TV.",
  "Kanal yok. Kumandadan bir link yapıştır.": "No channel. Paste a link in the remote.",
  "Link yapıştır (YouTube, video ya da site)": "Paste a link (YouTube, video or site)",
- "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "The screen is the same for everyone in the room. Some sites refuse to open inside another site; if the screen stays blank, press \"Open in a new tab\"."
+ "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "The screen is the same for everyone in the room. Some sites refuse to open inside another site; if the screen stays blank, press \"Open in a new tab\".",
+ "Kumanda": "Remote"
 };

@@ -2,7 +2,8 @@
 //
 // Oda tek ve ortak olduğu için ekran da ortaktır; biri değiştirince odadaki herkes aynısını görür.
 //   admin/config/tv = { mode: 'stats'|'tv', kind: 'yt'|'file'|'web', src, start, at, by }
-// Odadaki küçük ekran yalnızca gösterir (dokununca kumanda açılır); sitede gezinmek için "Büyüt" tam ekran yapar.
+// Odadaki küçük ekran doğrudan kullanılır (site, video); dokunuşlar ekrana gider, kumanda yandaki tuşla açılır.
+// "Büyüt" aynı ekranı tam ekran yapar.
 // Bazı siteler (Google, Instagram vb.) başka sitenin içinde açılmayı engeller: onlar için "Yeni sekmede aç" var.
 import { h, icon, openSheet, closeSheet, toast } from '../ui.js';
 import { db, ref, set, update, onValue, serverTimestamp, now } from '../fb.js';
@@ -25,8 +26,10 @@ export function createAdminTv(ctx, { rect, onMode, statsSheet }) {
   document.getElementById('tvLayer').append(box);
 
   // Geçiş tuşu: veri ekranı <-> normal TV (kasa tablosunun üstünde)
-  const btn = h('button', { class: 'admintvbtn', hidden: true, onclick: toggle });
-  document.body.append(btn);
+  const btn = h('button', { onclick: toggle });
+  const remote = h('button', { hidden: true, onclick: () => open() }, 'Kumanda');
+  const btns = h('div', { class: 'admintvbtns', hidden: true }, remote, btn);
+  document.body.append(btns);
 
   const mode = () => (tv.mode === 'tv' ? 'tv' : 'stats');
   function openOutside() { if (tv.src) window.open(webUrl(tv), '_blank', 'noopener'); }
@@ -80,7 +83,8 @@ export function createAdminTv(ctx, { rect, onMode, statsSheet }) {
     content.append(f);
   }
   function refreshUi() {
-    btn.hidden = !inRoom;
+    btns.hidden = !inRoom;
+    remote.hidden = mode() !== 'tv';
     btn.textContent = t(mode() === 'tv' ? 'Veri ekranı' : 'Normal TV');
     onMode(mode());
     build();
@@ -126,6 +130,6 @@ export function createAdminTv(ctx, { rect, onMode, statsSheet }) {
     if (!inRoom) { stop?.(); stop = null; }
     refreshUi();
   }
-  function destroy() { stop?.(); box.remove(); btn.remove(); }
+  function destroy() { stop?.(); box.remove(); btns.remove(); }
   return { onScene, open, place, mode, destroy };
 }
