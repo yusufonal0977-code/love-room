@@ -85,7 +85,7 @@ export function createAdmin(ctx) {
     onDisconnect(meRef).remove().catch(() => {});
     stopPres = onValue(ref(db, 'admin/presence'), (sn) => {
       others = sn.val() || {}; delete others[uid];
-      voice.sync(Object.keys(others).filter((id) => id !== ctx.partnerUid())); // partnerle zaten evdeki aramadan konuşuluyor
+      voice.sync(Object.keys(others)); // partnerin sesi kısık bağlanır (evdeki aramadan duyuluyor), yansıtmayı o da görsün
     }, () => {});
     voice.join();
     const since = now();
@@ -162,6 +162,7 @@ export function createAdmin(ctx) {
   const showStats = () => ctx.game.setPicture('admintv', 'admin', TV_RECT, tv.mode() === 'stats' && ctx.game.me.scene === 'admin' ? last : null);
   const tv = createAdminTv(ctx, {
     rect: TV_RECT,
+    voice,
     onMode: () => showStats(),
     statsSheet: (b) => b.append(last ? h('img', { class: 'bigphoto', src: last, alt: '' }) : h('p', {}, t('Yükleniyor…')), h('button', { onclick: refresh }, 'Yenile')),
   });

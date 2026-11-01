@@ -4,7 +4,7 @@
 // live/{rid}/games/mem  = { deck: [16], open: [i], done: {i: uid}, turn, score: {uid: n} }
 // live/{rid}/games/foos = { ball: {x,y,vx,vy,t}, rods: {uid: y}, score: {uid: n}, run, host }
 import { h, icon, openSheet, toast } from '../ui.js';
-import { onValue, set, update, now } from '../fb.js';
+import { db, ref as dbRef, onValue, set, update, now } from '../fb.js';
 import { t } from '../i18n.js';
 
 const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
@@ -312,6 +312,8 @@ export function createGames(ctx) {
   // Kurallar: açık masada ilk sokulan top oyuncunun grubunu belirler (1-7 düz, 9-15 çizgili). Önce kendi grubuna değmek
   // gerekir; beyaz topu sokmak, hiçbir topa değmemek ya da önce rakip gruba/8'e değmek fauldür (sıra geçer, beyaz başa döner).
   // Kendi grubundan top sokan tekrar vurur. 8 en son sokulur: grubunu bitirip faulsüz sokan kazanır, erken ya da faulle sokan kaybeder.
+  // Oyuncular: host (masayı açan) ve opp (partner, bot ya da katılan admin). Admin odasındaki masa ortaktır
+  // (admin/config/pool): bir admin açar, diğeri "Oyuna katıl" der, odadaki herkes canlı izler.
   // Sırayla oynanır. Vuran cihaz vuruşu (açı, güç, başlangıç konumları) yazar; iki cihaz da aynı simülasyonu oynatır,
   // vuruş bitince vuran sonucu (toplar, sıra, skor) yazar. Top sokan tekrar vurur; beyaz top girerse sıra geçer.
   // Bütün renkli toplar girince en çok top sokan kazanır. Partner yoksa tek başına antrenman.
@@ -389,40 +391,50 @@ export function createGames(ctx) {
     const end = balls.map((b) => [Math.round(b.x * 10) / 10, Math.round(b.y * 10) / 10, b.in ? 1 : 0]);
     return { end, potted, frames, first };
   }
-  function openPool() {
+  function openPool(opts) {
+    const admin = opts?.admin === true;
+    const DENEME = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && new URLSearchParams(location.search).has('tvdeneme');
+    const poolRef = admin ? dbRef(db, DENEME ? 'admin/config/pooltest' : 'admin/config/pool') : live.ref('games/pool');
     body = openSheet({ title: 'Bilardo', iconName: 'game', wide: true, onClose: close });
     const canvas = h('canvas', { width: PW, height: PH, class: 'foos pool' });
     const info = h('p', { class: 'center foos-score' }), hint = h('p', { class: 'small center' });
-    body.append(info, canvas, h('div', { class: 'row' }, h('button', { onclick: () => newGame() }, 'Yeni oyun')), hint);
+    const joinBtn = h('button', { class: 'primary', hidden: true, onclick: () => update(poolRef, { opp: uid, [`names/${uid}`]: ctx.myName() }) }, 'Oyuna katıl');
+    const botBtn = h('button', { hidden: true, onclick: () => update(poolRef, { opp: 'bot' }) }, 'Bota karşı');
+    body.append(info, canvas, h('div', { class: 'row' }, joinBtn, botBtn, h('button', { onclick: () => {
+      if (admin && st?.opp && !st.over && st.host !== uid && st.opp !== uid && !confirm(t('Masada oyun sürüyor. Sıfırlansın mı?'))) return;
+      newGame();
+    } }, 'Yeni oyun')), hint);
     const g = canvas.getContext('2d');
     let st = null, anim = null, aim = null, lastShot = 0, raf = 0, botTimer = null;
     // Partner çevrimiçiyse onunla, değilse bota karşı (bot hamlelerini bu cihaz yapar)
     const duo = () => !!(ctx.partnerOnline() && ctx.partnerUid());
     const opp = () => (duo() ? ctx.partnerUid() : 'bot');
-    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : ctx.partnerName());
-    const myTurn = () => st && !st.over && st.turn === uid;
-    function newGame() { set(live.ref('games/pool'), { v: 8, balls: rack(), turn: uid, opp: opp(), grp: null, win: null, shot: null, over: false, n: 0 }); }
+    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : st?.names?.[u] || (admin ? '?' : ctx.partnerName()));
+    const otherOf = (u) => (u === st.host ? st.opp : st.host);
+    const myTurn = () => st && !st.over && st.opp && st.turn === uid;
+    function newGame() { set(poolRef, { v: 9, balls: rack(), turn: uid, host: uid, opp: admin ? null : opp(), names: { [uid]: ctx.myName() }, grp: null, win: null, shot: null, over: false, n: 0 }); }
     function shoot(by, a, p) {
       const n = (st.n || 0) + 1;
-      update(live.ref('games/pool'), { n, shot: { a, p, by, n, from: st.balls } });
+      update(poolRef, { n, shot: { a, p, by, n, from: st.balls } });
     }
     function botTurn() {
       clearTimeout(botTimer);
-      if (!st || st.over || st.turn !== 'bot' || st.shot || duo()) return;
+      if (!st || st.over || st.turn !== 'bot' || st.shot || st.host !== uid) return; // botu masayı açan cihaz oynatır
       botTimer = setTimeout(() => { if (st && st.turn === 'bot' && !st.shot) { const b = botShot(st.balls, st.grp?.bot); shoot('bot', b.a, b.p); } }, 1300);
     }
-    stopSub = onValue(live.ref('games/pool'), (s) => {
+    stopSub = onValue(poolRef, (s) => {
       st = s.val();
       if (!st) return;
-      // Eski sürümün 8 toplu masası ya da rakip değiştiyse (partner geldi/gitti) yeni oyun
-      if (st.balls?.length !== 16 || st.v !== 8 || (!st.shot && st.opp && st.opp !== opp() && st.turn !== uid)) { newGame(); return; }
+      // Eski kayıt ya da (çift masasında) partner geldi/gitti: yeni oyun
+      const stale = st.balls?.length !== 16 || st.v !== 9;
+      if (stale || (!admin && !st.shot && (st.opp === 'bot') === duo())) { newGame(); return; }
       const sh = st.shot;
       if (sh && sh.n > lastShot) {
         lastShot = sh.n;
         const r = simulate(sh.from, sh.a, sh.p);
         anim = { frames: r.frames, i: 0 };
-        if (sh.by === uid || sh.by === 'bot') { // vuran (ya da botu yöneten bu cihaz) sonucu yazar
-          const who = sh.by, other = who === uid ? (st.opp || opp()) : uid;
+        if (sh.by === uid || (sh.by === 'bot' && st.host === uid)) { // vuran (ya da botu yöneten bu cihaz) sonucu yazar
+          const who = sh.by, other = otherOf(who);
           const grp = { ...(st.grp || {}) }, mine = grp[who];
           const pots = r.potted.filter((k) => k > 0 && k !== 8);
           const cleared = mine && groupLeft(sh.from, mine) === 0; // vuruştan önce grubu bitmiş miydi
@@ -436,7 +448,7 @@ export function createGames(ctx) {
           if (r.potted.includes(8)) win = cleared && !why ? who : other; // 8: grubunu bitirip faulsüz sokan kazanır, değilse kaybeder
           const ownPot = pots.some((k) => groupOf(k) === grp[who]);
           const next = !why && ownPot ? who : other;
-          setTimeout(() => update(live.ref('games/pool'), { balls: end, grp, turn: win ? st.turn : next, win, over: !!win, shot: null }), Math.max(300, r.frames.length * 16));
+          setTimeout(() => update(poolRef, { balls: end, grp, turn: win ? st.turn : next, win, over: !!win, shot: null }), Math.max(300, r.frames.length * 16));
           if (win) toast(win === who ? t('8 numarayı soktu, oyunu kazandı: {name}', { name: nameOf(who) }) : t('8 numara erken girdi, oyunu kaybetti: {name}', { name: nameOf(who) }), 4000);
           else if (why) toast(t('Faul: {why} Sıra geçti, beyaz top başa döndü.', { why }), 3500);
           if (win === uid) live.stat('wins');
@@ -477,17 +489,20 @@ export function createGames(ctx) {
         g.strokeStyle = 'rgba(255,255,255,0.55)'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + (dx / d) * 160, cy + (dy / d) * 160); g.stroke(); g.setLineDash([]);
         g.strokeStyle = '#e0b25a'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx - (dx / d) * (12 + Math.min(d, 120) * 0.4), cy - (dy / d) * (12 + Math.min(d, 120) * 0.4)); g.lineTo(cx - (dx / d) * 150, cy - (dy / d) * 150); g.stroke(); g.lineWidth = 1;
       }
-      const o = st.opp || opp(), grp = st.grp || {};
+      const A = st.host, o = st.opp, grp = st.grp || {};
+      joinBtn.hidden = !(admin && !o && A !== uid);
+      botBtn.hidden = !(admin && !o && A === uid);
       const label = (u) => (grp[u] ? `${t(grp[u] === 'solid' ? 'Düzler' : 'Çizgililer')}, ${t('kalan {n}', { n: groupLeft(st.balls, grp[u]) })}` : '');
-      info.textContent = `${ctx.myName()}${grp[uid] ? ' (' + label(uid) + ')' : ''}  –  ${nameOf(o)}${grp[o] ? ' (' + label(o) + ')' : ''}`;
-      hint.textContent = st.over ? (st.win === uid ? t('Kazandın') : t('{name} kazandı', { name: nameOf(st.win) }))
+      info.textContent = `${nameOf(A)}${grp[A] ? ' (' + label(A) + ')' : ''}  –  ${o ? nameOf(o) + (grp[o] ? ' (' + label(o) + ')' : '') : '…'}`;
+      hint.textContent = !o ? t(A === uid ? 'Rakip bekleniyor: başka bir admin "Oyuna katıl" diyebilir ya da bota karşı oyna.' : '{name} masayı açtı, rakip bekliyor.', { name: nameOf(A) })
+        : st.over ? (st.win === uid ? t('Kazandın') : t('{name} kazandı', { name: nameOf(st.win) }))
         : myTurn() ? (grp[uid] ? t('Sıra sende ({group}): beyaz toptan geriye çek ve bırak.', { group: t(grp[uid] === 'solid' ? 'Düzler' : 'Çizgililer') }) : t('Açık masa: ilk sokan grubunu seçer') + ' · ' + t('Sıra sende: parmağını/fareni beyaz toptan geriye çek ve bırak. Ne kadar çekersen o kadar sert.'))
         : t('{name} nişan alıyor…', { name: nameOf(st.turn) });
     }
     draw();
     const oldStop = stopSub;
     stopSub = () => { oldStop(); cancelAnimationFrame(raf); clearTimeout(botTimer); };
-    setTimeout(() => { if (body && !st) newGame(); if (body && !duo()) toast(t('Partnerin çevrimiçi değil; bota karşı oynuyorsun')); }, 600);
+    setTimeout(() => { if (body && !st) newGame(); if (body && !admin && !duo()) toast(t('Partnerin çevrimiçi değil; bota karşı oynuyorsun')); }, 600);
   }
 
   return { openHub, openXox, openMem, openFoos, openPool };

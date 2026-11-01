@@ -866,5 +866,15 @@ export default {
  "Kanal yok. Kumandadan bir link yapıştır.": "Sin canal. Pega un enlace en el mando.",
  "Link yapıştır (YouTube, video ya da site)": "Pega un enlace (YouTube, vídeo o sitio)",
  "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "La pantalla es la misma para todos en la sala. Algunos sitios no se abren dentro de otro; si queda en blanco, pulsa \"Abrir en una pestaña nueva\".",
- "Kumanda": "Mando"
+ "Kumanda": "Mando",
+ "Oyuna katıl": "Unirse a la partida",
+ "Bota karşı": "Contra el bot",
+ "Masada oyun sürüyor. Sıfırlansın mı?": "Hay una partida en curso. ¿Reiniciarla?",
+ "Rakip bekleniyor: başka bir admin \"Oyuna katıl\" diyebilir ya da bota karşı oyna.": "Esperando rival: otro admin puede pulsar \"Unirse a la partida\", o juega contra el bot.",
+ "{name} masayı açtı, rakip bekliyor.": "{name} abrió la mesa y espera rival.",
+ "Ekranımı yansıt": "Compartir mi pantalla",
+ "Yansıtmayı durdur": "Dejar de compartir",
+ "Ekran yansıtılamadı.": "No se pudo compartir la pantalla.",
+ "{name} ekranını yansıtıyor": "{name} está compartiendo su pantalla",
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "En YouTube y vídeos, pausar y avanzar llega a todos. En sitios cada uno navega por su cuenta; para ver exactamente lo mismo usa \"Compartir mi pantalla\". Algunos sitios no se abren dentro de otro; si queda en blanco, pulsa \"Abrir en una pestaña nueva\"."
 };

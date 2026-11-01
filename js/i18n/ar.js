@@ -866,5 +866,15 @@ export default {
  "Kanal yok. Kumandadan bir link yapıştır.": "لا توجد قناة. الصق رابطًا في جهاز التحكم.",
  "Link yapıştır (YouTube, video ya da site)": "الصق رابطًا (YouTube أو فيديو أو موقع)",
  "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "الشاشة نفسها لكل من في الغرفة. بعض المواقع ترفض الفتح داخل موقع آخر؛ إذا بقيت الشاشة فارغة فاضغط \"افتح في علامة تبويب جديدة\".",
- "Kumanda": "جهاز التحكم"
+ "Kumanda": "جهاز التحكم",
+ "Oyuna katıl": "انضم إلى اللعبة",
+ "Bota karşı": "ضد الروبوت",
+ "Masada oyun sürüyor. Sıfırlansın mı?": "هناك لعبة جارية. هل تريد إعادة ضبطها؟",
+ "Rakip bekleniyor: başka bir admin \"Oyuna katıl\" diyebilir ya da bota karşı oyna.": "في انتظار خصم: يمكن لمشرف آخر الضغط على \"انضم إلى اللعبة\"، أو العب ضد الروبوت.",
+ "{name} masayı açtı, rakip bekliyor.": "فتح {name} الطاولة وينتظر خصمًا.",
+ "Ekranımı yansıt": "شارك شاشتي",
+ "Yansıtmayı durdur": "أوقف المشاركة",
+ "Ekran yansıtılamadı.": "تعذّرت مشاركة الشاشة.",
+ "{name} ekranını yansıtıyor": "يشارك {name} شاشته",
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "في YouTube والفيديو ينعكس الإيقاف والتقديم على الجميع. في المواقع يتصفح كل شخص بنفسه؛ للصورة نفسها استخدم \"شارك شاشتي\". بعض المواقع لا تُفتح داخل موقع آخر؛ إذا بقيت فارغة فاضغط \"افتح في علامة تبويب جديدة\"."
 };

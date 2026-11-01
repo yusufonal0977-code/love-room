@@ -866,5 +866,15 @@ export default {
  "Kanal yok. Kumandadan bir link yapıştır.": "No channel. Paste a link in the remote.",
  "Link yapıştır (YouTube, video ya da site)": "Paste a link (YouTube, video or site)",
  "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "The screen is the same for everyone in the room. Some sites refuse to open inside another site; if the screen stays blank, press \"Open in a new tab\".",
- "Kumanda": "Remote"
+ "Kumanda": "Remote",
+ "Oyuna katıl": "Join the game",
+ "Bota karşı": "Against the bot",
+ "Masada oyun sürüyor. Sıfırlansın mı?": "A game is in progress. Reset it?",
+ "Rakip bekleniyor: başka bir admin \"Oyuna katıl\" diyebilir ya da bota karşı oyna.": "Waiting for an opponent: another admin can press \"Join the game\", or play the bot.",
+ "{name} masayı açtı, rakip bekliyor.": "{name} opened the table and is waiting for an opponent.",
+ "Ekranımı yansıt": "Share my screen",
+ "Yansıtmayı durdur": "Stop sharing",
+ "Ekran yansıtılamadı.": "Couldn't share the screen.",
+ "{name} ekranını yansıtıyor": "{name} is sharing their screen",
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "On YouTube and videos, pausing and seeking reach everyone. On sites everyone browses separately; for the exact same picture use \"Share my screen\". Some sites won't open inside another site; if the screen stays blank, press \"Open in a new tab\"."
 };

@@ -866,5 +866,15 @@ export default {
  "Kanal yok. Kumandadan bir link yapıştır.": "Pas de chaîne. Colle un lien dans la télécommande.",
  "Link yapıştır (YouTube, video ya da site)": "Colle un lien (YouTube, vidéo ou site)",
  "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "L'écran est le même pour tous dans la pièce. Certains sites refusent de s'ouvrir dans un autre ; si l'écran reste vide, appuie sur \"Ouvrir dans un nouvel onglet\".",
- "Kumanda": "Télécommande"
+ "Kumanda": "Télécommande",
+ "Oyuna katıl": "Rejoindre la partie",
+ "Bota karşı": "Contre le bot",
+ "Masada oyun sürüyor. Sıfırlansın mı?": "Une partie est en cours. La réinitialiser ?",
+ "Rakip bekleniyor: başka bir admin \"Oyuna katıl\" diyebilir ya da bota karşı oyna.": "En attente d'un adversaire : un autre admin peut appuyer sur \"Rejoindre la partie\", ou joue contre le bot.",
+ "{name} masayı açtı, rakip bekliyor.": "{name} a ouvert la table et attend un adversaire.",
+ "Ekranımı yansıt": "Partager mon écran",
+ "Yansıtmayı durdur": "Arrêter le partage",
+ "Ekran yansıtılamadı.": "Impossible de partager l'écran.",
+ "{name} ekranını yansıtıyor": "{name} partage son écran",
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Sur YouTube et les vidéos, la pause et l'avance s'appliquent à tous. Sur les sites chacun navigue de son côté ; pour la même image, utilise \"Partager mon écran\". Certains sites ne s'ouvrent pas dans un autre ; si c'est vide, appuie sur \"Ouvrir dans un nouvel onglet\"."
 };

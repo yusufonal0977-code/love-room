@@ -40,6 +40,7 @@ export function createRoulette(ctx) {
 
   // Kasa tablosu: admin odasında ekranın köşesinde hep görünür
   const board = h('div', { class: 'casino-board', hidden: true });
+  board.onclick = () => board.classList.toggle('collapsed'); // dokununca küçülür, arkasındaki masa görünür
   document.body.append(board);
   function drawBoard() {
     const list = Object.entries(coins).map(([id, v]) => ({ id, name: v.name || '?', c: v.coins || 0 })).sort((a, b) => b.c - a.c);

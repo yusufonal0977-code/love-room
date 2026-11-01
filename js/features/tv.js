@@ -41,7 +41,7 @@ export function parseLink(raw) {
 }
 
 let ytApi = null;
-function loadYT() {
+export function loadYT() {
   ytApi ??= new Promise((res) => {
     if (window.YT?.Player) return res(window.YT);
     window.onYouTubeIframeAPIReady = () => res(window.YT);

@@ -303,6 +303,15 @@ const somine = makeScene({
   ],
 });
 
+/** Bilardo masası (balkon ve admin odası aynı çizimi kullanır); (x, y) sol üst köşe. */
+function poolTable(g, x, y) {
+  R(g, x, y + 2, 50, 18, '#6b3e22'); R(g, x + 2, y + 4, 46, 14, '#2f8f5a'); R(g, x + 3, y + 5, 44, 12, '#3fa86a');
+  for (const [px, py] of [[2, 4], [24, 4], [46, 4], [2, 16], [24, 16], [46, 16]]) R(g, x + px, y + py, 2, 2, '#1a1210');
+  R(g, x + 10, y + 10, 2, 2, '#ffffff'); R(g, x + 34, y + 8, 2, 2, '#ffc93c'); R(g, x + 36, y + 11, 2, 2, '#e0473f'); R(g, x + 34, y + 13, 2, 2, '#5b8def');
+  R(g, x + 7, y, 30, 1, '#e0b25a'); // isteka
+  R(g, x + 2, y + 20, 3, 4, C.woodD); R(g, x + 45, y + 20, 3, 4, C.woodD);
+}
+
 /** Balkon: gökyüzü (iki saat dilimi), şehir, bank, ışık zinciri, langırt masası, bizim çiçeğimiz. */
 const balkon = makeScene({
   id: 'balkon',
@@ -355,13 +364,7 @@ const balkon = makeScene({
       R(g, 35, 103, 2, 2, '#ffffff');
       R(g, 16, 112, 3, 4, C.woodD); R(g, 53, 112, 3, 4, C.woodD);
     } },
-    { id: 'pool', movable: true, y: 132, hit: [70, 104, 54, 30], block: [72, 114, 50, 18], draw(g) { // bilardo masası
-      R(g, 72, 110, 50, 18, '#6b3e22'); R(g, 74, 112, 46, 14, '#2f8f5a'); R(g, 75, 113, 44, 12, '#3fa86a');
-      for (const [x, y] of [[74, 112], [96, 112], [118, 112], [74, 124], [96, 124], [118, 124]]) R(g, x, y, 2, 2, '#1a1210');
-      R(g, 82, 118, 2, 2, '#ffffff'); R(g, 106, 116, 2, 2, '#ffc93c'); R(g, 108, 119, 2, 2, '#e0473f'); R(g, 106, 121, 2, 2, '#5b8def');
-      R(g, 79, 108, 30, 1, '#e0b25a'); // isteka
-      R(g, 74, 128, 3, 4, C.woodD); R(g, 117, 128, 3, 4, C.woodD);
-    } },
+    { id: 'pool', movable: true, y: 132, hit: [70, 104, 54, 30], block: [72, 114, 50, 18], draw(g) { poolTable(g, 72, 108); } },
     { id: 'flower', movable: true, y: 126, hit: [158, 92, 26, 36], block: [162, 120, 16, 6], draw(g, { t }) { drawFlower(g, 170, 126, t); } },
     { id: 'plant', movable: true, y: 134, hit: [180, 102, 12, 34], block: [178, 128, 12, 6], draw(g) { plant(g, 184, 134, false); } },
   ],
@@ -594,6 +597,7 @@ const admin = makeScene({
     for (let i = 0; i < 3; i++) { const w = 3 + ((i * 5 + (t * 2 | 0)) % 7); R(g, 16, 50 + i * 2, w, 1, i === 0 ? '#ffcf5a' : '#39ff88'); R(g, 24, 50 + i * 2, 2, 1, '#1f7a4a'); }
   },
   props: [
+    { id: 'pool', y: 96, draw(g) { poolTable(g, 118, 72); } }, // koltuğun sağında
     { id: 'roulette', y: 128, draw(g, { t }) { // rulet masası: ahşap kenar, yeşil çuha, solda çark, sağda sayı alanı
       R(g, 122, 104, 64, 22, '#5a3420'); R(g, 124, 106, 60, 18, '#1f8a4c'); R(g, 124, 106, 60, 1, '#3fae6a');
       R(g, 127, 108, 14, 14, '#3a2214'); R(g, 128, 109, 12, 12, '#c8323c'); R(g, 130, 111, 8, 8, '#1a1a22'); R(g, 132, 113, 4, 4, '#c9a36b');
@@ -611,14 +615,15 @@ const admin = makeScene({
       R(g, 88, 106, 16, 1, C.metal); R(g, 87, 106, 2, 2, '#1a1a24'); R(g, 95, 106, 2, 2, '#1a1a24'); R(g, 103, 106, 2, 2, '#1a1a24'); // tekerlekler
     } },
   ],
-  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18]],
+  blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18], [118, 78, 50, 18]],
   doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
   spots: [
     { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'TV kumandası' },
     { id: 'home', x: 96, y: 128, hit: [78, 126, 36, 18], label: () => 'Evime dön' },
     { id: 'sit', group: 'chair', x: 96, y: 114, hit: [84, 82, 24, 26], label: () => 'Koltuğa otur' },
     { id: 'pc', x: 30, y: 72, hit: [6, 46, 48, 22], label: () => 'Bilgisayar' },
-    { id: 'roulette', x: 154, y: 98, hit: [120, 100, 68, 30], label: () => 'Rulet oyna' },
+    { id: 'roulette', x: 154, y: 100, hit: [120, 102, 68, 28], label: () => 'Rulet oyna' },
+    { id: 'adminpool', x: 143, y: 72, hit: [116, 70, 54, 28], label: () => 'Bilardo oyna' },
   ],
   seats: [{ x: 96, y: 101, pose: 'back', group: 'chair' }],
   lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }, { x: 154, y: 112, r: 40, a: 0.7, color: '255,210,140' }],

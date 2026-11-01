@@ -866,5 +866,15 @@ export default {
  "Kanal yok. Kumandadan bir link yapıştır.": "Kein Kanal. Füge in der Fernbedienung einen Link ein.",
  "Link yapıştır (YouTube, video ya da site)": "Link einfügen (YouTube, Video oder Website)",
  "Ekran odadaki herkeste aynıdır. Bazı siteler başka bir sitenin içinde açılmayı engeller; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Der Bildschirm ist für alle im Raum gleich. Manche Websites lassen sich nicht in einer anderen öffnen; bleibt er leer, drücke \"In neuem Tab öffnen\".",
- "Kumanda": "Fernbedienung"
+ "Kumanda": "Fernbedienung",
+ "Oyuna katıl": "Mitspielen",
+ "Bota karşı": "Gegen den Bot",
+ "Masada oyun sürüyor. Sıfırlansın mı?": "Ein Spiel läuft. Zurücksetzen?",
+ "Rakip bekleniyor: başka bir admin \"Oyuna katıl\" diyebilir ya da bota karşı oyna.": "Warte auf Gegner: ein anderer Admin kann \"Mitspielen\" drücken, oder spiele gegen den Bot.",
+ "{name} masayı açtı, rakip bekliyor.": "{name} hat den Tisch geöffnet und wartet auf einen Gegner.",
+ "Ekranımı yansıt": "Meinen Bildschirm teilen",
+ "Yansıtmayı durdur": "Teilen beenden",
+ "Ekran yansıtılamadı.": "Bildschirm konnte nicht geteilt werden.",
+ "{name} ekranını yansıtıyor": "{name} teilt den Bildschirm",
+ "YouTube ve videoda durdurma ve sarma herkese yansır. Sitelerde herkes kendi gezer; birebir aynı görüntü için \"Ekranımı yansıt\"ı kullan. Bazı siteler başka bir sitenin içinde açılmaz; ekran boş kalırsa \"Yeni sekmede aç\"a bas.": "Bei YouTube und Videos wirken Pause und Spulen bei allen. Auf Websites surft jeder für sich; für genau dasselbe Bild nutze \"Meinen Bildschirm teilen\". Manche Websites öffnen sich nicht in einer anderen; bleibt es leer, drücke \"In neuem Tab öffnen\"."
 };
