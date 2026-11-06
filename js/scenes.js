@@ -575,7 +575,7 @@ const mutfak = makeScene({
   lights: () => [{ x: 113, y: 40, r: 40, a: 0.6, color: '255,210,150' }, { x: 20, y: 18, r: 28, a: 0.5, color: '200,220,255' }],
 });
 
-/** Admin odası: yalnızca şifreyle girilir (menü). Duvardaki büyük TV yalnızca istatistik gösterir. Alt kapı → salon. */
+/** Admin odası: yalnızca şifreyle girilir (menü). Duvardaki büyük TV yalnızca istatistik gösterir. Alt kapı → salon, sol kapı → meyhane. */
 const admin = makeScene({
   id: 'admin',
   name: 'Admin odası',
@@ -589,6 +589,7 @@ const admin = makeScene({
     R(g, 30, 52, 10, 3, '#2e2e3a'); R(g, 31, 52, 8, 1, '#4a4752'); // klavye
     R(g, 3, 7, 30, 38, '#0a0c16'); R(g, 4, 8, 28, 36, '#000000'); // Eclip tabelası (logo ve ad canlı resim olarak üstüne gelir)
     R(g, 82, 138, 28, 6, '#c9a36b'); R(g, 80, 140, 32, 4, C.woodD); // alt kapı
+    sideDoor(g, 'left', col.wall); // sol kapı → meyhane
   },
   dyn(g, { t }) {
     for (let y = 16; y < 60; y += 6) for (let i = 0; i < 3; i++) R(g, 164 + i * 5, y + 1, 2, 2, (Math.sin(t * 3 + y + i * 2) > 0 ? ['#4fbf6a', '#fcdf4b', '#ff5d8f'][i] : '#1a1a24'));
@@ -623,7 +624,7 @@ const admin = makeScene({
     } },
   ],
   blocks: [[0, 0, W, 54], [6, 54, 48, 14], [158, 54, 28, 12], [86, 98, 22, 10], [122, 110, 64, 18], [118, 78, 50, 18], [8, 110, 60, 18]],
-  doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }],
+  doors: [{ x: 82, y: 134, w: 28, h: 6, to: 'salon', spawn: { x: 96, y: 120, dir: 'down' } }, { x: 4, y: 84, w: 6, h: 26, to: 'meyhane', spawn: { x: 172, y: 100, dir: 'left' } }],
   spots: [
     { id: 'admintv', x: 96, y: 66, hit: [36, 3, 120, 50], label: () => 'TV kumandası' },
     { id: 'home', x: 96, y: 128, hit: [78, 126, 36, 18], label: () => 'Evime dön' },
@@ -637,7 +638,94 @@ const admin = makeScene({
   lights: () => [{ x: 96, y: 26, r: 80, a: 0.8, color: '120,160,255' }, { x: 172, y: 36, r: 22, a: 0.6, color: '120,255,160' }, { x: 154, y: 112, r: 40, a: 0.7, color: '255,210,140' }, { x: 38, y: 114, r: 32, a: 0.6, color: '255,210,140' }],
 });
 
-export const SCENES = { salon, somine, balkon, hobi, yatak, mutfak, admin };
+/** Meyhane: admin odasının sol kapısından girilen eski İstanbul meyhanesi (yalnızca adminler). Sağ kapı → admin odası.
+ *  Sararmış duvar, yeşil lambri, şişe rafları ve mermer tezgah, kareli örtülü masalar, duvarda ud, köşede fasıl sahnesi. */
+const meyTable = (g, cx) => { // kareli örtülü masa: meze tabakları, ince uzun kadehler, şişe
+  R(g, cx - 22, 94, 44, 12, '#f4efe6');
+  for (let x = cx - 22; x < cx + 22; x += 4) for (let y = 94; y < 106; y += 4) if (((x - cx) / 4 + (y - 94) / 4) % 2 === 0) R(g, x, y, 4, 4, '#c8323c');
+  R(g, cx - 22, 106, 44, 3, '#a8242c'); for (let x = cx - 21; x < cx + 22; x += 3) R(g, x, 109, 1, 2, '#f4efe6'); // örtünün saçağı
+  R(g, cx - 14, 96, 7, 3, '#ffffff'); R(g, cx - 13, 97, 2, 1, '#7fbf4a'); R(g, cx - 10, 97, 2, 1, '#ff7a59'); // meze
+  R(g, cx + 6, 96, 7, 3, '#ffffff'); R(g, cx + 7, 97, 3, 1, '#f4d36b'); R(g, cx + 10, 97, 2, 1, '#d84a3a');
+  R(g, cx - 3, 89, 3, 8, '#e8f4f7'); R(g, cx - 3, 89, 3, 2, '#2f8f5a'); R(g, cx - 2, 91, 1, 5, '#ffffff'); // şişe
+  R(g, cx - 8, 92, 2, 5, 'rgba(255,255,255,0.85)'); R(g, cx + 3, 92, 2, 5, 'rgba(255,255,255,0.85)'); // kadehler
+  R(g, cx - 20, 111, 2, 5, '#3a2214'); R(g, cx + 18, 111, 2, 5, '#3a2214');
+};
+const meyChair = (g, x) => { // hasır sandalye sırtı (oturanın arkasında kalır)
+  R(g, x - 5, 84, 10, 16, '#5a3420'); R(g, x - 4, 85, 8, 2, '#8a5a36'); R(g, x - 4, 89, 8, 1, '#8a5a36'); R(g, x - 4, 93, 8, 6, '#d9b36b');
+  for (let i = 0; i < 4; i++) R(g, x - 4 + i * 2, 93, 1, 6, '#b48a44');
+};
+const meyhane = makeScene({
+  id: 'meyhane',
+  name: 'Meyhane',
+  colors: { wall: '#e6cf98', accent: '#dcc184', floor: '#cfc2a4' },
+  dim: 0.4,
+  draw(g, col) {
+    R(g, 0, 0, W, WALL, col.wall);
+    for (let x = 0; x < W; x += 3) R(g, x, 0, 1, 28, col.accent); // eskimiş, çizgili duvar kâğıdı
+    R(g, 0, 0, W, 4, 'rgba(60,30,10,0.35)'); R(g, 0, 4, W, 3, 'rgba(60,30,10,0.15)'); // tütün sarısı tavan
+    R(g, 0, 28, W, 22, '#2f4a3a'); R(g, 0, 28, W, 2, '#c9a36b'); R(g, 0, 48, W, 2, '#1e3226'); // yeşil lambri
+    for (let x = 6; x < W; x += 20) { R(g, x, 32, 14, 1, '#4a6a54'); R(g, x, 32, 1, 13, '#4a6a54'); R(g, x, 45, 14, 1, '#1e3226'); }
+    tileFloor(g, WALL, col.floor, '#4a3a30'); // siyah beyaz karo
+    // Sol: şişe rafları ve mermer tezgah
+    for (const y of [10, 20]) {
+      R(g, 8, y + 7, 62, 2, '#5a3420');
+      for (let x = 10; x < 68; x += 5) {
+        const k = ((x + y) / 5) % 3;
+        R(g, x, y + 1, 3, 6, k === 0 ? '#e8f4f7' : k === 1 ? '#b8e0c8' : '#c87a3a'); R(g, x + 1, y - 1, 1, 2, k === 1 ? '#2f8f5a' : '#e8f4f7');
+      }
+    }
+    R(g, 6, 44, 66, 22, '#5a3420'); R(g, 6, 42, 66, 4, '#e8e2d6'); R(g, 6, 46, 66, 1, '#b8b0a0'); // tezgah + mermer
+    for (let x = 10; x < 70; x += 15) { R(g, x, 50, 12, 13, '#6b4228'); R(g, x + 1, 51, 10, 11, '#7a4c2e'); }
+    R(g, 14, 38, 6, 4, '#ffffff'); R(g, 16, 39, 2, 2, '#ff7a59'); R(g, 50, 36, 3, 6, '#e8f4f7'); R(g, 50, 36, 3, 1, '#2f8f5a'); // tabak, şişe
+    R(g, 60, 34, 8, 8, '#f4d36b'); R(g, 61, 35, 6, 6, '#c8323c'); // küçük çerçeve: eski afiş
+    // Orta: tabela (yazı canlı resim olarak gelir) ve sepya fotoğraflar
+    R(g, 74, 4, 48, 18, '#3a2214'); R(g, 75, 5, 46, 16, '#1a0f08');
+    for (const x of [78, 102]) { R(g, x, 25, 16, 13, '#3a2214'); R(g, x + 1, 26, 14, 11, '#c9a37a'); R(g, x + 3, 28, 10, 7, '#8a6a4a'); R(g, x + 6, 29, 4, 4, '#5a4030'); }
+    // Sağ: duvarda ud ve eski radyo
+    R(g, 136, 14, 14, 16, '#7a4c2e'); R(g, 134, 18, 18, 10, '#7a4c2e'); R(g, 138, 16, 10, 12, '#8a5a36'); R(g, 141, 20, 4, 4, '#3a2214');
+    R(g, 142, 6, 2, 9, '#5a3420'); R(g, 141, 4, 4, 3, '#3a2214'); for (let i = 0; i < 3; i++) R(g, 141 + i, 15, 1, 12, '#e8d8b8');
+    R(g, 158, 20, 22, 2, '#5a3420'); R(g, 160, 10, 18, 10, '#8a5a36'); R(g, 161, 11, 10, 8, '#d9b36b');
+    for (let y = 12; y < 18; y += 2) R(g, 162, y, 8, 1, '#a8824f'); R(g, 173, 12, 3, 3, '#3a2214'); R(g, 173, 16, 3, 2, '#3a2214');
+    // Sağ ön: fasıl sahnesi (alçak ahşap platform)
+    R(g, 148, 114, 40, 24, '#6b4228'); R(g, 148, 114, 40, 2, '#8a5a36'); for (let x = 150; x < 188; x += 8) R(g, x, 117, 1, 21, '#5a3420');
+    sideDoor(g, 'right', col.wall);
+  },
+  dyn(g, { t }) {
+    // Tavandan sarkan çıplak ampuller, hafifçe titrer
+    for (const x of [46, 96, 146]) {
+      R(g, x, 0, 1, 10, '#2a1a10'); R(g, x - 2, 10, 5, 2, '#3a2a1a');
+      R(g, x - 1, 12, 3, 4, Math.sin(t * 7 + x) > -0.92 ? '#fff1c8' : '#d9b36b');
+    }
+    // Radyonun ışığı
+    R(g, 172, 18, 1, 1, Math.sin(t * 2) > 0 ? '#ffcf5a' : '#8a5a36');
+  },
+  props: [
+    { id: 'chairs1', y: 100, draw(g) { meyChair(g, 42); meyChair(g, 70); } },
+    { id: 'table1', y: 118, draw(g) { meyTable(g, 56); } },
+    { id: 'chairs2', y: 100, draw(g) { meyChair(g, 108); meyChair(g, 136); } },
+    { id: 'table2', y: 118, draw(g) { meyTable(g, 122); } },
+    { id: 'stool', y: 126, draw(g) { // fasıl taburesi ve yanında darbuka
+      R(g, 162, 120, 12, 3, '#8a5a36'); R(g, 163, 123, 2, 6, '#5a3420'); R(g, 171, 123, 2, 6, '#5a3420');
+      R(g, 178, 120, 6, 4, '#c9a36b'); R(g, 179, 124, 4, 4, '#8a5a36'); R(g, 180, 128, 2, 2, '#6b4228');
+    } },
+  ],
+  blocks: [[0, 0, W, 54], [6, 54, 66, 14], [34, 96, 44, 14], [100, 96, 44, 14]],
+  doors: [{ x: 182, y: 84, w: 6, h: 26, to: 'admin', spawn: { x: 18, y: 96, dir: 'right' } }],
+  spots: [
+    { id: 'sit', group: 'meyt1', x: 56, y: 120, hit: [32, 82, 48, 34], label: () => 'Masaya otur' },
+    { id: 'sit', group: 'meyt2', x: 122, y: 120, hit: [98, 82, 48, 34], label: () => 'Masaya otur' },
+    { id: 'sit', group: 'fasil', x: 168, y: 132, hit: [156, 112, 32, 26], label: () => 'Fasıl taburesine otur' },
+  ],
+  seats: [{ x: 42, y: 102, group: 'meyt1' }, { x: 70, y: 102, group: 'meyt1' }, { x: 108, y: 102, group: 'meyt2' }, { x: 136, y: 102, group: 'meyt2' }, { x: 168, y: 120, group: 'fasil' }],
+  lights: () => [
+    { x: 46, y: 16, r: 46, a: 0.85, color: '255,190,110' }, { x: 96, y: 16, r: 50, a: 0.85, color: '255,190,110' }, { x: 146, y: 16, r: 46, a: 0.85, color: '255,190,110' },
+    { x: 56, y: 100, r: 30, a: 0.5, color: '255,170,90' }, { x: 122, y: 100, r: 30, a: 0.5, color: '255,170,90' }, { x: 168, y: 118, r: 28, a: 0.5, color: '255,150,90' },
+  ],
+});
+
+export const SCENES = { salon, somine, balkon, hobi, yatak, mutfak, admin, meyhane };
+/** Yalnızca adminlerin girebildiği sahneler (ortak oda: konumlar, ses ve sohbet paylaşılır). */
+export const ADMIN_SCENES = new Set(['admin', 'meyhane']);
 export const DEFAULT_STATE = { lamp: true, tv: false, fire: true, lights: true, desk: true, bedlamp: true };
 
 // ---------- Yerleşim (taşınan eşyalar + dekor dahil) ----------

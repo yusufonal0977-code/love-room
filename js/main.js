@@ -5,7 +5,7 @@ import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
-import { DEFAULT_STATE, SCENES, W, H } from './scenes.js';
+import { DEFAULT_STATE, SCENES, W, H, ADMIN_SCENES } from './scenes.js';
 import { APP_URL } from './config.js';
 import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
 import { $, h, icon, toast, openSheet, closeSheet, esc } from './ui.js';
@@ -378,8 +378,8 @@ async function enterWorld(rid, fresh = false) {
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
     getExtras: () => adminRoom?.extras() || [],
-    hasCrown: (who) => game?.me.scene === 'admin' && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
-    canEnter: (to) => to !== 'yatak' || bedOpen(),
+    hasCrown: (who) => ADMIN_SCENES.has(game?.me.scene) && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
+    canEnter: (to) => (to === 'meyhane' ? !!adminRoom?.active() : to !== 'yatak' || bedOpen()),
     onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır. Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız')); },
     onToast: toast,

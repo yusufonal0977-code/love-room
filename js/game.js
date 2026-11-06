@@ -348,7 +348,7 @@ export function createGame(opts) {
     cat.t += dt;
     const who = cat.follow === 'partner' && partner.shown ? partner : me;
     // Takip ettiği kişi başka odaya geçtiyse kısa süre sonra kapıdan o da gelir
-    if (who.scene && who.scene !== cat.scene && who.scene !== 'admin') { // gizli admin odasına gelmez
+    if (who.scene && who.scene !== cat.scene && who.scene !== 'admin' && who.scene !== 'meyhane') { // gizli admin odasına ve meyhaneye gelmez
       cat.away += dt;
       if (cat.away > 1.2) {
         cat.away = 0; cat.scene = who.scene; cat.sit = false; cat.target = null; cat.wait = 0.6;

@@ -930,5 +930,7 @@ export default {
  "İleri": "Weiter",
  "Turu geç": "Überspringen",
  "Başlayalım": "Los geht's",
- "Nasıl kullanılır?": "Wie funktioniert es?"
+ "Nasıl kullanılır?": "Wie funktioniert es?",
+ "Meyhane": "Taverne",
+ "Fasıl taburesine otur": "Auf den Musikerhocker setzen"
 };

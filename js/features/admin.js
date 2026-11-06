@@ -18,11 +18,13 @@ import { createAdminTv } from './admintv.js';
 import { createPoolBets } from './poolbet.js';
 import { createHorses } from './horses.js';
 import { t, locale } from '../i18n.js';
+import { ADMIN_SCENES, SCENES, layout } from '../scenes.js';
 
 const DAY = 86_400_000;
 const dayKey = (ms) => new Date(ms).toISOString().slice(0, 10);
 export const TV_RECT = [40, 6, 112, 40];
 const SIGN_RECT = [4, 8, 28, 36]; // TV'nin solundaki Eclip tabelası
+const MEY_SIGN = [75, 5, 46, 16]; // meyhanenin tabelası
 
 /** Her kullanıcı için: bugün aktif + çevrimiçi kaydı (kurallar yoksa sessizce geçer). */
 export function trackActivity(uid) {
@@ -114,8 +116,9 @@ export function createAdmin(ctx) {
     }, () => {});
     const send = () => {
       const m = ctx.game.me;
-      if (m.scene !== 'admin') return;
-      const p = { x: Math.round(m.x), y: Math.round(m.y), dir: m.dir, moving: !!m.moving, seat: m.seat, name: ctx.myName(), look: ctx.myLook(), side: ctx.mySide(), cam: !!ctx.call?.camStream };
+      if (!ADMIN_SCENES.has(m.scene)) return;
+      const pose = m.seat >= 0 ? layout(SCENES[m.scene]).seats[m.seat]?.pose || 'sit' : null;
+      const p = { scene: m.scene, pose, x: Math.round(m.x), y: Math.round(m.y), dir: m.dir, moving: !!m.moving, seat: m.seat, name: ctx.myName(), look: ctx.myLook(), side: ctx.mySide(), cam: !!ctx.call?.camStream };
       const key = JSON.stringify(p);
       if (key !== lastSent || Date.now() - lastBeat > BEAT) { lastSent = key; lastBeat = Date.now(); set(meRef, { ...p, ts: serverTimestamp() }).catch(() => {}); }
     };
@@ -142,9 +145,9 @@ export function createAdmin(ctx) {
       if (!q || Math.hypot(q.x - p.x, q.y - p.y) > 60) { q = { x: p.x, y: p.y, t: 0 }; shown.set(id, q); }
       q.x += (p.x - q.x) * Math.min(1, dt * 10); q.y += (p.y - q.y) * Math.min(1, dt * 10);
       if (p.moving) q.t += dt;
-      const seat = p.seat >= 0;
+      const seat = p.seat >= 0, pose = seat ? p.pose || 'back' : null; // eski sürümler duruş göndermez: admin koltuğu
       const sp = said[id] && said[id].until > n ? said[id].text : null;
-      out.push({ id, scene: 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose: seat ? 'back' : null, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id), cam: p.cam ? voice.camBubble(id) : null, crown: api.leader() === id });
+      out.push({ id, scene: p.scene || 'admin', x: q.x, y: q.y, t: q.t, dir: p.dir, moving: p.moving && !seat, pose, look: p.look, side: p.side, name: p.name, say: sp, talking: voice.talking(id), cam: p.cam ? voice.camBubble(id) : null, crown: api.leader() === id });
     }
     return out;
   }
@@ -211,10 +214,24 @@ export function createAdmin(ctx) {
     horses.onScene(scene);
     if (scene === 'admin') poolBets.start(); else poolBets.stop();
     tv.onScene(scene);
-    if (scene !== 'admin') { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); return; }
-    startPresence();
+    // Admin odası ile meyhane arasında geçerken bağlantı (konum, ses, sohbet) kopmaz
+    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); return; }
+    if (!stopPres) startPresence();
+    if (scene === 'meyhane') { meySign().then((src) => ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, src)).catch(() => {}); return; }
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
+  }
+  /** Meyhane tabelası: koyu ahşap üstünde eski usul altın yazı. */
+  let meyS = null;
+  async function meySign() {
+    if (meyS) return meyS;
+    await document.fonts.load('700 40px "Pixelify Sans"').catch(() => {});
+    const c = h('canvas', { width: 460, height: 160 }), g = c.getContext('2d');
+    g.fillStyle = '#1a0f08'; g.fillRect(0, 0, 460, 160);
+    g.strokeStyle = '#c9a36b'; g.lineWidth = 6; g.strokeRect(12, 12, 436, 136);
+    g.textAlign = 'center'; g.fillStyle = '#f4d36b'; g.font = '700 74px "Pixelify Sans", monospace'; g.fillText('MEYHANE', 230, 98);
+    g.fillStyle = '#c9a36b'; g.font = '24px "Pixelify Sans", monospace'; g.fillText('ESKİ İSTANBUL · 1955', 230, 134);
+    return (meyS = c.toDataURL('image/png'));
   }
   /** Masadaki bilgisayar: günün maçları ve bahis oranları (matches.js). */
   const openPc = () => matches.open();
