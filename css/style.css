@@ -514,3 +514,17 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .admscreen.full .livebar { top: 44px; }
 .sharepick { margin-bottom: 10px; }
 .sharepick button.sel { background: #fcdf4b; color: #1a1608; }
+
+/* İlk giriş turu */
+.tour { position: fixed; inset: 0; z-index: 60; }
+.tourring { position: fixed; border-radius: 18px; box-shadow: 0 0 0 4px var(--sun), 0 0 0 9999px rgba(8, 6, 3, .72); transition: all .25s; pointer-events: none; }
+.tourcard { position: fixed; background: #1d1810; color: var(--ink); border: 1px solid rgba(255, 246, 216, .18); border-radius: 16px; padding: 16px; box-shadow: 0 12px 40px rgba(0, 0, 0, .5); }
+.tourcard.center { left: 50% !important; top: 50% !important; bottom: auto !important; transform: translate(-50%, -50%); width: min(360px, calc(100vw - 24px)) !important; }
+.tourcard b { display: block; color: var(--sun); font-size: 17px; margin-bottom: 6px; }
+.tourcard p { margin: 0 0 12px; font-size: 14px; line-height: 1.45; }
+.tourcard .row { justify-content: flex-end; gap: 8px; align-items: center; }
+.tourcard .row .link:first-child { margin-right: auto; }
+.tourcard .row [hidden] { display: none; }
+.tourdots { display: flex; gap: 5px; margin-bottom: 12px; }
+.tourdots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 246, 216, .25); }
+.tourdots i.on { background: var(--sun); }

@@ -1,6 +1,7 @@
 // Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
 import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { pickQuality } from './screenshare.js';
+import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
@@ -224,6 +225,7 @@ function askCharacter() {
 
 // ---------- Dünya ----------
 async function enterWorld(rid, fresh = false) {
+  const newcomer = !profile.picked; // ilk kez giriyor (ev kuran da davetle gelen de)
   if (!profile.picked) await askCharacter();
   show('world');
   const room = { data: await getRoom(rid) };
@@ -637,7 +639,14 @@ async function enterWorld(rid, fresh = false) {
     ));
   }
 
-  if (fresh) setTimeout(() => $('menuBtn').onclick(), 600);
+  // Yeni gelene önce kısa tur; ev yeni kurulduysa ardından davet linki için menü açılır
+  if (!profile.tourSeen && (newcomer || fresh)) {
+    setTimeout(() => startTour(() => {
+      profile.tourSeen = true; saveProfile(user.uid, { tourSeen: true }).catch(() => {});
+      if (fresh) $('menuBtn').onclick();
+    }), 800);
+  } else if (fresh) setTimeout(() => $('menuBtn').onclick(), 600);
+  $('tourBtn').onclick = () => { $('menu').hidden = true; startTour(); };
   if (spotifyReturn) {
     if (spotifyReturn.error) toast(spotifyReturn.error, 6000);
     else { toast(t('Spotify bağlandı')); }
