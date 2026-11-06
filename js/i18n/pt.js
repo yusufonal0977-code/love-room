@@ -955,5 +955,10 @@ export default {
  "Garson Birkan": "Birkan, o garçom",
  "Ses (yalnızca sende)": "Volume (só para você)",
  "kapalı": "desligado",
- "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "A playlist toca para todos na sala de admin e na taberna ao mesmo tempo. O volume só afeta você; no zero, para para você."
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "A playlist toca para todos na sala de admin e na taberna ao mesmo tempo. O volume só afeta você; no zero, para para você.",
+ "Fotoğraf": "Foto",
+ "Fotoğraf duvara asıldı": "Foto pendurada na parede",
+ "Bu çerçeve boş.": "Este quadro está vazio.",
+ "Asan: {name}": "Pendurada por: {name}",
+ "Fotoğrafı değiştir": "Trocar foto"
 };

@@ -9,7 +9,7 @@
 // Sayaçlar (her kullanıcı kendi kaydını yazar, yalnızca adminler okur):
 //   metrics/active/{YYYY-MM-DD}/{uid} = true   o gün evine giren kullanıcılar (UTC günü)
 //   metrics/online/{uid} = zaman               son 2 dakikada görülenler = şu an çevrimiçi
-import { h, icon, openSheet, toast, loadImg } from '../ui.js';
+import { h, icon, openSheet, closeSheet, toast, loadImg, pickImage, compressImage } from '../ui.js';
 import { db, get, ref, set, remove, push, onValue, onChildAdded, onDisconnect, query, limitToLast, serverTimestamp, now } from '../fb.js';
 import { createRoulette } from './roulette.js';
 import { createMatches } from './matches.js';
@@ -18,7 +18,7 @@ import { createAdminTv } from './admintv.js';
 import { createPoolBets } from './poolbet.js';
 import { createHorses } from './horses.js';
 import { t, locale } from '../i18n.js';
-import { ADMIN_SCENES, SCENES, layout } from '../scenes.js';
+import { ADMIN_SCENES, SCENES, layout, meyFrameInner } from '../scenes.js';
 import { createMeyhane } from './meyhane.js';
 import { createRadio } from './radio.js';
 
@@ -222,13 +222,39 @@ export function createAdmin(ctx) {
     if (scene === 'admin') poolBets.start(); else poolBets.stop();
     tv.onScene(scene);
     // Admin odası ile meyhane arasında geçerken bağlantı (konum, ses, sohbet) kopmaz
-    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); radio.leave(); radioBtn.hidden = true; return; }
+    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); radio.leave(); radioBtn.hidden = true; watchPhotos(false); return; }
     if (!stopPres) startPresence();
     meyhane.start();
+    watchPhotos(true);
     radio.enter(); radioBtn.hidden = false;
     if (scene === 'meyhane') { meySign().then((src) => ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, src)).catch(() => {}); return; }
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
+  }
+  // ---------- Meyhanenin duvarındaki fotoğraflar ----------
+  // admin/config/meyhane/photos/{0|1} = { src (JPEG dataURL), by, at }   yalnızca adminler okur/yazar
+  let photos = {}, stopPhotos = null;
+  const showPhotos = () => [0, 1].forEach((i) => ctx.game.setPicture('meyphoto' + i, 'meyhane', meyFrameInner(i), photos[i]?.src || null));
+  function watchPhotos(on) {
+    if (on && !stopPhotos) stopPhotos = onValue(ref(db, 'admin/config/meyhane/photos'), (s) => { photos = s.val() || {}; showPhotos(); }, () => {});
+    if (!on) { stopPhotos?.(); stopPhotos = null; photos = {}; showPhotos(); }
+  }
+  async function putPhoto(i) {
+    const f = await pickImage();
+    if (!f) return;
+    try {
+      const src = await compressImage(f, 640, 0.82);
+      await set(ref(db, `admin/config/meyhane/photos/${i}`), { src, by: ctx.myName(), at: serverTimestamp() });
+      closeSheet(); toast(t('Fotoğraf duvara asıldı'));
+    } catch (e) { console.warn(e); toast(t('Kaydedilemedi. Kurallar güncel mi?')); }
+  }
+  function openPhoto(i) {
+    const b = openSheet({ title: 'Fotoğraf', iconName: 'album', wide: true });
+    const p = photos[i];
+    b.append(p?.src ? h('img', { class: 'bigphoto', src: p.src, alt: '' }) : h('p', {}, t('Bu çerçeve boş.')),
+      p?.by ? h('p', { class: 'small' }, t('Asan: {name}', { name: p.by })) : null,
+      h('div', { class: 'row wrap' }, h('button', { class: 'primary', onclick: () => putPhoto(i) }, p?.src ? t('Fotoğrafı değiştir') : t('Fotoğraf koy')),
+        p?.src ? h('button', { class: 'link', onclick: () => { remove(ref(db, `admin/config/meyhane/photos/${i}`)).catch(() => {}); closeSheet(); } }, t('Kaldır')) : null));
   }
   /** Meyhane tabelası: koyu ahşap üstünde eski usul altın yazı. */
   let meyS = null;
@@ -256,6 +282,6 @@ export function createAdmin(ctx) {
   /** Bu sahnede başkalarının oturduğu sandalyeler (aynı sandalyeye iki kişi oturmasın). */
   const takenSeats = (scene) => Object.values(others).filter((p) => isFresh(p) && (p.scene || 'admin') === scene && p.seat >= 0).map((p) => p.seat);
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  Object.assign(api, { takenSeats, enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), openRadio: () => radio.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); radio.leave(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
+  Object.assign(api, { takenSeats, enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), openRadio: () => radio.open(), openMeyPhoto: (i) => openPhoto(i), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); radio.leave(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
   return api;
 }

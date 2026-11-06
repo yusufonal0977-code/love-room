@@ -955,5 +955,10 @@ export default {
  "Garson Birkan": "النادل بيركان",
  "Ses (yalnızca sende)": "مستوى الصوت (عندك فقط)",
  "kapalı": "مغلق",
- "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "تُشغَّل القائمة للجميع في غرفة المشرفين والحانة في الوقت نفسه. مستوى الصوت يخصك وحدك؛ عند الصفر يتوقف عندك."
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "تُشغَّل القائمة للجميع في غرفة المشرفين والحانة في الوقت نفسه. مستوى الصوت يخصك وحدك؛ عند الصفر يتوقف عندك.",
+ "Fotoğraf": "صورة",
+ "Fotoğraf duvara asıldı": "عُلّقت الصورة على الجدار",
+ "Bu çerçeve boş.": "هذا الإطار فارغ.",
+ "Asan: {name}": "علّقها: {name}",
+ "Fotoğrafı değiştir": "تغيير الصورة"
 };

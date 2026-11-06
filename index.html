@@ -239,6 +239,19 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<script type="module">
+// Site dosyaları tarayıcıda 10 dk önbellekte kalır (GitHub Pages). Yeni sürüm yayınlandıysa (version.json, her açılışta
+// önbelleksiz okunur) bütün dosyalar sunucudan tazelenir ve sayfa bir kez yenilenir; böylece güncelleme hemen gelir.
+try {
+  const v = await (await fetch('version.json', { cache: 'no-store' })).json();
+  let seen = null; try { seen = localStorage.getItem('lr.ver'); } catch {}
+  if (v?.v && seen !== v.v) {
+    await Promise.all((v.files || []).map((f) => fetch(f, { cache: 'reload' }).catch(() => {})));
+    try { localStorage.setItem('lr.ver', v.v); } catch {}
+    if (seen && sessionStorage.getItem('lr.verReload') !== v.v) { sessionStorage.setItem('lr.verReload', v.v); location.reload(); await new Promise(() => {}); }
+  }
+} catch { /* çevrimdışı ya da dosya yok: önbellektekiyle devam */ }
+import('./js/main.js');
+</script>
 </body>
 </html>

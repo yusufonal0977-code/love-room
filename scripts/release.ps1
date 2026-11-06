@@ -31,6 +31,12 @@ foreach ($file in @('app/app.json', 'package.json', 'app/package.json', 'server/
   [IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding $false))
 }
 
+# 1b. version.json: tarayici her acilista bunu onbelleksiz okur; surum degistiyse listedeki dosyalari tazeler (index.html)
+$files = @('index.html') + (Get-ChildItem -Recurse -File -Path (Join-Path $root 'js'), (Join-Path $root 'css') -Include *.js, *.css |
+  ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') } | Sort-Object)
+$json = @{ v = $Version; files = $files } | ConvertTo-Json -Compress
+[IO.File]::WriteAllText((Join-Path $root 'version.json'), $json, (New-Object Text.UTF8Encoding $false))
+
 # 2. Commit, etiket, GitHub
 $msgFile = Join-Path $env:TEMP "loveroom-release-msg.txt"
 $body = "Love Room $tag"

@@ -955,5 +955,10 @@ export default {
  "Garson Birkan": "Birkan the waiter",
  "Ses (yalnızca sende)": "Volume (only for you)",
  "kapalı": "off",
- "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "The playlist plays for everyone in the admin room and the tavern at the same time. The volume only affects you; set it to zero to stop it for you."
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "The playlist plays for everyone in the admin room and the tavern at the same time. The volume only affects you; set it to zero to stop it for you.",
+ "Fotoğraf": "Photo",
+ "Fotoğraf duvara asıldı": "Photo hung on the wall",
+ "Bu çerçeve boş.": "This frame is empty.",
+ "Asan: {name}": "Hung by: {name}",
+ "Fotoğrafı değiştir": "Change photo"
 };

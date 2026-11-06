@@ -955,5 +955,10 @@ export default {
  "Garson Birkan": "Kellner Birkan",
  "Ses (yalnızca sende)": "Lautstärke (nur bei dir)",
  "kapalı": "aus",
- "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "Die Playlist läuft für alle im Admin-Raum und in der Taverne gleichzeitig. Die Lautstärke gilt nur für dich; auf null stoppt sie bei dir."
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "Die Playlist läuft für alle im Admin-Raum und in der Taverne gleichzeitig. Die Lautstärke gilt nur für dich; auf null stoppt sie bei dir.",
+ "Fotoğraf": "Foto",
+ "Fotoğraf duvara asıldı": "Foto an die Wand gehängt",
+ "Bu çerçeve boş.": "Dieser Rahmen ist leer.",
+ "Asan: {name}": "Aufgehängt von: {name}",
+ "Fotoğrafı değiştir": "Foto ändern"
 };

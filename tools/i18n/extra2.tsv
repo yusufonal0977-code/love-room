@@ -398,3 +398,9 @@ Garson Birkan	Birkan the waiter	Birkan, el camarero	Kellner Birkan	Birkan le ser
 Ses (yalnızca sende)	Volume (only for you)	Volumen (solo para ti)	Lautstärke (nur bei dir)	Volume (pour toi seulement)	Volume (só para você)	مستوى الصوت (عندك فقط)
 kapalı	off	apagado	aus	coupé	desligado	مغلق
 Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.	The playlist plays for everyone in the admin room and the tavern at the same time. The volume only affects you; set it to zero to stop it for you.	La lista suena a la vez para todos en la sala de admin y en la taberna. El volumen solo te afecta a ti; a cero, se detiene para ti.	Die Playlist läuft für alle im Admin-Raum und in der Taverne gleichzeitig. Die Lautstärke gilt nur für dich; auf null stoppt sie bei dir.	La playlist joue pour tout le monde dans la salle admin et la taverne en même temps. Le volume ne concerne que toi ; à zéro, elle s'arrête chez toi.	A playlist toca para todos na sala de admin e na taberna ao mesmo tempo. O volume só afeta você; no zero, para para você.	تُشغَّل القائمة للجميع في غرفة المشرفين والحانة في الوقت نفسه. مستوى الصوت يخصك وحدك؛ عند الصفر يتوقف عندك.
+# v0.39: meyhane fotoğrafları
+Fotoğraf	Photo	Foto	Foto	Photo	Foto	صورة
+Fotoğraf duvara asıldı	Photo hung on the wall	Foto colgada en la pared	Foto an die Wand gehängt	Photo accrochée au mur	Foto pendurada na parede	عُلّقت الصورة على الجدار
+Bu çerçeve boş.	This frame is empty.	Este marco está vacío.	Dieser Rahmen ist leer.	Ce cadre est vide.	Este quadro está vazio.	هذا الإطار فارغ.
+Asan: {name}	Hung by: {name}	La colgó: {name}	Aufgehängt von: {name}	Accrochée par : {name}	Pendurada por: {name}	علّقها: {name}
+Fotoğrafı değiştir	Change photo	Cambiar foto	Foto ändern	Changer la photo	Trocar foto	تغيير الصورة

@@ -955,5 +955,10 @@ export default {
  "Garson Birkan": "Birkan, el camarero",
  "Ses (yalnızca sende)": "Volumen (solo para ti)",
  "kapalı": "apagado",
- "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "La lista suena a la vez para todos en la sala de admin y en la taberna. El volumen solo te afecta a ti; a cero, se detiene para ti."
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "La lista suena a la vez para todos en la sala de admin y en la taberna. El volumen solo te afecta a ti; a cero, se detiene para ti.",
+ "Fotoğraf": "Foto",
+ "Fotoğraf duvara asıldı": "Foto colgada en la pared",
+ "Bu çerçeve boş.": "Este marco está vacío.",
+ "Asan: {name}": "La colgó: {name}",
+ "Fotoğrafı değiştir": "Cambiar foto"
 };
