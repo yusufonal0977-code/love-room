@@ -540,3 +540,11 @@ body:has(.modal:not([hidden])) .meybtn, body.cinema .meybtn { display: none; }
 
 /* Meyhane radyosu: YouTube oynatıcısı görünmez yerde çalar */
 .radiohost { position: fixed; left: -9999px; top: 0; width: 320px; height: 180px; pointer-events: none; }
+
+.radiovol { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.radiovol input { flex: 1; }
+.radiovol b { min-width: 52px; text-align: right; }
+.radiochip { position: fixed; left: 10px; top: 92px; z-index: 15; display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 13px; }
+.radiochip[hidden] { display: none; }
+.radiochip svg { width: 16px; height: 16px; }
+body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden])) .radiochip, body.cinema .radiochip { display: none; }

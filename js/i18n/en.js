@@ -952,5 +952,8 @@ export default {
  "Radyoda yeni liste çalıyor": "A new playlist is on the radio",
  "Çal": "Play",
  "Liste meyhanedeki herkese aynı anda çalar. \"Radyoyu kapat\" yalnızca senin sesini kapatır.": "The playlist plays for everyone in the tavern at the same time. \"Turn radio off\" only mutes it for you.",
- "Garson Birkan": "Birkan the waiter"
+ "Garson Birkan": "Birkan the waiter",
+ "Ses (yalnızca sende)": "Volume (only for you)",
+ "kapalı": "off",
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "The playlist plays for everyone in the admin room and the tavern at the same time. The volume only affects you; set it to zero to stop it for you."
 };

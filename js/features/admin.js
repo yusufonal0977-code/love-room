@@ -9,7 +9,7 @@
 // Sayaçlar (her kullanıcı kendi kaydını yazar, yalnızca adminler okur):
 //   metrics/active/{YYYY-MM-DD}/{uid} = true   o gün evine giren kullanıcılar (UTC günü)
 //   metrics/online/{uid} = zaman               son 2 dakikada görülenler = şu an çevrimiçi
-import { h, openSheet, toast, loadImg } from '../ui.js';
+import { h, icon, openSheet, toast, loadImg } from '../ui.js';
 import { db, get, ref, set, remove, push, onValue, onChildAdded, onDisconnect, query, limitToLast, serverTimestamp, now } from '../fb.js';
 import { createRoulette } from './roulette.js';
 import { createMatches } from './matches.js';
@@ -84,6 +84,8 @@ export function createAdmin(ctx) {
   const voice = createAdminVoice(ctx);
   const meyhane = createMeyhane(ctx);
   const radio = createRadio(ctx);
+  const radioBtn = h('button', { class: 'radiochip', hidden: true, html: `${icon('music')}<span>${t('Radyo')}</span>`, onclick: () => radio.open() });
+  document.body.append(radioBtn);
   const said = {}; // uid -> { text, until } başın üstündeki sohbet balonu
   let stopChat = null;
 
@@ -220,10 +222,10 @@ export function createAdmin(ctx) {
     if (scene === 'admin') poolBets.start(); else poolBets.stop();
     tv.onScene(scene);
     // Admin odası ile meyhane arasında geçerken bağlantı (konum, ses, sohbet) kopmaz
-    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); radio.leave(); return; }
+    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); radio.leave(); radioBtn.hidden = true; return; }
     if (!stopPres) startPresence();
     meyhane.start();
-    if (scene === 'meyhane') radio.enter(); else radio.leave();
+    radio.enter(); radioBtn.hidden = false;
     if (scene === 'meyhane') { meySign().then((src) => ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, src)).catch(() => {}); return; }
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);

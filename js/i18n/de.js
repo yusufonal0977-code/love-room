@@ -952,5 +952,8 @@ export default {
  "Radyoda yeni liste çalıyor": "Neue Playlist im Radio",
  "Çal": "Abspielen",
  "Liste meyhanedeki herkese aynı anda çalar. \"Radyoyu kapat\" yalnızca senin sesini kapatır.": "Die Playlist läuft für alle in der Taverne gleichzeitig. \"Radio aus\" schaltet nur bei dir stumm.",
- "Garson Birkan": "Kellner Birkan"
+ "Garson Birkan": "Kellner Birkan",
+ "Ses (yalnızca sende)": "Lautstärke (nur bei dir)",
+ "kapalı": "aus",
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "Die Playlist läuft für alle im Admin-Raum und in der Taverne gleichzeitig. Die Lautstärke gilt nur für dich; auf null stoppt sie bei dir."
 };

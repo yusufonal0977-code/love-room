@@ -952,5 +952,8 @@ export default {
  "Radyoda yeni liste çalıyor": "قائمة جديدة على الراديو",
  "Çal": "تشغيل",
  "Liste meyhanedeki herkese aynı anda çalar. \"Radyoyu kapat\" yalnızca senin sesini kapatır.": "تُشغَّل القائمة للجميع في الحانة في الوقت نفسه. \"إيقاف الراديو\" يكتم الصوت عندك فقط.",
- "Garson Birkan": "النادل بيركان"
+ "Garson Birkan": "النادل بيركان",
+ "Ses (yalnızca sende)": "مستوى الصوت (عندك فقط)",
+ "kapalı": "مغلق",
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "تُشغَّل القائمة للجميع في غرفة المشرفين والحانة في الوقت نفسه. مستوى الصوت يخصك وحدك؛ عند الصفر يتوقف عندك."
 };

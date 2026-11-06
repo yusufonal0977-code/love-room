@@ -952,5 +952,8 @@ export default {
  "Radyoda yeni liste çalıyor": "Nouvelle playlist à la radio",
  "Çal": "Lire",
  "Liste meyhanedeki herkese aynı anda çalar. \"Radyoyu kapat\" yalnızca senin sesini kapatır.": "La playlist joue pour tout le monde dans la taverne en même temps. \"Couper la radio\" ne coupe que chez toi.",
- "Garson Birkan": "Birkan le serveur"
+ "Garson Birkan": "Birkan le serveur",
+ "Ses (yalnızca sende)": "Volume (pour toi seulement)",
+ "kapalı": "coupé",
+ "Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "La playlist joue pour tout le monde dans la salle admin et la taverne en même temps. Le volume ne concerne que toi ; à zéro, elle s'arrête chez toi."
 };
