@@ -1,15 +1,16 @@
 // İlk giriş turu: odaya ilk kez giren kişiye alttaki düğmeleri sırayla gösterip neler yapabileceğini anlatır.
 // Bir kez gösterilir (profile.tourSeen); menüdeki "Nasıl kullanılır?" ile yeniden açılabilir.
+// Adımlardaki kısa sessiz videolar gerçek oyundan kaydedilir: tiktok-oto/tour-clips.mjs → assets/tour/<ad>.mp4
 import { h } from '../ui.js';
 import { t } from '../i18n.js';
 
 const STEPS = [
-  { title: 'Evine hoş geldin', text: 'Burası ikinizin ortak evi. Yürümek için yere dokun (bilgisayarda WASD ya da oklar). Bir eşyaya dokununca onu kullanırsın: kanepeye oturur, TV\'yi açar, kediyi seversin.' },
-  { el: ['micBtn', 'camBtn'], title: 'Sesli ve görüntülü konuşun', text: 'Partnerin eve gelince sesli sohbet kendiliğinden açılır. Mikrofonunu ve kameranı buradan açıp kapatırsın.' },
-  { el: ['screenBtn'], title: 'Birlikte izleyin', text: 'Salondaki TV\'de YouTube ya da video linki ikinizde aynı saniyede oynar. Bilgisayardan ekranını da TV\'ye yansıtabilirsin.' },
-  { el: ['heartBtn', 'hugBtn', 'kissBtn'], title: 'Sevgini göster', text: 'Kalp gönder; partnerinin yanına gidince sarıl ya da öp.' },
+  { media: 'hosgeldin', title: 'Evine hoş geldin', text: 'Burası ikinizin ortak evi. Yürümek için yere dokun (bilgisayarda WASD ya da oklar). Bir eşyaya dokununca onu kullanırsın: kanepeye oturur, TV\'yi açar, kediyi seversin.' },
+  { media: 'konusma', el: ['micBtn', 'camBtn'], title: 'Sesli ve görüntülü konuşun', text: 'Partnerin eve gelince sesli sohbet kendiliğinden açılır. Mikrofonunu ve kameranı buradan açıp kapatırsın.' },
+  { media: 'izle', el: ['screenBtn'], title: 'Birlikte izleyin', text: 'Salondaki TV\'de YouTube ya da video linki ikinizde aynı saniyede oynar. Bilgisayardan ekranını da TV\'ye yansıtabilirsin.' },
+  { media: 'sevgi', el: ['heartBtn', 'hugBtn', 'kissBtn'], title: 'Sevgini göster', text: 'Kalp gönder; partnerinin yanına gidince sarıl ya da öp.' },
   { el: ['chatBtn'], title: 'Yazışın', text: 'Sohbetten mesaj yaz; mesajın karakterinin üstünde balon olarak da görünür.' },
-  { el: ['hubBtn'], title: 'Birlikte yapılacaklar', text: 'Oyunlar, birlikte çizim, fotoğraf kabini, ortak albüm, günlük, geleceğe mektup, evcil hayvan ve evi düzenleme burada.' },
+  { media: 'birlikte', el: ['hubBtn'], title: 'Birlikte yapılacaklar', text: 'Oyunlar, birlikte çizim, fotoğraf kabini, ortak albüm, günlük, geleceğe mektup, evcil hayvan ve evi düzenleme burada.' },
   { el: ['menuBtn'], title: 'Menü', text: 'Partnerine davet linkini buradan gönderirsin. Karakterini düzenleme, dil ve hesap ayarları da burada.' },
 ];
 
@@ -18,9 +19,10 @@ export function startTour(onDone) {
   let i = 0;
   const ring = h('div', { class: 'tourring' });
   const title = h('b'), text = h('p'), dots = h('div', { class: 'tourdots' });
+  const media = h('video', { class: 'tourmedia', muted: true, autoplay: true, loop: true, playsInline: true, preload: 'auto' });
   const back = h('button', { class: 'link', onclick: () => go(i - 1) }, t('Geri'));
   const next = h('button', { class: 'primary', onclick: () => go(i + 1) });
-  const card = h('div', { class: 'tourcard', role: 'dialog' }, title, text, dots,
+  const card = h('div', { class: 'tourcard', role: 'dialog' }, media, title, text, dots,
     h('div', { class: 'row' }, h('button', { class: 'link', onclick: finish }, t('Turu geç')), back, next));
   const wrap = h('div', { class: 'tour' }, ring, card);
   document.body.append(wrap);
@@ -29,6 +31,9 @@ export function startTour(onDone) {
 
   function show() {
     const s = STEPS[i];
+    media.hidden = !s.media;
+    if (!s.media) media.pause();
+    if (s.media && !media.src.endsWith(`/${s.media}.mp4`)) { media.poster = `assets/tour/${s.media}.jpg`; media.src = `assets/tour/${s.media}.mp4`; media.play().catch(() => {}); }
     title.textContent = t(s.title);
     text.textContent = t(s.text);
     dots.innerHTML = '';
@@ -56,6 +61,7 @@ export function startTour(onDone) {
   }
   function finish() {
     removeEventListener('resize', onResize);
+    media.pause();
     wrap.remove();
     onDone?.();
   }

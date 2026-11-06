@@ -528,3 +528,6 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .tourdots { display: flex; gap: 5px; margin-bottom: 12px; }
 .tourdots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 246, 216, .25); }
 .tourdots i.on { background: var(--sun); }
+
+.tourmedia { display: block; width: 100%; max-height: 34vh; object-fit: cover; object-position: 50% 80%; border-radius: 10px; margin-bottom: 12px; background: #0d0b1a; image-rendering: pixelated; aspect-ratio: 540 / 576; }
+.tourmedia[hidden] { display: none; }
