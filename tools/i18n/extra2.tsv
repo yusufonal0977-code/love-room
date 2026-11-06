@@ -379,3 +379,18 @@ Sıradasın: {n}	You're in line: {n}	Estás en la cola: {n}	Du bist dran als: {n
 Garson Rıza	Rıza the waiter	Rıza, el camarero	Kellner Rıza	Rıza le serveur	Rıza, o garçom	النادل رضا
 Buyrun, {name}. Şerefe!	Here you go, {name}. Cheers!	Aquí tienes, {name}. ¡Salud!	Bitte schön, {name}. Prost!	Voilà, {name}. Santé !	Aqui está, {name}. Saúde!	تفضل يا {name}. في صحتك!
 Önce masaya otur.	Sit at the table first.	Siéntate primero a la mesa.	Setz dich zuerst an den Tisch.	Assieds-toi d'abord à table.	Sente-se à mesa primeiro.	اجلس إلى الطاولة أولًا.
+# v0.38: meyhane radyosu, garson Birkan
+Radyo	Radio	Radio	Radio	Radio	Rádio	راديو
+YouTube listesi linki (list=...)	YouTube playlist link (list=...)	Enlace de lista de YouTube (list=...)	YouTube-Playlist-Link (list=...)	Lien de playlist YouTube (list=...)	Link da playlist do YouTube (list=...)	رابط قائمة يوتيوب (list=...)
+Çalıyor: {title}	Playing: {title}	Sonando: {title}	Läuft: {title}	En cours : {title}	Tocando: {title}	يُشغَّل الآن: {title}
+Radyo açılıyor…	Tuning in…	Sintonizando…	Sender wird gesucht…	Réglage de la radio…	Sintonizando…	جارٍ ضبط الراديو…
+Radyoda henüz liste yok. Bir YouTube listesi linki yapıştır.	No playlist on the radio yet. Paste a YouTube playlist link.	Aún no hay lista en la radio. Pega un enlace de lista de YouTube.	Noch keine Playlist im Radio. Füge einen YouTube-Playlist-Link ein.	Pas encore de playlist à la radio. Colle un lien de playlist YouTube.	Ainda não há playlist no rádio. Cole um link de playlist do YouTube.	لا توجد قائمة في الراديو بعد. الصق رابط قائمة يوتيوب.
+Listeyi açan: {name}	Playlist set by: {name}	Lista puesta por: {name}	Playlist von: {name}	Playlist choisie par : {name}	Playlist de: {name}	القائمة من: {name}
+Radyoyu aç (bende)	Turn radio on (for me)	Encender la radio (para mí)	Radio an (nur bei mir)	Allumer la radio (pour moi)	Ligar o rádio (para mim)	تشغيل الراديو (عندي)
+Radyoyu kapat (bende)	Turn radio off (for me)	Apagar la radio (para mí)	Radio aus (nur bei mir)	Couper la radio (pour moi)	Desligar o rádio (para mim)	إيقاف الراديو (عندي)
+Sonraki şarkı	Next song	Siguiente canción	Nächster Song	Chanson suivante	Próxima música	الأغنية التالية
+Bu bir YouTube listesi linki değil. Linkte list= olmalı.	That's not a YouTube playlist link. It needs list= in it.	No es un enlace de lista de YouTube. Debe tener list=.	Das ist kein YouTube-Playlist-Link. Er braucht list=.	Ce n'est pas un lien de playlist YouTube. Il doit contenir list=.	Não é um link de playlist do YouTube. Precisa ter list=.	هذا ليس رابط قائمة يوتيوب. يجب أن يحتوي على list=.
+Radyoda yeni liste çalıyor	A new playlist is on the radio	Nueva lista en la radio	Neue Playlist im Radio	Nouvelle playlist à la radio	Nova playlist no rádio	قائمة جديدة على الراديو
+Çal	Play	Reproducir	Abspielen	Lire	Tocar	تشغيل
+Liste meyhanedeki herkese aynı anda çalar. "Radyoyu kapat" yalnızca senin sesini kapatır.	The playlist plays for everyone in the tavern at the same time. "Turn radio off" only mutes it for you.	La lista suena a la vez para todos en la taberna. "Apagar la radio" solo la silencia para ti.	Die Playlist läuft für alle in der Taverne gleichzeitig. "Radio aus" schaltet nur bei dir stumm.	La playlist joue pour tout le monde dans la taverne en même temps. "Couper la radio" ne coupe que chez toi.	A playlist toca para todos na taberna ao mesmo tempo. "Desligar o rádio" só silencia para você.	تُشغَّل القائمة للجميع في الحانة في الوقت نفسه. "إيقاف الراديو" يكتم الصوت عندك فقط.
+Garson Birkan	Birkan the waiter	Birkan, el camarero	Kellner Birkan	Birkan le serveur	Birkan, o garçom	النادل بيركان

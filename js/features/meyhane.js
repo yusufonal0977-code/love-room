@@ -9,7 +9,7 @@ import { t } from '../i18n.js';
 import { DECOR, SCENES, MEY_TABLE, layout } from '../scenes.js';
 
 const HOME = { x: 84, y: 74 }, SPEED = 34, POUR = 3200, DRINK = 240_000; // px/sn, ms, kadehin bitme süresi
-const LOOK = { skin: 1, hair: 'short', hairColor: 5, outfit: 'basic', shirt: 0, pants: 0 };
+const LOOK = { skin: 2, hair: 'short', hairColor: 0, outfit: 'basic', shirt: 0, pants: 0 }; // Garson Birkan
 
 /** Sıradaki isteklerden garsonun zaman çizelgesi: her istek bir önceki bitince başlar. */
 export function schedule(queue, seats) {
@@ -17,7 +17,7 @@ export function schedule(queue, seats) {
   return Object.entries(queue || {}).filter(([, e]) => typeof e?.at === 'number' && seats[e.seat])
     .sort((a, b) => a[1].at - b[1].at || (a[0] < b[0] ? -1 : 1))
     .map(([id, e]) => {
-      const to = { x: seats[e.seat].x + 9, y: 88 };
+      const to = { x: seats[e.seat].x + 14, y: 92 }; // kadehin hemen sağında, masanın arkasında
       const walk = (Math.hypot(to.x - HOME.x, to.y - HOME.y) / SPEED) * 1000;
       const start = Math.max(e.at, prevEnd), arrive = start + walk, poured = arrive + POUR, end = poured + walk;
       prevEnd = end;
@@ -31,7 +31,7 @@ export function waiterAt(plan, ms) {
   const lerp = (a, b, k) => ({ x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k });
   const side = (a, b) => (Math.abs(b.x - a.x) > Math.abs(b.y - a.y) ? (b.x > a.x ? 'right' : 'left') : b.y > a.y ? 'down' : 'up');
   if (ms < job.arrive) return { ...lerp(HOME, job.to, (ms - job.start) / (job.arrive - job.start)), dir: side(HOME, job.to), moving: true, job };
-  if (ms < job.poured) return { ...job.to, dir: 'left', moving: false, job, pouring: true };
+  if (ms < job.poured) return { ...job.to, dir: 'down', moving: false, job, pouring: true, k: (ms - job.arrive) / (job.poured - job.arrive) };
   return { ...lerp(job.to, HOME, (ms - job.poured) / (job.end - job.poured)), dir: side(job.to, HOME), moving: true, job };
 }
 
@@ -50,7 +50,7 @@ export function createMeyhane(ctx) {
     stops.push(onValue(qRef, (s) => { queue = s.val() || {}; plan = schedule(queue, seats()); }, () => {}));
     stops.push(onValue(gRef, (s) => { glass = s.val() || {}; }, () => {}));
   }
-  function stop() { stops.splice(0).forEach((u) => u()); btn.hidden = true; DECOR.meyGlasses = []; }
+  function stop() { stops.splice(0).forEach((u) => u()); btn.hidden = true; DECOR.meyGlasses = []; DECOR.meyPour = null; }
 
   const mySeat = () => { const m = ctx.game.me; return m.scene === 'meyhane' && m.seat >= 0 && seats()[m.seat]?.group === 'meyt' ? m.seat : -1; };
   const myJob = (ms) => plan.find((j) => j.uid === uid && ms < j.poured);
@@ -79,14 +79,16 @@ export function createMeyhane(ctx) {
     // Kadehler: masada oturan herkesin önünde
     const list = [];
     const level = (id) => { const ts = glass[id]; return ts ? Math.max(0.12, 1 - (ms - ts) / DRINK) : 0.12; };
-    if (seat >= 0) list.push({ x: seats()[seat].x - 1, level: level(uid) });
-    for (const [id, p] of Object.entries(others)) if (p?.scene === 'meyhane' && p.seat >= 0 && seats()[p.seat]?.group === 'meyt') list.push({ x: seats()[p.seat].x - 1, level: level(id) });
+    if (seat >= 0) list.push({ x: seats()[seat].x + 8, level: level(uid) });
+    for (const [id, p] of Object.entries(others)) if (p?.scene === 'meyhane' && p.seat >= 0 && seats()[p.seat]?.group === 'meyt') list.push({ x: seats()[p.seat].x + 8, level: level(id) });
     // Dolarken kadeh garsonun elinden yavaşça dolar
     const w = waiterAt(plan, ms);
-    if (w.pouring) { const g = list.find((x) => Math.abs(x.x - (seats()[w.job.seat].x - 1)) < 1); if (g) g.level = Math.max(g.level, (ms - w.job.arrive) / POUR); }
+    const gx = w.pouring ? seats()[w.job.seat].x + 8 : 0;
+    if (w.pouring) { const g = list.find((x) => x.x === gx); if (g) g.level = Math.max(g.level, w.k); else list.push({ x: gx, level: w.k }); }
+    DECOR.meyPour = w.pouring ? { x: gx, k: w.k } : null;
     if (JSON.stringify(list) !== JSON.stringify(DECOR.meyGlasses || [])) DECOR.meyGlasses = list;
     if (w.moving) walkT += dt;
-    return { id: 'garson', scene: 'meyhane', x: w.x, y: w.y, t: walkT, dir: w.dir, moving: w.moving, look: LOOK, name: t('Garson Rıza'), noBadge: true,
+    return { id: 'garson', scene: 'meyhane', x: w.x, y: w.y, t: walkT, dir: w.dir, moving: w.moving, look: LOOK, name: t('Garson Birkan'), noBadge: true,
       say: w.pouring ? t('Buyrun, {name}. Şerefe!', { name: w.job.name || '' }) : null };
   }
   return { start, stop, tick };

@@ -20,6 +20,7 @@ import { createHorses } from './horses.js';
 import { t, locale } from '../i18n.js';
 import { ADMIN_SCENES, SCENES, layout } from '../scenes.js';
 import { createMeyhane } from './meyhane.js';
+import { createRadio } from './radio.js';
 
 const DAY = 86_400_000;
 const dayKey = (ms) => new Date(ms).toISOString().slice(0, 10);
@@ -82,6 +83,7 @@ export function createAdmin(ctx) {
   const matches = createMatches();
   const voice = createAdminVoice(ctx);
   const meyhane = createMeyhane(ctx);
+  const radio = createRadio(ctx);
   const said = {}; // uid -> { text, until } başın üstündeki sohbet balonu
   let stopChat = null;
 
@@ -218,9 +220,10 @@ export function createAdmin(ctx) {
     if (scene === 'admin') poolBets.start(); else poolBets.stop();
     tv.onScene(scene);
     // Admin odası ile meyhane arasında geçerken bağlantı (konum, ses, sohbet) kopmaz
-    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); return; }
+    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); radio.leave(); return; }
     if (!stopPres) startPresence();
     meyhane.start();
+    if (scene === 'meyhane') radio.enter(); else radio.leave();
     if (scene === 'meyhane') { meySign().then((src) => ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, src)).catch(() => {}); return; }
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
@@ -233,8 +236,8 @@ export function createAdmin(ctx) {
     const c = h('canvas', { width: 460, height: 160 }), g = c.getContext('2d');
     g.fillStyle = '#1a0f08'; g.fillRect(0, 0, 460, 160);
     g.strokeStyle = '#c9a36b'; g.lineWidth = 6; g.strokeRect(12, 12, 436, 136);
-    g.textAlign = 'center'; g.fillStyle = '#f4d36b'; g.font = '700 74px "Pixelify Sans", monospace'; g.fillText('MEYHANE', 230, 98);
-    g.fillStyle = '#c9a36b'; g.font = '24px "Pixelify Sans", monospace'; g.fillText('ESKİ İSTANBUL · 1955', 230, 134);
+    g.textAlign = 'center'; g.fillStyle = '#f4d36b'; g.font = '700 68px "Pixelify Sans", monospace'; g.fillText('ECLIP', 230, 82);
+    g.fillStyle = '#e8c27a'; g.font = '700 40px "Pixelify Sans", monospace'; g.fillText('MEYHANESİ', 230, 128);
     return (meyS = c.toDataURL('image/png'));
   }
   /** Masadaki bilgisayar: günün maçları ve bahis oranları (matches.js). */
@@ -249,6 +252,6 @@ export function createAdmin(ctx) {
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
+  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), openRadio: () => radio.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); radio.leave(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
   return api;
 }

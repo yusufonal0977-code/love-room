@@ -537,3 +537,6 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .meybtn[hidden] { display: none; }
 .meybtn:disabled { background: #d9c3a0; opacity: 1; }
 body:has(.modal:not([hidden])) .meybtn, body.cinema .meybtn { display: none; }
+
+/* Meyhane radyosu: YouTube oynatıcısı görünmez yerde çalar */
+.radiohost { position: fixed; left: -9999px; top: 0; width: 320px; height: 180px; pointer-events: none; }

@@ -938,5 +938,19 @@ export default {
  "Sıradasın: {n}": "Você está na fila: {n}",
  "Garson Rıza": "Rıza, o garçom",
  "Buyrun, {name}. Şerefe!": "Aqui está, {name}. Saúde!",
- "Önce masaya otur.": "Sente-se à mesa primeiro."
+ "Önce masaya otur.": "Sente-se à mesa primeiro.",
+ "Radyo": "Rádio",
+ "YouTube listesi linki (list=...)": "Link da playlist do YouTube (list=...)",
+ "Çalıyor: {title}": "Tocando: {title}",
+ "Radyo açılıyor…": "Sintonizando…",
+ "Radyoda henüz liste yok. Bir YouTube listesi linki yapıştır.": "Ainda não há playlist no rádio. Cole um link de playlist do YouTube.",
+ "Listeyi açan: {name}": "Playlist de: {name}",
+ "Radyoyu aç (bende)": "Ligar o rádio (para mim)",
+ "Radyoyu kapat (bende)": "Desligar o rádio (para mim)",
+ "Sonraki şarkı": "Próxima música",
+ "Bu bir YouTube listesi linki değil. Linkte list= olmalı.": "Não é um link de playlist do YouTube. Precisa ter list=.",
+ "Radyoda yeni liste çalıyor": "Nova playlist no rádio",
+ "Çal": "Tocar",
+ "Liste meyhanedeki herkese aynı anda çalar. \"Radyoyu kapat\" yalnızca senin sesini kapatır.": "A playlist toca para todos na taberna ao mesmo tempo. \"Desligar o rádio\" só silencia para você.",
+ "Garson Birkan": "Birkan, o garçom"
 };

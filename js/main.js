@@ -438,6 +438,7 @@ async function enterWorld(rid, fresh = false) {
       pc: () => adminRoom.openPc(),
       roulette: () => adminRoom.openRoulette(),
       horses: () => adminRoom.openHorses(),
+      radio: () => adminRoom.openRadio(),
       home: () => game.goto('salon', 96, 120),
       pool: () => games.openPool(),
       adminpool: () => games.openPool({ admin: true }),

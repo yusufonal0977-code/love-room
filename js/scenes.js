@@ -641,25 +641,41 @@ const admin = makeScene({
 /** Meyhane: admin odasının sol kapısından girilen eski İstanbul meyhanesi (yalnızca adminler). Sağ kapı → admin odası.
  *  Sararmış duvar, yeşil lambri, şişe rafları ve mermer tezgah, kareli örtülü tek uzun masa, duvarda ud, köşede fasıl sahnesi.
  *  Garson (admin.js) rakı isteyenleri sıraya koyup tezgahtan gelir, kadehlerini doldurur. */
-// Meyhanenin tek uzun masası: kareli örtü, meze tabakları, şişeler; kadehler oturanların önünde canlı çizilir
-export const MEY_TABLE = { x0: 26, x1: 154, y: 94 };
-const meyTable = (g) => {
+// Meyhanenin tek uzun masası: alçak ve ince üstlü (oturanın göğsüne kadar görünür), beyaz örtü, kenarında
+// kırmızı şerit; üstünde meze tabakları, ekmek sepeti, buz kovası ve şişeler. Kadehler ve garsonun doldurması canlı çizilir.
+export const MEY_TABLE = { x0: 24, x1: 158, y: 105 }; // üst yüz oturanın kucağı hizasında: gövde görünür
+const meyTable = (g, t) => {
   const { x0, x1, y } = MEY_TABLE, w = x1 - x0;
-  R(g, x0, y, w, 12, '#f4efe6');
-  for (let x = x0; x < x1; x += 4) for (let yy = y; yy < y + 12; yy += 4) if (((x - x0) / 4 + (yy - y) / 4) % 2 === 0) R(g, x, yy, 4, 4, '#c8323c');
-  R(g, x0, y + 12, w, 3, '#a8242c'); for (let x = x0 + 1; x < x1; x += 3) R(g, x, y + 15, 1, 2, '#f4efe6'); // saçak
-  const plates = [['#7fbf4a', '#ff7a59'], ['#f4d36b', '#d84a3a'], ['#ffffff', '#7fbf4a'], ['#ff7a59', '#f4d36b'], ['#d84a3a', '#ffffff']];
-  plates.forEach(([a, b], i) => { const px = x0 + 12 + i * 24; R(g, px, y + 3, 9, 4, '#ffffff'); R(g, px + 1, y + 4, 3, 2, a); R(g, px + 5, y + 4, 2, 2, b); });
-  for (const bx of [x0 + 33, x0 + 81, x0 + 117]) { R(g, bx, y - 6, 3, 9, '#e8f4f7'); R(g, bx, y - 6, 3, 2, '#2f8f5a'); R(g, bx + 1, y - 3, 1, 5, '#ffffff'); } // şişeler
-  // Kadehler: oturan herkesin önünde, son tazelemeden bu yana içildikçe azalır (admin.js doldurur)
+  R(g, x0 - 1, y - 1, w + 2, 6, '#5a3420'); // masanın ahşap kenarı (örtünün altından görünür)
+  R(g, x0, y, w, 5, '#f7f2e8'); R(g, x0, y, w, 1, '#ffffff'); // örtünün üstü
+  for (let x = x0 + 3; x < x1; x += 6) R(g, x, y + 2, 1, 1, '#e6ddcc');
+  R(g, x0, y + 5, w, 6, '#efe7d6'); R(g, x0, y + 6, w, 2, '#c8323c'); R(g, x0, y + 9, w, 1, '#c8323c'); // sarkan kısım, kırmızı şerit
+  for (let x = x0 + 1; x < x1; x += 3) R(g, x, y + 11, 1, 2, '#efe7d6'); // saçak
+  for (const lx of [x0 + 3, (x0 + x1) / 2 - 1, x1 - 5]) { R(g, lx, y + 13, 2, 6, '#3a2214'); R(g, lx - 1, y + 18, 4, 1, '#2a180e'); }
+  // Masanın üstü: tabaklar (oturanların önünde), ortada ekmek sepeti ve buz kovası, aralarda şişeler
+  for (const sx of MEY_SEATS) { R(g, sx - 5, y + 1, 7, 3, '#ffffff'); R(g, sx - 4, y + 2, 2, 1, (sx / 2) % 3 < 1 ? '#7fbf4a' : '#ff7a59'); R(g, sx - 1, y + 2, 2, 1, '#f4d36b'); }
+  const mid = (x0 + x1) / 2;
+  R(g, mid - 16, y - 3, 10, 4, '#b48a44'); R(g, mid - 15, y - 4, 8, 2, '#e8c27a'); // ekmek sepeti
+  R(g, mid + 4, y - 6, 8, 7, '#9aa3ad'); R(g, mid + 5, y - 6, 6, 2, '#e8f4f7'); R(g, mid + 5, y - 7, 2, 1, '#e8f4f7'); // buz kovası
+  for (const bx of [x0 + 26, x1 - 30]) { R(g, bx, y - 9, 3, 10, '#e8f4f7'); R(g, bx, y - 10, 3, 2, '#2f8f5a'); R(g, bx + 1, y - 7, 1, 7, '#ffffff'); R(g, bx, y - 4, 3, 2, '#c8323c'); } // rakı şişeleri
+  // Kadehler: ince uzun, oturanın sağında; rakı suyla beyazlaşır
   for (const gl of DECOR.meyGlasses || []) {
-    const gx = Math.round(gl.x), gy = y + 9, fill = Math.round(6 * Math.max(0, Math.min(1, gl.level))); // örtünün üstünde, oturanın önünde
-    R(g, gx, gy - 7, 3, 8, 'rgba(255,255,255,0.35)'); R(g, gx, gy - 7, 1, 8, 'rgba(255,255,255,0.7)');
-    if (fill) R(g, gx, gy + 1 - fill, 3, fill, '#f2efe6'); // rakı (su katılınca beyazlaşır)
+    const gx = Math.round(gl.x), fill = Math.round(7 * Math.max(0, Math.min(1, gl.level)));
+    R(g, gx, y - 7, 3, 9, 'rgba(255,255,255,0.28)'); R(g, gx, y - 7, 1, 9, 'rgba(255,255,255,0.75)'); R(g, gx + 2, y - 7, 1, 9, 'rgba(255,255,255,0.45)');
+    if (fill) R(g, gx, y + 2 - fill, 3, fill, '#f2efe6');
   }
-  for (const lx of [x0 + 2, (x0 + x1) / 2, x1 - 4]) R(g, lx, y + 17, 2, 5, '#3a2214');
+  // Garson dolduruyor: kadehin üstünde eğik şişe ve şişeden süzülen ince rakı
+  const p = DECOR.meyPour;
+  if (p) {
+    const bx = Math.round(p.x) + 3, by = y - 17;
+    R(g, bx - 2, by - 2, 11, 7, 'rgba(20,30,25,0.55)'); // şişe koyu kenarlı, garsonun önünde belli olsun
+    R(g, bx, by, 7, 4, '#e8f4f7'); R(g, bx + 6, by - 1, 2, 3, '#2f8f5a'); R(g, bx + 1, by + 1, 5, 1, '#ffffff'); R(g, bx - 1, by + 3, 2, 2, '#e8f4f7'); // eğik şişe
+    R(g, bx + 2, by + 2, 3, 1, '#c8323c'); // etiket
+    const top = Math.round(y - 7 + 9 - 7 * Math.max(0, Math.min(1, p.k)));
+    for (let yy = by + 5; yy < top; yy++) R(g, bx - 1 + (((t * 20 + yy) | 0) % 3 === 0 ? 1 : 0), yy, 2, 1, '#fffaf0'); // akan rakı
+  }
 };
-export const MEY_SEATS = [36, 58, 80, 102, 124, 146]; // uzun masanın arkasındaki altı sandalye
+export const MEY_SEATS = [36, 58, 80, 102, 124, 146]; // uzun masanın arkasındaki altı sandalye (kadeh oturanın 8 px sağında)
 const meyChair = (g, x) => { // hasır sandalye sırtı (oturanın arkasında kalır)
   R(g, x - 5, 84, 10, 16, '#5a3420'); R(g, x - 4, 85, 8, 2, '#8a5a36'); R(g, x - 4, 89, 8, 1, '#8a5a36'); R(g, x - 4, 93, 8, 6, '#d9b36b');
   for (let i = 0; i < 4; i++) R(g, x - 4 + i * 2, 93, 1, 6, '#b48a44');
@@ -711,19 +727,20 @@ const meyhane = makeScene({
   },
   props: [
     { id: 'chairs', y: 100, draw(g) { MEY_SEATS.forEach((x) => meyChair(g, x)); } },
-    { id: 'table', y: 118, draw(g) { meyTable(g); } },
+    { id: 'table', y: 122, draw(g, { t }) { meyTable(g, t); } },
     { id: 'stool', y: 126, draw(g) { // fasıl taburesi ve yanında darbuka
       R(g, 162, 120, 12, 3, '#8a5a36'); R(g, 163, 123, 2, 6, '#5a3420'); R(g, 171, 123, 2, 6, '#5a3420');
       R(g, 178, 120, 6, 4, '#c9a36b'); R(g, 179, 124, 4, 4, '#8a5a36'); R(g, 180, 128, 2, 2, '#6b4228');
     } },
   ],
-  blocks: [[0, 0, W, 54], [6, 54, 66, 14], [MEY_TABLE.x0 + 2, 96, MEY_TABLE.x1 - MEY_TABLE.x0 - 4, 14]],
+  blocks: [[0, 0, W, 54], [6, 54, 66, 14], [MEY_TABLE.x0 + 2, 104, MEY_TABLE.x1 - MEY_TABLE.x0 - 4, 14]],
   doors: [{ x: 182, y: 84, w: 6, h: 26, to: 'admin', spawn: { x: 18, y: 96, dir: 'right' } }],
   spots: [
-    { id: 'sit', group: 'meyt', x: 90, y: 120, hit: [MEY_TABLE.x0, 82, MEY_TABLE.x1 - MEY_TABLE.x0, 34], label: () => 'Masaya otur' },
+    { id: 'sit', group: 'meyt', x: 90, y: 128, hit: [MEY_TABLE.x0, 82, MEY_TABLE.x1 - MEY_TABLE.x0, 42], label: () => 'Masaya otur' },
+    { id: 'radio', x: 168, y: 72, hit: [154, 6, 30, 20], label: () => 'Radyo' },
     { id: 'sit', group: 'fasil', x: 168, y: 132, hit: [156, 112, 32, 26], label: () => 'Fasıl taburesine otur' },
   ],
-  seats: [...MEY_SEATS.map((x) => ({ x, y: 102, group: 'meyt' })), { x: 168, y: 120, group: 'fasil' }],
+  seats: [...MEY_SEATS.map((x) => ({ x, y: 104, group: 'meyt' })), { x: 168, y: 120, group: 'fasil' }],
   lights: () => [
     { x: 46, y: 16, r: 46, a: 0.85, color: '255,190,110' }, { x: 96, y: 16, r: 50, a: 0.85, color: '255,190,110' }, { x: 146, y: 16, r: 46, a: 0.85, color: '255,190,110' },
     { x: 60, y: 100, r: 34, a: 0.5, color: '255,170,90' }, { x: 120, y: 100, r: 34, a: 0.5, color: '255,170,90' }, { x: 168, y: 118, r: 28, a: 0.5, color: '255,150,90' },

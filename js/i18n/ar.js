@@ -938,5 +938,19 @@ export default {
  "Sıradasın: {n}": "دورك: {n}",
  "Garson Rıza": "النادل رضا",
  "Buyrun, {name}. Şerefe!": "تفضل يا {name}. في صحتك!",
- "Önce masaya otur.": "اجلس إلى الطاولة أولًا."
+ "Önce masaya otur.": "اجلس إلى الطاولة أولًا.",
+ "Radyo": "راديو",
+ "YouTube listesi linki (list=...)": "رابط قائمة يوتيوب (list=...)",
+ "Çalıyor: {title}": "يُشغَّل الآن: {title}",
+ "Radyo açılıyor…": "جارٍ ضبط الراديو…",
+ "Radyoda henüz liste yok. Bir YouTube listesi linki yapıştır.": "لا توجد قائمة في الراديو بعد. الصق رابط قائمة يوتيوب.",
+ "Listeyi açan: {name}": "القائمة من: {name}",
+ "Radyoyu aç (bende)": "تشغيل الراديو (عندي)",
+ "Radyoyu kapat (bende)": "إيقاف الراديو (عندي)",
+ "Sonraki şarkı": "الأغنية التالية",
+ "Bu bir YouTube listesi linki değil. Linkte list= olmalı.": "هذا ليس رابط قائمة يوتيوب. يجب أن يحتوي على list=.",
+ "Radyoda yeni liste çalıyor": "قائمة جديدة على الراديو",
+ "Çal": "تشغيل",
+ "Liste meyhanedeki herkese aynı anda çalar. \"Radyoyu kapat\" yalnızca senin sesini kapatır.": "تُشغَّل القائمة للجميع في الحانة في الوقت نفسه. \"إيقاف الراديو\" يكتم الصوت عندك فقط.",
+ "Garson Birkan": "النادل بيركان"
 };
