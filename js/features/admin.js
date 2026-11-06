@@ -26,7 +26,7 @@ const DAY = 86_400_000;
 const dayKey = (ms) => new Date(ms).toISOString().slice(0, 10);
 export const TV_RECT = [40, 6, 112, 40];
 const SIGN_RECT = [4, 8, 28, 36]; // TV'nin solundaki Eclip tabelası
-const MEY_SIGN = [75, 5, 46, 16]; // meyhanenin tabelası
+const MEY_SIGN = [138, 2, 46, 16]; // meyhanenin tabelası (sağ üst)
 
 /** Her kullanıcı için: bugün aktif + çevrimiçi kaydı (kurallar yoksa sessizce geçer). */
 export function trackActivity(uid) {
