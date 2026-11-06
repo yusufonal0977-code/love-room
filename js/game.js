@@ -176,15 +176,22 @@ export function createGame(opts) {
     const s = nearestSpot();
     if (s) doSpot(s);
   }
+  /** Gruptaki boş sandalyeye oturur: partnerin ve odadaki diğerlerinin (admin odası, meyhane) sandalyesi dolu sayılır.
+   *  Dokunarak gelindiyse dokunulan yere en yakın boş sandalye, tuşla gelindiyse karaktere en yakın olan seçilir. */
+  let lastTap = null;
   function sitDown(group) {
     const seats = lay().seats;
-    const taken = partner.shown && partner.scene === me.scene ? partner.seat : -1;
-    const free = seats.findIndex((s, i) => s.group === group && i !== taken);
+    const pSeat = partner.shown && partner.scene === me.scene ? partner.seat : -1;
+    const taken = new Set(opts.takenSeats?.(me.scene) || []);
+    if (pSeat >= 0) taken.add(pSeat);
+    const near = lastTap && performance.now() - lastTap.at < 10_000 ? lastTap : me;
+    let free = -1, best = Infinity;
+    seats.forEach((s, i) => { if (s.group !== group || taken.has(i)) return; const d = Math.hypot(s.x - near.x, s.y - near.y); if (d < best) { best = d; free = i; } });
     if (free < 0) return opts.onToast?.(t('Burada yer yok'));
     const s = seats[free];
     me.seat = free; me.x = s.x; me.y = s.y; me.dir = s.pose === 'back' ? 'up' : 'down'; me.target = null; me.path = [];
     changed();
-    if (taken >= 0 && seats[taken]?.group === group) opts.onTogether?.();
+    if (pSeat >= 0 && seats[pSeat]?.group === group) opts.onTogether?.();
   }
   function standUp() {
     if (me.seat < 0) return;
@@ -245,7 +252,7 @@ export function createGame(opts) {
   addEventListener('keydown', (e) => {
     if (e.target.closest?.('input, textarea, select, [contenteditable]') || opts.blockInput?.()) return;
     keys[e.key.toLowerCase()] = true;
-    if (e.key.toLowerCase() === 'e' || e.key === ' ') { e.preventDefault(); interact(); }
+    if (e.key.toLowerCase() === 'e' || e.key === ' ') { e.preventDefault(); lastTap = null; interact(); }
   });
   addEventListener('keyup', (e) => (keys[e.key.toLowerCase()] = false));
   addEventListener('blur', () => Object.keys(keys).forEach((k) => (keys[k] = false)));
@@ -257,7 +264,8 @@ export function createGame(opts) {
     const [x, y] = toWorld(e);
     if (edit) { try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } return editDown(x, y); }
     const door = doorAt(x, y);
-    if (me.seat >= 0 && !door) return standUp(); // otururken dokunmak kalkar; kapıya dokunmak kalkıp gider
+    if (me.seat >= 0 && !door) return standUp();
+    lastTap = { x, y, at: performance.now() }; // oturulacak sandalye dokunulan yere göre seçilir // otururken dokunmak kalkar; kapıya dokunmak kalkıp gider
     const l = lay();
     const catHit = cat.scene === me.scene && Math.abs(x - cat.x) < 12 && Math.abs(y - cat.y + 5) < 10;
     const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];

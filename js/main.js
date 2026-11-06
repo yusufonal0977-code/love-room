@@ -379,6 +379,7 @@ async function enterWorld(rid, fresh = false) {
     sleepyOf: (who) => !!sleep?.sleepy(who),
     getExtras: () => adminRoom?.extras() || [],
     hasCrown: (who) => ADMIN_SCENES.has(game?.me.scene) && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
+    takenSeats: (sc) => adminRoom?.takenSeats?.(sc) || [],
     canEnter: (to) => (to === 'meyhane' ? !!adminRoom?.active() : to !== 'yatak' || bedOpen()),
     onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır. Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız')); },

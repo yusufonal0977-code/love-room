@@ -6,7 +6,7 @@
 import { db, ref, push, remove, set, onValue, serverTimestamp, now } from '../fb.js';
 import { h, toast } from '../ui.js';
 import { t } from '../i18n.js';
-import { DECOR, SCENES, MEY_TABLE, layout } from '../scenes.js';
+import { DECOR, SCENES, layout, meyGlassAt } from '../scenes.js';
 
 const HOME = { x: 84, y: 74 }, SPEED = 34, POUR = 3200, DRINK = 240_000; // px/sn, ms, kadehin bitme süresi
 const LOOK = { skin: 2, hair: 'short', hairColor: 0, outfit: 'basic', shirt: 0, pants: 0 }; // Garson Birkan
@@ -17,7 +17,7 @@ export function schedule(queue, seats) {
   return Object.entries(queue || {}).filter(([, e]) => typeof e?.at === 'number' && seats[e.seat])
     .sort((a, b) => a[1].at - b[1].at || (a[0] < b[0] ? -1 : 1))
     .map(([id, e]) => {
-      const to = { x: seats[e.seat].x + 14, y: 92 }; // kadehin hemen sağında, masanın arkasında
+      const gl = meyGlassAt(seats[e.seat]), to = { x: gl.x + 6, y: 92 }; // kadehin hemen sağında, masanın arkasında (sandalyeler arası)
       const walk = (Math.hypot(to.x - HOME.x, to.y - HOME.y) / SPEED) * 1000;
       const start = Math.max(e.at, prevEnd), arrive = start + walk, poured = arrive + POUR, end = poured + walk;
       prevEnd = end;
@@ -79,13 +79,13 @@ export function createMeyhane(ctx) {
     // Kadehler: masada oturan herkesin önünde
     const list = [];
     const level = (id) => { const ts = glass[id]; return ts ? Math.max(0.12, 1 - (ms - ts) / DRINK) : 0.12; };
-    if (seat >= 0) list.push({ x: seats()[seat].x + 8, level: level(uid) });
-    for (const [id, p] of Object.entries(others)) if (p?.scene === 'meyhane' && p.seat >= 0 && seats()[p.seat]?.group === 'meyt') list.push({ x: seats()[p.seat].x + 8, level: level(id) });
+    if (seat >= 0) list.push({ ...meyGlassAt(seats()[seat]), level: level(uid) });
+    for (const [id, p] of Object.entries(others)) if (p?.scene === 'meyhane' && p.seat >= 0 && seats()[p.seat]?.group === 'meyt') list.push({ ...meyGlassAt(seats()[p.seat]), level: level(id) });
     // Dolarken kadeh garsonun elinden yavaşça dolar
     const w = waiterAt(plan, ms);
-    const gx = w.pouring ? seats()[w.job.seat].x + 8 : 0;
-    if (w.pouring) { const g = list.find((x) => x.x === gx); if (g) g.level = Math.max(g.level, w.k); else list.push({ x: gx, level: w.k }); }
-    DECOR.meyPour = w.pouring ? { x: gx, k: w.k } : null;
+    const pg = w.pouring ? meyGlassAt(seats()[w.job.seat]) : null;
+    if (pg) { const g = list.find((x) => x.x === pg.x && x.y === pg.y); if (g) g.level = Math.max(g.level, w.k); else list.push({ ...pg, level: w.k }); }
+    DECOR.meyPour = pg ? { ...pg, k: w.k } : null;
     if (JSON.stringify(list) !== JSON.stringify(DECOR.meyGlasses || [])) DECOR.meyGlasses = list;
     if (w.moving) walkT += dt;
     return { id: 'garson', scene: 'meyhane', x: w.x, y: w.y, t: walkT, dir: w.dir, moving: w.moving, look: LOOK, name: t('Garson Birkan'), noBadge: true,

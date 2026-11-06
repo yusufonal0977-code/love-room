@@ -253,7 +253,9 @@ export function createAdmin(ctx) {
 
   /** Sohbet paneli admin odasındayken mesajı ortak admin sohbetine yazar. */
   const active = () => !!stopPres;
+  /** Bu sahnede başkalarının oturduğu sandalyeler (aynı sandalyeye iki kişi oturmasın). */
+  const takenSeats = (scene) => Object.values(others).filter((p) => isFresh(p) && (p.scene || 'admin') === scene && p.seat >= 0).map((p) => p.seat);
   const sendChat = (text) => push(ref(db, 'admin/chat'), { by: uid, name: ctx.myName(), text, at: serverTimestamp() });
-  Object.assign(api, { enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), openRadio: () => radio.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); radio.leave(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
+  Object.assign(api, { takenSeats, enter, onScene, openTv, openPc, extras, active, sendChat, voice, poolBets, openRoulette: () => roulette.open(), openHorses: () => horses.open(), openRadio: () => radio.open(), placeTv: () => tv.place(), leader: () => roulette.leader(), leave: () => (stopPres ? stopPresence() : null), stop: () => { stopPresence(); radio.leave(); roulette.stop(); tv.destroy(); poolBets.stop(); horses.stop(); } });
   return api;
 }
