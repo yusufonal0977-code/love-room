@@ -898,5 +898,19 @@ export default {
  "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "حسابك موجود الآن في هذا المتصفح فقط. إذا ربطته، سيبقى منزلك وبياناتك كما هي، ويمكنك الدخول من أجهزة أخرى أيضًا.",
  "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "تم ربط حسابك بـ Google. يمكنك الآن الدخول عبر Google من أجهزة أخرى أيضًا.",
  "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "حساب Google هذا مستخدم بالفعل في حساب آخر على Get Love Room. اختر حساب Google آخر.",
- "Google hesabı bağlanamadı. Tekrar dene.": "تعذر ربط حساب Google. حاول مرة أخرى."
+ "Google hesabı bağlanamadı. Tekrar dene.": "تعذر ربط حساب Google. حاول مرة أخرى.",
+ "Ekranını yansıt": "شارك شاشتك",
+ "Kalite": "الجودة",
+ "İçerik": "المحتوى",
+ "Film / oyun (akıcı)": "فيلم / لعبة (سلس)",
+ "Yazı / kod (net)": "نص / كود (واضح)",
+ "Film için \"Sekme\"yi seçip \"Sekme sesini de paylaş\"ı işaretle. Yavaş internette 720p daha akıcı olur.": "لفيلم، اختر \"علامة التبويب\" وفعّل \"مشاركة صوت علامة التبويب أيضًا\". مع إنترنت بطيء يكون 720p أكثر سلاسة.",
+ "Yayına başla": "ابدأ البث",
+ "CANLI": "مباشر",
+ "Yayın sesi": "صوت البث",
+ "Pencere içinde izle": "صورة داخل صورة",
+ "Yayını durdur": "إيقاف البث",
+ "Sen yayındasın": "أنت في بث مباشر",
+ "{n} izleyici": "{n} يشاهدون",
+ "{name} yayında": "{name} في بث مباشر"
 };

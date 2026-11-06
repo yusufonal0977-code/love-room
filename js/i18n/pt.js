@@ -898,5 +898,19 @@ export default {
  "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "Sua conta agora só existe neste navegador. Se você vincular, sua casa e seus dados continuam iguais e você também poderá entrar por outros dispositivos.",
  "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "Sua conta agora está vinculada ao Google. Você também pode entrar com o Google em outros dispositivos.",
  "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "Esta conta Google já é usada em outra conta do Get Love Room. Escolha outra conta Google.",
- "Google hesabı bağlanamadı. Tekrar dene.": "Não foi possível vincular a conta Google. Tente novamente."
+ "Google hesabı bağlanamadı. Tekrar dene.": "Não foi possível vincular a conta Google. Tente novamente.",
+ "Ekranını yansıt": "Compartilhe sua tela",
+ "Kalite": "Qualidade",
+ "İçerik": "Conteúdo",
+ "Film / oyun (akıcı)": "Filme / jogo (fluido)",
+ "Yazı / kod (net)": "Texto / código (nítido)",
+ "Film için \"Sekme\"yi seçip \"Sekme sesini de paylaş\"ı işaretle. Yavaş internette 720p daha akıcı olur.": "Para um filme, escolha \"Guia\" e marque \"Compartilhar também o áudio da guia\". Em internet lenta, 720p fica mais fluido.",
+ "Yayına başla": "Começar transmissão",
+ "CANLI": "AO VIVO",
+ "Yayın sesi": "Volume da transmissão",
+ "Pencere içinde izle": "Picture-in-picture",
+ "Yayını durdur": "Parar transmissão",
+ "Sen yayındasın": "Você está ao vivo",
+ "{n} izleyici": "{n} assistindo",
+ "{name} yayında": "{name} está ao vivo"
 };

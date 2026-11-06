@@ -898,5 +898,19 @@ export default {
  "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "Ton compte n'existe pour l'instant que dans ce navigateur. Si tu l'associes, ta maison et tes données restent intactes et tu pourras aussi te connecter depuis d'autres appareils.",
  "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "Ton compte est maintenant associé à Google. Tu peux aussi te connecter avec Google sur d'autres appareils.",
  "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "Ce compte Google est déjà utilisé par un autre compte Get Love Room. Choisis un autre compte Google.",
- "Google hesabı bağlanamadı. Tekrar dene.": "Impossible d'associer le compte Google. Réessaie."
+ "Google hesabı bağlanamadı. Tekrar dene.": "Impossible d'associer le compte Google. Réessaie.",
+ "Ekranını yansıt": "Partage ton écran",
+ "Kalite": "Qualité",
+ "İçerik": "Contenu",
+ "Film / oyun (akıcı)": "Film / jeu (fluide)",
+ "Yazı / kod (net)": "Texte / code (net)",
+ "Film için \"Sekme\"yi seçip \"Sekme sesini de paylaş\"ı işaretle. Yavaş internette 720p daha akıcı olur.": "Pour un film, choisis \"Onglet\" et coche \"Partager aussi l'audio de l'onglet\". Avec une connexion lente, 720p est plus fluide.",
+ "Yayına başla": "Passer en direct",
+ "CANLI": "EN DIRECT",
+ "Yayın sesi": "Volume du direct",
+ "Pencere içinde izle": "Image dans l'image",
+ "Yayını durdur": "Arrêter le direct",
+ "Sen yayındasın": "Tu es en direct",
+ "{n} izleyici": "{n} regardent",
+ "{name} yayında": "{name} est en direct"
 };

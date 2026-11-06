@@ -495,3 +495,22 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 /* Menü: Google hesabını bağlama */
 #linkBox button { width: 100%; }
 #linkBox p { margin: 6px 0 0; }
+
+/* Ekran yansıtma: Discord tarzı yayın çubuğu ve kalite penceresi */
+.livebar { position: absolute; left: 0; right: 0; top: 0; z-index: 4; display: flex; flex-direction: column; gap: 4px; padding: 4px 6px; background: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,0)); color: #fff; font-size: 11px; cursor: pointer; pointer-events: auto; }
+.livebar[hidden] { display: none; }
+.livetop { display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; overflow: hidden; }
+.livebadge { background: #ed4245; color: #fff; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .04em; flex: none; }
+.livewho { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.livestats { opacity: .75; font-variant-numeric: tabular-nums; }
+.livebtns { display: none; align-items: center; gap: 6px; flex-wrap: wrap; }
+.livebar.open .livebtns, .livebar:hover .livebtns { display: flex; }
+.livebtns button, .livebtns select { padding: 3px 8px; font-size: 12px; min-height: 0; }
+.livebtns button[hidden], .livebtns select[hidden], .livevol[hidden] { display: none; }
+.livevol { display: flex; align-items: center; gap: 4px; }
+.livevol input { width: 80px; }
+.livevol span svg { width: 14px; height: 14px; }
+.tvbox.full .livebar, .admscreen.full .livebar, .tvbox.incinema .livebar { font-size: 13px; padding: 8px 12px; }
+.admscreen.full .livebar { top: 44px; }
+.sharepick { margin-bottom: 10px; }
+.sharepick button.sel { background: #fcdf4b; color: #1a1608; }

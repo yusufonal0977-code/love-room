@@ -6,6 +6,7 @@
 // Farklı ağlarda (mobil veri, sıkı modemler) bağlantı config.js'teki TURN sunucusu üzerinden geçer.
 import { ICE_SERVERS } from './config.js';
 import { t } from './i18n.js';
+import { capture, tune, changeQuality, savedOpts } from './screenshare.js';
 
 const SLOTS = ['audio', 'cam', 'screen', 'screenAudio'];
 
@@ -22,7 +23,7 @@ export function mediaError(e, what) {
 
 export function createCall({ uid, send, onRemote, onState }) {
   let pc = null, partner = null, pendingIce = [];
-  let mic = null, cam = null, screen = null;
+  let mic = null, cam = null, screen = null, shareOpts = savedOpts();
   let discT = null;
   const remote = Object.fromEntries(SLOTS.map((s) => [s, new MediaStream()]));
   const levels = { me: 0, partner: 0 };
@@ -113,17 +114,8 @@ export function createCall({ uid, send, onRemote, onState }) {
     const tr = pc.getTransceivers();
     const tracks = [mic?.getAudioTracks()[0], cam?.getVideoTracks()[0], screen?.getVideoTracks()[0], screen?.getAudioTracks()[0]];
     for (let i = 0; i < 4; i++) if (tr[i]) await tr[i].sender.replaceTrack(tracks[i] ?? null).catch(() => {});
-    // Film kalitesi: ekran paylaşımına yüksek bit hızı
-    if (tr[2] && screen) {
-      try {
-        const p = tr[2].sender.getParameters();
-        p.encodings = p.encodings?.length ? p.encodings : [{}];
-        p.encodings[0].maxBitrate = 6_000_000;
-        p.encodings[0].maxFramerate = 30;
-        p.degradationPreference = 'maintain-framerate';
-        await tr[2].sender.setParameters(p);
-      } catch { /* bazı tarayıcılar desteklemez */ }
-    }
+    // Seçilen yayın kalitesi: bit hızı, fps ve öncelik
+    if (tr[2] && screen) await tune(tr[2].sender, shareOpts);
   }
 
   async function restart() {
@@ -220,28 +212,27 @@ export function createCall({ uid, send, onRemote, onState }) {
     },
     get camStream() { return cam; },
     get canShareScreen() { return !!navigator.mediaDevices?.getDisplayMedia; },
-    async toggleScreen() {
+    /** opts: { q, mode } yayın kalitesi (screenshare.js); verilmezse son seçilen. */
+    async toggleScreen(opts) {
       if (screen) {
         screen.getTracks().forEach((t) => t.stop());
         screen = null;
       } else {
         try {
-          // Film için: 1080p/30fps, sekme/sistem sesi dahil, hareket öncelikli kodlama
-          screen = await navigator.mediaDevices.getDisplayMedia({
-            video: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
-            audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
-            systemAudio: 'include',
-            selfBrowserSurface: 'exclude',
-          });
+          shareOpts = opts || savedOpts();
+          screen = await capture(shareOpts);
           const v = screen.getVideoTracks()[0];
-          if (v) { v.contentHint = 'motion'; v.onended = () => { screen = null; attachTracks(); onState?.({ ...status, screen: false }); }; }
-          const a = screen.getAudioTracks()[0];
-          if (a) a.contentHint = 'music';
-          if (!a) onState?.({ ...status, screenNoAudio: true });
+          if (v) v.onended = () => { screen = null; attachTracks(); onState?.({ ...status, screen: false }); };
+          if (!screen.getAudioTracks()[0]) onState?.({ ...status, screenNoAudio: true });
         } catch { return false; }
       }
       await attachTracks();
       return !!screen;
+    },
+    /** Yayın sürerken kaliteyi değiştirir. */
+    async setScreenQuality(opts) {
+      shareOpts = opts;
+      if (screen) await changeQuality(screen, opts, pc ? [pc.getTransceivers()[2]?.sender].filter(Boolean) : []);
     },
     get screenStream() { return screen; },
     /** Hazır bir akışı TV kanalından gönderir (telefondan video dosyası ya da arka kamera). null → durdur. */

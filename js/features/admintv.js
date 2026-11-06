@@ -12,6 +12,7 @@ import { db, ref, set, update, onValue, serverTimestamp, now } from '../fb.js';
 import { W, H } from '../scenes.js';
 import { t } from '../i18n.js';
 import { parseLink, loadYT } from './tv.js';
+import { pickQuality, capture, changeQuality, liveOverlay } from '../screenshare.js';
 
 const YT_ID = /^[\w-]{6,}$/;
 const webUrl = (v) => (v.kind === 'yt' ? `https://www.youtube.com/watch?v=${v.src}` : v.src);
@@ -30,6 +31,14 @@ export function createAdminTv(ctx, { rect, onMode, statsSheet, voice }) {
     h('button', { onclick: () => openOutside() }, 'Yeni sekmede aç'));
   const box = h('div', { class: 'admscreen', hidden: true }, content, soundBtn, bar);
   document.getElementById('tvLayer').append(box);
+  // Yansıtmada yayın çubuğu: herkes aynı yayını izler, yansıtan kalite değiştirip durdurabilir
+  liveOverlay(box, () => screenVid, {
+    info: () => (tv.kind === 'screen' && inRoom && mode() === 'tv' ? { isMe: tv.by === ctx.uid, name: t('{name} yayında', { name: tv.name || '' }), viewers: voice.connected() } : null),
+    onStop: () => stopShare(true),
+    onRetune: (o) => share && changeQuality(share, o, voice.shareSenders()),
+    onVolume: (v) => voice.setScreenVolume(v),
+    onFull: () => setFull(!full),
+  });
 
   // Geçiş tuşu: veri ekranı <-> normal TV; kumanda yalnızca normal TV'deyken
   const btn = h('button', { onclick: toggle });
@@ -60,9 +69,11 @@ export function createAdminTv(ctx, { rect, onMode, statsSheet, voice }) {
 
   // ---------- Ekran yansıtma ----------
   async function startShare() {
+    const opts = await pickQuality();
+    if (!opts) return;
     try {
-      const s = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-      share = s; voice.setShare(s);
+      const s = await capture(opts);
+      share = s; voice.setShare(s, opts);
       s.getVideoTracks()[0].onended = () => stopShare(true);
       await set(tvRef, { mode: 'tv', kind: 'screen', by: ctx.uid, name: ctx.myName(), at: serverTimestamp() });
       closeSheet();

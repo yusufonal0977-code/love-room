@@ -8,11 +8,12 @@
 // Kanal sırası sabittir: 0 mikrofon, 1 kamera, 2 ekran yansıtma, 3 ekran sesi (TV'de yansıtma için, admintv.js).
 import { ICE_SERVERS } from '../config.js';
 import { db, ref, push, remove, onChildAdded, serverTimestamp, now } from '../fb.js';
+import { tune, savedOpts } from '../screenshare.js';
 
 export function createAdminVoice(ctx) {
   const { uid } = ctx;
   const peers = new Map(); // uid -> { pc, pending, audio, level, vsender, bubble }
-  let mic = null, stopSig = null, muteTimer = null, joinedAt = 0, actx = null, share = null;
+  let mic = null, stopSig = null, muteTimer = null, joinedAt = 0, actx = null, share = null, shareOpts = savedOpts(), screenVol = 1;
   const send = (to, msg) => push(ref(db, `admin/signal/${to}`), { ...msg, from: uid, at: serverTimestamp() }).catch(() => {});
 
   async function getMic() {
@@ -37,7 +38,7 @@ export function createAdminVoice(ctx) {
     const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     const audio = new Audio(); audio.autoplay = true; audio.playsInline = true;
     audio.muted = id === ctx.partnerUid(); // partnerle evdeki aramadan zaten konuşuluyor, ses iki kez gelmesin
-    const screenAudio = new Audio(); screenAudio.autoplay = true;
+    const screenAudio = new Audio(); screenAudio.autoplay = true; screenAudio.volume = screenVol;
     // Görüntü balonu (evdeki partner balonuyla aynı görünüm); oyun admin karakterinin başına yerleştirir
     const bubble = document.createElement('div'); bubble.className = 'bubble admincam';
     const vid = document.createElement('video'); vid.autoplay = true; vid.playsInline = true; vid.muted = true; bubble.append(vid);
@@ -93,10 +94,11 @@ export function createAdminVoice(ctx) {
   function close(id) { const p = peers.get(id); if (!p) return; p.pc.close(); p.audio.srcObject = null; p.vid.srcObject = null; p.screenAudio.srcObject = null; p.bubble.remove(); peers.delete(id); }
   /** Evdeki kamera açıksa görüntüsünü bu bağlantıya koyar, kapalıysa kanalı boşaltır. */
   const camTrack = () => ctx.call?.camStream?.getVideoTracks()[0] || null;
-  const put = (sender, tr) => { if (sender && sender.track !== tr) sender.replaceTrack(tr).catch(() => {}); };
+  const put = (sender, tr) => { if (sender && sender.track !== tr) return sender.replaceTrack(tr).catch(() => {}); };
   function setCam(p) {
     put(p.vsender, camTrack());
-    put(p.ssender, share?.getVideoTracks()[0] || null);
+    const sv = share?.getVideoTracks()[0] || null;
+    if (p.ssender && p.ssender.track !== sv) Promise.resolve(put(p.ssender, sv)).then(() => sv && tune(p.ssender, shareOpts)); // yayın kalitesi: bit hızı, fps, öncelik
     put(p.sasender, share?.getAudioTracks()[0] || null);
   }
 
@@ -125,5 +127,7 @@ export function createAdminVoice(ctx) {
     for (const id of [...peers.keys()]) close(id);
     mic?.getTracks().forEach((tr) => tr.stop()); mic = null;
   }
-  return { join, leave, sync, peers, setShare: (s) => { share = s; peers.forEach(setCam); }, screenOf: (id) => { const s = peers.get(id)?.screen; return s?.getVideoTracks().length ? s : null; }, camBubble: (id) => peers.get(id)?.bubble || null, talking: (id) => (peers.get(id)?.level || 0) > 18, connected: () => [...peers.values()].filter((p) => p.pc.connectionState === 'connected').length };
+  return { join, leave, sync, peers, setShare: (s, opts) => { share = s; if (opts) shareOpts = opts; peers.forEach(setCam); },
+    shareSenders: () => { shareOpts = savedOpts(); return [...peers.values()].map((p) => p.ssender).filter(Boolean); },
+    setScreenVolume: (v) => { screenVol = v; peers.forEach((p) => (p.screenAudio.volume = v)); }, screenOf: (id) => { const s = peers.get(id)?.screen; return s?.getVideoTracks().length ? s : null; }, camBubble: (id) => peers.get(id)?.bubble || null, talking: (id) => (peers.get(id)?.level || 0) > 18, connected: () => [...peers.values()].filter((p) => p.pc.connectionState === 'connected').length };
 }

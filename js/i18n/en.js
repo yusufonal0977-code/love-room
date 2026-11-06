@@ -898,5 +898,19 @@ export default {
  "Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.": "Your account only exists in this browser right now. If you link it, your home and data stay as they are, and you can sign in from other devices too.",
  "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.": "Your account is now linked to Google. You can now sign in with Google on other devices too.",
  "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.": "This Google account is already used by another Get Love Room account. Choose a different Google account.",
- "Google hesabı bağlanamadı. Tekrar dene.": "Couldn't link the Google account. Try again."
+ "Google hesabı bağlanamadı. Tekrar dene.": "Couldn't link the Google account. Try again.",
+ "Ekranını yansıt": "Share your screen",
+ "Kalite": "Quality",
+ "İçerik": "Content",
+ "Film / oyun (akıcı)": "Film / game (smooth)",
+ "Yazı / kod (net)": "Text / code (sharp)",
+ "Film için \"Sekme\"yi seçip \"Sekme sesini de paylaş\"ı işaretle. Yavaş internette 720p daha akıcı olur.": "For a film, pick \"Tab\" and tick \"Also share tab audio\". On slow internet 720p is smoother.",
+ "Yayına başla": "Go live",
+ "CANLI": "LIVE",
+ "Yayın sesi": "Stream volume",
+ "Pencere içinde izle": "Picture in picture",
+ "Yayını durdur": "Stop stream",
+ "Sen yayındasın": "You are live",
+ "{n} izleyici": "{n} watching",
+ "{name} yayında": "{name} is live"
 };

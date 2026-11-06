@@ -1,5 +1,6 @@
 // Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
 import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
+import { pickQuality } from './screenshare.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
@@ -518,7 +519,9 @@ async function enterWorld(rid, fresh = false) {
   $('screenBtn').onclick = async () => {
     // Telefonda tüm ekran paylaşılamaz: TV penceresindeki "Galeriden video / Kamera" seçenekleri açılır
     if (!call.canShareScreen) return tv.open();
-    const on = await call.toggleScreen(); setBtn('screenBtn', on); live.setPresence({ screen: on });
+    let opts;
+    if (!call.screenStream && !(opts = await pickQuality())) return; // kalite penceresinden vazgeçildi
+    const on = await call.toggleScreen(opts); setBtn('screenBtn', on); live.setPresence({ screen: on });
     tv.setScreen(on ? call.screenStream : partnerP()?.screen ? call.remote.screen : null);
     if (on) { toast(t('Ekranın salondaki TV\'de')); if (game.me.scene !== 'salon') tv.cinema(true); }
   };

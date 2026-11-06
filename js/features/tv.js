@@ -12,6 +12,7 @@ import { h, icon, openSheet, closeSheet, toast } from '../ui.js';
 import { serverTimestamp, set, now } from '../fb.js';
 import { DECOR, W, H } from '../scenes.js';
 import { t } from '../i18n.js';
+import { liveOverlay } from '../screenshare.js';
 
 const TV_RECT = [73, 13, 46, 26]; // salondaki ekran (sahne pikseli)
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -66,6 +67,13 @@ export function createTV(ctx) {
   const tapZone = h('div', { class: 'tvtap', onclick: () => setCinema(true) });
   const box = h('div', { class: 'tvbox', hidden: true }, ytHost, file, web, screen, join, count, tapZone);
   document.getElementById('tvLayer').append(box);
+  // Ekran paylaşımında Discord'daki gibi yayın çubuğu: kim yayında, çözünürlük/fps, ses, kalite, tam ekran
+  const liveBar = liveOverlay(box, () => screen, {
+    info: () => (screenStream ? { isMe: screenStream === ctx.call.screenStream, name: localShare ? t(localShare.name) : t('{name} yayında', { name: ctx.partnerName() }) } : null),
+    onStop: () => { stopLocal(); ctx.shareMedia(null); },
+    onRetune: (o) => ctx.call.setScreenQuality(o),
+    onFull: () => { if (!cinema) setCinema(true); setFull(!full); },
+  });
 
   // Sinema kontrolleri (alt çubuğun yerine geçer; telefonda üst üste binmez)
   const cTitle = h('span', { class: 'ctitle' });
@@ -260,7 +268,7 @@ export function createTV(ctx) {
     const vol = inSalon || cinema ? 100 : 25;
     if (ytReady && yt.getVolume?.() !== vol) yt.setVolume(vol);
     file.volume = vol / 100;
-    ctx.screenAudio.volume = vol / 100;
+    ctx.screenAudio.volume = (vol / 100) * liveBar.volume();
     box.classList.toggle('away', !inSalon && !full);
     box.classList.toggle('incinema', cinema);
     if (full || !inSalon) return;

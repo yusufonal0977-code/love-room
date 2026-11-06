@@ -2,7 +2,9 @@
 //
 // Turlar sunucu saatine bağlıdır, herkes aynı anı görür: her 40 sn'de bir tur = 25 sn bahis, 9 sn çark, 6 sn sonuç.
 // Sonuç çark dönmeye başlarken ilk yazan cihazca rastgele seçilir ve bir daha değiştirilemez (önceden bilinemez).
-//   admin/coins/{uid}               = { name, coins }           her adminin fişi (ilk girişte 1000)
+//   admin/coins/{uid}               = { name, coins, season, seasonAt }  her adminin fişi (ilk girişte 1000)
+// Sezon: SEASON artırılınca herkesin fişi odaya ilk girişinde 1000'e döner (kurallar herkese yalnızca kendi fişini
+// yazdırdığı için sıfırlamayı her admin kendisi yapar); sıfırlanmamış eski puanlar tabloda gösterilmez.
 //   admin/roulette/bets/{tur}/{uid} = { <bahis>: miktar, paid }  bahisler; sonuçtan sonra herkes kendi kazancını alır
 //   admin/roulette/results/{tur}    = 0-36
 import { h, openSheet, toast } from '../ui.js';
@@ -10,6 +12,7 @@ import { db, ref, get, set, update, remove, onValue, runTransaction, now } from 
 import { t, locale } from '../i18n.js';
 
 const ROUND = 40_000, BET = 25_000, SPIN = 9_000, START = 1000;
+const SEASON = 1; // 2026-11-07: kullanıcının isteğiyle herkesin puanı sıfırlandı
 const WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 const RED = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
 const colorOf = (n) => (n === 0 ? 'green' : RED.has(n) ? 'red' : 'black');
@@ -34,7 +37,8 @@ const phaseOf = (ms = now()) => {
 
 export function createRoulette(ctx) {
   const { uid } = ctx;
-  let coins = {}, bets = {}, results = {}, body = null, raf = 0, chip = 10, inRoom = false, round = -1;
+  let coins = {}, bets = {}, results = {}, body = null, raf = 0, chip = 10, inRoom = false, round = -1, seasonAt = 0;
+  const current = () => Object.entries(coins).filter(([, v]) => (v?.season || 0) >= SEASON);
   const subs = [];
   const myCoins = () => coins[uid]?.coins ?? 0;
 
@@ -43,7 +47,7 @@ export function createRoulette(ctx) {
   board.onclick = () => board.classList.toggle('collapsed'); // dokununca küçülür, arkasındaki masa görünür
   document.body.append(board);
   function drawBoard() {
-    const list = Object.entries(coins).map(([id, v]) => ({ id, name: v.name || '?', c: v.coins || 0 })).sort((a, b) => b.c - a.c);
+    const list = current().map(([id, v]) => ({ id, name: v.name || '?', c: v.coins || 0 })).sort((a, b) => b.c - a.c);
     const ph = phaseOf();
     const last = results[ph.r - 1];
     board.innerHTML = '';
@@ -68,8 +72,13 @@ export function createRoulette(ctx) {
   async function ensureCoins() {
     const s = await get(ref(db, `admin/coins/${uid}`)).catch(() => null);
     if (!s) return;
-    if (!s.exists()) await set(ref(db, `admin/coins/${uid}`), { name: ctx.myName(), coins: START }).catch(() => {});
-    else if (s.val().name !== ctx.myName()) update(ref(db, `admin/coins/${uid}`), { name: ctx.myName() }).catch(() => {});
+    if (!s.exists() || (s.val().season || 0) < SEASON) {
+      seasonAt = now();
+      await set(ref(db, `admin/coins/${uid}`), { name: ctx.myName(), coins: START, season: SEASON, seasonAt }).catch(() => {});
+    } else {
+      seasonAt = s.val().seasonAt || 0;
+      if (s.val().name !== ctx.myName()) update(ref(db, `admin/coins/${uid}`), { name: ctx.myName() }).catch(() => {});
+    }
   }
 
   // Tur saati: her yarım saniyede bir; sonucu çek, kazancı al, tabloyu yenile
@@ -128,6 +137,7 @@ export function createRoulette(ctx) {
     for (const [k, byUser] of Object.entries(s.val() || {})) {
       const mine = byUser?.[uid];
       if (!mine || +k >= r) continue;
+      if (+k * ROUND < seasonAt) { remove(ref(db, `admin/roulette/bets/${k}/${uid}`)).catch(() => {}); continue; }
       if (mine.paid) { if (+k < r - 5) remove(ref(db, `admin/roulette/bets/${k}/${uid}`)).catch(() => {}); continue; }
       await settleRound(+k, r);
     }
@@ -166,8 +176,8 @@ export function createRoulette(ctx) {
       status,
       h('p', {}, t('Fişin: {n}', { n: fmt(myCoins()) })),
       h('div', { class: 'row wrap' }, ...CHIPS.map((c) => h('button', { class: 'rchipbtn' + (c === chip ? ' sel' : ''), onclick: () => { chip = c; render(); } }, String(c)))),
-      h('div', { class: 'row wrap' }, h('button', { class: 'link', onclick: undo }, 'Bahislerimi geri al'),
-        myCoins() < 10 && !bets[uid] ? h('button', { class: 'link', onclick: () => set(ref(db, `admin/coins/${uid}/coins`), 500) }, 'Fişim bitti: 500 fiş al') : null),
+      h('div', { class: 'row wrap' }, h('button', { class: 'link', onclick: undo }, t('Bahislerimi geri al')),
+        myCoins() < 10 && !bets[uid] ? h('button', { class: 'link', onclick: () => set(ref(db, `admin/coins/${uid}/coins`), 500) }, t('Fişim bitti: 500 fiş al')) : null),
       h('small', {}, t('Son sonuçlar: {list}', { list: Object.keys(results).sort((a, b) => b - a).slice(0, 8).map((k) => results[k]).join(' · ') || '-' })),
       h('small', {}, t('Bu turun bahisleri: {list}', { list: Object.entries(bets).map(([id, b]) => `${coins[id]?.name || '?'} ${fmt(Object.entries(b).filter(([k]) => k !== 'paid').reduce((s, [, a]) => s + a, 0))}`).join(', ') || '-' })),
     )));
@@ -251,7 +261,7 @@ export function createRoulette(ctx) {
   function stop() { clearInterval(tick); subs.splice(0).forEach((u) => u()); board.remove(); }
   /** Kasada tek başına en çok fişi olan (odada olmasa da). Eşitlikte taç kimsede olmaz. */
   function leader() {
-    const list = Object.entries(coins).map(([id, v]) => [id, v?.coins || 0]).sort((a, b) => b[1] - a[1]);
+    const list = current().map(([id, v]) => [id, v?.coins || 0]).sort((a, b) => b[1] - a[1]);
     return list.length && list[0][1] > 0 && (list.length === 1 || list[0][1] > list[1][1]) ? list[0][0] : null;
   }
   return { open, onScene, stop, leader };
