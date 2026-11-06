@@ -932,5 +932,11 @@ export default {
  "Başlayalım": "Los geht's",
  "Nasıl kullanılır?": "Wie funktioniert es?",
  "Meyhane": "Taverne",
- "Fasıl taburesine otur": "Auf den Musikerhocker setzen"
+ "Fasıl taburesine otur": "Auf den Musikerhocker setzen",
+ "Rakı tazele": "Rakı nachschenken",
+ "Garson geliyor": "Der Kellner kommt",
+ "Sıradasın: {n}": "Du bist dran als: {n}",
+ "Garson Rıza": "Kellner Rıza",
+ "Buyrun, {name}. Şerefe!": "Bitte schön, {name}. Prost!",
+ "Önce masaya otur.": "Setz dich zuerst an den Tisch."
 };

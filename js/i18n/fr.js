@@ -932,5 +932,11 @@ export default {
  "Başlayalım": "C'est parti",
  "Nasıl kullanılır?": "Comment ça marche ?",
  "Meyhane": "Taverne",
- "Fasıl taburesine otur": "S'asseoir sur le tabouret du musicien"
+ "Fasıl taburesine otur": "S'asseoir sur le tabouret du musicien",
+ "Rakı tazele": "Resservir du raki",
+ "Garson geliyor": "Le serveur arrive",
+ "Sıradasın: {n}": "Ton tour : {n}",
+ "Garson Rıza": "Rıza le serveur",
+ "Buyrun, {name}. Şerefe!": "Voilà, {name}. Santé !",
+ "Önce masaya otur.": "Assieds-toi d'abord à table."
 };

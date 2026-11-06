@@ -124,10 +124,36 @@ export function createGame(opts) {
     if (!me.target && onArrive) onArrive();
   }
 
+  // ---------- Kapılar ----------
+  // Kapının ortası çoğu zaman duvarın içinde kalır; yol bulma oraya varamaz. Bu yüzden kapının odadaki önüne yürünür,
+  // varınca kapıdan geçilir. Kapının yanındayken E (ya da dokunma) ile de geçilir; üstünde gideceği oda yazar.
+  function doorFront(d) {
+    const cx = d.x + d.w / 2, cy = d.y + d.h / 2;
+    const [ix, iy] = d.h > d.w ? [cx < W / 2 ? 1 : -1, 0] : [0, cy < H / 2 ? 1 : -1];
+    for (let k = 0; k <= 40; k += 2) { const x = cx + ix * k, y = cy + iy * k; if (!blocked(x, y)) return { x, y }; }
+    return { x: cx, y: cy };
+  }
+  function enterDoor(d) {
+    if (fadeTo) return;
+    me.doorIntent = null; me.target = null; me.path = [];
+    if (opts.canEnter?.(d.to) === false) {
+      const n = performance.now();
+      if (n - lockedAt > 3000) { lockedAt = n; opts.onLocked?.(d.to); }
+      return;
+    }
+    fadeTo = d; fade = 0;
+  }
+  const doorSpot = (d) => ({ id: 'door', door: d, ...doorFront(d), label: () => t(SCENES[d.to]?.name || '') + ' →' });
+  /** Dokunulan nokta bir kapı mı (kapının çizimi ve önü dahil, parmakla kolay tutturulsun). */
+  const doorAt = (x, y) => scene().doors.find((d) => {
+    const f = doorFront(d), pad = 8;
+    return (x >= d.x - pad && x <= d.x + d.w + pad && y >= d.y - 12 && y <= d.y + d.h + 8) || Math.hypot(x - f.x, y - f.y) < 9;
+  });
+
   // ---------- Etkileşim ----------
   const spotPos = (s) => (s.id === 'cat' ? { x: cat.x - 10, y: cat.y + 2 } : { x: s.x, y: s.y });
   function spotsHere() {
-    const l = lay().spots.filter((s) => s.id !== 'cat');
+    const l = [...lay().spots.filter((s) => s.id !== 'cat'), ...scene().doors.map(doorSpot)];
     return cat.scene === me.scene ? [...l, CAT_SPOT] : l;
   }
   function nearestSpot() {
@@ -140,6 +166,7 @@ export function createGame(opts) {
   }
   function doSpot(s) {
     if (s.id === 'sit') return sitDown(s.group);
+    if (s.id === 'door') return enterDoor(s.door);
     if (s.id === 'cat') { burst(cat.x, cat.y - 10, 3, false); cat.sit = true; cat.wait = 3; }
     opts.onSpot?.(s.id, s);
   }
@@ -229,14 +256,14 @@ export function createGame(opts) {
   canvas.addEventListener('pointerdown', (e) => {
     const [x, y] = toWorld(e);
     if (edit) { try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } return editDown(x, y); }
-    if (me.seat >= 0) return standUp();
-    const sc = scene(), l = lay();
+    const door = doorAt(x, y);
+    if (me.seat >= 0 && !door) return standUp(); // otururken dokunmak kalkar; kapıya dokunmak kalkıp gider
+    const l = lay();
     const catHit = cat.scene === me.scene && Math.abs(x - cat.x) < 12 && Math.abs(y - cat.y + 5) < 10;
     const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];
     const spot = catHit ? CAT_SPOT : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
-    const door = sc.doors.find((d) => x >= d.x - 4 && x <= d.x + d.w + 4 && y >= d.y - 4 && y <= d.y + d.h + 4);
-    if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
-    else if (door) walkTo(door.x + door.w / 2, door.y + door.h / 2, null, door);
+    if (door) { const f = doorFront(door); walkTo(f.x, f.y, () => enterDoor(door), door); }
+    else if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
     else walkTo(x, y);
   });
   canvas.addEventListener('pointermove', (e) => edit && editMove(...toWorld(e)));
@@ -289,14 +316,9 @@ export function createGame(opts) {
     // Kapı
     const door = scene().doors.find((d) => me.x >= d.x && me.x <= d.x + d.w && me.y >= d.y && me.y <= d.y + d.h);
     if (door && !fadeTo && (byKeys || me.doorIntent === door)) {
-      me.doorIntent = null;
-      if (opts.canEnter?.(door.to) === false) {
-        // Kilitli oda: kapıdan geri it, uyarıyı en fazla 3 sn'de bir göster
-        if (door.h > door.w) me.x += me.x < W / 2 ? 8 : -8; else me.y += me.y < H / 2 ? 8 : -8;
-        me.target = null; me.path = [];
-        const n = performance.now();
-        if (n - lockedAt > 3000) { lockedAt = n; opts.onLocked?.(door.to); }
-      } else { fadeTo = door; fade = 0; }
+      // Kilitli oda: kapıdan geri it (uyarıyı enterDoor en fazla 3 sn'de bir gösterir)
+      if (opts.canEnter?.(door.to) === false) { if (door.h > door.w) me.x += me.x < W / 2 ? 8 : -8; else me.y += me.y < H / 2 ? 8 : -8; }
+      enterDoor(door);
     }
   }
 
@@ -673,7 +695,7 @@ export function createGame(opts) {
         if (!x.pose) R(ctx, x.x - 5, x.y - 1, 10, 2, 'rgba(30,15,5,0.3)');
         ctx.drawImage(img, Math.round(x.x - img.width / 2), yy);
         if (x.crown) drawCrown(Math.round(x.x), yy);
-        else {
+        else if (!x.noBadge) {
           const b = x.side === 'moon' ? MOON_BADGE : SUN_BADGE;
           ctx.drawImage(b, Math.round(x.x - b.width / 2), yy - b.height - 1);
         }

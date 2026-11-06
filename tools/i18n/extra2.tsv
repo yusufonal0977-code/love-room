@@ -372,3 +372,10 @@ Nasıl kullanılır?	How does it work?	¿Cómo funciona?	Wie funktioniert es?	Co
 # v0.36: meyhane
 Meyhane	Tavern	Taberna	Taverne	Taverne	Taberna	حانة
 Fasıl taburesine otur	Sit on the musician's stool	Siéntate en el taburete del músico	Auf den Musikerhocker setzen	S'asseoir sur le tabouret du musicien	Sentar no banquinho do músico	اجلس على كرسي العازف
+# v0.37: meyhane garsonu
+Rakı tazele	Top up my rakı	Rellenar el rakı	Rakı nachschenken	Resservir du raki	Completar o rakı	إعادة ملء الراكي
+Garson geliyor	The waiter is coming	Viene el camarero	Der Kellner kommt	Le serveur arrive	O garçom está vindo	النادل قادم
+Sıradasın: {n}	You're in line: {n}	Estás en la cola: {n}	Du bist dran als: {n}	Ton tour : {n}	Você está na fila: {n}	دورك: {n}
+Garson Rıza	Rıza the waiter	Rıza, el camarero	Kellner Rıza	Rıza le serveur	Rıza, o garçom	النادل رضا
+Buyrun, {name}. Şerefe!	Here you go, {name}. Cheers!	Aquí tienes, {name}. ¡Salud!	Bitte schön, {name}. Prost!	Voilà, {name}. Santé !	Aqui está, {name}. Saúde!	تفضل يا {name}. في صحتك!
+Önce masaya otur.	Sit at the table first.	Siéntate primero a la mesa.	Setz dich zuerst an den Tisch.	Assieds-toi d'abord à table.	Sente-se à mesa primeiro.	اجلس إلى الطاولة أولًا.

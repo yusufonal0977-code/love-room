@@ -19,6 +19,7 @@ import { createPoolBets } from './poolbet.js';
 import { createHorses } from './horses.js';
 import { t, locale } from '../i18n.js';
 import { ADMIN_SCENES, SCENES, layout } from '../scenes.js';
+import { createMeyhane } from './meyhane.js';
 
 const DAY = 86_400_000;
 const dayKey = (ms) => new Date(ms).toISOString().slice(0, 10);
@@ -80,6 +81,7 @@ export function createAdmin(ctx) {
   const horses = createHorses(ctx);
   const matches = createMatches();
   const voice = createAdminVoice(ctx);
+  const meyhane = createMeyhane(ctx);
   const said = {}; // uid -> { text, until } başın üstündeki sohbet balonu
   let stopChat = null;
 
@@ -139,6 +141,7 @@ export function createAdmin(ctx) {
   function extras() {
     const n = performance.now(), dt = Math.min(0.1, (n - lastT) / 1000); lastT = n;
     const out = [];
+    if (stopPres) out.push(meyhane.tick(Object.fromEntries(Object.entries(others).filter(([, p]) => isFresh(p))))); // garson ve kadehler
     for (const [id, p] of Object.entries(others)) {
       if (!p || id === ctx.partnerUid() || !isFresh(p)) continue;
       let q = shown.get(id);
@@ -215,8 +218,9 @@ export function createAdmin(ctx) {
     if (scene === 'admin') poolBets.start(); else poolBets.stop();
     tv.onScene(scene);
     // Admin odası ile meyhane arasında geçerken bağlantı (konum, ses, sohbet) kopmaz
-    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); return; }
+    if (!ADMIN_SCENES.has(scene)) { stopPresence(); ctx.game.setPicture('admintv', 'admin', TV_RECT, null); ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, null); ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, null); meyhane.stop(); return; }
     if (!stopPres) startPresence();
+    meyhane.start();
     if (scene === 'meyhane') { meySign().then((src) => ctx.game.setPicture('meysign', 'meyhane', MEY_SIGN, src)).catch(() => {}); return; }
     drawSign().then((src) => ctx.game.setPicture('eclipsign', 'admin', SIGN_RECT, src)).catch(() => {});
     refresh(); timer = setInterval(refresh, 60_000);
