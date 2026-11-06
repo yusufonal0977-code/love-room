@@ -91,28 +91,45 @@ export function createRoulette(ctx) {
   /** Kendi bahislerinin kazancını bir kez alır (son birkaç turu da kontrol eder). */
   const settling = new Set();
   async function settle(r) {
-    for (let k = r; k > r - 5; k--) {
-      if (settling.has(k)) continue;
-      settling.add(k);
-      try {
-        const [b, res] = await Promise.all([get(ref(db, `admin/roulette/bets/${k}/${uid}`)), get(ref(db, `admin/roulette/results/${k}`))]);
-        const mine = b.val();
-        if (mine && !mine.paid && res.val() == null && k < r) { // kimse yokken sonuçlanmamış tur: bahis iade
-          const back = Object.entries(mine).filter(([key]) => key !== 'paid').reduce((s2, [, a]) => s2 + a, 0);
-          const tr0 = await runTransaction(ref(db, `admin/roulette/bets/${k}/${uid}/paid`), (v) => (v ? undefined : true));
-          if (tr0.committed && back) await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + back);
-          continue;
-        }
-        if (!mine || mine.paid || res.val() == null) { if (k < r) continue; settling.delete(k); continue; }
-        const n = res.val();
-        const win = Object.entries(mine).filter(([key]) => key !== 'paid').reduce((s, [key, amt]) => s + amt * payout(key, n), 0);
-        const tr = await runTransaction(ref(db, `admin/roulette/bets/${k}/${uid}/paid`), (v) => (v ? undefined : true));
-        if (!tr.committed) continue;
-        if (win > 0) {
-          await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + win);
-          if (k === r) toast(t('Kazandın: {n} fiş', { n: fmt(win) }), 3500);
-        } else if (k === r) toast(t('Bu tur kaybettin. Sonuç: {n}', { n }), 3000);
-      } catch { settling.delete(k); }
+    for (let k = r; k > r - 5; k--) await settleRound(k, r);
+  }
+  async function settleRound(k, r) {
+    if (settling.has(k)) return;
+    settling.add(k);
+    try {
+      const [b, res] = await Promise.all([get(ref(db, `admin/roulette/bets/${k}/${uid}`)), get(ref(db, `admin/roulette/results/${k}`))]);
+      const mine = b.val();
+      if (mine && !mine.paid && res.val() == null && k < r) { // kimse yokken sonuçlanmamış tur: bahis iade
+        const back = staked(mine);
+        const tr0 = await runTransaction(ref(db, `admin/roulette/bets/${k}/${uid}/paid`), (v) => (v ? undefined : true));
+        if (tr0.committed && back) await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + back);
+        return;
+      }
+      if (!mine || mine.paid || res.val() == null) { if (k >= r) settling.delete(k); return; }
+      const n = res.val();
+      const win = Object.entries(mine).filter(([key]) => key !== 'paid').reduce((s, [key, amt]) => s + amt * payout(key, n), 0);
+      const tr = await runTransaction(ref(db, `admin/roulette/bets/${k}/${uid}/paid`), (v) => (v ? undefined : true));
+      if (!tr.committed) return;
+      if (win > 0) {
+        await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + win);
+        if (k === r) toast(t('Kazandın: {n} fiş', { n: fmt(win) }), 3500);
+      } else if (k === r) toast(t('Bu tur kaybettin. Sonuç: {n}', { n }), 3000);
+    } catch { settling.delete(k); }
+  }
+  const staked = (mine) => Object.entries(mine || {}).filter(([key]) => key !== 'paid').reduce((s, [, a]) => s + (a || 0), 0);
+  /** Odaya girince bir kez: bahis yapıp odadan çıkılan turların kazancını öder (ya da iade eder), eski ödenmiş kayıtları siler. */
+  let swept = false;
+  async function sweep() {
+    if (swept) return;
+    swept = true;
+    const s = await get(ref(db, 'admin/roulette/bets')).catch(() => null);
+    if (!s) { swept = false; return; }
+    const r = phaseOf().r;
+    for (const [k, byUser] of Object.entries(s.val() || {})) {
+      const mine = byUser?.[uid];
+      if (!mine || +k >= r) continue;
+      if (mine.paid) { if (+k < r - 5) remove(ref(db, `admin/roulette/bets/${k}/${uid}`)).catch(() => {}); continue; }
+      await settleRound(+k, r);
     }
   }
 
@@ -121,15 +138,16 @@ export function createRoulette(ctx) {
     if (ph.phase !== 'bet') return toast(t('Bahisler kapandı, bir sonraki turu bekle.'));
     const tr = await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v == null || v < chip ? undefined : v - chip)).catch(() => null);
     if (!tr?.committed) return toast(t('Yeterli fişin yok.'));
-    await runTransaction(ref(db, `admin/roulette/bets/${ph.r}/${uid}/${key}`), (v) => (v || 0) + chip);
+    const amt = chip;
+    try { await runTransaction(ref(db, `admin/roulette/bets/${ph.r}/${uid}/${key}`), (v) => (v || 0) + amt); }
+    catch (e) { await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + amt).catch(() => {}); throw e; }
   }
   async function undo() {
     const ph = phaseOf();
-    const mine = bets[uid];
-    if (ph.phase !== 'bet' || !mine) return;
-    const sum = Object.entries(mine).filter(([k]) => k !== 'paid').reduce((s, [, a]) => s + a, 0);
-    await remove(ref(db, `admin/roulette/bets/${ph.r}/${uid}`));
-    await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + sum);
+    if (ph.phase !== 'bet' || !bets[uid]) return;
+    let sum = 0;
+    const tr = await runTransaction(ref(db, `admin/roulette/bets/${ph.r}/${uid}`), (v) => { sum = v && !v.paid ? staked(v) : 0; return v && !v.paid ? null : undefined; });
+    if (tr.committed && sum) await runTransaction(ref(db, `admin/coins/${uid}/coins`), (v) => (v || 0) + sum);
   }
 
   // ---------- Masa ekranı ----------
@@ -227,7 +245,7 @@ export function createRoulette(ctx) {
   function onScene(scene) {
     inRoom = scene === 'admin';
     board.hidden = !inRoom;
-    if (inRoom) { watch(); ensureCoins(); startTick(); drawBoard(); }
+    if (inRoom) { watch(); ensureCoins().then(sweep); startTick(); drawBoard(); }
     else { clearInterval(tick); tick = null; }
   }
   function stop() { clearInterval(tick); subs.splice(0).forEach((u) => u()); board.remove(); }
