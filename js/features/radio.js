@@ -10,7 +10,7 @@ import { loadYT } from './tv.js';
 
 const KEY = 'lr.radioVol';
 // Kullanıcının istediği liste (2026-11-07): veritabanında başka liste yoksa bu çalar
-const DEFAULT_LIST = 'PLzGj5zROpZrS9PyJXzZASw_0GBZlUZ8Er', DEFAULT_AT = Date.UTC(2026, 10, 7);
+const DEFAULT_LIST = 'PLzGj5zROpZrS9PyJXzZASw_0GBZlUZ8Er';
 /** YouTube listesi linkinden liste kimliği (list=...). */
 export function playlistId(raw) {
   try {
@@ -71,10 +71,8 @@ export function createRadio(ctx) {
       });
     });
   }
-  /** Listenin şarkı kimlikleri (YouTube listeyi yükleyince verir). */
-  async function loadList() {
-    if (loaded === st.list && ids.length) return;
-    yt.cuePlaylist({ listType: 'playlist', list: st.list });
+  /** Listenin şarkı kimlikleri (YouTube listeyi yükleyince verir); sıradaki şarkıyı hesaplamak için. */
+  async function readList() {
     for (let i = 0; i < 40 && !(yt.getPlaylist?.() || []).length; i++) await new Promise((r) => setTimeout(r, 250));
     ids = yt.getPlaylist?.() || []; loaded = st.list;
   }
@@ -84,10 +82,10 @@ export function createRadio(ctx) {
     if (!vol) { yt?.pauseVideo?.(); return; } // sesi sıfıra çeken için hiç çalmaz (veri harcamaz)
     await ensurePlayer();
     if (!ready) return;
-    await loadList();
-    if (!ids.length) return;
-    const idx = ((st.index || 0) % ids.length + ids.length) % ids.length, key = `${st.list}|${idx}|${st.at}`;
-    if (key !== playing) { playing = key; tune(); yt.loadVideoById({ videoId: ids[idx], startSeconds: expected() }); }
+    if (loaded !== st.list) ids = [];
+    const idx = ids.length ? ((st.index || 0) % ids.length + ids.length) % ids.length : st.index || 0, key = `${st.list}|${idx}|${st.at}`;
+    // Not: cuePlaylist'ten sonra loadVideoById takılıp "yükleniyor"da kalıyor (sessiz hata); listeyi sırasıyla açmak çalışıyor
+    if (key !== playing) { playing = key; tune(); yt.loadPlaylist({ listType: 'playlist', list: st.list, index: idx, startSeconds: expected() }); readList(); }
     yt.setVolume(vol);
     if (body && document.body.contains(body)) render();
   }
@@ -95,14 +93,14 @@ export function createRadio(ctx) {
   function next(from) {
     if (from == null || !ids.length) return;
     // Kayıt hiç yoksa (varsayılan liste) ilk geçiren kaydı da oluşturur
-    runTransaction(rRef, (v) => ((v ? v.index : 0) === from ? { ...(v || { list: DEFAULT_LIST, name: 'Eclip' }), index: (from + 1) % ids.length, at: now() } : undefined)).catch(() => {});
+    runTransaction(rRef, (v) => (v && v.index === from ? { ...v, index: (from + 1) % ids.length, at: now() } : undefined)).catch(() => {});
   }
   function watchSync() {
     clearInterval(syncT);
     syncT = setInterval(() => {
       if (!on || !ready || !playing || !ids.length) return;
       const exp = expected(), dur = yt.getDuration?.() || 0, cur = yt.getCurrentTime?.() || 0;
-      if (dur && exp > dur + 3) return next(st.index); // kimse yokken şarkı bitmiş: sıradakine geç
+      if ((dur && exp > dur + 3) || exp > 3 * 3600) return next(st.index); // kimse yokken şarkı bitmiş: sıradakine geç
       if (yt.getPlayerState?.() === 1 && Math.abs(cur - exp) > 4) yt.seekTo(exp, true); // kaydıysa düzelt
       if (yt.getPlayerState?.() !== 1 && yt.getPlayerState?.() !== 3 && vol) yt.playVideo();
     }, 4000);
@@ -111,7 +109,12 @@ export function createRadio(ctx) {
   function enter() {
     on = true;
     startNoise();
-    stop ??= onValue(rRef, (s) => { st = s.val() || { list: DEFAULT_LIST, index: 0, at: DEFAULT_AT, name: 'Eclip' }; apply().catch((e) => console.warn('radyo', e)); }, () => {});
+    stop ??= onValue(rRef, (s) => {
+      st = s.val();
+      // Henüz kayıt yoksa ilk gelen varsayılan listeyi başlatır (herkes aynı andan dinlesin diye kayıt ortak)
+      if (!st) { runTransaction(rRef, (v) => v ?? { list: DEFAULT_LIST, index: 0, at: now(), name: 'Eclip' }).catch(() => {}); return; }
+      apply().catch((e) => console.warn('radyo', e));
+    }, () => {});
     watchSync();
   }
   function leave() { on = false; stop?.(); stop = null; clearInterval(syncT); yt?.stopVideo?.(); playing = ''; stopNoise(); }
