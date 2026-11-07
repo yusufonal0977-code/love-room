@@ -20,4 +20,11 @@
   <string name="food">Tokluk</string>
   <string name="love">Sevgi</string>
   <string name="play">Oyun</string>
+  <string name="mood_happy">Çok mutlu</string>
+  <string name="mood_ok">Keyfi yerinde</string>
+  <string name="mood_hungry">Karnı acıktı</string>
+  <string name="mood_lonely">Sevgi bekliyor</string>
+  <string name="mood_bored">Canı sıkıldı</string>
+  <string name="draw_empty">Dokun, birlikte çizin</string>
+  <string name="draw_go">Çiz</string>
 </resources>

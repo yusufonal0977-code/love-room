@@ -2,8 +2,8 @@
     android:minWidth="180dp" android:minHeight="110dp"
     android:targetCellWidth="3" android:targetCellHeight="2"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/widget_pet"
-    android:previewLayout="@layout/widget_pet"
+    android:initialLayout="@layout/widget_image"
+    android:previewImage="@drawable/preview_pet"
     android:description="@string/w_pet_desc"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen|keyguard" />

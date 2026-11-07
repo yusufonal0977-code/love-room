@@ -18,4 +18,11 @@
   <string name="food">Food</string>
   <string name="love">Love</string>
   <string name="play">Play</string>
+  <string name="mood_happy">Very happy</string>
+  <string name="mood_ok">Doing fine</string>
+  <string name="mood_hungry">Getting hungry</string>
+  <string name="mood_lonely">Wants some love</string>
+  <string name="mood_bored">Feeling bored</string>
+  <string name="draw_empty">Tap to draw together</string>
+  <string name="draw_go">Draw</string>
 </resources>
