@@ -524,12 +524,12 @@ export function createGame(opts) {
       const ex = Math.round(cat.x - (cat.dir > 0 ? 1 : -1) * (13 + i * 12) - im.width / 2), ey = Math.round(cat.y - 3 - (i % 2) * 2 - im.height + 1);
       R(ctx, ex + im.width / 2 - 6, ey + im.height - 1, 12, 2, 'rgba(30,15,5,0.3)');
       ctx.drawImage(im, ex, ey);
-      if (q.acc && q.acc !== 'none') { const [hx, hy] = cat.sit ? s2.head[1] : s2.head[0]; drawPetAcc(ctx, q.acc, ex + (cat.sit || cat.dir > 0 ? hx : im.width - 1 - hx), ey + hy); }
+      if (q.acc && q.acc !== 'none') { const [hx, hy] = cat.sit ? s2.head[1] : s2.head[0]; drawPetAcc(ctx, q.acc, ex + (cat.sit || cat.dir > 0 ? hx : im.width - 1 - hx), ey + hy, s2.neck[cat.sit ? 1 : 0]); }
     });
     ctx.drawImage(img, x0, y0);
     if (pet.acc && pet.acc !== 'none') {
       const [hx, hy] = cat.sit ? sp.head[1] : sp.head[0];
-      drawPetAcc(ctx, pet.acc, x0 + (cat.sit || cat.dir > 0 ? hx : img.width - 1 - hx), y0 + hy);
+      drawPetAcc(ctx, pet.acc, x0 + (cat.sit || cat.dir > 0 ? hx : img.width - 1 - hx), y0 + hy, sp.neck[cat.sit ? 1 : 0]);
     }
     if (sleeping) { // Zz
       const k = (performance.now() / 600) % 3 | 0;

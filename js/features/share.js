@@ -52,7 +52,7 @@ export function createShare(ctx) {
       const g = c.getContext('2d');
       const img = sp.right[0], x0 = Math.round(20 - img.width / 2), y0 = 24 - img.height;
       g.drawImage(img, x0, y0);
-      if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1]);
+      if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1], sp.neck[0]);
       return { title: t('Evcil dostumuz'), image: c, pixel: true, transparent: true, sub: p.name, sub2: names(), caption: t('Ailemizin minik üyesi: {name}', { name: p.name }) };
     } },
     badges: { label: 'Rozetlerimiz', async make() {

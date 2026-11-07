@@ -576,3 +576,13 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
 }
 @media (orientation: landscape) and (max-height: 330px) { #bar { gap: 4px; } #bar button { width: 38px; height: 38px; } }
 
+
+/* Mutfak: buzdolabı ve yeni yemek aşamaları */
+.fridge { margin-top: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: #1d180d; display: flex; flex-direction: column; gap: 6px; }
+.fridge > b { color: var(--sun); }
+.fridgelist { display: flex; flex-direction: column; gap: 6px; }
+.fitem { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.fitem i { width: 14px; height: 14px; border-radius: 4px; flex: none; }
+.fitem span { flex: 1; }
+.fitem button { padding: 6px 14px; font-size: 14px; }
+.cookbar .needle { position: absolute; top: -2px; bottom: -2px; width: 4px; margin-left: -2px; background: #fff6e8; border-radius: 2px; box-shadow: 0 0 6px rgba(255,255,255,.6); }

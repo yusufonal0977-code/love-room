@@ -107,7 +107,7 @@ export function createCare(ctx) {
     const img = sp.right[0];
     const x0 = Math.round(16 - img.width / 2), y0 = 24 - img.height;
     g.drawImage(img, x0, y0);
-    if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1]);
+    if (p.acc !== 'none') drawPetAcc(g, p.acc, x0 + sp.head[0][0], y0 + sp.head[0][1], sp.neck[0]);
     return c;
   }
   function renderPet() {

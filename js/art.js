@@ -279,6 +279,7 @@ const PETS = {
     walk: [[...BUNNY_BODY, '..kkk....kkk....', '.kkk....kkk.....'], [...BUNNY_BODY, '...kkk..kkk.....', '..kkk..kkk......']],
     sit: ['..k.k.....', '..k.k.....', '..k.k.....', '.kkkkk....', '.kekek....', '.kknkk....', 'kkkkkkk...', 'kkkkkkkk..', 'kkwwkkkkw.', '.kk..kk...'],
     head: [[12, 1], [3, 1]],
+    neck: [5, 6], // oturan tavşanın boynu daha aşağıda (kulaklar uzun)
   },
   // Rakun: gri gövde, açık gri yüz, koyu göz maskesi içinde beyaz parıltı, halkalı kuyruk (t koyu halka)
   raccoon: {
@@ -308,15 +309,15 @@ export function petSprites(species = 'cat', color = PET_COLORS[0]) {
   // Siyah kedide koyu göz görünmez: sarı gözler, kömür grisi göğüs
   if (color === PET_BLACK && !d.pal) Object.assign(pal, { e: '#f2d14a', n: '#6b6470', w: '#3b3642', D: '#120f16' });
   const right = d.walk.map((r) => sprite(r, pal));
-  const set = { right, left: right.map(mirror), sit: sprite(d.sit, pal), head: d.head, w: right[0].width };
+  const set = { right, left: right.map(mirror), sit: sprite(d.sit, pal), head: d.head, neck: d.neck || [5, 5], w: right[0].width };
   petCache.set(key, set);
   return set;
 }
-/** Aksesuarı (x, y) baş noktasına çizer. */
-export function drawPetAcc(g, acc, x, y) {
+/** Aksesuarı (x, y) baş noktasına çizer; tasma baş noktasının neck piksel altına, boyna (gözün üstüne değil). */
+export function drawPetAcc(g, acc, x, y, neck = 5) {
   const P = (dx, dy, w, h, c) => R(g, x + dx, y + dy, w, h, c);
   if (acc === 'bow') { P(-2, -2, 2, 2, '#ff4f7b'); P(1, -2, 2, 2, '#ff4f7b'); P(0, -2, 1, 1, '#ffb3c6'); }
   if (acc === 'hat') { P(-2, -2, 5, 1, '#26160f'); P(-1, -5, 3, 3, '#26160f'); P(-1, -3, 3, 1, '#e0473f'); }
   if (acc === 'crown') { P(-2, -3, 5, 2, '#ffc93c'); P(-2, -4, 1, 1, '#ffc93c'); P(0, -4, 1, 1, '#ffc93c'); P(2, -4, 1, 1, '#ffc93c'); P(0, -2, 1, 1, '#ff4f7b'); }
-  if (acc === 'collar') { P(-2, 3, 4, 1, '#e0473f'); P(-1, 4, 1, 1, '#ffc93c'); }
+  if (acc === 'collar') { P(-2, neck, 4, 1, '#e0473f'); P(-1, neck + 1, 1, 1, '#ffc93c'); }
 }

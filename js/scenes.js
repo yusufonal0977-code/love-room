@@ -545,12 +545,27 @@ const mutfak = makeScene({
     // Buzdolabı
     R(g, 150, 10, 30, 56, '#e8f4f7'); R(g, 150, 10, 30, 2, '#ffffff'); R(g, 150, 30, 30, 1, '#b8c4cc'); R(g, 174, 16, 2, 10, '#9aa3ad'); R(g, 174, 34, 2, 14, '#9aa3ad');
     R(g, 156, 14, 5, 5, '#ff5d8f'); R(g, 163, 18, 5, 4, '#ffc93c'); // magnetler
+    R(g, 154, 36, 8, 10, '#fff3dc'); R(g, 155, 37, 6, 1, '#e0473f'); R(g, 155, 39, 5, 1, '#9aa3ad'); R(g, 155, 41, 6, 1, '#9aa3ad'); // alışveriş listesi
+    // Fayans duvarda: baharat rafı, kepçe askısı, bıçaklık
+    R(g, 66, 26, 24, 2, C.woodD); for (let i = 0; i < 5; i++) { R(g, 67 + i * 5, 21, 3, 5, ['#e0473f', '#ffc93c', '#4fbf6a', '#c8742c', '#8a5a36'][i]); R(g, 67 + i * 5, 20, 3, 1, '#fff6e8'); }
+    R(g, 92, 24, 40, 1, '#9aa3ad'); for (const [x, c] of [[95, '#c8742c'], [104, '#9aa3ad'], [112, '#8a5a36'], [121, '#2e2e3a']]) { R(g, x, 25, 1, 6, '#6d7680'); R(g, x - 2, 31, 5, 3, c); }
+    R(g, 134, 26, 10, 8, '#5a3420'); R(g, 135, 22, 1, 4, '#c8d0d8'); R(g, 138, 21, 1, 5, '#c8d0d8'); R(g, 141, 23, 1, 3, '#c8d0d8');
+    // Tezgahın üstü: kesme tahtası, meyve kâsesi, çaydanlık, mikser
+    R(g, 70, 39, 18, 4, '#c48b55'); R(g, 72, 38, 4, 2, '#e0473f'); R(g, 78, 38, 3, 2, '#4fbf6a');
+    R(g, 36, 39, 6, 4, '#ffc93c'); R(g, 37, 37, 4, 2, '#4fbf6a'); R(g, 35, 41, 8, 2, '#5a3420'); // meyve kâsesi
+    R(g, 132, 36, 9, 6, '#e0473f'); R(g, 134, 34, 5, 2, '#e0473f'); R(g, 141, 37, 2, 2, '#e0473f'); R(g, 135, 33, 3, 1, '#2e2e3a'); // çaydanlık
+    // Pencere önünde saksıda fesleğen, duvarda saat
+    R(g, 12, 28, 16, 2, C.woodD); R(g, 14, 25, 5, 3, '#c8742c'); R(g, 15, 22, 3, 3, '#4fbf6a'); R(g, 21, 25, 5, 3, '#c8742c'); R(g, 22, 21, 3, 4, '#3f9b4f');
+    // Yerde yolluk halı
+    R(g, 40, 76, 110, 10, '#e07a5f'); R(g, 42, 78, 106, 6, '#f2cc8f'); for (let x = 46; x < 146; x += 10) R(g, x, 80, 4, 2, '#e07a5f');
     // Masa örtüsü (yemek masası ön planda çizilir)
     sideDoor(g, 'left', col.wall);
     R(g, 8, 4, 24, 26, C.woodD); R(g, 10, 6, 20, 22, '#5ec2ff'); // küçük pencere
   },
   dyn(g, { t, hour }) {
     drawSky(g, 10, 6, 20, 22, hour, t); R(g, 19, 6, 2, 22, C.woodD);
+    // Buzdolabındaki yemekler: üstünde saklama kapları (en çok 5)
+    (DECOR.fridgeFood || []).forEach((col, i) => { R(g, 151 + i * 6, 6, 5, 4, col); R(g, 151 + i * 6, 5, 5, 1, '#ffffff'); });
     if (DECOR.cooking) { // ocakta tencere + buhar
       R(g, 99, 34, 12, 7, '#9aa3ad'); R(g, 100, 34, 10, 2, '#b8c4cc');
       for (let i = 0; i < 3; i++) R(g, 101 + i * 4, 30 - ((t * 2 + i) % 2 | 0) * 3, 1, 3, 'rgba(255,255,255,0.7)');

@@ -1,0 +1,38 @@
+# Mutfak: yeni tarifler, buzdolabı (2026-11-08) · tr en es de fr pt ar ko zh ja
+Pizza	Pizza	Pizza	Pizza	Pizza	Pizza	بيتزا	피자	披萨	ピザ
+Mantar	Mushroom	Champiñón	Pilze	Champignon	Cogumelo	فطر	버섯	蘑菇	マッシュルーム
+Kekik	Thyme	Tomillo	Thymian	Thym	Tomilho	زعتر	타임	百里香	タイム
+Zeytin	Olives	Aceitunas	Oliven	Olives	Azeitonas	زيتون	올리브	橄榄	オリーブ
+Fesleğen	Basil	Albahaca	Basilikum	Basilic	Manjericão	ريحان	바질	罗勒	バジル
+Krep	Crêpes	Crepes	Crêpes	Crêpes	Crepe	كريب	크레페	可丽饼	クレープ
+Çilek	Strawberries	Fresas	Erdbeeren	Fraises	Morangos	فراولة	딸기	草莓	いちご
+Bal	Honey	Miel	Honig	Miel	Mel	عسل	꿀	蜂蜜	はちみつ
+Köfte	Meatballs	Albóndigas	Frikadellen	Boulettes	Almôndegas	كفتة	쾨프테 (미트볼)	土耳其肉丸	キョフテ（肉団子）
+Çoban salatası	Shepherd's salad	Ensalada pastora	Hirtensalat	Salade du berger	Salada pastora	سلطة الراعي	목동 샐러드	牧羊人沙拉	羊飼いのサラダ
+Salatalık	Cucumber	Pepino	Gurke	Concombre	Pepino	خيار	오이	黄瓜	きゅうり
+Maydanoz	Parsley	Perejil	Petersilie	Persil	Salsinha	بقدونس	파슬리	欧芹	パセリ
+Yoğur	Knead	Amasar	Kneten	Pétrir	Sovar	اعجن	반죽	揉面	こねる
+Baharatla	Season	Sazonar	Würzen	Assaisonner	Temperar	تبّل	양념	调味	味付け
+Çevir	Flip	Dar la vuelta	Wenden	Retourner	Virar	اقلب	뒤집기	翻面	ひっくり返す
+Süsle	Garnish	Decorar	Garnieren	Décorer	Decorar	زيّن	장식	装饰	盛り付け
+{dish} hazır! {n}/3 yıldız. Buzdolabına kondu.	{dish} is ready! {n}/3 stars. Put in the fridge.	¡{dish} está listo! {n}/3 estrellas. Guardado en la nevera.	{dish} ist fertig! {n}/3 Sterne. Ab in den Kühlschrank.	{dish} est prêt ! {n}/3 étoiles. Rangé au frigo.	{dish} está pronto! {n}/3 estrelas. Guardado na geladeira.	{dish} جاهز! {n}/3 نجوم. وُضع في الثلاجة.	{dish} 완성! 별 {n}/3. 냉장고에 넣었어요.	{dish} 做好了！{n}/3 星。已放进冰箱。	{dish}の完成！星{n}/3。冷蔵庫に入れました。
+Şu an tokum, sonra yerim.	I'm full right now, I'll eat later.	Ahora estoy lleno, como luego.	Ich bin gerade satt, ich esse später.	Je n'ai plus faim, je mangerai plus tard.	Estou satisfeito agora, como depois.	أنا شبعان الآن، سآكل لاحقًا.	지금은 배불러요, 나중에 먹을게요.	我现在饱了，待会儿再吃。	今はお腹いっぱい。あとで食べるね。
+Buzdolabı	Fridge	Nevera	Kühlschrank	Frigo	Geladeira	الثلاجة	냉장고	冰箱	冷蔵庫
+{n} porsiyon	{n} servings	{n} raciones	{n} Portionen	{n} portions	{n} porções	{n} حصص	{n}인분	{n} 份	{n}人前
+Ye	Eat	Comer	Essen	Manger	Comer	كُل	먹기	吃	食べる
+Buzdolabı boş. Pişirdiğiniz yemekler buraya girer; acıkınca yersiniz.	The fridge is empty. Dishes you cook go in here; eat them when you're hungry.	La nevera está vacía. Los platos que cocinéis se guardan aquí; coméoslos cuando tengáis hambre.	Der Kühlschrank ist leer. Gekochte Gerichte landen hier; esst sie, wenn ihr Hunger habt.	Le frigo est vide. Les plats que vous cuisinez vont ici ; mangez-les quand vous avez faim.	A geladeira está vazia. Os pratos que vocês cozinham ficam aqui; comam quando tiverem fome.	الثلاجة فارغة. الأطباق التي تطبخانها تُحفظ هنا؛ كلاها عندما تجوعان.	냉장고가 비었어요. 요리한 음식이 여기 들어가요; 배고플 때 드세요.	冰箱是空的。你们做的菜会放在这里，饿了就吃。	冷蔵庫は空です。作った料理はここに入ります。お腹がすいたら食べましょう。
+Şimdi ye	Eat now	Comer ahora	Jetzt essen	Manger maintenant	Comer agora	كُل الآن	지금 먹기	现在吃	今食べる
+Buzdolabında kalsın	Keep it in the fridge	Dejarlo en la nevera	Im Kühlschrank lassen	Le garder au frigo	Deixar na geladeira	اتركه في الثلاجة	냉장고에 두기	放在冰箱里	冷蔵庫に取っておく
+Sol el	Left hand	Mano izquierda	Linke Hand	Main gauche	Mão esquerda	اليد اليسرى	왼손	左手	左手
+Sağ el	Right hand	Mano derecha	Rechte Hand	Main droite	Mão direita	اليد اليمنى	오른손	右手	右手
+Hamuru yoğur: parlayan ele sırayla dokun ({n} kez).	Knead the dough: tap the glowing hand, taking turns ({n} times).	Amasa la masa: toca la mano que brilla, alternando ({n} veces).	Knete den Teig: tippe abwechselnd auf die leuchtende Hand ({n}-mal).	Pétris la pâte : touche la main qui brille, en alternant ({n} fois).	Sove a massa: toque na mão que brilha, alternando ({n} vezes).	اعجن العجين: المس اليد المضيئة بالتناوب ({n} مرة).	반죽하기: 빛나는 손을 번갈아 누르세요 ({n}번).	揉面：轮流点按发光的手（{n} 次）。	生地をこねよう：光っている手を交互にタップ（{n}回）。
+{item} at	Add {item}	Echar {item}	{item} dazugeben	Ajouter {item}	Pôr {item}	أضف {item}	{item} 넣기	加{item}	{item}を入れる
+Tamam, tadı yerinde	Done, tastes right	Listo, está en su punto	Fertig, schmeckt genau richtig	C'est bon, c'est juste	Pronto, está no ponto	تمام، الطعم مضبوط	좋아요, 간이 딱 맞아요	好了，味道正好	よし、ちょうどいい味
+Biraz tuzlu oldu	A bit too salty	Quedó un poco salado	Etwas zu salzig	Un peu trop salé	Ficou um pouco salgado	صار مالحًا قليلًا	조금 짜요	有点咸了	ちょっとしょっぱい
+Biraz tatsız oldu	A bit bland	Quedó un poco soso	Etwas fade	Un peu fade	Ficou um pouco sem gosto	صار باهتًا قليلًا	조금 싱거워요	有点淡了	ちょっと味が薄い
+Tarif: {n} tutam {item}. Fazlası da azı da tadı bozar.	Recipe: {n} pinches of {item}. Too much or too little spoils the taste.	Receta: {n} pizcas de {item}. Ni de más ni de menos.	Rezept: {n} Prisen {item}. Zu viel oder zu wenig verdirbt den Geschmack.	Recette : {n} pincées de {item}. Trop ou trop peu gâche le goût.	Receita: {n} pitadas de {item}. Demais ou de menos estraga o sabor.	الوصفة: {n} رشات من {item}. الزيادة والنقصان يفسدان الطعم.	레시피: {item} {n}꼬집. 많아도 적어도 맛이 망가져요.	食谱：{item} {n} 撮。多了少了都会坏味道。	レシピ：{item}を{n}つまみ。多すぎても少なすぎても味が崩れます。
+Çevir!	Flip!	¡Dale la vuelta!	Wenden!	Retourne !	Vira!	اقلب!	뒤집어!	翻面！	ひっくり返す！
+Tam zamanında çevrildi!	Flipped right on time!	¡Volteado en el momento justo!	Genau rechtzeitig gewendet!	Retourné pile à temps !	Virado na hora certa!	قُلب في الوقت المناسب!	딱 맞게 뒤집었어요!	翻得正是时候！	ちょうどいいタイミング！
+Biraz kaçtı	Slightly off	Un poco fuera de tiempo	Etwas daneben	Un peu raté	Passou um pouco	فات قليلًا	조금 빗나갔어요	稍微偏了	ちょっとずれた
+İbre yeşil bölgedeyken çevir ({n} kez). Her seferinde hızlanır.	Flip when the needle is in the green zone ({n} times). It speeds up each time.	Da la vuelta cuando la aguja esté en la zona verde ({n} veces). Cada vez va más rápido.	Wende, wenn der Zeiger im grünen Bereich ist ({n}-mal). Er wird jedes Mal schneller.	Retourne quand l'aiguille est dans la zone verte ({n} fois). Elle accélère à chaque fois.	Vire quando o ponteiro estiver na zona verde ({n} vezes). Fica mais rápido a cada vez.	اقلب عندما يكون المؤشر في المنطقة الخضراء ({n} مرات). يزداد سرعة كل مرة.	바늘이 초록 구역에 있을 때 뒤집으세요 ({n}번). 매번 빨라져요.	指针在绿色区域时翻面（{n} 次），每次都会变快。	針が緑のゾーンにある時にひっくり返そう（{n}回）。毎回速くなります。
+Yemeği süsle: tabakta beliren {list} noktalarına çabucak dokun.	Garnish the dish: quickly tap the {list} spots that appear on the plate.	Decora el plato: toca rápido los puntos de {list} que aparecen.	Garniere das Gericht: tippe schnell auf die {list}-Punkte, die auf dem Teller erscheinen.	Décore le plat : touche vite les points de {list} qui apparaissent sur l'assiette.	Decore o prato: toque rápido nos pontos de {list} que aparecem no prato.	زيّن الطبق: المس بسرعة نقاط {list} التي تظهر على الطبق.	음식을 장식하세요: 접시에 나타나는 {list} 점을 빠르게 누르세요.	装饰菜品：快速点按盘子上出现的{list}点。	盛り付けよう：お皿に出てくる{list}の点をすばやくタップ。
