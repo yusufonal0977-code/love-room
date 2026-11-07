@@ -1,0 +1,18 @@
+<resources>
+  <string name="app_name">Get Love Room</string>
+  <string name="w_draw">Ortak tuvalimiz</string>
+  <string name="w_pet">Evcil dostumuz</string>
+  <string name="w_clock">İlişki saatimiz</string>
+  <string name="w_draw_desc">Birlikte çizdiğiniz tuval. Dokun, çizmeye devam et.</string>
+  <string name="w_pet_desc">Ortak dostunuz ve ihtiyaçları.</string>
+  <string name="w_clock_desc">Sevgili olduğunuz günden bu yana geçen günler.</string>
+  <string name="signin_hint">Widget için uygulamayı bir kez aç</string>
+  <string name="pet_default">Pascal</string>
+  <string name="clock_days">gündür birlikteyiz</string>
+  <string name="clock_unset">İlişki saatinden gününüzü girin</string>
+  <string name="clock_meet">Kavuşmaya %1$d gün</string>
+  <string name="clock_meet_today">Bugün kavuşuyorsunuz</string>
+  <string name="food">Tokluk</string>
+  <string name="love">Sevgi</string>
+  <string name="play">Oyun</string>
+</resources>

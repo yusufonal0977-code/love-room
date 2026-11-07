@@ -964,5 +964,11 @@ export default {
  "Tablolar görünsün": "Fotos zeigen",
  "Tablolar gizli": "Fotos ausblenden",
  "Eclip Meyhanesi'nde bir akşam": "Ein Abend in der Eclip Meyhanesi",
- "Admin odası": "Admin-Raum"
+ "Admin odası": "Admin-Raum",
+ "Uygulamayı telefona indir": "App aufs Handy laden",
+ "Android uygulamasıyla ana ekrana widget ekleyebilirsiniz: ortak tuvaliniz, evcil dostunuz ve ilişki saatiniz telefonun ekranında durur.": "Mit der Android-App kannst du Widgets auf den Startbildschirm legen: eure gemeinsame Leinwand, euer Haustier und eure Liebesuhr.",
+ "iPhone uygulaması henüz yok. Şimdilik Safari'de Paylaş, sonra \"Ana Ekrana Ekle\" ile siteyi uygulama gibi açabilirsin.": "Eine iPhone-App gibt es noch nicht. Tippe in Safari auf Teilen und dann auf \"Zum Home-Bildschirm\".",
+ "Android uygulamasını indir": "Android-App herunterladen",
+ "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "Öffne nach dem Download die Datei. Fragt das Handy nach \"unbekannten Quellen\", erlaube es für diese App. Bald bei Google Play.",
+ "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "In der App gibt es vorerst nur die Anmeldung mit Namen; Google-Anmeldung kommt bald."
 };

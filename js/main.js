@@ -1,6 +1,7 @@
 // Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
 import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { pickQuality } from './screenshare.js';
+import { connectApp, inApp, openDownload } from './features/app.js';
 import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
@@ -87,6 +88,8 @@ function showGate() {
   show('gate');
   if (inviteCode) $('gateNote').textContent = t('Partnerin seni bekliyor. Giriş yap ve odaya gel.');
 }
+// Android uygulamasında Google girişi (açılır pencere) çalışmıyor: şimdilik yalnızca adla giriş
+if (inApp()) { $('googleBtn').hidden = true; document.querySelector('#gate .or').hidden = true; }
 $('googleBtn').onclick = async () => {
   try { const r = await loginGoogle(); await afterLogin(r.user); }
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }
@@ -409,7 +412,8 @@ async function enterWorld(rid, fresh = false) {
   sleep = createSleep(ctx, { enabled: bedOpen, lying: () => game.me.scene === 'yatak' && game.me.seat >= 0 });
   adminRoom = createAdmin(ctx);
   ctx.adminRoom = adminRoom;
-  beforeLogout = () => adminRoom.leave();
+  beforeLogout = async () => { await adminRoom.leave(); window.LoveRoomApp?.logout(); };
+  connectApp(ctx, { rid, care, draw, life });
   const activityTick = trackActivity(user.uid);
 
   // Hata ayıklama için konsoldan erişim: window.__lr
@@ -650,6 +654,8 @@ async function enterWorld(rid, fresh = false) {
     }), 800);
   } else if (fresh) setTimeout(() => $('menuBtn').onclick(), 600);
   $('tourBtn').onclick = () => { $('menu').hidden = true; startTour(); };
+  $('appBtn').hidden = inApp(); // uygulamanın içindeyken gereksiz
+  $('appBtn').onclick = () => { $('menu').hidden = true; openDownload(); };
   if (spotifyReturn) {
     if (spotifyReturn.error) toast(spotifyReturn.error, 6000);
     else { toast(t('Spotify bağlandı')); }

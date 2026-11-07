@@ -1,0 +1,16 @@
+<resources>
+  <string name="w_draw">Our shared canvas</string>
+  <string name="w_pet">Our pet</string>
+  <string name="w_clock">Our love clock</string>
+  <string name="w_draw_desc">The canvas you draw on together. Tap to keep drawing.</string>
+  <string name="w_pet_desc">Your shared pet and its needs.</string>
+  <string name="w_clock_desc">Days since you became a couple.</string>
+  <string name="signin_hint">Open the app once to set up the widget</string>
+  <string name="clock_days">days together</string>
+  <string name="clock_unset">Set your date in the love clock</string>
+  <string name="clock_meet">%1$d days until we meet</string>
+  <string name="clock_meet_today">You meet today</string>
+  <string name="food">Food</string>
+  <string name="love">Love</string>
+  <string name="play">Play</string>
+</resources>

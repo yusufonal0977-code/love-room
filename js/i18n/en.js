@@ -964,5 +964,11 @@ export default {
  "Tablolar görünsün": "Show photos",
  "Tablolar gizli": "Hide photos",
  "Eclip Meyhanesi'nde bir akşam": "An evening at Eclip Meyhanesi",
- "Admin odası": "Admin room"
+ "Admin odası": "Admin room",
+ "Uygulamayı telefona indir": "Get the phone app",
+ "Android uygulamasıyla ana ekrana widget ekleyebilirsiniz: ortak tuvaliniz, evcil dostunuz ve ilişki saatiniz telefonun ekranında durur.": "With the Android app you can add widgets to your home screen: your shared canvas, your pet and your love clock stay on your phone's screen.",
+ "iPhone uygulaması henüz yok. Şimdilik Safari'de Paylaş, sonra \"Ana Ekrana Ekle\" ile siteyi uygulama gibi açabilirsin.": "There's no iPhone app yet. For now, in Safari tap Share, then \"Add to Home Screen\" to open the site like an app.",
+ "Android uygulamasını indir": "Download the Android app",
+ "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "After downloading, open the file. If your phone asks about \"unknown sources\", allow it for this app. Coming to Google Play soon.",
+ "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "For now the app only has sign-in with your name; Google sign-in is coming soon."
 };

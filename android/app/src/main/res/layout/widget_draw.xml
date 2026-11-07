@@ -1,0 +1,12 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/root"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:background="@drawable/widget_bg" android:padding="10dp">
+  <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/w_draw"
+      android:textColor="@color/sun" android:textSize="13sp" android:textStyle="bold" android:paddingBottom="6dp" />
+  <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+    <ImageView android:id="@+id/drawImg" android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="@drawable/canvas_bg" android:scaleType="fitCenter" android:padding="2dp" android:contentDescription="@string/w_draw" />
+    <TextView android:id="@+id/drawHint" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center" android:text="@string/signin_hint" android:textColor="#8a5638" android:textSize="12sp" android:visibility="gone" />
+  </FrameLayout>
+</LinearLayout>

@@ -964,5 +964,11 @@ export default {
  "Tablolar görünsün": "إظهار الصور",
  "Tablolar gizli": "إخفاء الصور",
  "Eclip Meyhanesi'nde bir akşam": "أمسية في Eclip Meyhanesi",
- "Admin odası": "غرفة المشرفين"
+ "Admin odası": "غرفة المشرفين",
+ "Uygulamayı telefona indir": "تنزيل التطبيق على الهاتف",
+ "Android uygulamasıyla ana ekrana widget ekleyebilirsiniz: ortak tuvaliniz, evcil dostunuz ve ilişki saatiniz telefonun ekranında durur.": "مع تطبيق أندرويد يمكنك إضافة أدوات إلى الشاشة الرئيسية: لوحتكما المشتركة وحيوانكما الأليف وساعة حبكما.",
+ "iPhone uygulaması henüz yok. Şimdilik Safari'de Paylaş, sonra \"Ana Ekrana Ekle\" ile siteyi uygulama gibi açabilirsin.": "لا يوجد تطبيق آيفون بعد. حاليًا في سفاري اضغط مشاركة ثم \"إضافة إلى الشاشة الرئيسية\".",
+ "Android uygulamasını indir": "تنزيل تطبيق أندرويد",
+ "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "بعد التنزيل افتح الملف. إذا طلب الهاتف إذن \"مصادر غير معروفة\" فاسمح به لهذا التطبيق. قريبًا على Google Play.",
+ "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "حاليًا يتيح التطبيق الدخول بالاسم فقط؛ الدخول عبر Google قريبًا."
 };
