@@ -48,7 +48,9 @@ export function createGame(opts) {
     if (cine) { targetScale = Math.min((vw * 0.74) / TV[2], ((vh - 170) * 0.58) / TV[3]); return; } // TV yakın, oda da görünür
     const contain = Math.min(vw / W, vh / H), cover = Math.max(vw / W, vh / H);
     // Yatay ekranda oda neredeyse tamamen görünür (az kırpma); dikey telefonda oda ekranı doldurur, kamera seni takip eder.
-    targetScale = zoom === 'contain' ? Math.min(vw / W, (vh - 120) / H) : vw >= vh ? Math.min(cover, contain * 1.12) : Math.min(cover, vw / (W * 0.56));
+    // Yatay telefonda alt çubuk yanlara taşınır (style.css): alttan çubuk payı ayırmaya gerek yok
+    const reserve = matchMedia('(orientation: landscape) and (max-height: 520px)').matches ? 50 : 120;
+    targetScale = zoom === 'contain' ? Math.min(vw / W, (vh - reserve) / H) : vw >= vh ? Math.min(cover, contain * 1.12) : Math.min(cover, vw / (W * 0.56));
     if (cam.snap) { scale = targetScale; setSize(); }
   }
   addEventListener('resize', () => { cam.snap = true; fit(); }); fit();
