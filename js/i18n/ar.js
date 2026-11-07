@@ -972,5 +972,12 @@ export default {
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "بعد التنزيل افتح الملف. إذا طلب الهاتف إذن \"مصادر غير معروفة\" فاسمح به لهذا التطبيق. قريبًا على Google Play.",
  "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "حاليًا يتيح التطبيق الدخول بالاسم فقط؛ الدخول عبر Google قريبًا.",
  "Galeriye kaydedildi": "تم الحفظ في المعرض",
- "Kaydedilemedi": "تعذر الحفظ"
+ "Kaydedilemedi": "تعذر الحفظ",
+ "Pikap · YouTube listesi": "المشغّل · قائمة يوتيوب",
+ "Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "تُشغَّل القائمة لكليكما في المنزل في الوقت نفسه. مستوى الصوت يخصك وحدك؛ عند الصفر يتوقف عندك.",
+ "Listeyi kapat": "إيقاف القائمة",
+ "YouTube listesi çal": "تشغيل قائمة يوتيوب",
+ "Ekran: dikey (yataya çevir)": "الشاشة: عمودي (التحويل إلى أفقي)",
+ "Ekran: yatay (dikeye çevir)": "الشاشة: أفقي (التحويل إلى عمودي)",
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "لا توجد قائمة على المشغّل بعد. الصق رابط قائمة يوتيوب."
 };

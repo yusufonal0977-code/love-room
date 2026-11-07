@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -40,6 +41,7 @@ public class MainActivity extends Activity {
   @SuppressLint("SetJavaScriptEnabled")
   @Override protected void onCreate(Bundle b) {
     super.onCreate(b);
+    applyOrientation(this);
     root = new FrameLayout(this);
     web = new WebView(this);
     root.addView(web, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -51,7 +53,7 @@ public class MainActivity extends Activity {
     s.setMediaPlaybackRequiresUserGesture(false);
     s.setUserAgentString(s.getUserAgentString() + " GetLoveRoomApp/1");
     CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
-    web.addJavascriptInterface(new Bridge(this), "LoveRoomApp");
+    web.addJavascriptInterface(new Bridge(this, this), "LoveRoomApp");
     web.setWebViewClient(new WebViewClient() {
       @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
         Uri u = r.getUrl();
@@ -104,6 +106,13 @@ public class MainActivity extends Activity {
     getWindow().getDecorView().setSystemUiVisibility(on
         ? View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         : View.SYSTEM_UI_FLAG_VISIBLE);
+    if (!on) applyOrientation(this);
+    else setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE); // video tam ekranı hep yatay
+  }
+  /** Kayıtlı ekran yönü: varsayılan yatay (sensörle iki yatay yön), istenirse dikey. */
+  static void applyOrientation(Activity a) {
+    String o = Bridge.prefs(a).getString("orientation", "landscape");
+    a.setRequestedOrientation("portrait".equals(o) ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
   }
   void openOutside(Uri u) { try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception ignored) { } }
 

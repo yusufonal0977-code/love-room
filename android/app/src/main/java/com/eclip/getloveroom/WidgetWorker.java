@@ -42,10 +42,14 @@ public class WidgetWorker extends Worker {
         String draw = fb.get("live/" + rid + "/draw");
         String pet = fb.get("live/" + rid + "/pet");
         String rel = fb.get("live/" + rid + "/rel");
+        String yt = fb.get("live/" + rid + "/ytradio");
+        String sp = fb.get("live/" + rid + "/music");
         SharedPreferences.Editor e = p.edit();
         if (draw != null) e.putString("draw", draw);
         if (pet != null) e.putString("pet", pet);
         if (rel != null) e.putString("rel", rel);
+        if (yt != null) e.putString("ytradio", yt);
+        if (sp != null) e.putString("music", sp);
         e.apply();
       }
     } catch (Exception ignored) { /* çevrimdışı: önbellekteki son hal çizilir */ }
@@ -58,5 +62,6 @@ public class WidgetWorker extends Worker {
     DrawWidget.render(c, m, m.getAppWidgetIds(new ComponentName(c, DrawWidget.class)));
     PetWidget.render(c, m, m.getAppWidgetIds(new ComponentName(c, PetWidget.class)));
     ClockWidget.render(c, m, m.getAppWidgetIds(new ComponentName(c, ClockWidget.class)));
+    MusicWidget.render(c, m, m.getAppWidgetIds(new ComponentName(c, MusicWidget.class)));
   }
 }

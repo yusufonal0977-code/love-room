@@ -972,5 +972,12 @@ export default {
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "Depois de baixar, abra o arquivo. Se o celular pedir permissão de \"fontes desconhecidas\", permita. Em breve no Google Play.",
  "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "Por enquanto o app só tem entrada com seu nome; login com Google em breve.",
  "Galeriye kaydedildi": "Salvo na galeria",
- "Kaydedilemedi": "Não foi possível salvar"
+ "Kaydedilemedi": "Não foi possível salvar",
+ "Pikap · YouTube listesi": "Toca-discos · playlist do YouTube",
+ "Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "A playlist toca para vocês dois em casa ao mesmo tempo. O volume só afeta você; no zero, para para você.",
+ "Listeyi kapat": "Desligar a playlist",
+ "YouTube listesi çal": "Tocar uma playlist do YouTube",
+ "Ekran: dikey (yataya çevir)": "Tela: retrato (mudar para paisagem)",
+ "Ekran: yatay (dikeye çevir)": "Tela: paisagem (mudar para retrato)",
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Ainda não há playlist no toca-discos. Cole um link de playlist do YouTube."
 };

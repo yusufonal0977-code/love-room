@@ -9,10 +9,10 @@ import { t } from '../i18n.js';
 export const inApp = () => !!window.LoveRoomApp;
 export const APK_URL = 'https://github.com/yusufonal0977-code/love-room/releases/download/android/GetLoveRoom.apk';
 
-export function connectApp(ctx, { rid, care, draw, life }) {
+export function connectApp(ctx, { rid, care, draw, life, spotify }) {
   const app = window.LoveRoomApp;
   // Widget'a dokununca uygulama ilgili pencereyi açtırır
-  const actions = { draw: () => draw.open(), pet: () => care.openPet(), clock: () => life.openClock() };
+  const actions = { draw: () => draw.open(), pet: () => care.openPet(), clock: () => life.openClock(), music: () => spotify?.open() };
   window.__lrAction = (ac) => actions[ac]?.();
   const ac = new URLSearchParams(location.search).get('ac');
   if (ac) setTimeout(() => window.__lrAction(ac), 900);
@@ -30,6 +30,8 @@ export function connectApp(ctx, { rid, care, draw, life }) {
   }, () => {});
   onValue(ctx.live.ref('draw'), refresh, () => {});
   onValue(ctx.live.ref('rel'), refresh, () => {});
+  onValue(ctx.live.ref('ytradio/title'), refresh, () => {});
+  onValue(ctx.live.ref('music'), refresh, () => {});
 }
 
 /** Menüdeki "Uygulamayı telefona indir": Android'de APK, iPhone'da ana ekrana ekleme yolu. */

@@ -2,11 +2,12 @@
 import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { pickQuality } from './screenshare.js';
 import { connectApp, inApp, openDownload } from './features/app.js';
+import { createRadio } from './features/radio.js';
 import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
-import { DEFAULT_STATE, SCENES, W, H, ADMIN_SCENES } from './scenes.js';
+import { DECOR, DEFAULT_STATE, SCENES, W, H, ADMIN_SCENES } from './scenes.js';
 import { APP_URL } from './config.js';
 import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
 import { $, h, icon, toast, openSheet, closeSheet, esc } from './ui.js';
@@ -381,7 +382,7 @@ async function enterWorld(rid, fresh = false) {
     },
     onFrame: () => { tv?.place(); adminRoom?.placeTv(); ctx.onFrame?.(); },
     onSpot: (id, s) => spot(id, s),
-    onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); },
+    onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); if (ADMIN_SCENES.has(s)) ctx.homeRadio?.leave(); else ctx.homeRadio?.enter(); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
     getExtras: () => adminRoom?.extras() || [],
@@ -401,6 +402,11 @@ async function enterWorld(rid, fresh = false) {
   const spotify = createSpotify(ctx);
   const photos = createPhotos(ctx);
   ctx.photos = photos;
+  // Pikabın YouTube listesi: ikinizde aynı şarkının aynı saniyesi; ses ayarı herkesin kendinde
+  const homeRadio = createRadio(ctx, { path: `live/${rid}/ytradio`, defaultList: null, noise: false, volKey: 'lr.homeRadioVol', title: 'Pikap · YouTube listesi',
+    note: 'Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.', canStop: true, empty: 'Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.',
+    onPlaying: (on) => { if (DECOR.ytMusic !== on) { DECOR.ytMusic = on; DECOR.music = on || !!spotify?.playing; } } });
+  ctx.homeRadio = homeRadio;
   const life = createLife(ctx);
   const draw = createDraw(ctx);
   care = createCare(ctx);
@@ -417,7 +423,8 @@ async function enterWorld(rid, fresh = false) {
   adminRoom = createAdmin(ctx);
   ctx.adminRoom = adminRoom;
   beforeLogout = async () => { await adminRoom.leave(); window.LoveRoomApp?.logout(); };
-  connectApp(ctx, { rid, care, draw, life });
+  connectApp(ctx, { rid, care, draw, life, spotify });
+  homeRadio.enter();
   const activityTick = trackActivity(user.uid);
 
   // Hata ayıklama için konsoldan erişim: window.__lr
@@ -660,6 +667,13 @@ async function enterWorld(rid, fresh = false) {
   $('tourBtn').onclick = () => { $('menu').hidden = true; startTour(); };
   $('appBtn').hidden = inApp(); // uygulamanın içindeyken gereksiz
   $('appBtn').onclick = () => { $('menu').hidden = true; openDownload(); };
+  // Uygulamada ekran yönü: varsayılan yatay, istenirse dikey (telefonda kalıcı)
+  const app = window.LoveRoomApp;
+  if (app?.orientation) {
+    const label = () => ($('orientBtn').textContent = t(app.orientation() === 'portrait' ? 'Ekran: dikey (yataya çevir)' : 'Ekran: yatay (dikeye çevir)'));
+    $('orientBtn').hidden = false; label();
+    $('orientBtn').onclick = () => { app.setOrientation(app.orientation() === 'portrait' ? 'landscape' : 'portrait'); setTimeout(label, 300); };
+  }
   if (spotifyReturn) {
     if (spotifyReturn.error) toast(spotifyReturn.error, 6000);
     else { toast(t('Spotify bağlandı')); }

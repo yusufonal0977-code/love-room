@@ -972,5 +972,12 @@ export default {
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "Öffne nach dem Download die Datei. Fragt das Handy nach \"unbekannten Quellen\", erlaube es für diese App. Bald bei Google Play.",
  "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "In der App gibt es vorerst nur die Anmeldung mit Namen; Google-Anmeldung kommt bald.",
  "Galeriye kaydedildi": "In der Galerie gespeichert",
- "Kaydedilemedi": "Speichern fehlgeschlagen"
+ "Kaydedilemedi": "Speichern fehlgeschlagen",
+ "Pikap · YouTube listesi": "Plattenspieler · YouTube-Playlist",
+ "Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "Die Playlist läuft zu Hause für euch beide gleichzeitig. Die Lautstärke gilt nur für dich; auf null stoppt sie bei dir.",
+ "Listeyi kapat": "Playlist ausschalten",
+ "YouTube listesi çal": "YouTube-Playlist abspielen",
+ "Ekran: dikey (yataya çevir)": "Bildschirm: Hochformat (zu Querformat)",
+ "Ekran: yatay (dikeye çevir)": "Bildschirm: Querformat (zu Hochformat)",
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Noch keine Playlist auf dem Plattenspieler. Füge einen YouTube-Playlist-Link ein."
 };

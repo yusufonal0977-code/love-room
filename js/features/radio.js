@@ -20,12 +20,20 @@ export function playlistId(raw) {
   } catch { return null; }
 }
 
-export function createRadio(ctx) {
-  const rRef = ref(db, 'admin/config/meyhane/radio');
+/**
+ * opts: path (kayıt yeri), defaultList (kayıt yoksa çalacak liste; yoksa hiçbir şey çalmaz), noise (plak sesi),
+ * volKey (ses ayarının saklandığı anahtar), title / note (pencere), canStop (herkes için durdur), onPlaying(çalıyor mu).
+ * Varsayılanlar meyhane radyosu içindir; evdeki pikap kendi yerini (live/{oda}/ytradio) verir.
+ */
+export function createRadio(ctx, opts = {}) {
+  const o = { path: 'admin/config/meyhane/radio', defaultList: DEFAULT_LIST, noise: true, volKey: KEY, title: 'Radyo',
+    note: 'Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.', canStop: false, ...opts };
+  const rRef = ref(db, o.path);
+  const playerId = 'radioPlayer' + Math.random().toString(36).slice(2, 7);
   let st = null, stop = null, on = false, yt = null, ready = false, ids = [], loaded = '', syncT = null, body = null;
-  let vol = (() => { try { const v = localStorage.getItem(KEY); return v == null ? 60 : Math.max(0, Math.min(100, +v || 0)); } catch { return 60; } })();
+  let vol = (() => { try { const v = localStorage.getItem(o.volKey); return v == null ? 60 : Math.max(0, Math.min(100, +v || 0)); } catch { return 60; } })();
   const hiss = () => 0.012 * (vol / 60); // plak sesi çok hafif, müzikle birlikte kısılır (2026-11-07: kulak tırmalıyordu)
-  const host = h('div', { class: 'radiohost' }, h('div', { id: 'radioPlayer' }));
+  const host = h('div', { class: 'radiohost' }, h('div', { id: playerId }));
   document.body.append(host);
 
   // ---------- Eski radyo sesi: hışırtı + çıtırtı, şarkı geçişinde istasyon arama ----------
@@ -64,7 +72,7 @@ export function createRadio(ctx) {
     if (yt) return;
     const YT = await loadYT();
     await new Promise((res) => {
-      yt = new YT.Player('radioPlayer', {
+      yt = new YT.Player(playerId, {
         width: 320, height: 180,
         playerVars: { listType: 'playlist', list: st.list, autoplay: 0, playsinline: 1, rel: 0 },
         events: { onReady: () => { ready = true; res(); }, onStateChange: (e) => { if (e.data === 0) next(st?.index); } },
@@ -78,7 +86,7 @@ export function createRadio(ctx) {
   }
   let playing = '';
   async function apply() {
-    if (!on || !st?.list) { yt?.stopVideo?.(); playing = ''; return; }
+    if (!on || !st?.list) { yt?.stopVideo?.(); playing = ''; o.onPlaying?.(false); if (body && document.body.contains(body)) render(); return; }
     if (!vol) { yt?.pauseVideo?.(); return; } // sesi sıfıra çeken için hiç çalmaz (veri harcamaz)
     await ensurePlayer();
     if (!ready) return;
@@ -87,6 +95,9 @@ export function createRadio(ctx) {
     // Not: cuePlaylist'ten sonra loadVideoById takılıp "yükleniyor"da kalıyor (sessiz hata); listeyi sırasıyla açmak çalışıyor
     if (key !== playing) { playing = key; tune(); yt.loadPlaylist({ listType: 'playlist', list: st.list, index: idx, startSeconds: expected() }); readList(); }
     yt.setVolume(vol);
+    o.onPlaying?.(true);
+    // Çalan şarkının adı kayda yazılır (telefon widget'ı ve partnerin penceresi görsün)
+    setTimeout(() => { const ti = (yt?.getVideoData?.() || {}).title; if (ti && st?.list && st.title !== ti) set(ref(db, o.path + '/title'), ti).catch(() => {}); }, 4000);
     if (body && document.body.contains(body)) render();
   }
   /** Şarkı bitti ya da atlandı: sıradakine geç (aynı şarkıyı iki kişi geçirmesin diye yalnızca sıra hâlâ aynıysa). */
@@ -108,11 +119,11 @@ export function createRadio(ctx) {
 
   function enter() {
     on = true;
-    startNoise();
+    if (o.noise) startNoise();
     stop ??= onValue(rRef, (s) => {
       st = s.val();
       // Henüz kayıt yoksa ilk gelen varsayılan listeyi başlatır (herkes aynı andan dinlesin diye kayıt ortak)
-      if (!st) { runTransaction(rRef, (v) => v ?? { list: DEFAULT_LIST, index: 0, at: now(), name: 'Eclip' }).catch(() => {}); return; }
+      if (!st && o.defaultList) { runTransaction(rRef, (v) => v ?? { list: o.defaultList, index: 0, at: now(), name: 'Eclip' }).catch(() => {}); return; }
       apply().catch((e) => console.warn('radyo', e));
     }, () => {});
     watchSync();
@@ -124,7 +135,7 @@ export function createRadio(ctx) {
   function setVol(v) {
     const was = vol;
     vol = Math.max(0, Math.min(100, Math.round(v)));
-    try { localStorage.setItem(KEY, String(vol)); } catch { /* gizli sekme */ }
+    try { localStorage.setItem(o.volKey, String(vol)); } catch { /* gizli sekme */ }
     if (gain) gain.gain.value = hiss();
     yt?.setVolume?.(vol);
     if (!was && vol) { playing = ''; apply().catch(() => {}); } else if (!vol) yt?.pauseVideo?.();
@@ -135,10 +146,11 @@ export function createRadio(ctx) {
     const volTxt = h('b', {}, vol ? `%${vol}` : t('kapalı'));
     const input = h('input', { placeholder: t('YouTube listesi linki (list=...)'), autocomplete: 'off', inputMode: 'url' });
     b.append(
-      h('p', {}, st?.list ? (title ? t('Çalıyor: {title}', { title }) : t('Radyo açılıyor…')) : t('Radyoda henüz liste yok. Bir YouTube listesi linki yapıştır.')),
+      h('p', {}, st?.list ? (title ? t('Çalıyor: {title}', { title }) : t('Radyo açılıyor…')) : t(o.empty || 'Radyoda henüz liste yok. Bir YouTube listesi linki yapıştır.')),
       st?.list ? h('p', { class: 'small' }, t('Listeyi açan: {name}', { name: st.name || '?' })) : null,
       h('div', { class: 'row wrap' },
-        st?.list ? h('button', { onclick: () => next(st.index) }, t('Sonraki şarkı')) : null),
+        st?.list ? h('button', { onclick: () => next(st.index) }, t('Sonraki şarkı')) : null,
+        st?.list && o.canStop ? h('button', { class: 'link', onclick: () => set(rRef, null).catch(() => {}) }, t('Listeyi kapat')) : null),
       h('label', { class: 'radiovol' }, h('span', {}, t('Ses (yalnızca sende)')), h('input', { type: 'range', min: 0, max: 100, value: vol, oninput: (e) => { setVol(+e.target.value); volTxt.textContent = vol ? `%${vol}` : t('kapalı'); } }), volTxt),
       h('form', { class: 'row', onsubmit: (e) => {
         e.preventDefault();
@@ -146,13 +158,14 @@ export function createRadio(ctx) {
         if (!id) return toast(t('Bu bir YouTube listesi linki değil. Linkte list= olmalı.'));
         set(rRef, { list: id, index: 0, at: serverTimestamp(), by: ctx.uid, name: ctx.myName() }).then(() => { toast(t('Radyoda yeni liste çalıyor')); closeSheet(); }).catch(() => toast(t('Kaydedilemedi. Kurallar güncel mi?')));
       } }, input, h('button', { class: 'primary' }, t('Çal'))),
-      h('p', { class: 'small' }, t('Liste admin odasında ve meyhanede herkese aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.')),
+      h('p', { class: 'small' }, t(o.note)),
     );
   }
   function open() {
-    body = openSheet({ title: 'Radyo', iconName: 'music', onClose: () => (body = null) });
+    body = openSheet({ title: o.title, iconName: 'music', onClose: () => (body = null) });
     ac?.resume?.(); // tarayıcının ses engeli: dokunuşla açılır
     render();
   }
-  return { enter, leave, open, get on() { return on; } };
+  return { enter, leave, open, get on() { return on; }, get title() { return st?.title || ''; },
+    debug: () => ({ on, ready, playing, vol, state: yt?.getPlayerState?.(), t: Math.round(yt?.getCurrentTime?.() || 0), video: (yt?.getVideoData?.() || {}).title }) };
 }

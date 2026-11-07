@@ -972,5 +972,12 @@ export default {
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "After downloading, open the file. If your phone asks about \"unknown sources\", allow it for this app. Coming to Google Play soon.",
  "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "For now the app only has sign-in with your name; Google sign-in is coming soon.",
  "Galeriye kaydedildi": "Saved to gallery",
- "Kaydedilemedi": "Couldn't save"
+ "Kaydedilemedi": "Couldn't save",
+ "Pikap · YouTube listesi": "Record player · YouTube playlist",
+ "Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "The playlist plays for both of you at home at the same time. The volume only affects you; set it to zero to stop it for you.",
+ "Listeyi kapat": "Turn the playlist off",
+ "YouTube listesi çal": "Play a YouTube playlist",
+ "Ekran: dikey (yataya çevir)": "Screen: portrait (switch to landscape)",
+ "Ekran: yatay (dikeye çevir)": "Screen: landscape (switch to portrait)",
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "No playlist on the record player yet. Paste a YouTube playlist link."
 };

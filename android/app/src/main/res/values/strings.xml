@@ -12,6 +12,11 @@
   <string name="clock_unset">İlişki saatinden gününüzü girin</string>
   <string name="clock_meet">Kavuşmaya %1$d gün</string>
   <string name="clock_meet_today">Bugün kavuşuyorsunuz</string>
+  <string name="w_music">Pikabımız</string>
+  <string name="w_music_desc">Evde şimdi çalan şarkı.</string>
+  <string name="music_yt">YouTube listesi</string>
+  <string name="music_quiet">Pikap sessiz</string>
+  <string name="music_tap">Dokun, birlikte dinleyin</string>
   <string name="food">Tokluk</string>
   <string name="love">Sevgi</string>
   <string name="play">Oyun</string>

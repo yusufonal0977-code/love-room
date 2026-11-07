@@ -10,6 +10,11 @@
   <string name="clock_unset">Set your date in the love clock</string>
   <string name="clock_meet">%1$d days until we meet</string>
   <string name="clock_meet_today">You meet today</string>
+  <string name="w_music">Our record player</string>
+  <string name="w_music_desc">The song playing at home now.</string>
+  <string name="music_yt">YouTube playlist</string>
+  <string name="music_quiet">Record player is quiet</string>
+  <string name="music_tap">Tap to listen together</string>
   <string name="food">Food</string>
   <string name="love">Love</string>
   <string name="play">Play</string>

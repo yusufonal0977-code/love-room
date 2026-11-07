@@ -19,7 +19,8 @@ import java.io.OutputStream;
 /** Sitenin uygulamaya verdiği bilgiler ve istekleri (window.LoveRoomApp). Yalnızca kendi sitemiz yüklenir. */
 public class Bridge {
   private final Context ctx;
-  Bridge(Context c) { ctx = c.getApplicationContext(); }
+  private final java.lang.ref.WeakReference<MainActivity> act;
+  Bridge(Context c, MainActivity a) { ctx = c.getApplicationContext(); act = new java.lang.ref.WeakReference<>(a); }
   static SharedPreferences prefs(Context c) { return c.getSharedPreferences("lr", Context.MODE_PRIVATE); }
 
   /** Oturum: { rid, uid, refreshToken, lang } — widget'lar Firebase'den bununla okur. */
@@ -42,6 +43,13 @@ public class Bridge {
   }
   /** Bir şey değişti (çizim, hayvan bakımı): widget'ları hemen yenile. */
   @JavascriptInterface public void refresh() { WidgetWorker.runNow(ctx); }
+  /** Ekran yönü: "landscape" (varsayılan) ya da "portrait"; telefonda kalıcı. */
+  @JavascriptInterface public String orientation() { return prefs(ctx).getString("orientation", "landscape"); }
+  @JavascriptInterface public void setOrientation(String o) {
+    prefs(ctx).edit().putString("orientation", "portrait".equals(o) ? "portrait" : "landscape").apply();
+    MainActivity a = act.get();
+    if (a != null) a.runOnUiThread(() -> MainActivity.applyOrientation(a));
+  }
   @JavascriptInterface public String version() { return BuildConfig.VERSION_NAME; }
 
   /** Google ile giriş: Google, uygulama içindeki sayfada girişe izin vermez; tarayıcıda yapılır, sonuç getloveroom://auth ile döner. */

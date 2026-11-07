@@ -972,5 +972,12 @@ export default {
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "Después de descargarla, abre el archivo. Si el móvil pide permiso de \"fuentes desconocidas\", permítelo. Pronto en Google Play.",
  "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "Por ahora la app solo permite entrar con tu nombre; pronto con Google.",
  "Galeriye kaydedildi": "Guardado en la galería",
- "Kaydedilemedi": "No se pudo guardar"
+ "Kaydedilemedi": "No se pudo guardar",
+ "Pikap · YouTube listesi": "Tocadiscos · lista de YouTube",
+ "Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "La lista suena a la vez para los dos en casa. El volumen solo te afecta a ti; a cero, se detiene para ti.",
+ "Listeyi kapat": "Apagar la lista",
+ "YouTube listesi çal": "Poner una lista de YouTube",
+ "Ekran: dikey (yataya çevir)": "Pantalla: vertical (cambiar a horizontal)",
+ "Ekran: yatay (dikeye çevir)": "Pantalla: horizontal (cambiar a vertical)",
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Aún no hay lista en el tocadiscos. Pega un enlace de lista de YouTube."
 };

@@ -972,5 +972,12 @@ export default {
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "Après le téléchargement, ouvre le fichier. Si le téléphone demande « sources inconnues », autorise-le. Bientôt sur Google Play.",
  "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "Pour l'instant, l'appli permet seulement d'entrer avec ton prénom ; Google arrive bientôt.",
  "Galeriye kaydedildi": "Enregistré dans la galerie",
- "Kaydedilemedi": "Impossible d'enregistrer"
+ "Kaydedilemedi": "Impossible d'enregistrer",
+ "Pikap · YouTube listesi": "Platine · playlist YouTube",
+ "Liste evde ikinize aynı anda çalar. Ses ayarı yalnızca seni etkiler; sıfıra çekersen sende durur.": "La playlist joue pour vous deux à la maison en même temps. Le volume ne concerne que toi ; à zéro, elle s'arrête chez toi.",
+ "Listeyi kapat": "Arrêter la playlist",
+ "YouTube listesi çal": "Lire une playlist YouTube",
+ "Ekran: dikey (yataya çevir)": "Écran : portrait (passer en paysage)",
+ "Ekran: yatay (dikeye çevir)": "Écran : paysage (passer en portrait)",
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Pas encore de playlist sur la platine. Colle un lien de playlist YouTube."
 };

@@ -157,7 +157,7 @@ export function createSpotify(ctx) {
   live.on('music', (v) => {
     const prev = state;
     state = v;
-    DECOR.music = !!v?.playing;
+    DECOR.music = !!v?.playing || !!DECOR.ytMusic; // pikap Spotify ya da YouTube listesi çalarken döner
     render();
     if (!v) { if (prev) pauseHere(); return; }
     if (v.by === uid) return;
@@ -281,6 +281,10 @@ export function createSpotify(ctx) {
   function open() {
     sheetBody = openSheet({ title: 'Pikap · birlikte dinle', iconName: 'music', onClose: () => (sheetBody = null) });
     render();
+    // Spotify'a ek olarak: YouTube listesi (hesap gerekmez)
+    if (ctx.homeRadio) sheetBody.prepend(h('div', { class: 'row wrap ytpick' },
+      h('button', { class: 'primary', html: `${icon('music')} ${t('YouTube listesi çal')}`, onclick: () => ctx.homeRadio.open() }),
+      ctx.homeRadio.title ? h('small', {}, t('Çalıyor: {title}', { title: ctx.homeRadio.title })) : null));
   }
 
   if (connected()) loadMe();
