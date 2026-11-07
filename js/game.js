@@ -267,17 +267,12 @@ export function createGame(opts) {
     const [x, y] = toWorld(e);
     if (edit) { try { canvas.setPointerCapture(e.pointerId); } catch { /* sentetik olay */ } return editDown(x, y); }
     const door = doorAt(x, y);
-    const aiHit = partner.shown && partner.ai && partner.scene === me.scene && Math.abs(x - partner.x) < 9 && y > partner.y - 28 && y < partner.y + 3;
-    if (aiHit && !door && (me.seat >= 0 || together())) return opts.onPartnerTap?.(); // yapay partnere dokununca sohbet
     if (me.seat >= 0 && !door) return standUp();
     lastTap = { x, y, at: performance.now() }; // oturulacak sandalye dokunulan yere göre seçilir // otururken dokunmak kalkar; kapıya dokunmak kalkıp gider
     const l = lay();
     const catHit = cat.scene === me.scene && Math.abs(x - cat.x) < 12 && Math.abs(y - cat.y + 5) < 10;
     const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];
     const spot = catHit ? CAT_SPOT : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
-    const npc = !door && (opts.getExtras?.() || []).find((p) => p.onTap && p.scene === me.scene && Math.abs(x - p.x) < 9 && y > p.y - 28 && y < p.y + 3);
-    if (aiHit && !door) { walkTo(partner.x + (me.x < partner.x ? -12 : 12), partner.y, () => opts.onPartnerTap?.()); return; }
-    if (npc) { walkTo(npc.x + (me.x < npc.x ? -14 : 14), npc.y, () => { me.dir = me.x < npc.x ? 'right' : 'left'; npc.onTap(); }); return; }
     if (door) { const f = doorFront(door); walkTo(f.x, f.y, () => enterDoor(door), door); }
     else if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
     else walkTo(x, y);
@@ -353,7 +348,7 @@ export function createGame(opts) {
     const p = opts.getPartner?.();
     partner.shown = !!p;
     if (!p) return;
-    partner.look = p.look; partner.side = p.side; partner.name = p.name; partner.ai = !!p.ai;
+    partner.look = p.look; partner.side = p.side; partner.name = p.name;
     if (partner.scene !== p.scene) { partner.scene = p.scene; partner.x = p.x; partner.y = p.y; }
     partner.seat = p.seat ?? -1; partner.dir = p.dir || 'down'; partner.moving = !!p.moving;
     const dx = p.x - partner.x, dy = p.y - partner.y, d = Math.hypot(dx, dy);
@@ -363,7 +358,7 @@ export function createGame(opts) {
   }
 
   // Hayvanı oda kurucusu simüle eder; o çevrimdışıysa (ya da partner yoksa) bu cihaz.
-  const petSim = () => !!opts.isHost?.() || !partner.shown || !!partner.ai; // yapay partner simüle etmez
+  const petSim = () => !!opts.isHost?.() || !partner.shown;
   const catBlocked = (x, y) => blockedIn(SCENES[cat.scene] || SCENES.salon, x, y) || y < WALL + 10;
   function catNear(p, r) {
     for (let i = 0; i < 12; i++) {
@@ -823,8 +818,6 @@ export function createGame(opts) {
     setCinema(on) { cine = !!on; fit(); },
     get cinema() { return cine; },
     sit: (group) => sitDown(group),
-    /** Bulunulan odanın oturma yerleri (yapay partner yanına oturabilsin diye). */
-    seats: () => lay().seats,
     /** Küçük pencere modunda döngüyü o pencerenin karesine bağlar (ana sekme arka planda kalsa da çizsin). */
     setRaf(fn) { raf = fn || ((f) => requestAnimationFrame(f)); gen++; raf(loop(gen)); },
     stop() { running = false; },

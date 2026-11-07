@@ -576,35 +576,3 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
 }
 @media (orientation: landscape) and (max-height: 330px) { #bar { gap: 4px; } #bar button { width: 38px; height: 38px; } }
 
-/* Yapay partner */
-.aiintro { display: flex; gap: 12px; align-items: center; }
-.aiintro p { margin: 0; color: var(--dim); line-height: 1.45; font-size: 14px; }
-.aiprev { width: 72px; height: 72px; image-rendering: pixelated; flex: none; background: #1d180d; border-radius: 14px; }
-.aisafe { margin: 10px 0; padding-inline-start: 18px; color: var(--dim); font-size: 13px; line-height: 1.45; }
-.aichips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
-.aichips button { padding: 6px 12px; font-size: 14px; border-radius: 999px; }
-.aichips button.on { border-color: var(--sun); color: var(--sun); background: rgba(252, 223, 75, .1); }
-.ailbl { display: block; color: var(--dim); font-size: 13px; margin-top: 10px; }
-.aiwarn { color: #ffb3c3; font-size: 13px; }
-.aibadge { font-size: 11px; color: var(--dim); background: rgba(252, 223, 75, .08); border: 1px solid rgba(252, 223, 75, .18); border-radius: 10px; padding: 5px 9px; margin-bottom: 6px; }
-.aibadge b { color: var(--sun); }
-.ailist { min-height: 220px; height: min(46vh, 420px); padding: 4px 2px; }
-.aiimg { max-width: 160px; border-radius: 10px; margin-bottom: 2px; }
-.ainote { align-self: center; text-align: center; font-size: 12px; color: var(--dim); max-width: 90%; padding: 4px 8px; }
-.ainote.crisis { color: #ffd0da; background: #3a1420; border: 1px solid #ff4f7b; border-radius: 10px; padding: 8px 10px; -webkit-user-select: text; user-select: text; }
-.ainote.crisis a { color: #fff; }
-.aistat { font-size: 12px; color: var(--sun); padding: 2px 4px; }
-.aiform { padding: 6px 0 0; }
-.aiform button.ghost, .aitools button { width: 40px; height: 40px; padding: 0; display: grid; place-items: center; flex: none; }
-.aiform button .ic, .aitools button .ic { margin: 0; }
-.aiform button.on, .aitools button.on { border-color: var(--sun); color: var(--sun); }
-.aitools { display: flex; gap: 6px; justify-content: flex-end; padding-top: 6px; }
-.aifacts { list-style: none; padding: 0; margin: 6px 0; display: flex; flex-direction: column; gap: 4px; }
-.aifacts li { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; background: #1d180d; border-radius: 8px; padding: 4px 4px 4px 10px; }
-.aifacts button { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; }
-.aifacts button .ic { margin: 0; width: 16px; height: 16px; }
-.aidl { font-size: 12px; color: var(--dim); margin-bottom: 8px; display: flex; flex-direction: column; gap: 5px; }
-.aidl[hidden] { display: none; }
-.aibar { height: 8px; border-radius: 99px; background: #2a2414; overflow: hidden; }
-.aibar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--sun), #ff4f7b); border-radius: 99px; transition: width .4s linear; }
-.aidl button.link { padding: 0 4px; font-size: 12px; }

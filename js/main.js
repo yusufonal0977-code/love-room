@@ -4,7 +4,6 @@ import { pickQuality } from './screenshare.js';
 import { connectApp, inApp, openDownload, openWidgets } from './features/app.js';
 import { createRadio } from './features/radio.js';
 import { startTour } from './features/tour.js';
-import { createAi } from './features/ai.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
@@ -31,6 +30,10 @@ import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
 import { auth, db, get, ref, remove } from './fb.js';
 import { initI18n, t, lang, locale, langPicker } from './i18n.js';
 import { deleteUser, GoogleAuthProvider, reauthenticateWithPopup } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+
+// Kaldırılan yapay partnerden (v0.47-0.48) kalanlar: bu cihazdaki sohbetler ve indirilen model dosyaları (1 GB'a kadar) silinir
+try { for (const k of Object.keys(localStorage)) if (k.startsWith('lr.ai.')) localStorage.removeItem(k); } catch { /* gizli sekme */ }
+globalThis.caches?.keys().then((ks) => ks.filter((k) => k.startsWith('webllm/') || k === 'transformers-cache').forEach((k) => caches.delete(k))).catch(() => {});
 
 // ---------- Hakkımızda ve hukuki metinler (uygulama içi pencere) ----------
 function openLegal(id) {
@@ -343,7 +346,7 @@ async function enterWorld(rid, fresh = false) {
     onRel: (t) => { $('relChip').textContent = t; $('relChip').hidden = !t; },
     onFrame: null,
   };
-  let decor = null, care = null, kitchen = null, adminRoom = null, sleep = null, ai = null;
+  let decor = null, care = null, kitchen = null, adminRoom = null, sleep = null;
 
   // Yatak odası: evde birlikte 100 saat (6000 dk) geçirince açılır. Sayaç live/{rid}/stats/minutes;
   // ikiniz de açıksanız yalnızca ev sahibi sayar (süre iki kez sayılmasın). Yerelde ?yatak ile hemen açılır.
@@ -365,7 +368,7 @@ async function enterWorld(rid, fresh = false) {
     getShared: () => shared,
     getPartner() {
       const p = partnerP();
-      if (!p || !partnerProfile) return ai?.presence(game?.me) || null; // partner yokken yapay partner
+      if (!p || !partnerProfile) return null;
       return { ...p, look: partnerProfile.look ?? DEFAULT_LOOK, side: partnerProfile.side ?? 'moon', name: partnerProfile.name };
     },
     getHours: () => ({ hour: previewHour ?? hourOf(tz) ?? 12, partnerHour: partnerProfile?.tz && partnerProfile.tz !== tz ? hourOf(partnerProfile.tz) : null }),
@@ -387,7 +390,6 @@ async function enterWorld(rid, fresh = false) {
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
     getExtras: () => adminRoom?.extras() || [],
-    onPartnerTap: () => ai?.open(),
     hasCrown: (who) => ADMIN_SCENES.has(game?.me.scene) && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
     takenSeats: (sc) => adminRoom?.takenSeats?.(sc) || [],
     canEnter: (to) => (to === 'meyhane' ? !!adminRoom?.active() : to !== 'yatak' || bedOpen()),
@@ -417,9 +419,6 @@ async function enterWorld(rid, fresh = false) {
   const pip = createPip(ctx);
   Object.assign(ctx, { life, draw, care });
   ctx.chat = createChat(ctx);
-  ai = createAi(ctx);
-  ctx.aiPlays = () => !partnerP() && !!ai?.active(); // partner yokken oyunlarda rakip yapay partner
-  ctx.aiName = () => ai?.name() || '';
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
   kitchen = createKitchen(ctx);
@@ -552,12 +551,11 @@ async function enterWorld(rid, fresh = false) {
   };
   $('heartBtn').onclick = () => live.react('heart');
   const touch = (kind) => {
-    const virt = !partnerP() && ctx.aiPlays();
-    if (!partnerP() && !virt) return toast(t('Partnerin odada değil'));
-    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); if (virt) ai.touched(kind); };
+    if (!partnerP()) return toast(t('Partnerin odada değil'));
+    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); };
     if (game.near()) return go();
     // Aynı odadaysanız karakterin partnerine yürür, varınca sarılır/öper
-    if (game.sameRoom() && game.partner.seat < 0) return game.approach(go);
+    if (game.sameRoom() && partnerP()?.seat < 0) return game.approach(go);
     toast(t(kind === 'hug' ? 'Sarılmak için aynı odaya git' : 'Öpmek için aynı odaya git'));
   };
   $('hugBtn').onclick = () => touch('hug');
@@ -659,7 +657,6 @@ async function enterWorld(rid, fresh = false) {
       tile('eye', 'Evimizi göster', 'Linkle arkadaşlarına', () => showcase.open()),
       tile('share', 'Paylaş', 'Hikâye ve kare şablonlar', () => share.open()),
       pip.supported ? tile('pip', 'Küçük pencere', 'Başka işle uğraşırken', () => pip.toggle()) : null,
-      tile('spark', 'Yapay partner', 'Bekarlar için · cihazında çalışır', () => ai.open()),
       tile('full', 'Tam ekran', 'Bu cihazda', fullscreen),
     ));
   }
