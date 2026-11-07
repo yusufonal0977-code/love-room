@@ -50,6 +50,17 @@ public class Bridge {
     MainActivity a = act.get();
     if (a != null) a.runOnUiThread(() -> MainActivity.applyOrientation(a));
   }
+  /** Telefonun ana ekranı widget'ı uygulamanın içinden eklemeye izin veriyor mu (Android 8+ ve destekleyen ana ekran). */
+  @JavascriptInterface public boolean canPinWidget() {
+    return Build.VERSION.SDK_INT >= 26 && android.appwidget.AppWidgetManager.getInstance(ctx).isRequestPinAppWidgetSupported();
+  }
+  /** "Widget ekle": telefon "ana ekrana eklensin mi?" diye sorar; onaylanınca widget ekrana yerleşir. */
+  @JavascriptInterface public boolean pinWidget(String kind) {
+    if (!canPinWidget()) return false;
+    Class<?> cls = "pet".equals(kind) ? PetWidget.class : "draw".equals(kind) ? DrawWidget.class : "music".equals(kind) ? MusicWidget.class : ClockWidget.class;
+    WidgetWorker.runNow(ctx);
+    return android.appwidget.AppWidgetManager.getInstance(ctx).requestPinAppWidget(new android.content.ComponentName(ctx, cls), null, null);
+  }
   @JavascriptInterface public String version() { return BuildConfig.VERSION_NAME; }
 
   /** Google ile giriş: Google, uygulama içindeki sayfada girişe izin vermez; tarayıcıda yapılır, sonuç getloveroom://auth ile döner. */

@@ -979,5 +979,17 @@ export default {
  "YouTube listesi çal": "تشغيل قائمة يوتيوب",
  "Ekran: dikey (yataya çevir)": "الشاشة: عمودي (التحويل إلى أفقي)",
  "Ekran: yatay (dikeye çevir)": "الشاشة: أفقي (التحويل إلى عمودي)",
- "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "لا توجد قائمة على المشغّل بعد. الصق رابط قائمة يوتيوب."
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "لا توجد قائمة على المشغّل بعد. الصق رابط قائمة يوتيوب.",
+ "Widget ekle": "إضافة أداة",
+ "Birini seç, telefon ana ekrana eklemek isteyip istemediğini soracak.": "اختر واحدة وسيسألك الهاتف إن كنت تريد إضافتها إلى الشاشة الرئيسية.",
+ "Ana ekranda boş bir yere basılı tut, \"Widget'lar\"a dokun ve listede Get Love Room'u bul.": "اضغط مطولًا على مكان فارغ في الشاشة الرئيسية، ثم \"الأدوات\" وابحث عن Get Love Room.",
+ "Widget'lar Android uygulamasıyla ana ekrana eklenir.": "تُضاف الأدوات إلى الشاشة الرئيسية عبر تطبيق أندرويد.",
+ "Kaçıncı gününüz, kavuşmaya kaç gün kaldı": "يومكما الكم، وكم يومًا حتى اللقاء",
+ "Dostunuz, hali ve ihtiyaçları": "حيوانكما وحالته واحتياجاته",
+ "Birlikte çizdiğiniz tuval": "اللوحة التي ترسمانها معًا",
+ "Evde şimdi çalan şarkı": "الأغنية التي تُشغَّل الآن في المنزل",
+ "Ana ekrana ekle": "إضافة إلى الشاشة الرئيسية",
+ "Bu telefon widget'ı uygulamadan eklemeye izin vermiyor. Ana ekrandan ekleyebilirsin.": "هذا الهاتف لا يسمح بإضافة الأدوات من التطبيق. أضفها من الشاشة الرئيسية.",
+ "Ortak tuvalimiz": "لوحتنا المشتركة",
+ "Pikabımız": "مشغّلنا"
 };

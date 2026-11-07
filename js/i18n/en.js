@@ -979,5 +979,17 @@ export default {
  "YouTube listesi çal": "Play a YouTube playlist",
  "Ekran: dikey (yataya çevir)": "Screen: portrait (switch to landscape)",
  "Ekran: yatay (dikeye çevir)": "Screen: landscape (switch to portrait)",
- "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "No playlist on the record player yet. Paste a YouTube playlist link."
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "No playlist on the record player yet. Paste a YouTube playlist link.",
+ "Widget ekle": "Add widget",
+ "Birini seç, telefon ana ekrana eklemek isteyip istemediğini soracak.": "Pick one and your phone will ask if you want to add it to the home screen.",
+ "Ana ekranda boş bir yere basılı tut, \"Widget'lar\"a dokun ve listede Get Love Room'u bul.": "Press and hold an empty spot on the home screen, tap \"Widgets\" and find Get Love Room.",
+ "Widget'lar Android uygulamasıyla ana ekrana eklenir.": "Widgets are added to the home screen with the Android app.",
+ "Kaçıncı gününüz, kavuşmaya kaç gün kaldı": "Which day you're on, days until you meet",
+ "Dostunuz, hali ve ihtiyaçları": "Your pet, its mood and needs",
+ "Birlikte çizdiğiniz tuval": "The canvas you draw on together",
+ "Evde şimdi çalan şarkı": "The song playing at home now",
+ "Ana ekrana ekle": "Add to home screen",
+ "Bu telefon widget'ı uygulamadan eklemeye izin vermiyor. Ana ekrandan ekleyebilirsin.": "This phone doesn't let apps add widgets. You can add it from the home screen.",
+ "Ortak tuvalimiz": "Our shared canvas",
+ "Pikabımız": "Our record player"
 };

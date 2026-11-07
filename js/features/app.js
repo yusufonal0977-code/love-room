@@ -34,6 +34,25 @@ export function connectApp(ctx, { rid, care, draw, life, spotify }) {
   onValue(ctx.live.ref('music'), refresh, () => {});
 }
 
+const WIDGETS = [
+  { kind: 'clock', name: 'İlişki saatimiz', desc: 'Kaçıncı gününüz, kavuşmaya kaç gün kaldı' },
+  { kind: 'pet', name: 'Evcil dostumuz', desc: 'Dostunuz, hali ve ihtiyaçları' },
+  { kind: 'draw', name: 'Ortak tuvalimiz', desc: 'Birlikte çizdiğiniz tuval' },
+  { kind: 'music', name: 'Pikabımız', desc: 'Evde şimdi çalan şarkı' },
+];
+/** Menüdeki "Widget ekle": uygulamada tek dokunuşla ana ekrana ekler; tarayıcıda uygulamayı indirmeye yönlendirir. */
+export function openWidgets() {
+  const app = window.LoveRoomApp;
+  const b = openSheet({ title: 'Widget ekle', iconName: 'grid', wide: true });
+  const can = !!app?.canPinWidget?.();
+  b.append(h('p', {}, t(app ? (can ? 'Birini seç, telefon ana ekrana eklemek isteyip istemediğini soracak.' : 'Ana ekranda boş bir yere basılı tut, "Widget\'lar"a dokun ve listede Get Love Room\'u bul.') : 'Widget\'lar Android uygulamasıyla ana ekrana eklenir.')));
+  b.append(h('div', { class: 'widgetgrid' }, ...WIDGETS.map((w) => h('div', { class: 'widgetcard' },
+    h('img', { src: `assets/widgets/${w.kind}.png`, alt: '' }),
+    h('b', {}, t(w.name)), h('small', {}, t(w.desc)),
+    can ? h('button', { class: 'primary', onclick: () => { if (!app.pinWidget(w.kind)) toast(t('Bu telefon widget\'ı uygulamadan eklemeye izin vermiyor. Ana ekrandan ekleyebilirsin.'), 5000); } }, t('Ana ekrana ekle')) : null))));
+  if (!app) b.append(h('button', { class: 'primary', html: `${icon('download')} ${t('Android uygulamasını indir')}`, onclick: () => { location.href = APK_URL; } }));
+}
+
 /** Menüdeki "Uygulamayı telefona indir": Android'de APK, iPhone'da ana ekrana ekleme yolu. */
 export function openDownload() {
   const b = openSheet({ title: 'Uygulamayı telefona indir', iconName: 'download' });

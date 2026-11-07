@@ -548,3 +548,10 @@ body:has(.modal:not([hidden])) .meybtn, body.cinema .meybtn { display: none; }
 .radiochip[hidden] { display: none; }
 .radiochip svg { width: 16px; height: 16px; }
 body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden])) .radiochip, body.cinema .radiochip { display: none; }
+
+/* Menü: widget ekle */
+.widgetgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.widgetcard { display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 14px; background: rgba(255,246,216,.06); }
+.widgetcard img { width: 100%; height: 96px; object-fit: contain; }
+.widgetcard small { color: var(--soft, #b8ad8a); min-height: 2.4em; }
+.widgetcard button { margin-top: 4px; }

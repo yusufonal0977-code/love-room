@@ -979,5 +979,17 @@ export default {
  "YouTube listesi çal": "Lire une playlist YouTube",
  "Ekran: dikey (yataya çevir)": "Écran : portrait (passer en paysage)",
  "Ekran: yatay (dikeye çevir)": "Écran : paysage (passer en portrait)",
- "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Pas encore de playlist sur la platine. Colle un lien de playlist YouTube."
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Pas encore de playlist sur la platine. Colle un lien de playlist YouTube.",
+ "Widget ekle": "Ajouter un widget",
+ "Birini seç, telefon ana ekrana eklemek isteyip istemediğini soracak.": "Choisis-en un, le téléphone te demandera s'il faut l'ajouter à l'écran d'accueil.",
+ "Ana ekranda boş bir yere basılı tut, \"Widget'lar\"a dokun ve listede Get Love Room'u bul.": "Appuie longuement sur un espace vide de l'écran d'accueil, touche « Widgets » et trouve Get Love Room.",
+ "Widget'lar Android uygulamasıyla ana ekrana eklenir.": "Les widgets s'ajoutent à l'écran d'accueil avec l'appli Android.",
+ "Kaçıncı gününüz, kavuşmaya kaç gün kaldı": "Votre combientième jour, jours avant de se retrouver",
+ "Dostunuz, hali ve ihtiyaçları": "Votre animal, son humeur et ses besoins",
+ "Birlikte çizdiğiniz tuval": "La toile que vous dessinez ensemble",
+ "Evde şimdi çalan şarkı": "La chanson qui passe à la maison",
+ "Ana ekrana ekle": "Ajouter à l'accueil",
+ "Bu telefon widget'ı uygulamadan eklemeye izin vermiyor. Ana ekrandan ekleyebilirsin.": "Ce téléphone ne permet pas d'ajouter des widgets depuis l'appli. Ajoute-le depuis l'écran d'accueil.",
+ "Ortak tuvalimiz": "Notre toile commune",
+ "Pikabımız": "Notre platine"
 };

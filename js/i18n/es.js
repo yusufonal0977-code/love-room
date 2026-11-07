@@ -979,5 +979,17 @@ export default {
  "YouTube listesi çal": "Poner una lista de YouTube",
  "Ekran: dikey (yataya çevir)": "Pantalla: vertical (cambiar a horizontal)",
  "Ekran: yatay (dikeye çevir)": "Pantalla: horizontal (cambiar a vertical)",
- "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Aún no hay lista en el tocadiscos. Pega un enlace de lista de YouTube."
+ "Pikapta henüz liste yok. Bir YouTube listesi linki yapıştır.": "Aún no hay lista en el tocadiscos. Pega un enlace de lista de YouTube.",
+ "Widget ekle": "Añadir widget",
+ "Birini seç, telefon ana ekrana eklemek isteyip istemediğini soracak.": "Elige uno y el móvil te preguntará si quieres añadirlo a la pantalla de inicio.",
+ "Ana ekranda boş bir yere basılı tut, \"Widget'lar\"a dokun ve listede Get Love Room'u bul.": "Mantén pulsado un hueco de la pantalla de inicio, toca \"Widgets\" y busca Get Love Room.",
+ "Widget'lar Android uygulamasıyla ana ekrana eklenir.": "Los widgets se añaden a la pantalla de inicio con la app de Android.",
+ "Kaçıncı gününüz, kavuşmaya kaç gün kaldı": "Qué día lleváis y cuánto falta para veros",
+ "Dostunuz, hali ve ihtiyaçları": "Vuestra mascota, su ánimo y necesidades",
+ "Birlikte çizdiğiniz tuval": "El lienzo que dibujáis juntos",
+ "Evde şimdi çalan şarkı": "La canción que suena ahora en casa",
+ "Ana ekrana ekle": "Añadir a inicio",
+ "Bu telefon widget'ı uygulamadan eklemeye izin vermiyor. Ana ekrandan ekleyebilirsin.": "Este móvil no permite añadir widgets desde la app. Añádelo desde la pantalla de inicio.",
+ "Ortak tuvalimiz": "Nuestro lienzo compartido",
+ "Pikabımız": "Nuestro tocadiscos"
 };

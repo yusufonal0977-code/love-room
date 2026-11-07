@@ -1,7 +1,7 @@
 // Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
 import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { pickQuality } from './screenshare.js';
-import { connectApp, inApp, openDownload } from './features/app.js';
+import { connectApp, inApp, openDownload, openWidgets } from './features/app.js';
 import { createRadio } from './features/radio.js';
 import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
@@ -667,6 +667,7 @@ async function enterWorld(rid, fresh = false) {
   $('tourBtn').onclick = () => { $('menu').hidden = true; startTour(); };
   $('appBtn').hidden = inApp(); // uygulamanın içindeyken gereksiz
   $('appBtn').onclick = () => { $('menu').hidden = true; openDownload(); };
+  $('widgetBtn').onclick = () => { $('menu').hidden = true; openWidgets(); };
   // Uygulamada ekran yönü: varsayılan yatay, istenirse dikey (telefonda kalıcı)
   const app = window.LoveRoomApp;
   if (app?.orientation) {
