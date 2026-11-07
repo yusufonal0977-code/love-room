@@ -618,6 +618,13 @@ export function createGame(opts) {
     p.at = at;
     Object.assign(p.el.style, { left: (X / W) * 100 + '%', top: (Y / H) * 100 + '%', width: (w / W) * 100 + '%', height: (hh / H) * 100 + '%' });
   }
+  /** Bu odada görünen duvar resimleri (çerçeve fotoğrafları, tabelalar): öğe ve dünya koordinatındaki yeri. */
+  function pictureList() {
+    return [...pictures.values()].filter((p) => p.scene === me.scene).map((p) => {
+      const o = p.key.startsWith('frame:') ? DECOR.moved[p.scene]?.[p.key.slice(6)] : null, [x, y, w, hh] = p.rect;
+      return { key: p.key, el: p.el, rect: [x + (o?.dx || 0), y + (o?.dy || 0), w, hh] };
+    });
+  }
   function updatePictures(night) {
     const f = `brightness(${(1 - night * 0.45).toFixed(2)})`;
     pictures.forEach((p) => { p.el.style.display = p.scene === me.scene && !fadeTo ? '' : 'none'; p.el.style.filter = f; placePicture(p); });
@@ -752,6 +759,7 @@ export function createGame(opts) {
     fx,
     canvas,
     setPicture,
+    pictureList,
     fxOn(who, emoji) {
       const p = who === 'me' ? me : partner;
       if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return false;

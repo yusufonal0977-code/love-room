@@ -960,5 +960,9 @@ export default {
  "Fotoğraf duvara asıldı": "Foto colgada en la pared",
  "Bu çerçeve boş.": "Este marco está vacío.",
  "Asan: {name}": "La colgó: {name}",
- "Fotoğrafı değiştir": "Cambiar foto"
+ "Fotoğrafı değiştir": "Cambiar foto",
+ "Tablolar görünsün": "Mostrar fotos",
+ "Tablolar gizli": "Ocultar fotos",
+ "Eclip Meyhanesi'nde bir akşam": "Una noche en Eclip Meyhanesi",
+ "Admin odası": "Sala de admin"
 };

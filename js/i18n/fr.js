@@ -960,5 +960,9 @@ export default {
  "Fotoğraf duvara asıldı": "Photo accrochée au mur",
  "Bu çerçeve boş.": "Ce cadre est vide.",
  "Asan: {name}": "Accrochée par : {name}",
- "Fotoğrafı değiştir": "Changer la photo"
+ "Fotoğrafı değiştir": "Changer la photo",
+ "Tablolar görünsün": "Afficher les photos",
+ "Tablolar gizli": "Masquer les photos",
+ "Eclip Meyhanesi'nde bir akşam": "Une soirée à l'Eclip Meyhanesi",
+ "Admin odası": "Salle admin"
 };

@@ -131,7 +131,7 @@ export function createRadio(ctx) {
   }
   function render() {
     const b = body; b.innerHTML = '';
-    const title = ready && playing ? yt.getVideoData?.().title || '' : '';
+    const title = ready && playing ? (yt.getVideoData?.() || {}).title || '' : ''; // şarkı bilgisi henüz gelmemiş olabilir
     const volTxt = h('b', {}, vol ? `%${vol}` : t('kapalı'));
     const input = h('input', { placeholder: t('YouTube listesi linki (list=...)'), autocomplete: 'off', inputMode: 'url' });
     b.append(

@@ -960,5 +960,9 @@ export default {
  "Fotoğraf duvara asıldı": "Photo hung on the wall",
  "Bu çerçeve boş.": "This frame is empty.",
  "Asan: {name}": "Hung by: {name}",
- "Fotoğrafı değiştir": "Change photo"
+ "Fotoğrafı değiştir": "Change photo",
+ "Tablolar görünsün": "Show photos",
+ "Tablolar gizli": "Hide photos",
+ "Eclip Meyhanesi'nde bir akşam": "An evening at Eclip Meyhanesi",
+ "Admin odası": "Admin room"
 };

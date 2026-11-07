@@ -960,5 +960,9 @@ export default {
  "Fotoğraf duvara asıldı": "Foto an die Wand gehängt",
  "Bu çerçeve boş.": "Dieser Rahmen ist leer.",
  "Asan: {name}": "Aufgehängt von: {name}",
- "Fotoğrafı değiştir": "Foto ändern"
+ "Fotoğrafı değiştir": "Foto ändern",
+ "Tablolar görünsün": "Fotos zeigen",
+ "Tablolar gizli": "Fotos ausblenden",
+ "Eclip Meyhanesi'nde bir akşam": "Ein Abend in der Eclip Meyhanesi",
+ "Admin odası": "Admin-Raum"
 };

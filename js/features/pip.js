@@ -59,6 +59,21 @@ export function createPip(ctx) {
     vid.addEventListener('leavepictureinpicture', () => clearInterval(timer), { once: true });
   }
 
+  /** Uygulama arka plana atılınca (sekme değişince) küçük pencere kendiliğinden açılsın. Tarayıcı izin verirse çalışır:
+   *  Chrome bunu Media Session'daki "enterpictureinpicture" işleyicisiyle yapar (sesli görüşme ya da çalan ses varken). */
+  function enableAuto() {
+    try {
+      navigator.mediaSession?.setActionHandler('enterpictureinpicture', async () => {
+        if (win || document.pictureInPictureElement) return;
+        try {
+          if ('documentPictureInPicture' in window) await openDoc();
+          else if (document.pictureInPictureEnabled) await openVideo();
+        } catch (e) { console.warn('otomatik küçük pencere', e); }
+      });
+    } catch { /* bu tarayıcı desteklemiyor */ }
+  }
+  enableAuto();
+
   return {
     get supported() { return 'documentPictureInPicture' in window || !!document.pictureInPictureEnabled; },
     async toggle() {

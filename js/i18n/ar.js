@@ -960,5 +960,9 @@ export default {
  "Fotoğraf duvara asıldı": "عُلّقت الصورة على الجدار",
  "Bu çerçeve boş.": "هذا الإطار فارغ.",
  "Asan: {name}": "علّقها: {name}",
- "Fotoğrafı değiştir": "تغيير الصورة"
+ "Fotoğrafı değiştir": "تغيير الصورة",
+ "Tablolar görünsün": "إظهار الصور",
+ "Tablolar gizli": "إخفاء الصور",
+ "Eclip Meyhanesi'nde bir akşam": "أمسية في Eclip Meyhanesi",
+ "Admin odası": "غرفة المشرفين"
 };

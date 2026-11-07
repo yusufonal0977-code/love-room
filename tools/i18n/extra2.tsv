@@ -404,3 +404,8 @@ Fotoğraf duvara asıldı	Photo hung on the wall	Foto colgada en la pared	Foto a
 Bu çerçeve boş.	This frame is empty.	Este marco está vacío.	Dieser Rahmen ist leer.	Ce cadre est vide.	Este quadro está vazio.	هذا الإطار فارغ.
 Asan: {name}	Hung by: {name}	La colgó: {name}	Aufgehängt von: {name}	Accrochée par : {name}	Pendurada por: {name}	علّقها: {name}
 Fotoğrafı değiştir	Change photo	Cambiar foto	Foto ändern	Changer la photo	Trocar foto	تغيير الصورة
+# v0.40: paylaşımda tablolar, admin kartı
+Tablolar görünsün	Show photos	Mostrar fotos	Fotos zeigen	Afficher les photos	Mostrar fotos	إظهار الصور
+Tablolar gizli	Hide photos	Ocultar fotos	Fotos ausblenden	Masquer les photos	Ocultar fotos	إخفاء الصور
+Eclip Meyhanesi'nde bir akşam	An evening at Eclip Meyhanesi	Una noche en Eclip Meyhanesi	Ein Abend in der Eclip Meyhanesi	Une soirée à l'Eclip Meyhanesi	Uma noite no Eclip Meyhanesi	أمسية في Eclip Meyhanesi
+Admin odası	Admin room	Sala de admin	Admin-Raum	Salle admin	Sala de admin	غرفة المشرفين

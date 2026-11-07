@@ -4,6 +4,7 @@ import { h, icon, openSheet, toast, loadImg, saveImage } from '../ui.js';
 import { t } from '../i18n.js';
 import { petSprites, drawPetAcc } from '../art.js';
 import { APP_URL } from '../config.js';
+import { ADMIN_SCENES, SCENES } from '../scenes.js';
 
 const TEMPLATES = {
   night: { name: 'Gece', bg: ['#0d0b1a', '#2a1f4d'], ink: '#fff6d8', accent: '#fcdf4b', soft: 'rgba(255,246,216,.6)', deco: 'stars' },
@@ -15,9 +16,12 @@ const FONT = "'Pixelify Sans', 'Tajawal', system-ui, sans-serif";
 
 export function createShare(ctx) {
   const { game } = ctx;
-  let kind = 'room', tpl = 'night', fmt = 'story';
+  let kind = 'room', tpl = 'night', fmt = 'story', framesOn = true;
+  // Admin odası ve meyhane çift evi değil: orada kartta "ben & partnerim" yerine odadaki adminler yazar
+  const inAdmin = () => ADMIN_SCENES.has(game.me.scene);
 
   const names = () => {
+    if (inAdmin()) return [ctx.myName(), ...(ctx.adminRoom?.namesHere?.(game.me.scene) || [])].slice(0, 5).join('  ·  ');
     const meMoon = ctx.mySide() === 'moon';
     const a = `${meMoon ? ctx.partnerName() : ctx.myName()}`, b = `${meMoon ? ctx.myName() : ctx.partnerName()}`;
     return `${a}  &  ${b}`;
@@ -26,8 +30,9 @@ export function createShare(ctx) {
   /** Her paylaşım türü: başlık, alt yazı, ana görsel çizimi ve hazır açıklama. */
   const KINDS = {
     room: { label: 'Evimiz', async make() {
-      const src = game.canvas;
-      return { title: t('Bizim küçük evimiz'), sub: names(), image: src, pixel: true, caption: t('Kilometreler arada, aynı odadayız') };
+      const src = roomShot();
+      if (inAdmin()) { const n = t(SCENES[game.me.scene].name); return { title: game.me.scene === 'meyhane' ? 'Eclip Meyhanesi' : n, sub: names(), image: src, caption: game.me.scene === 'meyhane' ? t('Eclip Meyhanesi\'nde bir akşam') : n }; }
+      return { title: t('Bizim küçük evimiz'), sub: names(), image: src, caption: t('Kilometreler arada, aynı odadayız') };
     } },
     days: { label: 'Gün sayacı', async make() {
       const s = ctx.life.since();
@@ -66,6 +71,23 @@ export function createShare(ctx) {
       return { title: t('Birlikte çizdik'), image: await loadImg(d), framed: true, sub2: names(), caption: t('İki kişilik bir resim') };
     } },
   };
+
+  /** Oda görüntüsü: piksel oyun ekranı büyütülür; istenirse duvardaki fotoğraflar (ve her zaman tabelalar) üstüne gerçek çözünürlükte konur. */
+  function roomShot() {
+    const S = 6, src = game.canvas, c = document.createElement('canvas');
+    c.width = src.width * S; c.height = src.height * S;
+    const g = c.getContext('2d');
+    g.imageSmoothingEnabled = false; g.drawImage(src, 0, 0, c.width, c.height);
+    g.imageSmoothingEnabled = true;
+    for (const p of game.pictureList?.() || []) {
+      const photo = p.key.startsWith('frame:') || p.key.startsWith('meyphoto');
+      if ((photo && !framesOn) || !p.el.complete || !p.el.naturalWidth) continue;
+      const [x, y, w, hh] = p.rect.map((v) => v * S), iw = p.el.naturalWidth, ih = p.el.naturalHeight;
+      const s = Math.max(w / iw, hh / ih), sw = w / s, sh = hh / s; // çerçeveyi doldur (kenarlar kırpılır)
+      g.drawImage(p.el, (iw - sw) / 2, (ih - sh) / 2, sw, sh, x, y, w, hh);
+    }
+    return c;
+  }
 
   // ---------- Çizim ----------
   function wrap(g, text, x, y, maxW, lh, maxLines = 6) {
@@ -176,11 +198,13 @@ export function createShare(ctx) {
     const body = openSheet({ title: 'Paylaş', iconName: 'share', wide: true });
     const prev = h('img', { class: 'sharepreview', alt: '' });
     const status = h('p', { class: 'small center' }, 'Hazırlanıyor…');
+    if (inAdmin()) kind = 'room'; // diğer şablonlar çift evine ait
     const row = (items, cur, set) => h('div', { class: 'tabs' }, ...Object.entries(items).map(([k, v]) => h('button', { class: k === cur ? 'sel' : '', onclick: () => { set(k); open(); } }, v.label || v.name || v)));
     body.append(
-      row(KINDS, kind, (k) => (kind = k)),
+      inAdmin() ? null : row(KINDS, kind, (k) => (kind = k)),
       row(TEMPLATES, tpl, (k) => (tpl = k)),
       row({ story: 'Hikâye 9:16', square: 'Kare 1:1' }, fmt, (k) => (fmt = k)),
+      kind === 'room' ? row({ on: 'Tablolar görünsün', off: 'Tablolar gizli' }, framesOn ? 'on' : 'off', (k) => (framesOn = k === 'on')) : null,
       status, prev,
     );
     const data = await KINDS[kind].make();
