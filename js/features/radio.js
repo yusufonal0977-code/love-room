@@ -24,7 +24,7 @@ export function createRadio(ctx) {
   const rRef = ref(db, 'admin/config/meyhane/radio');
   let st = null, stop = null, on = false, yt = null, ready = false, ids = [], loaded = '', syncT = null, body = null;
   let vol = (() => { try { const v = localStorage.getItem(KEY); return v == null ? 60 : Math.max(0, Math.min(100, +v || 0)); } catch { return 60; } })();
-  const hiss = () => 0.05 * (vol / 60); // hışırtı müzikle birlikte kısılır
+  const hiss = () => 0.012 * (vol / 60); // plak sesi çok hafif, müzikle birlikte kısılır (2026-11-07: kulak tırmalıyordu)
   const host = h('div', { class: 'radiohost' }, h('div', { id: 'radioPlayer' }));
   document.body.append(host);
 
@@ -37,11 +37,11 @@ export function createRadio(ctx) {
       if (noise) return;
       const len = ac.sampleRate * 2, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
       for (let i = 0; i < len; i++) {
-        d[i] = (Math.random() * 2 - 1) * 0.35; // hışırtı
-        if (Math.random() < 0.0004) for (let k = 0; k < 40 && i + k < len; k++) d[i + k] += (Math.random() * 2 - 1) * (1 - k / 40) * 1.6; // çıtırtı
+        d[i] = (Math.random() * 2 - 1) * 0.12; // çok hafif zemin
+        if (Math.random() < 0.00012) for (let k = 0; k < 25 && i + k < len; k++) d[i + k] += (Math.random() * 2 - 1) * (1 - k / 25) * 0.9; // ara sıra yumuşak plak çıtırtısı
       }
       noise = ac.createBufferSource(); noise.buffer = buf; noise.loop = true;
-      const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2200; bp.Q.value = 0.6;
+      const bp = ac.createBiquadFilter(); bp.type = 'lowpass'; bp.frequency.value = 900; // tiz cızırtı yok, sıcak ve boğuk
       gain = ac.createGain(); gain.gain.value = hiss();
       noise.connect(bp).connect(gain).connect(ac.destination); noise.start();
     } catch { /* ses desteklenmiyor */ }
@@ -52,9 +52,9 @@ export function createRadio(ctx) {
     try {
       const o = ac.createOscillator(), g = ac.createGain(), n = ac.currentTime;
       o.type = 'sine'; o.frequency.setValueAtTime(1800, n); o.frequency.exponentialRampToValueAtTime(400, n + 0.9);
-      g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(0.04, n + 0.1); g.gain.exponentialRampToValueAtTime(0.0001, n + 1);
+      g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(0.008, n + 0.1); g.gain.exponentialRampToValueAtTime(0.0001, n + 1);
       o.connect(g).connect(ac.destination); o.start(n); o.stop(n + 1.05);
-      gain?.gain.setValueAtTime(hiss() * 3.5, n); gain?.gain.linearRampToValueAtTime(hiss(), n + 1.2);
+      gain?.gain.setValueAtTime(hiss() * 2, n); gain?.gain.linearRampToValueAtTime(hiss(), n + 1.2);
     } catch { /* yok say */ }
   }
 
