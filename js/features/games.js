@@ -15,8 +15,20 @@ const CARD_COLS = ['#ff4f7b', '#1db954', '#4fbf6a', '#ffc93c', '#5b8def', '#c887
 export function createGames(ctx) {
   const { live, uid } = ctx;
   let body = null, stopSub = null, foosLoop = null;
-  const pu = () => ctx.partnerUid() || 'bot';
-  const close = () => { stopSub?.(); stopSub = null; cancelAnimationFrame(foosLoop); foosLoop = null; body = null; };
+  const ai = () => !!ctx.aiPlays?.(); // partner yokken rakip yapay partner (hamlelerini bu cihaz yapar)
+  const pu = () => (ai() ? 'bot' : ctx.partnerUid() || 'bot');
+  const oppName = () => (ai() ? ctx.aiName() : ctx.partnerName());
+  const botName = () => ctx.aiName?.() || 'Bot';
+  const botToast = (fallback) => toast(ctx.aiName?.() ? t('{name} ile oynuyorsun', { name: ctx.aiName() }) : t(fallback));
+  let botT = null;
+  /** XOX: kazanabiliyorsa kazanır, kaybedecekse engeller, yoksa orta/köşe; arada bir küçük hata yapar. */
+  function xoxMove(b, mine, theirs) {
+    const free = [...b].map((c, i) => (c === '.' ? i : -1)).filter((i) => i >= 0);
+    const finish = (m) => free.find((i) => LINES.some((l) => l.includes(i) && l.every((k) => k === i || b[k] === m)));
+    if (Math.random() < 0.15) return free[Math.floor(Math.random() * free.length)];
+    return finish(mine) ?? finish(theirs) ?? (b[4] === '.' ? 4 : null) ?? [0, 2, 6, 8].filter((i) => b[i] === '.').sort(() => Math.random() - 0.5)[0] ?? free[0];
+  }
+  const close = () => { clearTimeout(botT); stopSub?.(); stopSub = null; cancelAnimationFrame(foosLoop); foosLoop = null; body = null; };
 
   function openHub() {
     const b = openSheet({ title: 'Oyun masası', iconName: 'game', onClose: close });
@@ -38,7 +50,15 @@ export function createGames(ctx) {
       if (!g) { body.append(h('button', { class: 'primary', onclick: () => newXox() }, 'Oyunu başlat')); return; }
       const mark = (u) => (u === g.x ? 'X' : 'O');
       const myTurn = g.turn === uid && !g.win;
-      body.append(h('p', { class: 'center' }, g.win ? (g.win === 'draw' ? t('Berabere') : (g.win === 'x') === (g.x === uid) ? t('Kazandın') : t('{name} kazandı', { name: ctx.partnerName() })) : myTurn ? t('Sıra sende ({mark})', { mark: mark(uid) }) : t('{name} düşünüyor…', { name: ctx.partnerName() })));
+      body.append(h('p', { class: 'center' }, g.win ? (g.win === 'draw' ? t('Berabere') : (g.win === 'x') === (g.x === uid) ? t('Kazandın') : t('{name} kazandı', { name: oppName() })) : myTurn ? t('Sıra sende ({mark})', { mark: mark(uid) }) : t('{name} düşünüyor…', { name: oppName() })));
+      if (g.turn === 'bot' && !g.win && ai()) {
+        clearTimeout(botT);
+        botT = setTimeout(() => {
+          const bm = g.x === 'bot' ? 'x' : 'o', b = [...g.b], i = xoxMove(b, bm, bm === 'x' ? 'o' : 'x');
+          b[i] = bm; const s2 = b.join(''), line = LINES.find((l) => l.every((k) => s2[k] === bm));
+          update(live.ref('games/xox'), { b: s2, turn: uid, win: line ? bm : !s2.includes('.') ? 'draw' : null, line: line || null });
+        }, 900);
+      }
       const grid = h('div', { class: 'xox' });
       [...g.b].forEach((c, i) => grid.append(h('button', {
         class: (c === 'x' ? 'x' : c === 'o' ? 'o' : '') + (g.line?.includes?.(i) ? ' win' : ''),
@@ -74,9 +94,23 @@ export function createGames(ctx) {
       const finished = Object.keys(done).length === 16;
       const sc = g.score || {};
       body.append(h('p', { class: 'center' }, finished
-        ? ((sc[uid] || 0) === (sc[pu()] || 0) ? t('Berabere') : (sc[uid] || 0) > (sc[pu()] || 0) ? t('Kazandın') : t('{name} kazandı', { name: ctx.partnerName() }))
-        : g.turn === uid ? t('Sıra sende: iki kart aç') : t('{name} oynuyor…', { name: ctx.partnerName() })),
-      h('p', { class: 'center small' }, `${ctx.myName()} ${sc[uid] || 0} · ${sc[pu()] || 0} ${ctx.partnerName()}`));
+        ? ((sc[uid] || 0) === (sc[pu()] || 0) ? t('Berabere') : (sc[uid] || 0) > (sc[pu()] || 0) ? t('Kazandın') : t('{name} kazandı', { name: oppName() }))
+        : g.turn === uid ? t('Sıra sende: iki kart aç') : t('{name} oynuyor…', { name: oppName() })),
+      h('p', { class: 'center small' }, `${ctx.myName()} ${sc[uid] || 0} · ${sc[pu()] || 0} ${oppName()}`));
+      // Yapay partnerin sırası: açılan kartları hatırlar (bazen unutur), iki kart çevirir
+      for (const i of open) seen[i] = g.deck[i];
+      if (g.turn === 'bot' && !finished && !open.length && ai()) {
+        clearTimeout(botT);
+        botT = setTimeout(() => {
+          const left = g.deck.map((c, i) => i).filter((i) => !done[i]);
+          const known = left.filter((i) => seen[i] != null && Math.random() < 0.75);
+          let a = null, b = null;
+          for (const i of known) { const j = known.find((k) => k !== i && seen[k] === seen[i]); if (j != null) { a = i; b = j; break; } }
+          if (a == null) { a = left[Math.floor(Math.random() * left.length)]; const m = known.find((k) => k !== a && seen[k] === g.deck[a]); b = m ?? left.filter((k) => k !== a)[Math.floor(Math.random() * (left.length - 1))]; }
+          update(live.ref('games/mem'), { open: [a] });
+          setTimeout(() => flip({ ...g, open: [a] }, b, 'bot'), 700);
+        }, 1000);
+      }
       const grid = h('div', { class: 'mem' });
       g.deck.forEach((c, i) => {
         const up = done[i] || open.includes(i);
@@ -90,22 +124,25 @@ export function createGames(ctx) {
       body.append(grid, h('button', { onclick: newMem }, 'Yeniden dağıt'));
     });
   }
+  const seen = {};
   function newMem() {
+    for (const k in seen) delete seen[k];
     const deck = [...Array(8).keys(), ...Array(8).keys()].sort(() => Math.random() - 0.5);
     set(live.ref('games/mem'), { deck, open: null, done: null, turn: uid, score: null });
   }
-  function flip(g, i) {
+  function flip(g, i, who = uid) {
     const open = [...(g.open || []), i];
     update(live.ref('games/mem'), { open });
     if (open.length < 2) return;
+    const other = who === uid ? pu() : uid;
     setTimeout(() => {
       const [a, b] = open;
       if (g.deck[a] === g.deck[b]) {
-        const done = { ...(g.done || {}), [a]: uid, [b]: uid };
-        const score = { ...(g.score || {}), [uid]: (g.score?.[uid] || 0) + 1 };
+        const done = { ...(g.done || {}), [a]: who, [b]: who };
+        const score = { ...(g.score || {}), [who]: (g.score?.[who] || 0) + 1 };
         update(live.ref('games/mem'), { open: null, done, score });
-        if (Object.keys(done).length === 16 && score[uid] > (score[pu()] || 0)) live.stat('wins');
-      } else update(live.ref('games/mem'), { open: null, turn: pu() });
+        if (who === uid && Object.keys(done).length === 16 && score[uid] > (score[pu()] || 0)) live.stat('wins');
+      } else update(live.ref('games/mem'), { open: null, turn: other });
     }, 900);
   }
 
@@ -248,7 +285,7 @@ export function createGames(ctx) {
       if (m !== mode) {
         hint.textContent = t(R.meLeft ? 'Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen soldasın (kırmızı).' : 'Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).');
         if (mode && R.auth) newMatch(); // partner masaya geldi/gitti: yeni maç
-        if (m === 'bot' && mode) toast(t('Partnerin masada değil; bota karşı oynuyorsun'));
+        if (m === 'bot' && mode) botToast('Partnerin masada değil; bota karşı oynuyorsun');
         mode = m;
       }
       if (keys.w || keys.arrowup) setY(myY - 300 * dt);
@@ -291,7 +328,7 @@ export function createGames(ctx) {
         g.strokeText(text, 200, 132); g.fillStyle = col; g.fillText(text, 200, 132);
       };
       const sc = st?.score || {};
-      const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : ctx.partnerName());
+      const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? botName() : ctx.partnerName());
       if (st && st.run === false) {
         const w = (sc[R.L] || 0) >= WIN ? R.L : R.R;
         big(w === uid ? t('Kazandın') : t('{name} kazandı', { name: nameOf(w) }), '#fcdf4b');
@@ -304,7 +341,7 @@ export function createGames(ctx) {
     setTimeout(() => {
       if (!body) return;
       const R = roles();
-      if (R.opp === 'bot') toast(t('Partnerin masada değil; bota karşı oynuyorsun'));
+      if (R.opp === 'bot') botToast('Partnerin masada değil; bota karşı oynuyorsun');
       if (R.auth && (!st?.run || !st?.ball)) newMatch();
     }, 500);
   }
@@ -414,7 +451,7 @@ export function createGames(ctx) {
     // Partner çevrimiçiyse onunla, değilse bota karşı (bot hamlelerini bu cihaz yapar)
     const duo = () => !!(ctx.partnerOnline() && ctx.partnerUid());
     const opp = () => (duo() ? ctx.partnerUid() : 'bot');
-    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? 'Bot' : st?.names?.[u] || (admin ? '?' : ctx.partnerName()));
+    const nameOf = (u) => (u === uid ? ctx.myName() : u === 'bot' ? botName() : st?.names?.[u] || (admin ? '?' : ctx.partnerName()));
     const otherOf = (u) => (u === st.host ? st.opp : st.host);
     const myTurn = () => st && !st.over && st.opp && st.turn === uid;
     function newGame() { set(poolRef, { v: 9, balls: rack(), turn: uid, host: uid, opp: admin ? null : opp(), names: { [uid]: ctx.myName() }, gid: admin ? Date.now().toString(36) + Math.random().toString(36).slice(2, 7) : null, grp: null, win: null, shot: null, over: false, n: 0 }); }
@@ -531,7 +568,7 @@ export function createGames(ctx) {
     draw();
     const oldStop = stopSub;
     stopSub = () => { oldStop(); cancelAnimationFrame(raf); clearTimeout(botTimer); };
-    setTimeout(() => { if (body && !st) newGame(); if (body && !admin && !duo()) toast(t('Partnerin çevrimiçi değil; bota karşı oynuyorsun')); }, 600);
+    setTimeout(() => { if (body && !st) newGame(); if (body && !admin && !duo()) botToast('Partnerin çevrimiçi değil; bota karşı oynuyorsun'); }, 600);
   }
 
   return { openHub, openXox, openMem, openFoos, openPool };

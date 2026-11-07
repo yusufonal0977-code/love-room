@@ -603,3 +603,8 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
 .aifacts li { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; background: #1d180d; border-radius: 8px; padding: 4px 4px 4px 10px; }
 .aifacts button { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; }
 .aifacts button .ic { margin: 0; width: 16px; height: 16px; }
+.aidl { font-size: 12px; color: var(--dim); margin-bottom: 8px; display: flex; flex-direction: column; gap: 5px; }
+.aidl[hidden] { display: none; }
+.aibar { height: 8px; border-radius: 99px; background: #2a2414; overflow: hidden; }
+.aibar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--sun), #ff4f7b); border-radius: 99px; transition: width .4s linear; }
+.aidl button.link { padding: 0 4px; font-size: 12px; }

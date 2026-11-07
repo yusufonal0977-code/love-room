@@ -365,7 +365,7 @@ async function enterWorld(rid, fresh = false) {
     getShared: () => shared,
     getPartner() {
       const p = partnerP();
-      if (!p || !partnerProfile) return null;
+      if (!p || !partnerProfile) return ai?.presence(game?.me) || null; // partner yokken yapay partner
       return { ...p, look: partnerProfile.look ?? DEFAULT_LOOK, side: partnerProfile.side ?? 'moon', name: partnerProfile.name };
     },
     getHours: () => ({ hour: previewHour ?? hourOf(tz) ?? 12, partnerHour: partnerProfile?.tz && partnerProfile.tz !== tz ? hourOf(partnerProfile.tz) : null }),
@@ -386,7 +386,8 @@ async function enterWorld(rid, fresh = false) {
     onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); if (ADMIN_SCENES.has(s)) ctx.homeRadio?.leave(); else ctx.homeRadio?.enter(); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
-    getExtras: () => [...(adminRoom?.extras() || []), ...(ai?.extras() || [])],
+    getExtras: () => adminRoom?.extras() || [],
+    onPartnerTap: () => ai?.open(),
     hasCrown: (who) => ADMIN_SCENES.has(game?.me.scene) && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
     takenSeats: (sc) => adminRoom?.takenSeats?.(sc) || [],
     canEnter: (to) => (to === 'meyhane' ? !!adminRoom?.active() : to !== 'yatak' || bedOpen()),
@@ -417,6 +418,8 @@ async function enterWorld(rid, fresh = false) {
   Object.assign(ctx, { life, draw, care });
   ctx.chat = createChat(ctx);
   ai = createAi(ctx);
+  ctx.aiPlays = () => !partnerP() && !!ai?.active(); // partner yokken oyunlarda rakip yapay partner
+  ctx.aiName = () => ai?.name() || '';
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
   kitchen = createKitchen(ctx);
@@ -549,11 +552,12 @@ async function enterWorld(rid, fresh = false) {
   };
   $('heartBtn').onclick = () => live.react('heart');
   const touch = (kind) => {
-    if (!partnerP()) return toast(t('Partnerin odada değil'));
-    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); };
+    const virt = !partnerP() && ctx.aiPlays();
+    if (!partnerP() && !virt) return toast(t('Partnerin odada değil'));
+    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); if (virt) ai.touched(kind); };
     if (game.near()) return go();
     // Aynı odadaysanız karakterin partnerine yürür, varınca sarılır/öper
-    if (game.sameRoom() && partnerP()?.seat < 0) return game.approach(go);
+    if (game.sameRoom() && game.partner.seat < 0) return game.approach(go);
     toast(t(kind === 'hug' ? 'Sarılmak için aynı odaya git' : 'Öpmek için aynı odaya git'));
   };
   $('hugBtn').onclick = () => touch('hug');
