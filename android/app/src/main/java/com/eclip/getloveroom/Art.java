@@ -98,4 +98,25 @@ class Art {
     return size;
   }
   Path path() { return new Path(); }
+
+  /** Arka plan: evinizin oda resmi (piksel net, alanı doldurur). Resim yoksa false: widget kendi zeminini çizer. */
+  boolean scene(Context c, String kind) { return scene(c, kind, 0, 0, w, h); }
+  boolean scene(Context c, String kind, float x, float y, float rw, float rh) {
+    java.io.File f = new java.io.File(c.getFilesDir(), "art_" + kind + ".png");
+    if (!f.exists()) return false;
+    android.graphics.Bitmap b = android.graphics.BitmapFactory.decodeFile(f.getPath());
+    if (b == null) return false;
+    float k = Math.max(px(rw) / b.getWidth(), px(rh) / b.getHeight()), dw = b.getWidth() * k, dh = b.getHeight() * k;
+    Paint p = new Paint(); p.setFilterBitmap(false);
+    g.save(); g.clipRect(px(x), px(y), px(x + rw), px(y + rh));
+    g.drawBitmap(b, null, new RectF(px(x + rw / 2) - dw / 2, px(y + rh / 2) - dh / 2, px(x + rw / 2) + dw / 2, px(y + rh / 2) + dh / 2), p);
+    g.restore();
+    return true;
+  }
+  /** Yazının okunsun diye alttan (ya da üstten) kararan şerit. */
+  void shade(float y0, float y1, int alphaTop, int alphaBottom) {
+    Paint p = new Paint();
+    p.setShader(new LinearGradient(0, px(y0), 0, px(y1), Color.argb(alphaTop, 8, 6, 20), Color.argb(alphaBottom, 8, 6, 20), Shader.TileMode.CLAMP));
+    g.drawRect(0, px(y0), bmp.getWidth(), px(y1), p);
+  }
 }

@@ -3,6 +3,7 @@
 // hayvanın piksel resmini ve "bir şey değişti, widget'ları yenile" haberini verir. Tarayıcıda hiçbir şey yapmaz.
 import { auth, onValue } from '../fb.js';
 import { petSprites } from '../art.js';
+import { DECOR } from '../scenes.js';
 import { h, icon, openSheet, toast } from '../ui.js';
 import { t } from '../i18n.js';
 
@@ -30,6 +31,28 @@ export function connectApp(ctx, { rid, care, draw, life, spotify }) {
   }, () => {});
   onValue(ctx.live.ref('draw'), refresh, () => {});
   onValue(ctx.live.ref('rel'), refresh, () => {});
+  // Widget arka planları: evinizin gerçek odaları (boya, eşyalar, saat ışığı); dekor ya da saat değişince yenilenir
+  if (app.sceneArt) {
+    let lastKey = '';
+    const art = () => {
+      try {
+        const g = ctx.game, pl = ctx.partnerProfile?.()?.look;
+        const key = `${DECOR.v}|${new Date().getHours()}|${!!pl}`;
+        if (key === lastKey) return;
+        lastKey = key;
+        const people = [{ look: ctx.myLook(), x: 84, y: 100 }, ...(pl ? [{ look: pl, x: 108, y: 100 }] : [])];
+        const crop = (src, x, y, w, h) => { const c = document.createElement('canvas'); c.width = w * 4; c.height = h * 4; const k = c.getContext('2d'); k.imageSmoothingEnabled = false; k.drawImage(src, x, y, w, h, 0, 0, c.width, c.height); return c.toDataURL('image/png'); };
+        const salon = g.renderScene('salon');
+        app.sceneArt('clock', crop(g.renderScene('somine', people), 46, 20, 100, 100));
+        app.sceneArt('pet', crop(salon, 0, 60, 192, 84));
+        app.sceneArt('draw', crop(g.renderScene('hobi'), 20, 4, 130, 94));
+        app.sceneArt('music', crop(salon, 119, 21, 52, 52));
+        app.refresh();
+      } catch (e) { console.warn('widget resmi', e); }
+    };
+    setTimeout(art, 3000);
+    setInterval(art, 60_000);
+  }
   onValue(ctx.live.ref('ytradio/title'), refresh, () => {});
   onValue(ctx.live.ref('music'), refresh, () => {});
 }

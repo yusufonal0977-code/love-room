@@ -21,6 +21,7 @@ export function nightLevel(h) {
 export function createGame(opts) {
   const { canvas, overlay, stage } = opts;
   const ctx = canvas.getContext('2d');
+  const mainCtx = ctx;
   ctx.imageSmoothingEnabled = false;
   const light = document.createElement('canvas');
   light.width = W; light.height = H;
@@ -543,7 +544,7 @@ export function createGame(opts) {
       if (need === 'clean') { R(ctx, bx + 2, by + 2, 2, 2, '#8fd0ff'); R(ctx, bx + 5, by + 3, 2, 2, '#8fd0ff'); R(ctx, bx + 4, by + 1, 1, 1, '#8fd0ff'); }
     }
   }
-  function drawLighting(sc, info) {
+  function drawLighting(sc, info, ctx = mainCtx) {
     const night = info.night;
     const lights = lightsOf(sc, info);
     const g = light.getContext('2d');
@@ -624,6 +625,23 @@ export function createGame(opts) {
       const o = p.key.startsWith('frame:') ? DECOR.moved[p.scene]?.[p.key.slice(6)] : null, [x, y, w, hh] = p.rect;
       return { key: p.key, el: p.el, rect: [x + (o?.dx || 0), y + (o?.dy || 0), w, hh] };
     });
+  }
+  /** Bir odanın o anki görüntüsü (ışık ve dekor dahil, karakterler isteğe bağlı): telefon widget'ları için. */
+  function renderScene(id, people = []) {
+    const sc = SCENES[id], l = layout(sc), c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    const hours = opts.getHours();
+    const info = { st: opts.getShared(), t: performance.now() / 1000, ...hours, night: Math.max(nightLevel(hours.hour) * (sc.outdoor ? 0.85 : 1), sc.dim || 0) };
+    g.drawImage(sc.bg, 0, 0);
+    sc.dyn?.(g, info);
+    l.items.forEach((it) => (it.c.wall || it.c.flat) && it.c.draw(g, it.x, it.y, info));
+    const ents = l.props.map((p) => ({ y: p.sortY, d: () => { g.save(); g.translate(p.dx, p.dy); p.draw(g, info); g.restore(); } }));
+    l.items.forEach((it) => !(it.c.wall || it.c.flat) && ents.push({ y: it.y, d: () => it.c.draw(g, it.x, it.y, info) }));
+    for (const p of people) ents.push({ y: p.y, d: () => { const sp = characterSprites(p.look)[p.dir === 'up' ? 'up' : 'down']; g.drawImage(sp, Math.round(p.x - sp.width / 2), Math.round(p.y - sp.height)); } });
+    ents.sort((a, b) => a.y - b.y).forEach((e) => e.d());
+    drawLighting(sc, info, g);
+    return c;
   }
   function updatePictures(night) {
     const f = `brightness(${(1 - night * 0.45).toFixed(2)})`;
@@ -760,6 +778,7 @@ export function createGame(opts) {
     canvas,
     setPicture,
     pictureList,
+    renderScene,
     fxOn(who, emoji) {
       const p = who === 'me' ? me : partner;
       if (who === 'partner' && !(partner.shown && partner.scene === me.scene)) return false;

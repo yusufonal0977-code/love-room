@@ -50,6 +50,17 @@ public class ClockWidget extends AppWidgetProvider {
       Art a = Art.of(c, m, id, 160, 160);
       float w = a.w, h = a.h, cy = h * 0.2f;
       a.card(Art.NIGHT_TOP, Art.NIGHT_BOTTOM, 22);
+      if (a.scene(c, "clock")) { // evinizin şömine odası ve siz
+        a.shade(0, h * 0.45f, 230, 0); // sayı üstte, şömine ve ikiniz altta görünsün
+        if (big != null) {
+          a.text(c, big, w / 2, h * 0.27f, h * 0.24f, w * 0.86f, Art.SUN, true, Paint.Align.CENTER, 12);
+          a.text(c, c.getString(R.string.clock_days), w / 2, h * 0.37f, h * 0.072f, w * 0.9f, Art.INK, false, Paint.Align.CENTER, 6);
+        } else a.text(c, c.getString(R.string.clock_unset), w / 2, h * 0.22f, h * 0.072f, w * 0.88f, Art.INK, false, Paint.Align.CENTER, 6);
+        if (meet != null) { a.roundRect(w * 0.12f, h * 0.885f, w * 0.76f, h * 0.085f, h * 0.042f, Art.PINK); a.text(c, meet, w / 2, h * 0.945f, h * 0.055f, w * 0.7f, Color.WHITE, true, Paint.Align.CENTER, 5); }
+        else a.heart(w / 2 - 5.6f, h * 0.88f, 1.6f, Art.PINK);
+        show(c, m, id, a, "clock", 3);
+        continue;
+      }
       a.stars(h * 0.55f, 18);
       // Güneş (sen ya da partnerin) · kalp · ay
       a.circle(w / 2 - 20, cy, 6.5f, Art.SUN);

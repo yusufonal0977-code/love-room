@@ -38,6 +38,19 @@ public class MusicWidget extends AppWidgetProvider {
       float w = a.w, h = a.h, r = Math.min(h * 0.4f, w * 0.18f), cx = 12 + r, cy = h / 2;
       a.card(Art.NIGHT_TOP, Art.NIGHT_BOTTOM, 22);
       a.stars(h, 10);
+      if (a.scene(c, "music", 0, 0, h * 1.05f, h)) { // salonunuzdaki pikap
+        a.shade(0, h, 0, 0);
+        android.graphics.Paint fade = new android.graphics.Paint();
+        fade.setShader(new android.graphics.LinearGradient(a.px(h * 0.7f), 0, a.px(h * 1.05f), 0, Color.argb(0, 13, 11, 26), Color.argb(255, 26, 20, 50), android.graphics.Shader.TileMode.CLAMP));
+        a.g.drawRect(a.px(h * 0.7f), 0, a.px(h * 1.06f), a.bmp.getHeight(), fade);
+        float x0 = h * 1.05f + 8, tw = w - x0 - (on ? 30 : 12);
+        a.text(c, c.getString(R.string.w_music), x0, h * 0.3f, Math.min(10.5f, h * 0.16f), tw, Art.SUN, true, Paint.Align.LEFT, 7);
+        a.text(c, on ? title : c.getString(R.string.music_quiet), x0, h * 0.58f, Math.min(14, h * 0.21f), tw, Art.INK, true, Paint.Align.LEFT, 11);
+        a.text(c, on ? (sub == null ? "" : sub) : c.getString(R.string.music_tap), x0, h * 0.82f, Math.min(10, h * 0.15f), tw, Art.SOFT, false, Paint.Align.LEFT, 6);
+        if (on) { float[] hs = { 0.35f, 0.6f, 0.45f, 0.75f }; for (int i = 0; i < 4; i++) a.roundRect(w - 26 + i * 4.5f, cy + h * 0.2f - h * 0.4f * hs[i], 3, h * 0.4f * hs[i], 1, Art.SUN); }
+        show(c, m, id, a, "music", 4);
+        continue;
+      }
       // Plak: oluklar, sarı etiket, delik; üstünde pikap kolu
       a.circle(cx, cy, r, Color.parseColor("#141018"));
       Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG); ring.setStyle(Paint.Style.STROKE); ring.setStrokeWidth(a.px(0.8f)); ring.setColor(Color.parseColor("#3a3046"));

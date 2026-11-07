@@ -47,13 +47,17 @@ public class PetWidget extends AppWidgetProvider {
       Art a = Art.of(c, m, id, 250, 110);
       float w = a.w, h = a.h;
       a.card(Color.parseColor("#4a2c1e"), Color.parseColor("#1f140c"), 22);
-      // Duvarda pencere ışığı ve tahta zemin
-      a.rect(0, h * 0.7f, w, h * 0.3f, Art.WOOD);
-      for (float x = -6; x < w; x += 18) a.rect(x, h * 0.7f, 1, h * 0.3f, Color.parseColor("#4a2a18"));
-      a.rect(0, h * 0.7f, w, 1.5f, Color.parseColor("#2a170c"));
       float cx = w * 0.25f;
-      a.g.drawOval(new RectF(a.px(cx - w * 0.16f), a.px(h * 0.74f), a.px(cx + w * 0.16f), a.px(h * 0.86f)), a.fill(Color.parseColor("#c8323c")));
-      a.g.drawOval(new RectF(a.px(cx - w * 0.13f), a.px(h * 0.755f), a.px(cx + w * 0.13f), a.px(h * 0.83f)), a.fill(Color.parseColor("#e05a5a")));
+      boolean room = a.scene(c, "pet"); // salonunuz
+      if (room) a.shade(h * 0.55f, h, 0, 120);
+      else {
+        a.rect(0, h * 0.7f, w, h * 0.3f, Art.WOOD);
+        for (float x = -6; x < w; x += 18) a.rect(x, h * 0.7f, 1, h * 0.3f, Color.parseColor("#4a2a18"));
+        a.rect(0, h * 0.7f, w, 1.5f, Color.parseColor("#2a170c"));
+        a.g.drawOval(new RectF(a.px(cx - w * 0.16f), a.px(h * 0.74f), a.px(cx + w * 0.16f), a.px(h * 0.86f)), a.fill(Color.parseColor("#c8323c")));
+        a.g.drawOval(new RectF(a.px(cx - w * 0.13f), a.px(h * 0.755f), a.px(cx + w * 0.13f), a.px(h * 0.83f)), a.fill(Color.parseColor("#e05a5a")));
+      }
+      a.g.drawOval(new RectF(a.px(cx - w * 0.12f), a.px(h * 0.8f), a.px(cx + w * 0.12f), a.px(h * 0.86f)), a.fill(Color.argb(90, 0, 0, 0))); // gölge
       if (sprite != null) {
         float k = (float) Math.floor(Math.min(a.px(w * 0.36f) / sprite.getWidth(), a.px(h * 0.58f) / sprite.getHeight()));
         if (k < 1) k = 1;
@@ -62,6 +66,7 @@ public class PetWidget extends AppWidgetProvider {
         a.g.drawBitmap(sprite, null, new RectF(a.px(cx) - sw / 2, a.px(h * 0.8f) - sh, a.px(cx) + sw / 2, a.px(h * 0.8f)), p);
       } else a.heart(cx - 7, h * 0.45f, 2, Art.PINK);
       float x0 = w * 0.5f, bw = w * 0.44f;
+      if (room) a.roundRect(x0 - 8, 8, w - x0, h - 16, 14, Color.argb(190, 14, 10, 30)); // bilgi kartı
       a.text(c, name, x0, h * 0.27f, h * 0.17f, bw, Art.SUN, true, Paint.Align.LEFT, 9);
       a.text(c, mood, x0, h * 0.4f, h * 0.095f, bw, Art.INK, false, Paint.Align.LEFT, 6);
       int[] vals = { food, love, play };

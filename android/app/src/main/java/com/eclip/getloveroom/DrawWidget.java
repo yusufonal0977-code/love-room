@@ -34,8 +34,10 @@ public class DrawWidget extends AppWidgetProvider {
       Art a = Art.of(c, m, id, 250, 180);
       float w = a.w, h = a.h;
       a.card(Art.WOOD_L, Art.WOOD, 22);
-      for (float y = 3; y < h; y += 7) a.rect(0, y, w, 0.8f, Color.argb(30, 0, 0, 0)); // ahşap damarı
-      float top = 30, m0 = 10, cw = w - 2 * m0, ch = h - top - m0;
+      boolean room = a.scene(c, "draw", 0, 0, w * 0.42f, h); // solda hobi köşeniz (şövale), sağda tuval
+      if (!room) for (float y = 3; y < h; y += 7) a.rect(0, y, w, 0.8f, Color.argb(30, 0, 0, 0)); // ahşap damarı
+      float top = 30, m0 = room ? w * 0.42f + 4 : 10, cw = w - m0 - 10, ch = h - top - 10;
+      if (room) a.rect(m0 - 6, 0, w - m0 + 6, h, Color.argb(235, 90, 52, 32));
       a.roundRect(m0 - 2, top - 2, cw + 4, ch + 4, 12, Color.parseColor("#3a2214"));
       a.roundRect(m0, top, cw, ch, 10, Color.parseColor("#fffaf0"));
       // Çizim, tuvale oranı bozulmadan sığar
@@ -45,8 +47,8 @@ public class DrawWidget extends AppWidgetProvider {
       a.g.drawBitmap(pic, null, new RectF(a.px(dx), a.px(dy), a.px(dx + dw), a.px(dy + dh)), p);
       if (empty) a.text(c, c.getString(R.string.draw_empty), w / 2, top + ch / 2 + 4, 11, cw - 16, Color.parseColor("#8a5638"), false, Paint.Align.CENTER, 7);
       // Başlık ve "çiz" düğmesi
-      a.roundRect(10, 7, Math.min(w - 20, 120), 18, 9, Art.SUN);
-      a.text(c, c.getString(R.string.w_draw), 18, 20, 10.5f, Math.min(w - 36, 104), Color.parseColor("#1a1608"), true, Paint.Align.LEFT, 7);
+      a.roundRect(m0, 7, Math.min(w - m0 - 56, 120), 18, 9, Art.SUN);
+      a.text(c, c.getString(R.string.w_draw), m0 + 8, 20, 10.5f, Math.min(w - m0 - 72, 104), Color.parseColor("#1a1608"), true, Paint.Align.LEFT, 7);
       a.roundRect(w - 50, 7, 40, 18, 9, Art.PINK);
       a.text(c, c.getString(R.string.draw_go), w - 30, 20, 10.5f, 34, Color.WHITE, true, Paint.Align.CENTER, 7);
       show(c, m, id, a, "draw", 1);

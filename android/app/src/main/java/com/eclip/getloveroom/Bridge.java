@@ -41,6 +41,11 @@ public class Bridge {
       WidgetWorker.runNow(ctx);
     } catch (Exception ignored) { }
   }
+  /** Widget arka planı: sitenin çizdiği oda resmi (clock | pet | draw | music). */
+  @JavascriptInterface public void sceneArt(String kind, String dataUrl) {
+    if (!kind.matches("clock|pet|draw|music")) return;
+    try (FileOutputStream o = new FileOutputStream(new File(ctx.getFilesDir(), "art_" + kind + ".png"))) { o.write(decode(dataUrl)); } catch (Exception ignored) { }
+  }
   /** Bir şey değişti (çizim, hayvan bakımı): widget'ları hemen yenile. */
   @JavascriptInterface public void refresh() { WidgetWorker.runNow(ctx); }
   /** Ekran yönü: "landscape" (varsayılan) ya da "portrait"; telefonda kalıcı. */
