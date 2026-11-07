@@ -12,7 +12,7 @@ import { db, ref, get, set, update, remove, onValue, runTransaction, now } from 
 import { t, locale } from '../i18n.js';
 
 const ROUND = 40_000, BET = 25_000, SPIN = 9_000, START = 1000;
-const SEASON = 1; // 2026-11-07: kullanıcının isteğiyle herkesin puanı sıfırlandı
+const SEASON = 2; // 2026-11-07 ve 2026-11-08: kullanıcının isteğiyle herkesin fişi 1000'e sıfırlandı
 const WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 const RED = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
 const colorOf = (n) => (n === 0 ? 'green' : RED.has(n) ? 'red' : 'black');
