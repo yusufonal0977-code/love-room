@@ -22,8 +22,8 @@ Write-Host "APK: $out ($([math]::Round((Get-Item $out).Length / 1MB, 1)) MB)"
 
 if (-not $NoUpload) {
   $gh = 'C:\Program Files\GitHub CLI\gh.exe'
-  & $gh release view android *> $null
-  if ($LASTEXITCODE) { & $gh release create android --title "Get Love Room Android" --notes "Android uygulamasi (widget'lar: ortak tuval, evcil dostumuz, iliski saatimiz). Siteden menu > Uygulamayi telefona indir." --latest=false | Out-Null }
+  $exists = (& $gh release list --limit 50 | Select-String -SimpleMatch "android") -ne $null
+  if (-not $exists) { & $gh release create android --title "Get Love Room Android" --notes "Android uygulamasi (widget'lar: ortak tuval, evcil dostumuz, iliski saatimiz). Siteden menu > Uygulamayi telefona indir." --latest=false | Out-Null }
   & $gh release upload android $out --clobber | Out-Null
   Write-Host "Yuklendi: https://github.com/yusufonal0977-code/love-room/releases/download/android/GetLoveRoom.apk"
 }
