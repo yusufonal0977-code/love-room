@@ -4,6 +4,7 @@ import { pickQuality } from './screenshare.js';
 import { connectApp, inApp, openDownload, openWidgets } from './features/app.js';
 import { createRadio } from './features/radio.js';
 import { startTour } from './features/tour.js';
+import { createAi } from './features/ai.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
@@ -342,7 +343,7 @@ async function enterWorld(rid, fresh = false) {
     onRel: (t) => { $('relChip').textContent = t; $('relChip').hidden = !t; },
     onFrame: null,
   };
-  let decor = null, care = null, kitchen = null, adminRoom = null, sleep = null;
+  let decor = null, care = null, kitchen = null, adminRoom = null, sleep = null, ai = null;
 
   // Yatak odası: evde birlikte 100 saat (6000 dk) geçirince açılır. Sayaç live/{rid}/stats/minutes;
   // ikiniz de açıksanız yalnızca ev sahibi sayar (süre iki kez sayılmasın). Yerelde ?yatak ile hemen açılır.
@@ -385,7 +386,7 @@ async function enterWorld(rid, fresh = false) {
     onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); if (ADMIN_SCENES.has(s)) ctx.homeRadio?.leave(); else ctx.homeRadio?.enter(); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
-    getExtras: () => adminRoom?.extras() || [],
+    getExtras: () => [...(adminRoom?.extras() || []), ...(ai?.extras() || [])],
     hasCrown: (who) => ADMIN_SCENES.has(game?.me.scene) && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
     takenSeats: (sc) => adminRoom?.takenSeats?.(sc) || [],
     canEnter: (to) => (to === 'meyhane' ? !!adminRoom?.active() : to !== 'yatak' || bedOpen()),
@@ -415,6 +416,7 @@ async function enterWorld(rid, fresh = false) {
   const pip = createPip(ctx);
   Object.assign(ctx, { life, draw, care });
   ctx.chat = createChat(ctx);
+  ai = createAi(ctx);
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
   kitchen = createKitchen(ctx);
@@ -653,6 +655,7 @@ async function enterWorld(rid, fresh = false) {
       tile('eye', 'Evimizi göster', 'Linkle arkadaşlarına', () => showcase.open()),
       tile('share', 'Paylaş', 'Hikâye ve kare şablonlar', () => share.open()),
       pip.supported ? tile('pip', 'Küçük pencere', 'Başka işle uğraşırken', () => pip.toggle()) : null,
+      tile('spark', 'Yapay partner', 'Bekarlar için · cihazında çalışır', () => ai.open()),
       tile('full', 'Tam ekran', 'Bu cihazda', fullscreen),
     ));
   }

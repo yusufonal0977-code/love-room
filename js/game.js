@@ -273,6 +273,8 @@ export function createGame(opts) {
     const catHit = cat.scene === me.scene && Math.abs(x - cat.x) < 12 && Math.abs(y - cat.y + 5) < 10;
     const inHit = (s) => s.hit && x >= s.hit[0] && x <= s.hit[0] + s.hit[2] && y >= s.hit[1] && y <= s.hit[1] + s.hit[3];
     const spot = catHit ? CAT_SPOT : l.spots.filter(inHit).sort((a, b) => a.hit[2] * a.hit[3] - b.hit[2] * b.hit[3])[0];
+    const npc = !door && (opts.getExtras?.() || []).find((p) => p.onTap && p.scene === me.scene && Math.abs(x - p.x) < 9 && y > p.y - 28 && y < p.y + 3);
+    if (npc) { walkTo(npc.x + (me.x < npc.x ? -14 : 14), npc.y, () => { me.dir = me.x < npc.x ? 'right' : 'left'; npc.onTap(); }); return; }
     if (door) { const f = doorFront(door); walkTo(f.x, f.y, () => enterDoor(door), door); }
     else if (spot) { const p = spotPos(spot); walkTo(p.x, p.y, () => doSpot(spot)); }
     else walkTo(x, y);

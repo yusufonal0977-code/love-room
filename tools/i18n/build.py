@@ -4,7 +4,10 @@ Kaynaklar (bu klasörde):
   keys_v1.json   ilk sürümün Türkçe anahtarları (sıra numarasıyla)
   base1/2.tsv    sıra no → en es de fr pt
   ar.tsv         sıra no → ar
-  extra*.tsv     Türkçe anahtar → en es de fr pt ar   (yeni metinler buraya eklenir)
+  extra*.tsv     Türkçe anahtar → en es de fr pt ar [ko zh ja]   (yeni metinler buraya eklenir; son 3 sütun isteğe bağlı)
+  cjk_keys.json  CJK çevirisindeki Türkçe anahtarlar (sıra numarasıyla)
+  cjk/<dil>_*.txt  sıra no|çeviri  (ko, zh, ja)
+  Korece/Çince/Japonca karşılığı olmayan metin İngilizcesiyle yazılır.
 
 Kullanım:  python tools/i18n/build.py            sözlükleri üretir
            python tools/i18n/build.py --missing  koddaki çevrilmemiş metinleri listeler
@@ -13,7 +16,8 @@ import json, os, re, sys, subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-LANGS = ['en', 'es', 'de', 'fr', 'pt', 'ar']
+LANGS = ['en', 'es', 'de', 'fr', 'pt', 'ar', 'ko', 'zh', 'ja']
+CJK = ['ko', 'zh', 'ja']
 VAR = re.compile(r'\{\w+\}')
 
 keys = json.load(open(os.path.join(HERE, 'keys_v1.json'), encoding='utf8'))
@@ -43,9 +47,24 @@ for n, parts in rows('ar.tsv'):
     put('ar', keys[int(parts[0])], parts[1], f'ar.tsv:{n}')
 for fn in sorted(f for f in os.listdir(HERE) if f.startswith('extra') and f.endswith('.tsv')):
     for n, parts in rows(fn):
-        assert len(parts) == 7, (fn, n, len(parts), parts[0][:40])
+        assert len(parts) in (7, 10), (fn, n, len(parts), parts[0][:40])
         for l, v in zip(LANGS, parts[1:]):
             put(l, parts[0], v, f'{fn}:{n}')
+cjk_keys = json.load(open(os.path.join(HERE, 'cjk_keys.json'), encoding='utf8'))
+for l in CJK:
+    d = os.path.join(HERE, 'cjk')
+    for fn in sorted(f for f in os.listdir(d) if f.startswith(l + '_')):
+        for n, line in enumerate(open(os.path.join(d, fn), encoding='utf8'), 1):
+            line = line.rstrip(chr(10))
+            if not line.strip():
+                continue
+            i, v = line.split('|', 1)
+            k = cjk_keys[int(i)]
+            if k not in dicts[l]:
+                put(l, k, v, f'cjk/{fn}:{n}')
+for l in CJK:
+    for k, v in dicts['en'].items():
+        dicts[l].setdefault(k, v)
 
 if '--missing' in sys.argv:
     subprocess.run([sys.executable, os.path.join(HERE, 'extract.py')], check=True)

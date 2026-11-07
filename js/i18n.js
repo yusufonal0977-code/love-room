@@ -4,8 +4,16 @@
 
 export const LANGS = [
   ['tr', 'Türkçe'], ['en', 'English'], ['es', 'Español'], ['de', 'Deutsch'], ['fr', 'Français'], ['pt', 'Português'], ['ar', 'العربية'],
+  ['ko', '한국어'], ['zh', '中文'], ['ja', '日本語'],
 ];
-const LOCALES = { tr: 'tr-TR', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', ar: 'ar' };
+const LOCALES = { tr: 'tr-TR', en: 'en-US', es: 'es-ES', de: 'de-DE', fr: 'fr-FR', pt: 'pt-BR', ar: 'ar', ko: 'ko-KR', zh: 'zh-CN', ja: 'ja-JP' };
+/** Pixelify Sans'ta olmayan harfler için yedek yazı tipi (Google Fonts, yalnızca gereken harfleri indirir). */
+const EXTRA_FONT = {
+  ar: 'Tajawal:wght@400;500;700',
+  ja: 'DotGothic16',
+  ko: 'Noto+Sans+KR:wght@400;700',
+  zh: 'Noto+Sans+SC:wght@400;700',
+};
 /** Sağdan sola yazılan diller */
 export const rtl = (l) => l === 'ar';
 
@@ -25,11 +33,11 @@ let dict = {}, fallback = {};
 /** Açılışta bir kez: seçili dilin sözlüğünü yükler ve sayfadaki sabit metinleri çevirir. */
 export async function initI18n() {
   document.documentElement.lang = lang;
-  if (rtl(lang)) {
-    document.documentElement.dir = 'rtl';
+  if (rtl(lang)) document.documentElement.dir = 'rtl';
+  if (EXTRA_FONT[lang]) {
     const f = document.createElement('link');
     f.rel = 'stylesheet';
-    f.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap';
+    f.href = `https://fonts.googleapis.com/css2?family=${EXTRA_FONT[lang]}&display=swap`;
     document.head.append(f);
   }
   if (lang !== 'tr') {
