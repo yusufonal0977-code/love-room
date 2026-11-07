@@ -3,9 +3,11 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import {
   getAuth,
   GoogleAuthProvider,
+  linkWithCredential,
   linkWithPopup,
   onAuthStateChanged,
   signInAnonymously,
+  signInWithCredential,
   signInWithPopup,
   signOut,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
@@ -40,10 +42,24 @@ let offset = 0;
 onValue(ref(db, '.info/serverTimeOffset'), (s) => (offset = s.val() || 0));
 export const now = () => Date.now() + offset;
 
-export const loginGoogle = () => signInWithPopup(auth, new GoogleAuthProvider());
+// Android uygulamasında Google kendi giriş penceresini uygulama içinde açtırmaz: giriş telefonun tarayıcısında yapılır
+// (app-login.html), Google'ın kimlik belgesi uygulamaya döner ve burada aynı hesapla oturum açılır.
+function viaApp(link) {
+  return new Promise((resolve, reject) => {
+    window.__lrGoogle = async (idToken) => {
+      window.__lrGoogle = null;
+      if (!idToken) return reject(Object.assign(new Error('iptal'), { code: 'auth/popup-closed-by-user' }));
+      const cred = GoogleAuthProvider.credential(idToken);
+      try { resolve(link ? await linkWithCredential(auth.currentUser, cred) : await signInWithCredential(auth, cred)); } catch (e) { reject(e); }
+    };
+    window.LoveRoomApp.googleLogin();
+  });
+}
+const inApp = () => !!window.LoveRoomApp?.googleLogin;
+export const loginGoogle = () => (inApp() ? viaApp(false) : signInWithPopup(auth, new GoogleAuthProvider()));
 export const loginGuest = () => signInAnonymously(auth);
 /** İsimle açılmış hesabı Google'a bağlar: kullanıcı kimliği aynı kalır, ev ve tüm veriler yerinde durur. */
-export const linkGoogle = () => linkWithPopup(auth.currentUser, new GoogleAuthProvider());
+export const linkGoogle = () => (inApp() ? viaApp(true) : linkWithPopup(auth.currentUser, new GoogleAuthProvider()));
 export const logout = () => signOut(auth);
 
 /** İlk oturum durumunu bekler (oturum tarayıcıda hatırlanır). */

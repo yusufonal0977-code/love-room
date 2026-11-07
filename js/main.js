@@ -88,8 +88,12 @@ function showGate() {
   show('gate');
   if (inviteCode) $('gateNote').textContent = t('Partnerin seni bekliyor. Giriş yap ve odaya gel.');
 }
-// Android uygulamasında Google girişi (açılır pencere) çalışmıyor: şimdilik yalnızca adla giriş
-if (inApp()) { $('googleBtn').hidden = true; document.querySelector('#gate .or').hidden = true; }
+// Android uygulamasında geri tuşu: önce açık pencere/menü kapanır; kapatacak bir şey yoksa uygulama arka plana gider
+window.__lrBack = () => {
+  for (const m of document.querySelectorAll('.modal:not([hidden])')) { (m.querySelector('[data-close]') || m).click?.(); m.hidden = true; return true; }
+  if (document.querySelector('.tour')) { document.querySelector('.tour .tourcard .link')?.click(); return true; }
+  return false;
+};
 $('googleBtn').onclick = async () => {
   try { const r = await loginGoogle(); await afterLogin(r.user); }
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }

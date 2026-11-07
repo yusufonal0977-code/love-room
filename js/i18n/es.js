@@ -970,5 +970,7 @@ export default {
  "iPhone uygulaması henüz yok. Şimdilik Safari'de Paylaş, sonra \"Ana Ekrana Ekle\" ile siteyi uygulama gibi açabilirsin.": "Aún no hay app para iPhone. Por ahora, en Safari toca Compartir y luego \"Añadir a pantalla de inicio\".",
  "Android uygulamasını indir": "Descargar la app de Android",
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "Después de descargarla, abre el archivo. Si el móvil pide permiso de \"fuentes desconocidas\", permítelo. Pronto en Google Play.",
- "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "Por ahora la app solo permite entrar con tu nombre; pronto con Google."
+ "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "Por ahora la app solo permite entrar con tu nombre; pronto con Google.",
+ "Galeriye kaydedildi": "Guardado en la galería",
+ "Kaydedilemedi": "No se pudo guardar"
 };

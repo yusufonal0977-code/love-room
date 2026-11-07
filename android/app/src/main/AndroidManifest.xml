@@ -25,7 +25,25 @@
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+      <!-- Davet ve paylaşılan linkler (https://getloveroom.com/?davet=...) uygulamada açılsın; site .well-known/assetlinks.json ile doğrular -->
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="getloveroom.com" android:path="/" />
+      </intent-filter>
+      <!-- Google girişi tarayıcıda bitince buraya döner -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="getloveroom" android:host="auth" />
+      </intent-filter>
     </activity>
+    <provider android:name="androidx.core.content.FileProvider" android:authorities="com.eclip.getloveroom.files"
+        android:exported="false" android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/files" />
+    </provider>
 
     <receiver android:name=".DrawWidget" android:exported="false" android:label="@string/w_draw">
       <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>

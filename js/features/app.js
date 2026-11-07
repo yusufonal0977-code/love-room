@@ -41,6 +41,5 @@ export function openDownload() {
     ios ? h('p', { class: 'small' }, t('iPhone uygulaması henüz yok. Şimdilik Safari\'de Paylaş, sonra "Ana Ekrana Ekle" ile siteyi uygulama gibi açabilirsin.'))
       : h('button', { class: 'primary', html: `${icon('download')} ${t('Android uygulamasını indir')}`, onclick: () => { location.href = APK_URL; } }),
     ios ? null : h('p', { class: 'small' }, t('İndirdikten sonra dosyayı aç. Telefon "bilinmeyen kaynak" izni isterse bu uygulama için izin ver. Google Play\'e yakında gelecek.')),
-    ios ? null : h('p', { class: 'small' }, t('Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.')),
   );
 }

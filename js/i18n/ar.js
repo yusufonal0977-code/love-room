@@ -970,5 +970,7 @@ export default {
  "iPhone uygulaması henüz yok. Şimdilik Safari'de Paylaş, sonra \"Ana Ekrana Ekle\" ile siteyi uygulama gibi açabilirsin.": "لا يوجد تطبيق آيفون بعد. حاليًا في سفاري اضغط مشاركة ثم \"إضافة إلى الشاشة الرئيسية\".",
  "Android uygulamasını indir": "تنزيل تطبيق أندرويد",
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "بعد التنزيل افتح الملف. إذا طلب الهاتف إذن \"مصادر غير معروفة\" فاسمح به لهذا التطبيق. قريبًا على Google Play.",
- "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "حاليًا يتيح التطبيق الدخول بالاسم فقط؛ الدخول عبر Google قريبًا."
+ "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "حاليًا يتيح التطبيق الدخول بالاسم فقط؛ الدخول عبر Google قريبًا.",
+ "Galeriye kaydedildi": "تم الحفظ في المعرض",
+ "Kaydedilemedi": "تعذر الحفظ"
 };

@@ -970,5 +970,7 @@ export default {
  "iPhone uygulaması henüz yok. Şimdilik Safari'de Paylaş, sonra \"Ana Ekrana Ekle\" ile siteyi uygulama gibi açabilirsin.": "There's no iPhone app yet. For now, in Safari tap Share, then \"Add to Home Screen\" to open the site like an app.",
  "Android uygulamasını indir": "Download the Android app",
  "İndirdikten sonra dosyayı aç. Telefon \"bilinmeyen kaynak\" izni isterse bu uygulama için izin ver. Google Play'e yakında gelecek.": "After downloading, open the file. If your phone asks about \"unknown sources\", allow it for this app. Coming to Google Play soon.",
- "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "For now the app only has sign-in with your name; Google sign-in is coming soon."
+ "Uygulamada şimdilik yalnızca adınla giriş var; Google ile giriş yakında gelecek.": "For now the app only has sign-in with your name; Google sign-in is coming soon.",
+ "Galeriye kaydedildi": "Saved to gallery",
+ "Kaydedilemedi": "Couldn't save"
 };

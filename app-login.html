@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Get Love Room · Google ile giriş</title>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0d0b1a; color: #fff6d8; font: 16px 'Pixelify Sans', system-ui, sans-serif; text-align: center; }
+  main { padding: 24px; max-width: 360px; }
+  img { width: 96px; }
+  button { font: inherit; font-size: 18px; padding: 14px 22px; border-radius: 14px; border: 0; background: #fcdf4b; color: #1a1608; margin-top: 16px; width: 100%; }
+  p { opacity: .8; }
+</style>
+</head>
+<body>
+<main>
+  <img src="assets/loveroom-logo.webp" alt="">
+  <h2>Get Love Room</h2>
+  <p id="msg">Uygulamaya Google hesabınla girmek için devam et.</p>
+  <button id="go">Google ile devam et</button>
+</main>
+<script type="module">
+// Android uygulaması Google girişini buraya (telefonun tarayıcısına) yollar. Giriş bitince Google'ın kimlik belgesi
+// getloveroom://auth ile uygulamaya döner; uygulama aynı hesapla oturum açar. Belge kısa ömürlüdür (1 saat).
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { firebaseConfig } from './js/config.js';
+const auth = getAuth(initializeApp(firebaseConfig, 'applogin'));
+const msg = document.getElementById('msg'), go = document.getElementById('go');
+let back = null;
+go.onclick = async () => {
+  if (back) { location.href = back; return; }
+  try {
+    const res = await signInWithPopup(auth, new GoogleAuthProvider());
+    const id = GoogleAuthProvider.credentialFromResult(res)?.idToken;
+    if (!id) throw new Error('belge yok');
+    signOut(auth).catch(() => {}); // tarayıcıda oturum kalmasın; uygulama kendi oturumunu açar
+    back = 'intent://auth?id=' + encodeURIComponent(id) + '#Intent;scheme=getloveroom;package=com.eclip.getloveroom;end';
+    msg.textContent = 'Giriş tamam. Uygulamaya dönülüyor…';
+    go.textContent = 'Uygulamaya dön';
+    location.href = back;
+  } catch (e) {
+    msg.textContent = 'Giriş tamamlanamadı. Tekrar dene.';
+    console.warn(e);
+  }
+};
+</script>
+</body>
+</html>

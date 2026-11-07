@@ -216,6 +216,7 @@ export function createShare(ctx) {
     const caption = `${data.caption} #GetLoveRoom ${APP_URL.startsWith('http://localhost') ? 'https://getloveroom.com' : APP_URL}`;
     body.append(h('div', { class: 'row wrap' },
       h('button', { class: 'primary', html: `${icon('share')} Paylaş`, onclick: async () => {
+        if (window.LoveRoomApp?.shareImage) { window.LoveRoomApp.shareImage(url, caption, `getloveroom-${kind}.png`); ctx.live.stat('shares'); return; }
         try {
           const blob = await (await fetch(url)).blob();
           const file = new File([blob], `getloveroom-${kind}.png`, { type: 'image/png' });

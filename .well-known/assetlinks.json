@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.eclip.getloveroom",
+      "sha256_cert_fingerprints": [
+        "47:C9:DE:89:58:10:39:64:91:ED:AD:FE:30:AE:57:D8:3E:E8:E9:0C:7E:06:40:B0:9D:2A:0B:57:DD:74:5D:E4"
+      ]
+    }
+  }
+]

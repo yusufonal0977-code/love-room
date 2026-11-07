@@ -147,6 +147,11 @@ export function download(dataUrl, name) {
 }
 /** Telefonda paylaşım menüsünü açar ("Resmi kaydet" ile galeriye gider); bilgisayarda dosya olarak indirir. */
 export async function saveImage(dataUrl, name) {
+  if (window.LoveRoomApp?.saveImage) { // Android uygulaması: doğrudan galeriye (Resimler/Get Love Room)
+    const ok = window.LoveRoomApp.saveImage(String(dataUrl), name);
+    toast(t(ok ? 'Galeriye kaydedildi' : 'Kaydedilemedi'));
+    return;
+  }
   try {
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], name, { type: blob.type || 'image/jpeg' });
