@@ -564,7 +564,16 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
 
 /* Yatay telefon: alttaki çubuk odanın yanlarındaki boşluklara taşınır (solda konuşma, sağda sevgi ve menü) */
 @media (orientation: landscape) and (max-height: 520px) {
-  #bar { left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); top: 50%; bottom: auto; transform: translateY(-50%);
+  /* Üst bilgi tek satırda kalır; sığmayan çipler yatay kayar (alt satıra inip yan düğmelerin üstüne binmez) */
+  #top { flex-wrap: nowrap; padding: max(6px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 10px max(12px, env(safe-area-inset-left)); }
+  #top .who { flex-wrap: nowrap; min-width: 0; flex: 0 1 auto; }
+  #top b { font-size: 16px; white-space: nowrap; }
+  #status { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .chips { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; min-width: 0; flex: 0 1 auto; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { white-space: nowrap; flex: none; font-size: 12px; padding: 4px 9px; }
+  /* Yan sütunlar üst bilginin altından başlar, kalan yükseklikte ortalanır */
+  #bar { left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); top: calc(max(6px, env(safe-area-inset-top)) + 42px); bottom: max(8px, env(safe-area-inset-bottom)); transform: none; align-content: center;
     display: grid; grid-template-columns: auto 1fr auto; grid-auto-flow: row dense; gap: 6px; padding: 0; background: none; border: 0; box-shadow: none;
     backdrop-filter: none; -webkit-backdrop-filter: none; pointer-events: none; }
   #bar > * { pointer-events: auto; }
@@ -573,8 +582,18 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
   #bar #heartBtn, #bar #hugBtn, #bar #kissBtn, #bar #hubBtn, #bar #menuBtn { grid-column: 3; }
   #bar button { width: 44px; height: 44px; background: rgba(18, 15, 9, .78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 14px rgba(0, 0, 0, .4); }
   #help { display: none; }
+  /* Kenara yapışan çip ve paneller yan sütunların içine kayar */
+  .radiochip { left: calc(max(8px, env(safe-area-inset-left)) + 54px); top: calc(max(6px, env(safe-area-inset-top)) + 44px); }
+  .admintvbtns { right: calc(max(8px, env(safe-area-inset-right)) + 54px); top: calc(max(6px, env(safe-area-inset-top)) + 44px); }
+  .casino-board { right: calc(max(8px, env(safe-area-inset-right)) + 54px); top: calc(max(6px, env(safe-area-inset-top)) + 86px); max-height: calc(100vh - 100px); overflow-y: auto; }
+  html[dir=rtl] .admintvbtns, html[dir=rtl] .casino-board { right: auto; left: calc(max(8px, env(safe-area-inset-left)) + 54px); }
+  .chatpanel, body.cinema .chatpanel { left: calc(max(8px, env(safe-area-inset-left)) + 54px); right: auto; width: min(340px, calc(100vw - 130px)); top: calc(max(6px, env(safe-area-inset-top)) + 44px); bottom: max(8px, env(safe-area-inset-bottom)); height: auto; }
+  html[dir=rtl] .chatpanel { left: auto; right: calc(max(8px, env(safe-area-inset-right)) + 54px); }
+  .meybtn { bottom: max(10px, env(safe-area-inset-bottom)); }
+  body:has(.chatpanel:not([hidden])) .radiochip { display: none; }
 }
-@media (orientation: landscape) and (max-height: 330px) { #bar { gap: 4px; } #bar button { width: 38px; height: 38px; } }
+@media (orientation: landscape) and (max-height: 380px) { #bar { gap: 4px; } #bar button { width: 40px; height: 40px; } }
+@media (orientation: landscape) and (max-height: 320px) { #bar { gap: 3px; } #bar button { width: 36px; height: 36px; } .radiochip, .chatpanel { left: calc(max(8px, env(safe-area-inset-left)) + 46px); } }
 
 
 /* Mutfak: buzdolabı ve yeni yemek aşamaları */
