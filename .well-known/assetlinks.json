@@ -7,7 +7,8 @@
       "namespace": "android_app",
       "package_name": "com.eclip.getloveroom",
       "sha256_cert_fingerprints": [
-        "47:C9:DE:89:58:10:39:64:91:ED:AD:FE:30:AE:57:D8:3E:E8:E9:0C:7E:06:40:B0:9D:2A:0B:57:DD:74:5D:E4"
+        "47:C9:DE:89:58:10:39:64:91:ED:AD:FE:30:AE:57:D8:3E:E8:E9:0C:7E:06:40:B0:9D:2A:0B:57:DD:74:5D:E4",
+        "CB:87:91:00:5D:3D:1B:1F:23:EB:EE:F8:AD:16:1D:FD:BF:3B:C6:87:EB:A7:D0:2F:6F:5B:41:83:74:61:4A:2A"
       ]
     }
   }

@@ -43,7 +43,7 @@ const LEGAL_TR = [
 <h4>1. Taraflar ve kabul</h4>
 <p>Bu koşullar, ${COMPANY} ("Eclip", "biz") tarafından sunulan Get Love Room uygulamasını ("Hizmet") kullanan kişi ("siz") ile aramızdaki kuralları belirler. Hizmeti kullanarak ve giriş sırasında onay kutusunu işaretleyerek bu koşulları kabul etmiş olursunuz.</p>
 <h4>2. Kimler kullanabilir</h4>
-<p>Hizmeti kullanmak için <b>18 yaşını doldurmuş</b> olmanız gerekir. Bir ev en fazla iki kişiye aittir; evi kuran kişi davet linkiyle tek bir partner davet edebilir.</p>
+<p>Hizmeti kullanmak için <b>13 yaşını doldurmuş</b> olmanız gerekir. 18 yaşından küçükseniz hizmeti velinizin izniyle kullanabilirsiniz. Bir ev en fazla iki kişiye aittir; evi kuran kişi davet linkiyle tek bir partner davet edebilir.</p>
 <h4>3. Hesabınız</h4>
 <p>Google hesabınızla ya da sadece bir isimle (misafir) giriş yapabilirsiniz. Misafir hesapları o tarayıcıya bağlıdır; tarayıcı verilerini silerseniz eve yeniden giremeyebilirsiniz. Hesabınızın güvenliğinden ve davet linkinizi kiminle paylaştığınızdan siz sorumlusunuz.</p>
 <h4>4. Paylaştığınız içerik</h4>
@@ -98,7 +98,7 @@ const LEGAL_TR = [
 <h4>Güvenlik</h4>
 <p>Bağlantılar HTTPS ile şifrelenir; veritabanı kuralları sayesinde bir eve yalnızca o evin iki sahibi erişebilir. Sohbet uçtan uca şifreli akar. Yine de hiçbir sistem %100 güvenli değildir; davet linkinizi sadece partnerinizle paylaşın.</p>
 <h4>Çocuklar</h4>
-<p>Hizmet 18 yaş altındakiler için değildir; bilerek 18 yaş altından veri toplamayız.</p>
+<p>Hizmet 13 yaş altındakiler için değildir; bilerek 13 yaş altından veri toplamayız. 13-18 yaş arasındaki kullanıcıların hizmeti velilerinin izniyle kullanması gerekir. 13 yaş altından veri toplandığını fark edersek bu verileri sileriz.</p>
 <h4>Haklarınız ve başvuru</h4>
 <p>Verilerinize erişme, düzeltme, silme ve itiraz haklarınız için ${mail} adresine yazabilirsiniz. Ayrıntılar KVKK Aydınlatma Metni'nde.</p>`,
   },

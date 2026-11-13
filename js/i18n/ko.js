@@ -77,6 +77,7 @@ export default {
  "Google Play'den indir": "Google Play에서 받기",
  "Google Play'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.": "Google Play에서 아직 보이지 않으면 앱을 파일로 받을 수도 있어요.",
  "APK dosyasını indir": "APK 파일 받기",
+ "13 yaşından büyüğüm; 18 yaşından küçüksem velimin izni var.": "만 13세 이상이며, 18세 미만이면 보호자의 동의를 받았습니다.",
  "Ayrı sayfada aç": "별도 페이지에서 열기",
  "şömine başında": "벽난로 옆에서",
  "hobi köşesinde": "취미 코너에서",

@@ -39,7 +39,7 @@ export const LEGAL_EN = [
 <h4>1. Parties and acceptance</h4>
 <p>These terms set the rules between ${COMPANY} ("Eclip", "we") and you, the person using the Get Love Room app (the "Service"). By using the Service and ticking the box at sign-in, you accept these terms.</p>
 <h4>2. Who can use it</h4>
-<p>You must be <b>at least 18 years old</b>. A home belongs to at most two people; the person who creates it can invite one partner with the invite link.</p>
+<p>You must be <b>at least 13 years old</b>. If you are under 18, you may use the Service with your parent or guardian's permission. A home belongs to at most two people; the person who creates it can invite one partner with the invite link.</p>
 <h4>3. Your account</h4>
 <p>You can sign in with Google or just with a name (guest). Guest accounts are tied to that browser; if you clear its data you may not be able to get back into your home. You are responsible for your account's security and for who you share your invite link with.</p>
 <h4>4. Content you share</h4>
@@ -94,7 +94,7 @@ export const LEGAL_EN = [
 <h4>Security</h4>
 <p>Connections are encrypted with HTTPS; database rules ensure that only the two owners of a home can access it. Chat streams are end-to-end encrypted. Still, no system is 100% secure; share your invite link only with your partner.</p>
 <h4>Children</h4>
-<p>The Service is not for people under 18; we don't knowingly collect data from anyone under 18.</p>
+<p>The Service is not for children under 13; we don't knowingly collect data from anyone under 13. Users aged 13 to 17 need a parent or guardian's permission. If we learn that we have collected data from a child under 13, we delete it.</p>
 <h4>Your rights</h4>
 <p>You can ask to access, correct or delete your data, or object to its processing, by writing to ${mail}. If you live in the EU/EEA or the UK, you also have rights under the GDPR, including data portability and the right to complain to your local data protection authority. Users in Türkiye can find details in the KVKK Notice.</p>`,
   },

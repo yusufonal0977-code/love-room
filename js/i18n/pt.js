@@ -1068,5 +1068,6 @@ export default {
  "Önizleme": "Prévia",
  "Google Play'den indir": "Baixar no Google Play",
  "Google Play'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.": "Se ainda não aparecer no Google Play, você também pode baixar o app como arquivo.",
- "APK dosyasını indir": "Baixar o arquivo APK"
+ "APK dosyasını indir": "Baixar o arquivo APK",
+ "13 yaşından büyüğüm; 18 yaşından küçüksem velimin izni var.": "Tenho pelo menos 13 anos; se tiver menos de 18, tenho permissão dos meus pais."
 };

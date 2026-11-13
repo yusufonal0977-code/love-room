@@ -77,6 +77,7 @@ export default {
  "Google Play'den indir": "在 Google Play 下载",
  "Google Play'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.": "如果在 Google Play 上还找不到，也可以下载安装包文件。",
  "APK dosyasını indir": "下载 APK 文件",
+ "13 yaşından büyüğüm; 18 yaşından küçüksem velimin izni var.": "我已年满 13 岁；如未满 18 岁，已获得监护人同意。",
  "Ayrı sayfada aç": "在新页面中打开",
  "şömine başında": "在壁炉旁",
  "hobi köşesinde": "在爱好角",

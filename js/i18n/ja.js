@@ -77,6 +77,7 @@ export default {
  "Google Play'den indir": "Google Playで入手",
  "Google Play'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.": "Google Playでまだ見つからない場合は、ファイルとしてもダウンロードできます。",
  "APK dosyasını indir": "APKファイルをダウンロード",
+ "13 yaşından büyüğüm; 18 yaşından küçüksem velimin izni var.": "13歳以上です。18歳未満の場合は保護者の同意を得ています。",
  "Ayrı sayfada aç": "別のページで開く",
  "şömine başında": "暖炉のそばで",
  "hobi köşesinde": "趣味コーナーで",
