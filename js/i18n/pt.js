@@ -1065,5 +1065,8 @@ export default {
  "Kâğıt": "Papel",
  "Çiçekler": "Flores",
  "Yazı tipi": "Fonte",
- "Önizleme": "Prévia"
+ "Önizleme": "Prévia",
+ "Google Play'den indir": "Baixar no Google Play",
+ "Google Play'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.": "Se ainda não aparecer no Google Play, você também pode baixar o app como arquivo.",
+ "APK dosyasını indir": "Baixar o arquivo APK"
 };

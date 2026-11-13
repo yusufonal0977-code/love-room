@@ -12,11 +12,18 @@ import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 import androidx.core.content.FileProvider;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-/** Sitenin uygulamaya verdiği bilgiler ve istekleri (window.LoveRoomApp). Yalnızca kendi sitemiz yüklenir. */
+/**
+ * Sitenin uygulamaya verdiği bilgiler ve istekleri (window.LoveRoomApp).
+ * Güvenli yol: MainActivity yalnızca https://getloveroom.com ana çerçevesine küçük bir aracı betik koyar; istekler
+ * mesaj olarak handle()'a gelir. Sitenin TV'sinde açılan başka siteler (iframe) bu köprüye ulaşamaz.
+ * Eski WebView'lerde (mesaj kanalı yoksa) aynı metotlar @JavascriptInterface ile verilir.
+ */
 public class Bridge {
   private final Context ctx;
   private final java.lang.ref.WeakReference<MainActivity> act;
@@ -53,7 +60,7 @@ public class Bridge {
   @JavascriptInterface public void setOrientation(String o) {
     prefs(ctx).edit().putString("orientation", "portrait".equals(o) ? "portrait" : "landscape").apply();
     MainActivity a = act.get();
-    if (a != null) a.runOnUiThread(() -> MainActivity.applyOrientation(a));
+    if (a != null) a.runOnUiThread(() -> { MainActivity.applyOrientation(a); a.refreshShim(); });
   }
   /** Telefonun ana ekranı widget'ı uygulamanın içinden eklemeye izin veriyor mu (Android 8+ ve destekleyen ana ekran). */
   @JavascriptInterface public boolean canPinWidget() {
@@ -70,7 +77,10 @@ public class Bridge {
 
   /** Google ile giriş: Google, uygulama içindeki sayfada girişe izin vermez; tarayıcıda yapılır, sonuç getloveroom://auth ile döner. */
   @JavascriptInterface public void googleLogin() {
-    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.SITE + "app-login.html")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    // Tek seferlik doğrulama kodu: tarayıcıdan dönen giriş yalnızca bu kodla kabul edilir (başka uygulama sahte giriş yollayamasın)
+    String st = new java.math.BigInteger(130, new java.security.SecureRandom()).toString(32);
+    prefs(ctx).edit().putString("gstate", st).putLong("gstateAt", System.currentTimeMillis()).apply();
+    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.SITE + "app-login.html?s=" + st)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     ctx.startActivity(i);
   }
 
@@ -107,6 +117,44 @@ public class Bridge {
       ctx.startActivity(Intent.createChooser(s, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION));
       return true;
     } catch (Exception e) { return false; }
+  }
+
+  /** Google girişinden dönen kod, uygulamanın az önce ürettiğiyle aynı mı (15 dk geçerli, bir kez kullanılır). */
+  static boolean checkLoginState(Context c, String s) {
+    SharedPreferences p = prefs(c);
+    String want = p.getString("gstate", null);
+    long at = p.getLong("gstateAt", 0);
+    p.edit().remove("gstate").remove("gstateAt").apply();
+    return want != null && want.equals(s) && System.currentTimeMillis() - at < 15 * 60_000;
+  }
+
+  /** Güvenli mesaj kanalından gelen istek: { m: metot, a: [argümanlar] }. */
+  void handle(String json) {
+    try {
+      JSONObject o = new JSONObject(json);
+      JSONArray a = o.optJSONArray("a");
+      if (a == null) a = new JSONArray();
+      switch (o.optString("m")) {
+        case "session": session(a.optString(0)); break;
+        case "logout": logout(); break;
+        case "petImage": petImage(a.optString(0), a.optString(1)); break;
+        case "sceneArt": sceneArt(a.optString(0), a.optString(1)); break;
+        case "refresh": refresh(); break;
+        case "setOrientation": setOrientation(a.optString(0)); break;
+        case "pinWidget": pinWidget(a.optString(0)); break;
+        case "googleLogin": googleLogin(); break;
+        case "saveImage": if (!saveImage(a.optString(0), a.optString(1))) Toast.makeText(ctx, R.string.save_failed, Toast.LENGTH_SHORT).show(); break;
+        case "shareImage": shareImage(a.optString(0), a.optString(1), a.optString(2)); break;
+        default: break;
+      }
+    } catch (Exception ignored) { }
+  }
+
+  /** Sayfa başlarken konan aracı betiğin bildiği durum (sürüm, ekran yönü, widget eklenebilir mi). */
+  String stateJson() {
+    try {
+      return new JSONObject().put("version", BuildConfig.VERSION_NAME).put("orientation", orientation()).put("canPin", canPinWidget()).toString();
+    } catch (Exception e) { return "{}"; }
   }
 
   private static byte[] decode(String dataUrl) { return Base64.decode(dataUrl.substring(dataUrl.indexOf(',') + 1), Base64.DEFAULT); }

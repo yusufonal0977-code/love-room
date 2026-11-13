@@ -30,6 +30,8 @@ import { firebaseConfig } from './js/config.js';
 const auth = getAuth(initializeApp(firebaseConfig, 'applogin'));
 const msg = document.getElementById('msg'), go = document.getElementById('go');
 let back = null;
+// Uygulamanın ürettiği tek seferlik kod: dönüşte uygulama bununla girişin kendisinin başlattığı giriş olduğunu doğrular
+const st = (new URLSearchParams(location.search).get('s') || '').replace(/[^a-z0-9]/g, '').slice(0, 40);
 go.onclick = async () => {
   if (back) { location.href = back; return; }
   try {
@@ -37,7 +39,7 @@ go.onclick = async () => {
     const id = GoogleAuthProvider.credentialFromResult(res)?.idToken;
     if (!id) throw new Error('belge yok');
     signOut(auth).catch(() => {}); // tarayıcıda oturum kalmasın; uygulama kendi oturumunu açar
-    back = 'intent://auth?id=' + encodeURIComponent(id) + '#Intent;scheme=getloveroom;package=com.eclip.getloveroom;end';
+    back = 'intent://auth?id=' + encodeURIComponent(id) + '&s=' + st + '#Intent;scheme=getloveroom;package=com.eclip.getloveroom;end';
     msg.textContent = 'Giriş tamam. Uygulamaya dönülüyor…';
     go.textContent = 'Uygulamaya dön';
     location.href = back;

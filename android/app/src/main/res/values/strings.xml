@@ -27,4 +27,5 @@
   <string name="mood_bored">Canı sıkıldı</string>
   <string name="draw_empty">Dokun, birlikte çizin</string>
   <string name="draw_go">Çiz</string>
+  <string name="save_failed">Kaydedilemedi</string>
 </resources>

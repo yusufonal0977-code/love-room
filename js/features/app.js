@@ -9,6 +9,7 @@ import { t } from '../i18n.js';
 
 export const inApp = () => !!window.LoveRoomApp;
 export const APK_URL = 'https://github.com/yusufonal0977-code/love-room/releases/download/android/GetLoveRoom.apk';
+export const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.eclip.getloveroom';
 
 export function connectApp(ctx, { rid, care, draw, life, spotify }) {
   const app = window.LoveRoomApp;
@@ -83,7 +84,7 @@ export function openDownload() {
   b.append(
     h('p', {}, t('Android uygulamasıyla ana ekrana widget ekleyebilirsiniz: ortak tuvaliniz, evcil dostunuz ve ilişki saatiniz telefonun ekranında durur.')),
     ios ? h('p', { class: 'small' }, t('iPhone uygulaması henüz yok. Şimdilik Safari\'de Paylaş, sonra "Ana Ekrana Ekle" ile siteyi uygulama gibi açabilirsin.'))
-      : h('button', { class: 'primary', html: `${icon('download')} ${t('Android uygulamasını indir')}`, onclick: () => { location.href = APK_URL; } }),
-    ios ? null : h('p', { class: 'small' }, t('İndirdikten sonra dosyayı aç. Telefon "bilinmeyen kaynak" izni isterse bu uygulama için izin ver. Google Play\'e yakında gelecek.')),
+      : h('button', { class: 'primary', html: `${icon('download')} ${t('Google Play\'den indir')}`, onclick: () => { location.href = PLAY_URL; } }),
+    ios ? null : h('p', { class: 'small' }, t('Google Play\'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.'), ' ', h('a', { href: APK_URL }, t('APK dosyasını indir'))),
   );
 }

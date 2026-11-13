@@ -2,7 +2,7 @@
 // Metin değişirse LEGAL_VERSION artırılır; kullanıcılar bir sonraki girişte yeniden onaylar.
 
 export const LEGAL_VERSION = 1;
-export const LEGAL_DATE = '29 Ekim 2026';
+export const LEGAL_DATE = '13 Kasım 2026';
 export const CONTACT = 'eclipsoftware.dev@gmail.com';
 const COMPANY = 'Eclip Software &amp; Entertainment Company';
 const mail = `<a href="mailto:${CONTACT}">${CONTACT}</a>`;
@@ -82,6 +82,7 @@ const LEGAL_TR = [
   <li><b>Evinizin içeriği:</b> evdeki konumunuz ve o an hangi odada olduğunuz, eşya ve dekor tercihleri, tablolara astığınız ve albüme eklediğiniz fotoğraflar, fotoğraf kabini kareleri, çizimler, günlük yazıları ve mektuplar, soru kavanozu cevapları, ilişki tarihleri, oyun skorları, kedi ve çiçek durumu, rozet sayaçları, TV'de açılan linkler ve oynatma konumu, birlikte dinlenen şarkı bilgisi.</li>
   <li><b>Sesli/görüntülü sohbet ve paylaşım:</b> Mikrofon, kamera ve ekran/ video paylaşımı doğrudan iki cihaz arasında, şifreli olarak (WebRTC) akar. <b>Kaydetmiyor, saklamıyoruz.</b> Bazı ağlarda bağlantı, içeriği göremeyen bir aktarma sunucusu (Metered TURN) üzerinden geçer.</li>
   <li><b>Spotify:</b> Spotify'ı bağlarsanız erişim anahtarı yalnızca sizin cihazınızda saklanır. Partnerinizin görebilmesi için herkese açık/ortak çalma listelerinizin adı ve kapak görseli evinize yazılır.</li>
+  <li><b>Android uygulaması (Google Play):</b> Uygulama siteyi açar; ana ekran widget'larının (tuval, evcil dostunuz, ilişki saati, pikap) güncellenebilmesi için oturum anahtarınız ve widget görselleri <b>yalnızca telefonunuzda</b> saklanır ve yedeğe alınmaz. Kamera ve mikrofon izni yalnızca sesli/görüntülü sohbeti açtığınızda istenir; fotoğraflara yalnızca sizin seçtiğiniz dosya için erişilir. Uygulamada reklam, analiz ya da takip aracı yoktur.</li>
 </ul>
 <h4>Kullanım amaçları</h4>
 <p>Verileri yalnızca Hizmeti sunmak için kullanırız: sizi ve partnerinizi aynı evde buluşturmak, paylaştıklarınızı partnerinize göstermek, film/müzik senkronu, güvenlik ve kötüye kullanımın önlenmesi. Pazarlama, profil çıkarma ya da reklam için kullanmayız.</p>
@@ -93,7 +94,7 @@ const LEGAL_TR = [
   <li>Kanunen zorunlu olduğunda yetkili makamlar.</li>
 </ul>
 <h4>Saklama süresi ve silme</h4>
-<p>Verileriniz siz silene kadar saklanır. Bir fotoğrafı, yazıyı ya da cevabı tek tek silebilirsiniz. Menü → <i>Verilerimi sil</i> dediğinizde hesabınız, profiliniz ve <b>ortak eviniz (partnerinizin eklediği içerikler dahil)</b> veritabanından hemen silinir. Partnerinizin içeriklerini korumak istiyorsanız silmeden önce Albüm'den kaydetmesini isteyin.</p>
+<p>Verileriniz siz silene kadar saklanır. Bir fotoğrafı, yazıyı ya da cevabı tek tek silebilirsiniz. Menü → <i>Verilerimi sil</i> dediğinizde hesabınız, profiliniz ve <b>ortak eviniz (partnerinizin eklediği içerikler dahil)</b> veritabanından hemen silinir. Partnerinizin içeriklerini korumak istiyorsanız silmeden önce Albüm'den kaydetmesini isteyin. Uygulamaya girmeden silme talebi için: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
 <h4>Güvenlik</h4>
 <p>Bağlantılar HTTPS ile şifrelenir; veritabanı kuralları sayesinde bir eve yalnızca o evin iki sahibi erişebilir. Sohbet uçtan uca şifreli akar. Yine de hiçbir sistem %100 güvenli değildir; davet linkinizi sadece partnerinizle paylaşın.</p>
 <h4>Çocuklar</h4>

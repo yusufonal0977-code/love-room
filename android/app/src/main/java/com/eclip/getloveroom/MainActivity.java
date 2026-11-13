@@ -22,6 +22,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.window.OnBackInvokedDispatcher;
+import android.view.WindowInsets;
+import androidx.webkit.ScriptHandler;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
+import java.util.Collections;
+import java.util.Set;
 import org.json.JSONObject;
 
 /**
@@ -31,7 +38,11 @@ import org.json.JSONObject;
  */
 public class MainActivity extends Activity {
   static final String SITE = "https://getloveroom.com/";
+  static final String ORIGIN = "https://getloveroom.com";
+  private static final Set<String> ORIGINS = Collections.singleton(ORIGIN);
   private WebView web;
+  private Bridge bridge;
+  private ScriptHandler shim;
   private FrameLayout root;
   private View fullView;
   private WebChromeClient.CustomViewCallback fullCb;
@@ -46,21 +57,42 @@ public class MainActivity extends Activity {
     web = new WebView(this);
     root.addView(web, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     setContentView(root);
+    root.setBackgroundColor(0xFF000000);
+    // Android 15+ uygulamayı kenardan kenara çizer: içerik durum/gezinme çubuklarının ve kamera çentiğinin altında kalmasın
+    root.setOnApplyWindowInsetsListener((v, ins) -> {
+      if (Build.VERSION.SDK_INT >= 30) {
+        android.graphics.Insets bar = ins.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+        v.setPadding(bar.left, bar.top, bar.right, bar.bottom);
+      } else {
+        v.setPadding(ins.getSystemWindowInsetLeft(), ins.getSystemWindowInsetTop(), ins.getSystemWindowInsetRight(), ins.getSystemWindowInsetBottom());
+      }
+      return ins;
+    });
     WebSettings s = web.getSettings();
     s.setJavaScriptEnabled(true);
     s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true);
     s.setMediaPlaybackRequiresUserGesture(false);
-    s.setUserAgentString(s.getUserAgentString() + " GetLoveRoomApp/1");
+    // Güvenlik: yerel dosyalara erişim yok, şifresiz içerik yok, Google Güvenli Tarama açık
+    s.setAllowFileAccess(false);
+    s.setAllowContentAccess(false);
+    s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+    s.setGeolocationEnabled(false);
+    if (Build.VERSION.SDK_INT >= 26) s.setSafeBrowsingEnabled(true);
+    s.setUserAgentString(s.getUserAgentString() + " GetLoveRoomApp/2");
     CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
-    web.addJavascriptInterface(new Bridge(this, this), "LoveRoomApp");
+    bridge = new Bridge(this, this);
+    installBridge();
     web.setWebViewClient(new WebViewClient() {
       @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
         Uri u = r.getUrl();
         String host = u.getHost() == null ? "" : u.getHost();
-        // Site, Firebase ve Spotify girişi uygulamada; diğer linkler (YouTube, GitHub, maç siteleri...) tarayıcıda
-        if (host.endsWith("getloveroom.com") && !u.getPath().startsWith("/app-login")) return false;
-        if (host.endsWith("firebaseapp.com") || host.endsWith("googleapis.com") || host.endsWith("spotify.com")) return false;
+        // Site, kendi Firebase girişimiz ve Spotify girişi uygulamada; diğer linkler (YouTube, GitHub, maç siteleri...) tarayıcıda.
+        // Alan adı tam eşleşmeli: "kotugetloveroom.com" gibi benzer adresler uygulamada açılmaz.
+        if (!"https".equals(u.getScheme())) { openOutside(u); return true; }
+        String path = u.getPath() == null ? "" : u.getPath();
+        if (isOurHost(host) && !path.startsWith("/app-login")) return false;
+        if (host.equals(AUTH_HOST) || host.endsWith(".googleapis.com") || host.equals("accounts.spotify.com")) return false;
         openOutside(u);
         return true;
       }
@@ -70,6 +102,9 @@ public class MainActivity extends Activity {
         // Spotify'ın şifreli müziği (Widevine) için izin; mikrofon ve kamera için önce Android izni
         boolean media = false;
         for (String r : req.getResources()) if (!r.equals(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID)) media = true;
+        // Mikrofon ve kamera yalnızca bizim sitemize: TV'de açılan başka bir site kamerayı isteyemez
+        Uri o = req.getOrigin();
+        if (media && (o == null || !"https".equals(o.getScheme()) || !isOurHost(o.getHost() == null ? "" : o.getHost()))) { req.deny(); return; }
         if (!media || hasMedia()) { req.grant(req.getResources()); return; }
         pendingPerm = req;
         requestPermissions(new String[]{ Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA }, 7);
@@ -92,6 +127,37 @@ public class MainActivity extends Activity {
     });
     web.loadUrl(urlFor(getIntent()));
     WidgetWorker.schedule(this);
+    if (Build.VERSION.SDK_INT >= 33) getOnBackInvokedDispatcher().registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, this::goBack);
+  }
+
+  static final String AUTH_HOST = "love-room-aaf7e.firebaseapp.com";
+  static boolean isOurHost(String h) { return "getloveroom.com".equals(h) || "www.getloveroom.com".equals(h); }
+
+  /** Köprü: mesaj kanalı varsa yalnızca getloveroom.com ana çerçevesine verilir; yoksa (çok eski WebView) eski yol. */
+  private void installBridge() {
+    if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) && WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+      WebViewCompat.addWebMessageListener(web, "LoveRoomNative", ORIGINS, (view, msg, origin, isMainFrame, reply) -> {
+        if (isMainFrame && msg.getData() != null) bridge.handle(msg.getData());
+      });
+      refreshShim();
+    } else {
+      web.addJavascriptInterface(bridge, "LoveRoomApp");
+    }
+  }
+  /** window.LoveRoomApp'i tanımlayan aracı betik; ekran yönü değişince güncel durumla yeniden konur. */
+  void refreshShim() {
+    if (!WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) return;
+    if (shim != null) shim.remove();
+    String js = "(function(){if(window.top!==window||window.LoveRoomApp)return;var st=" + bridge.stateJson() + ";"
+        + "var p=function(m,a){try{LoveRoomNative.postMessage(JSON.stringify({m:m,a:a}))}catch(e){}};"
+        + "window.LoveRoomApp={session:function(j){p('session',[j])},logout:function(){p('logout',[])},"
+        + "petImage:function(k,d){p('petImage',[k,d])},sceneArt:function(k,d){p('sceneArt',[k,d])},refresh:function(){p('refresh',[])},"
+        + "googleLogin:function(){p('googleLogin',[])},orientation:function(){return st.orientation},"
+        + "setOrientation:function(o){st.orientation=o==='portrait'?'portrait':'landscape';p('setOrientation',[st.orientation])},"
+        + "canPinWidget:function(){return !!st.canPin},pinWidget:function(k){p('pinWidget',[k]);return !!st.canPin},"
+        + "version:function(){return st.version},saveImage:function(d,n){p('saveImage',[String(d),n]);return true},"
+        + "shareImage:function(d,t,n){p('shareImage',[String(d),t,n]);return true}};})();";
+    shim = WebViewCompat.addDocumentStartJavaScript(web, js, ORIGINS);
   }
 
   private void exitFull() {
@@ -142,7 +208,7 @@ public class MainActivity extends Activity {
   /** Açılış adresi: widget (?ac=...), davet ya da paylaşılan getloveroom.com linki, yoksa ana sayfa. */
   static String urlFor(Intent i) {
     Uri d = i == null ? null : i.getData();
-    if (d != null && "https".equals(d.getScheme()) && d.getHost() != null && d.getHost().endsWith("getloveroom.com")) {
+    if (d != null && "https".equals(d.getScheme()) && d.getHost() != null && isOurHost(d.getHost())) {
       return d.buildUpon().appendQueryParameter("app", "1").build().toString();
     }
     String ac = i == null ? null : i.getStringExtra("ac");
@@ -154,10 +220,11 @@ public class MainActivity extends Activity {
     if (d != null && "getloveroom".equals(d.getScheme())) { // Google girişi tarayıcıdan döndü
       String id = d.getQueryParameter("id");
       if (id == null) id = i.getStringExtra("id");
+      if (!Bridge.checkLoginState(this, d.getQueryParameter("s"))) id = ""; // bizim başlatmadığımız giriş: reddet
       web.evaluateJavascript("window.__lrGoogle && window.__lrGoogle(" + JSONObject.quote(id == null ? "" : id) + ")", null);
       return;
     }
-    if (d != null && "https".equals(d.getScheme())) { web.loadUrl(urlFor(i)); return; } // davet linki
+    if (d != null && "https".equals(d.getScheme()) && d.getHost() != null && isOurHost(d.getHost())) { web.loadUrl(urlFor(i)); return; } // davet linki
     String ac = i.getStringExtra("ac");
     if (ac != null) web.evaluateJavascript("window.__lrAction && window.__lrAction('" + ac.replaceAll("[^a-z]", "") + "')", null);
   }
@@ -171,7 +238,8 @@ public class MainActivity extends Activity {
   }
   /** Geri tuşu: tam ekrandan çık; site açık bir pencereyi kapatırsa orada kal; yoksa uygulamayı arka plana al. */
   @SuppressWarnings("deprecation")
-  @Override public void onBackPressed() {
+  @Override public void onBackPressed() { goBack(); } // Android 12 ve öncesi; 13+ OnBackInvokedCallback
+  private void goBack() {
     if (fullView != null) { exitFull(); return; }
     web.evaluateJavascript("window.__lrBack ? window.__lrBack() : false", (r) -> { if (!"true".equals(r)) moveTaskToBack(true); });
   }

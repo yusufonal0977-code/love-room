@@ -78,6 +78,7 @@ export const LEGAL_EN = [
   <li><b>Your home's content:</b> your position in the home and which room you're in, furniture and decor choices, photos you hang in frames or add to the album, photo booth shots, drawings, diary entries and letters, question jar answers, relationship dates, game scores, cat and flower status, badge counters, links opened on the TV and playback position, and info about the song you're listening to together.</li>
   <li><b>Voice/video chat and sharing:</b> microphone, camera and screen/video sharing flow directly and encrypted between your two devices (WebRTC). <b>We don't record or store them.</b> On some networks the connection passes through a relay server (Metered TURN) that cannot see the content.</li>
   <li><b>Spotify:</b> if you connect Spotify, the access token is stored only on your device. So your partner can see them, the names and cover images of your public/collaborative playlists are written to your home.</li>
+  <li><b>Android app (Google Play):</b> The app opens the website. So the home screen widgets (canvas, your pet, relationship clock, record player) can update, your session key and widget images are stored <b>only on your phone</b> and are excluded from backups. Camera and microphone permission is requested only when you start a voice/video chat; photos are accessed only for the file you pick. The app has no ads, analytics or tracking tools.</li>
 </ul>
 <h4>Why we use it</h4>
 <p>Only to provide the Service: bringing you and your partner together in one home, showing your partner what you share, syncing movies and music, security and preventing abuse. Never for marketing, profiling or ads.</p>
@@ -89,7 +90,7 @@ export const LEGAL_EN = [
   <li>Competent authorities, when required by law.</li>
 </ul>
 <h4>Retention and deletion</h4>
-<p>Your data is kept until you delete it. You can delete each photo, entry or answer individually. When you choose Menu → <i>Delete my data</i>, your account, profile and <b>shared home (including content your partner added)</b> are removed from the database immediately. If your partner wants to keep their content, ask them to save it from the Album first.</p>
+<p>Your data is kept until you delete it. You can delete each photo, entry or answer individually. When you choose Menu → <i>Delete my data</i>, your account, profile and <b>shared home (including content your partner added)</b> are removed from the database immediately. If your partner wants to keep their content, ask them to save it from the Album first. To request deletion without the app: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
 <h4>Security</h4>
 <p>Connections are encrypted with HTTPS; database rules ensure that only the two owners of a home can access it. Chat streams are end-to-end encrypted. Still, no system is 100% secure; share your invite link only with your partner.</p>
 <h4>Children</h4>

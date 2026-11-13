@@ -25,4 +25,5 @@
   <string name="mood_bored">Feeling bored</string>
   <string name="draw_empty">Tap to draw together</string>
   <string name="draw_go">Draw</string>
+  <string name="save_failed">Could not save</string>
 </resources>

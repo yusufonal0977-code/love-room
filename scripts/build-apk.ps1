@@ -8,7 +8,7 @@ $root = Split-Path -Parent $PSScriptRoot
 $tools = Join-Path $env:USERPROFILE 'android-tools'
 $env:JAVA_HOME = (Get-ChildItem $tools -Directory -Filter 'jdk-17*' | Select-Object -First 1).FullName
 $env:ANDROID_HOME = Join-Path $tools 'sdk'
-$gradle = Join-Path (Get-ChildItem $tools -Directory -Filter 'gradle-*' | Select-Object -First 1).FullName 'bin\gradle.bat'
+$gradle = Join-Path (Get-ChildItem $tools -Directory -Filter 'gradle-*' | Sort-Object { [version]($_.Name -replace 'gradle-', '') } -Descending | Select-Object -First 1).FullName 'bin\gradle.bat'
 $android = Join-Path $root 'android'
 Set-Content -Path (Join-Path $android 'local.properties') -Value ("sdk.dir=" + $env:ANDROID_HOME.Replace('\', '/')) -Encoding ascii
 

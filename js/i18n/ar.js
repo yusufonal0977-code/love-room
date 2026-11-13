@@ -1065,5 +1065,8 @@ export default {
  "Kâğıt": "الورق",
  "Çiçekler": "الزهور",
  "Yazı tipi": "الخط",
- "Önizleme": "معاينة"
+ "Önizleme": "معاينة",
+ "Google Play'den indir": "نزّله من Google Play",
+ "Google Play'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.": "إن لم تجده على Google Play بعد، يمكنك تنزيل التطبيق كملف أيضًا.",
+ "APK dosyasını indir": "تنزيل ملف APK"
 };
