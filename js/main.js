@@ -14,7 +14,8 @@ import { $, h, icon, toast, openSheet, closeSheet, esc } from './ui.js';
 import { createTV } from './features/tv.js';
 import { createSpotify, handleSpotifyRedirect } from './features/spotify.js';
 import { createPhotos } from './features/photos.js';
-import { createLife } from './features/life.js';
+import { createLife, datePicker, parseDay } from './features/life.js';
+import { createSurprise } from './features/surprise.js';
 import { createDraw } from './features/draw.js';
 import { createCare } from './features/care.js';
 import { createGames } from './features/games.js';
@@ -412,6 +413,8 @@ async function enterWorld(rid, fresh = false) {
     onPlaying: (on) => { if (DECOR.ytMusic !== on) { DECOR.ytMusic = on; DECOR.music = on || !!spotify?.playing; } } });
   ctx.homeRadio = homeRadio;
   const life = createLife(ctx);
+  Object.assign(ctx, { datePicker, parseDay });
+  ctx.surprise = createSurprise(ctx);
   const draw = createDraw(ctx);
   care = createCare(ctx);
   const games = createGames(ctx);
@@ -648,6 +651,7 @@ async function enterWorld(rid, fresh = false) {
       tile('album', 'Albümümüz', 'Anılar', () => photos.openAlbum()),
       tile('jar', 'Soru kavanozu', 'Salon', () => life.openJar()),
       tile('book', 'Günlük', 'Şömine · kitaplık', () => life.openDiary()),
+      tile('heart', 'Sürpriz mektup', 'Partnerine, seçtiğin gün', () => life.openDiary('surprise')),
       tile('clock', 'İlişki saati', 'Şömine', () => life.openClock()),
       tile('game', 'Oyunlar', 'XOX · Hafıza · Langırt', () => games.openHub()),
       tile('paw', 'Evcil dostumuz', 'Kedi · köpek · tavşan', () => care.openPet()),

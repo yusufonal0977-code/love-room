@@ -75,7 +75,7 @@ const DAY = 86_400_000;
 const MONTHS = Array.from({ length: 12 }, (_, i) => new Date(2024, i, 1).toLocaleDateString(locale, { month: 'long' }));
 
 /** Gün / ay / yıl seçicisi: telefonlarda tarih kutusu açılmadığı için açılır listeler. .value → 'YYYY-MM-DD' ya da ''. */
-function datePicker(value, { from, to }) {
+export function datePicker(value, { from, to }) {
   const [y0, m0, d0] = (value || '').split('-').map(Number);
   const sel = (items, cur, ph) => h('select', {}, h('option', { value: '' }, ph), ...items.map(([v, t]) => h('option', { value: v, selected: v === cur }, t)));
   const d = sel(Array.from({ length: 31 }, (_, i) => [i + 1, String(i + 1)]), d0, 'Gün');
@@ -93,7 +93,7 @@ function datePicker(value, { from, to }) {
   });
   return box;
 }
-const parseDay = (s) => (s ? new Date(s + 'T00:00:00').getTime() : null);
+export const parseDay = (s) => (s ? new Date(s + 'T00:00:00').getTime() : null);
 const daysBetween = (a, b) => Math.floor((b - a) / DAY);
 
 export function createLife(ctx) {
@@ -154,7 +154,9 @@ export function createLife(ctx) {
     const tabs = h('div', { class: 'tabs' },
       h('button', { class: tab === 'diary' ? 'sel' : '', onclick: () => openDiary('diary') }, 'Günlük'),
       h('button', { class: tab === 'letter' ? 'sel' : '', onclick: () => openDiary('letter') }, 'Geleceğe mektup'),
+      h('button', { class: tab === 'surprise' ? 'sel' : '', onclick: () => openDiary('surprise') }, 'Sürpriz mektup'),
     );
+    if (tab === 'surprise') { body.append(tabs); ctx.surprise?.editor(body); return; }
     const text = h('textarea', { rows: 4, maxLength: 2000, placeholder: tab === 'diary' ? 'Bugün aklında kalan bir şey… (ikiniz de okuyabilirsiniz)' : 'Gelecekteki ikinize bir mektup. Seçtiğin gün açılacak.' });
     const yr = new Date(now()).getFullYear();
     const date = datePicker('', { from: yr, to: yr + 10 });

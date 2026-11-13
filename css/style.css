@@ -586,3 +586,34 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
 .fitem span { flex: 1; }
 .fitem button { padding: 6px 14px; font-size: 14px; }
 .cookbar .needle { position: absolute; top: -2px; bottom: -2px; width: 4px; margin-left: -2px; background: #fff6e8; border-radius: 2px; box-shadow: 0 0 6px rgba(255,255,255,.6); }
+
+/* Sürpriz mektup */
+.sletter { position: relative; border-radius: 12px; padding: 38px 26px 56px; box-shadow: 0 10px 30px rgba(0,0,0,.45); background-attachment: local; line-height: 32px; overflow: hidden; -webkit-user-select: text; user-select: text; }
+.sletter .stext { margin: 0; white-space: pre-wrap; word-break: break-word; line-height: 32px; position: relative; z-index: 1; }
+.sletter .ssign { margin: 10px 0 0; text-align: end; font-size: 22px; position: relative; z-index: 1; }
+.sletter .sdate { display: block; text-align: end; opacity: .6; font-size: 12px; line-height: 16px; }
+.sletter .bouquet { position: absolute; display: flex; gap: 0; z-index: 0; pointer-events: none; }
+.sletter .bouquet img { width: 28px; height: 36px; image-rendering: pixelated; }
+.sletter .bouquet img:nth-child(2) { transform: translateY(-8px); }
+.sletter .bouquet.tl { top: -4px; left: 4px; }
+.sletter .bouquet.br { bottom: -4px; right: 4px; transform: scaleX(-1); }
+.spreview { margin: 6px 0 10px; }
+.slists { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.slists > b { color: var(--sun); margin-top: 6px; }
+.srow { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #1d180d; border-radius: 10px; padding: 8px 12px; font-size: 14px; text-align: start; }
+.modal.surprise { z-index: 30; background: rgba(10, 6, 20, .78); }
+.sstage { width: min(92vw, 460px); max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 16px; animation: sIn .5s ease both; }
+.sstage.read { align-items: stretch; }
+.sstage.read .sletter { animation: sUp .6s cubic-bezier(.2,.9,.3,1.2) both; }
+.sfrom { margin: 0; color: var(--ink); font-size: 18px; text-align: center; }
+.envelope { position: relative; width: 220px; height: 140px; background: #f4e3c3; border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,.5); animation: sWobble 2.4s ease-in-out infinite; }
+.envelope::before { content: ''; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(to top right, transparent 49.5%, #e8d2a8 50%) left / 50% 100% no-repeat, linear-gradient(to top left, transparent 49.5%, #e8d2a8 50%) right / 50% 100% no-repeat; }
+.envelope .flap { position: absolute; left: 0; right: 0; top: 0; height: 80px; background: #ead5ad; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; transition: transform .6s ease; }
+.envelope .seal { position: absolute; left: 50%; top: 62px; width: 36px; height: 36px; margin-left: -18px; border-radius: 50%; background: #e0473f; color: #fff; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.3); transition: opacity .3s; }
+.envelope .seal .ic { width: 18px; height: 18px; margin: 0; }
+.envelope.open { animation: none; }
+.envelope.open .flap { transform: rotateX(180deg); }
+.envelope.open .seal { opacity: 0; }
+@keyframes sIn { from { opacity: 0; transform: scale(.9); } }
+@keyframes sUp { from { opacity: 0; transform: translateY(40px) scale(.96); } }
+@keyframes sWobble { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg) translateY(-4px); } }
