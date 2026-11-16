@@ -16,6 +16,7 @@ import { createSpotify, handleSpotifyRedirect } from './features/spotify.js';
 import { createPhotos } from './features/photos.js';
 import { createLife, datePicker, parseDay } from './features/life.js';
 import { createSurprise } from './features/surprise.js';
+import { createRate } from './features/rate.js';
 import { createDraw } from './features/draw.js';
 import { createCare } from './features/care.js';
 import { createGames } from './features/games.js';
@@ -415,6 +416,7 @@ async function enterWorld(rid, fresh = false) {
   const life = createLife(ctx);
   Object.assign(ctx, { datePicker, parseDay });
   ctx.surprise = createSurprise(ctx);
+  ctx.rate = createRate(); ctx.rate.start();
   const draw = createDraw(ctx);
   care = createCare(ctx);
   const games = createGames(ctx);
@@ -531,6 +533,11 @@ async function enterWorld(rid, fresh = false) {
   function setBtn(id, on) { $(id).classList.toggle('off', !on); $(id).classList.toggle('on', on); }
   setIcon('micBtn', call.micOn ? 'mic' : 'micOff'); setBtn('micBtn', call.micOn);
   setIcon('camBtn', 'camOff'); setIcon('screenBtn', 'screen'); setIcon('heartBtn', 'heart'); setIcon('hugBtn', 'hug'); setIcon('kissBtn', 'kiss'); setIcon('hubBtn', 'grid'); setIcon('menuBtn', 'menu');
+  // Menü karoları: simge + tek kelime
+  const tile = (id, name) => { const e = $(id).querySelector('.mico'); if (e) e.innerHTML = icon(name); };
+  [['editBtn', 'user'], ['zoomBtn', 'eye'], ['fullBtn', 'full'], ['appBtn', 'phone'], ['widgetBtn', 'widget'], ['orientBtn', 'rotate'], ['tourBtn', 'help'],
+    ['logoutBtn', 'logout'], ['singlesLink', 'lock'], ['deleteBtn', 'trash'], ['copyBtn', 'copy']].forEach(([id, n]) => tile(id, n));
+  document.querySelector('.langrow .gl').innerHTML = icon('globe');
   $('soundBtn').innerHTML = icon('sound') + `<span>${t('Sesi aç')}</span>`;
   $('micWarn').innerHTML = icon('micOff') + `<span>${t('Mikrofon kapalı')}</span>`;
   $('micBtn').onclick = async () => {
@@ -568,7 +575,7 @@ async function enterWorld(rid, fresh = false) {
     $('inviteLink').textContent = `${APP_URL}?davet=${room.data?.info?.invite}`;
     $('menuInvite').hidden = !!partnerUid();
     $('linkBox').hidden = !auth.currentUser?.isAnonymous;
-    $('zoomBtn').textContent = t(game.zoom === 'cover' ? 'Görünüm: yakın (tüm odayı göster)' : 'Görünüm: tüm oda (yakınlaştır)');
+    $('zoomBtn').title = t(game.zoom === 'cover' ? 'Görünüm: yakın (tüm odayı göster)' : 'Görünüm: tüm oda (yakınlaştır)');
     $('menu').hidden = false;
   };
   $('zoomBtn').onclick = () => { game.setZoom(game.zoom === 'cover' ? 'contain' : 'cover'); $('menu').hidden = true; };
@@ -679,7 +686,7 @@ async function enterWorld(rid, fresh = false) {
   // Uygulamada ekran yönü: varsayılan yatay, istenirse dikey (telefonda kalıcı)
   const app = window.LoveRoomApp;
   if (app?.orientation) {
-    const label = () => ($('orientBtn').textContent = t(app.orientation() === 'portrait' ? 'Ekran: dikey (yataya çevir)' : 'Ekran: yatay (dikeye çevir)'));
+    const label = () => ($('orientBtn').title = t(app.orientation() === 'portrait' ? 'Ekran: dikey (yataya çevir)' : 'Ekran: yatay (dikeye çevir)'));
     $('orientBtn').hidden = false; label();
     $('orientBtn').onclick = () => { app.setOrientation(app.orientation() === 'portrait' ? 'landscape' : 'portrait'); setTimeout(label, 300); };
   }

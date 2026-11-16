@@ -173,7 +173,7 @@ export function createHorses(ctx) {
     frame();
   }
   function open() {
-    body = openSheet({ title: 'At yarışı', iconName: 'game', wide: true, onClose: () => { cancelAnimationFrame(raf); body = null; } });
+    body = openSheet({ title: 'At yarışı', iconName: 'game', game: true, wide: true, onClose: () => { cancelAnimationFrame(raf); body = null; } });
     body.classList.add('horses');
     watchRound(phaseOf().r);
     render();

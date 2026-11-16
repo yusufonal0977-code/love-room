@@ -147,7 +147,7 @@ export function createKitchen(ctx) {
   const sendProg = (p) => { const n = performance.now(); if (n - lastProg > 150 || p >= 1) { lastProg = n; update(live.ref('cook'), { prog: Math.round(p * 100) / 100 }); } };
 
   function open() {
-    body = openSheet({ title: 'Mutfak', iconName: 'heart', wide: true, onClose: () => { body = null; stop?.(); stop = null; cancelAnimationFrame(raf); } });
+    body = openSheet({ title: 'Mutfak', iconName: 'heart', game: true, wide: true, onClose: () => { body = null; stop?.(); stop = null; cancelAnimationFrame(raf); } });
     render();
   }
 

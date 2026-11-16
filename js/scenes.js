@@ -357,12 +357,12 @@ const balkon = makeScene({
   },
   props: [
     { id: 'candle', movable: true, y: 112, hit: [136, 88, 26, 26], block: [138, 104, 22, 8], draw(g) { R(g, 140, 98, 18, 3, '#fff3dc'); R(g, 148, 101, 2, 10, '#3a3330'); R(g, 144, 110, 10, 2, '#3a3330'); R(g, 146, 94, 3, 4, '#fff3dc'); R(g, 147, 92, 1, 2, '#ffd27a'); } },
-    { id: 'foos', movable: true, y: 116, hit: [12, 90, 48, 28], block: [14, 102, 44, 14], draw(g) { // langırt
-      R(g, 14, 96, 44, 16, '#7a4426'); R(g, 16, 98, 40, 11, '#3fae5a'); R(g, 16, 98, 40, 1, '#6fd07f');
-      R(g, 35, 98, 1, 11, '#d8f5d8'); R(g, 16, 101, 2, 5, '#fff3dc'); R(g, 54, 101, 2, 5, '#fff3dc');
-      [22, 30, 42, 50].forEach((x, i) => { R(g, x, 95, 1, 18, '#c8ccd4'); R(g, x - 1, 100 + (i % 2) * 3, 3, 3, i < 2 ? '#e0473f' : '#5b8def'); });
-      R(g, 35, 103, 2, 2, '#ffffff');
-      R(g, 16, 112, 3, 4, C.woodD); R(g, 53, 112, 3, 4, C.woodD);
+    { id: 'foos', movable: true, y: 132, hit: [12, 106, 48, 28], block: [14, 118, 44, 14], draw(g) { // langırt (ayakları bilardoyla aynı hizada)
+      R(g, 14, 112, 44, 16, '#7a4426'); R(g, 16, 114, 40, 11, '#3fae5a'); R(g, 16, 114, 40, 1, '#6fd07f');
+      R(g, 35, 114, 1, 11, '#d8f5d8'); R(g, 16, 117, 2, 5, '#fff3dc'); R(g, 54, 117, 2, 5, '#fff3dc');
+      [22, 30, 42, 50].forEach((x, i) => { R(g, x, 111, 1, 18, '#c8ccd4'); R(g, x - 1, 116 + (i % 2) * 3, 3, 3, i < 2 ? '#e0473f' : '#5b8def'); });
+      R(g, 35, 119, 2, 2, '#ffffff');
+      R(g, 16, 128, 3, 4, C.woodD); R(g, 53, 128, 3, 4, C.woodD);
     } },
     { id: 'pool', movable: true, y: 132, hit: [70, 104, 54, 30], block: [72, 114, 50, 18], draw(g) { poolTable(g, 72, 108); } },
     { id: 'flower', movable: true, y: 126, hit: [158, 92, 26, 36], block: [162, 120, 16, 6], draw(g, { t }) { drawFlower(g, 170, 126, t); } },
@@ -374,7 +374,7 @@ const balkon = makeScene({
     { id: 'sit', group: 'bench', x: 96, y: 96, hit: [64, 66, 64, 26], label: () => 'Banka otur' },
     { id: 'sky', x: 60, y: 78, hit: [0, 0, W, 56], label: () => 'Gökyüzüne bak' },
     { id: 'lights', x: 140, y: 78, hit: [0, 4, W, 12], label: (st) => (st.lights ? 'Işıkları söndür' : 'Işıkları yak') },
-    { id: 'foos', prop: 'foos', x: 36, y: 124, hit: [12, 90, 48, 28], label: () => 'Langırt oyna' },
+    { id: 'foos', prop: 'foos', x: 36, y: 104, hit: [12, 106, 48, 28], label: () => 'Langırt oyna' },
     { id: 'pool', prop: 'pool', x: 97, y: 104, hit: [70, 104, 54, 30], label: () => 'Bilardo oyna' },
     { id: 'flower', prop: 'flower', x: 156, y: 130, hit: [158, 92, 26, 36], label: () => 'Çiçeğimiz' },
   ],

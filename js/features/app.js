@@ -1,7 +1,7 @@
 // Telefon uygulaması (Android) ile köprü. Uygulama siteyi açar ve window.LoveRoomApp'i verir; widget'lar (ortak tuval,
 // evcil dostumuz, ilişki saatimiz) uygulama kapalıyken Firebase'den kendileri okur. Burada site uygulamaya oturumu,
 // hayvanın piksel resmini ve "bir şey değişti, widget'ları yenile" haberini verir. Tarayıcıda hiçbir şey yapmaz.
-import { auth, onValue } from '../fb.js';
+import { auth, db, ref as dbRef, set, now, onValue } from '../fb.js';
 import { petSprites } from '../art.js';
 import { DECOR } from '../scenes.js';
 import { h, icon, openSheet, toast } from '../ui.js';
@@ -10,6 +10,8 @@ import { t } from '../i18n.js';
 export const inApp = () => !!window.LoveRoomApp;
 export const APK_URL = 'https://github.com/yusufonal0977-code/love-room/releases/download/android/GetLoveRoom.apk';
 export const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.eclip.getloveroom';
+/** Kapalı test katılım bağlantısı: yalnızca test listesindeki Gmail hesaplarıyla çalışır. */
+export const TEST_URL = 'https://play.google.com/apps/testing/com.eclip.getloveroom';
 
 export function connectApp(ctx, { rid, care, draw, life, spotify }) {
   const app = window.LoveRoomApp;
@@ -74,17 +76,36 @@ export function openWidgets() {
     h('img', { src: `assets/widgets/${w.kind}.png`, alt: '' }),
     h('b', {}, t(w.name)), h('small', {}, t(w.desc)),
     can ? h('button', { class: 'primary', onclick: () => { if (!app.pinWidget(w.kind)) toast(t('Bu telefon widget\'ı uygulamadan eklemeye izin vermiyor. Ana ekrandan ekleyebilirsin.'), 5000); } }, t('Ana ekrana ekle')) : null))));
-  if (!app) b.append(h('button', { class: 'primary', html: `${icon('download')} ${t('Android uygulamasını indir')}`, onclick: () => { location.href = APK_URL; } }));
+  if (!app) b.append(h('button', { class: 'primary', html: `${icon('download')} ${t('Android uygulamasını indir')}`, onclick: () => openDownload() }));
 }
 
-/** Menüdeki "Uygulamayı telefona indir": Android'de APK, iPhone'da ana ekrana ekleme yolu. */
+/** Menüdeki "Uygulamayı telefona indir": uygulama şimdilik Google Play'de erken erişimde; Gmail adresi test listesine eklenmek üzere bize iletilir. */
 export function openDownload() {
   const b = openSheet({ title: 'Uygulamayı telefona indir', iconName: 'download' });
   const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  b.append(
-    h('p', {}, t('Android uygulamasıyla ana ekrana widget ekleyebilirsiniz: ortak tuvaliniz, evcil dostunuz ve ilişki saatiniz telefonun ekranında durur.')),
-    ios ? h('p', { class: 'small' }, t('iPhone uygulaması henüz yok. Şimdilik Safari\'de Paylaş, sonra "Ana Ekrana Ekle" ile siteyi uygulama gibi açabilirsin.'))
-      : h('button', { class: 'primary', html: `${icon('download')} ${t('Google Play\'den indir')}`, onclick: () => { location.href = PLAY_URL; } }),
-    ios ? null : h('p', { class: 'small' }, t('Google Play\'de henüz göremiyorsan uygulamayı dosya olarak da indirebilirsin.'), ' ', h('a', { href: APK_URL }, t('APK dosyasını indir'))),
-  );
+  b.append(h('p', {}, t('Android uygulamasıyla ana ekrana widget ekleyebilirsiniz: ortak tuvaliniz, evcil dostunuz ve ilişki saatiniz telefonun ekranında durur.')));
+  if (ios) { b.append(h('p', { class: 'small' }, t('iPhone uygulaması henüz yok. Şimdilik Safari\'de Paylaş, sonra "Ana Ekrana Ekle" ile siteyi uygulama gibi açabilirsin.'))); return; }
+  const KEY = 'lr.testReq';
+  let sent = null;
+  try { sent = localStorage.getItem(KEY); } catch { /* özel pencere */ }
+  b.append(h('p', {}, t('Android uygulaması Google Play\'de şimdilik erken erişimde. Önce test listesine eklenmen gerekiyor.')));
+  const email = h('input', { type: 'email', inputmode: 'email', autocomplete: 'email', maxlength: 120, placeholder: t('Gmail adresin'), value: sent || '' });
+  const state = h('p', { class: 'note okbox', hidden: !sent }, t('Aldık! Listeye eklenince aşağıdaki bağlantıdan katılabilirsin.'));
+  const send = h('button', { class: 'primary', onclick: async () => {
+    const v = email.value.trim().toLowerCase();
+    if (v.length > 120 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return toast(t('Geçerli bir e-posta adresi yaz'));
+    const uid = auth.currentUser?.uid;
+    if (!uid) return toast(t('Gönderilemedi, tekrar dene'));
+    send.disabled = true;
+    try {
+      await set(dbRef(db, `testRequests/${uid}`), { email: v, at: now(), lang: document.documentElement.lang || 'tr' });
+      try { localStorage.setItem(KEY, v); } catch { /* özel pencere */ }
+      state.hidden = false;
+    } catch (e) { console.warn(e); toast(t('Gönderilemedi, tekrar dene')); }
+    send.disabled = false;
+  } }, t('Erken erişim iste'));
+  b.append(h('div', { class: 'row grow' }, email, send), state,
+    h('p', { class: 'small' }, t('Zaten listedeysen: bağlantıdan \'Test kullanıcısı ol\' de, sonra Google Play\'den indir.')),
+    h('button', { html: `${icon('link')} ${t('Katılım bağlantısını aç')}`, onclick: () => { location.href = TEST_URL; } }),
+    h('p', { class: 'small' }, t('Beklemek istemezsen uygulamayı dosya olarak da indirebilirsin.'), ' ', h('a', { href: APK_URL }, t('APK dosyasını indir'))));
 }

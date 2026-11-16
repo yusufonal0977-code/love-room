@@ -30,7 +30,7 @@ export function createGames(ctx) {
 
   // ---------- XOX ----------
   function openXox() {
-    body = openSheet({ title: 'XOX', iconName: 'game', onClose: close });
+    body = openSheet({ title: 'XOX', iconName: 'game', game: true, onClose: close });
     const ref = live.ref('games/xox');
     stopSub = onValue(ref, (s) => {
       const g = s.val();
@@ -64,7 +64,7 @@ export function createGames(ctx) {
 
   // ---------- Hafıza ----------
   function openMem() {
-    body = openSheet({ title: 'Hafıza', iconName: 'game', wide: true, onClose: close });
+    body = openSheet({ title: 'Hafıza', iconName: 'game', game: true, wide: true, onClose: close });
     const ref = live.ref('games/mem');
     stopSub = onValue(ref, (s) => {
       const g = s.val();
@@ -117,7 +117,7 @@ export function createGames(ctx) {
   // Çubuk: x, adam sayısı, adam aralığı, merkez y aralığı, sahibi ('L' | 'R'), vuruş yönü
   const RODS = [[36, 1, 0, [70, 170], 'L', 1], [130, 3, 62, [72, 168], 'R', -1], [270, 3, 62, [72, 168], 'L', 1], [364, 1, 0, [70, 170], 'R', -1]];
   function openFoos() {
-    body = openSheet({ title: 'Langırt', iconName: 'game', wide: true, onClose: close });
+    body = openSheet({ title: 'Langırt', iconName: 'game', game: true, wide: true, onClose: close });
     const canvas = h('canvas', { width: FW, height: FH, class: 'foos' });
     const info = h('p', { class: 'center foos-score' });
     const kickBtn = h('button', { class: 'primary foos-kick', onpointerdown: (e) => { e.preventDefault(); kick(); } }, 'Vur!');
@@ -396,7 +396,7 @@ export function createGames(ctx) {
     const admin = opts?.admin === true;
     const DENEME = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && new URLSearchParams(location.search).has('tvdeneme');
     const poolRef = admin ? dbRef(db, DENEME ? 'admin/config/pooltest' : 'admin/config/pool') : live.ref('games/pool');
-    body = openSheet({ title: 'Bilardo', iconName: 'game', wide: true, onClose: close });
+    body = openSheet({ title: 'Bilardo', iconName: 'game', game: true, wide: true, onClose: close });
     const canvas = h('canvas', { width: PW, height: PH, class: 'foos pool' });
     const info = h('p', { class: 'center foos-score' }), hint = h('p', { class: 'small center' });
     const joinBtn = h('button', { class: 'primary', hidden: true, onclick: () => update(poolRef, { opp: uid, [`names/${uid}`]: ctx.myName() }) }, 'Oyuna katıl');

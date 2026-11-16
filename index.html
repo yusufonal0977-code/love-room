@@ -189,37 +189,38 @@
 
 <!-- Menü -->
 <div id="menu" class="modal" hidden>
-  <div class="card">
-    <h3 data-t>Bizim Ev</h3>
-    <div id="menuInvite">
-      <p data-t class="small">Partnerine bu linki gönder:</p>
-      <div class="linkbox"><span id="inviteLink"></span></div>
-      <button data-t id="copyBtn">Linki kopyala</button>
+  <div class="card menucard">
+    <div class="menuhead"><h3 data-t>Bizim Ev</h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div id="menuInvite" class="menuinv">
+      <div class="invrow"><div class="linkbox"><span id="inviteLink"></span></div><button id="copyBtn" class="mini" data-tt title="Linki kopyala"><span class="mico"></span></button></div>
     </div>
-    <button data-t id="editBtn" class="primary">Karakterimi düzenle</button>
-    <button id="zoomBtn"></button>
-    <button data-t id="fullBtn">Tam ekran</button>
-    <button data-t id="appBtn">Uygulamayı telefona indir</button>
-    <button data-t id="widgetBtn">Widget ekle</button>
-    <button id="orientBtn" hidden></button>
-    <div id="linkBox" hidden>
-      <button id="linkGoogleBtn"><span class="g">G</span> <span data-t>Google hesabımı bağla</span></button>
-      <p data-t class="small">Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.</p>
+    <div class="menugrid">
+      <button id="editBtn" class="mtile primary" data-tt title="Karakterimi düzenle"><span class="mico"></span><span class="mcap" data-t>Karakter</span></button>
+      <button id="zoomBtn" class="mtile"><span class="mico"></span><span class="mcap" data-t>Görünüm</span></button>
+      <button id="fullBtn" class="mtile"><span class="mico"></span><span class="mcap" data-t>Tam ekran</span></button>
+      <button id="appBtn" class="mtile" data-tt title="Uygulamayı telefona indir"><span class="mico"></span><span class="mcap" data-t>Uygulama</span></button>
+      <button id="widgetBtn" class="mtile" data-tt title="Widget ekle"><span class="mico"></span><span class="mcap" data-t>Widget</span></button>
+      <button id="orientBtn" class="mtile" hidden><span class="mico"></span><span class="mcap" data-t>Ekran yönü</span></button>
+      <button id="tourBtn" class="mtile" data-tt title="Nasıl kullanılır?"><span class="mico"></span><span class="mcap" data-t>Yardım</span></button>
+      <button id="logoutBtn" class="mtile"><span class="mico"></span><span class="mcap" data-t>Çıkış yap</span></button>
+      <button id="singlesLink" class="mtile"><span class="mico"></span><span class="mcap" data-t>Bekarlar için</span></button>
+      <button id="deleteBtn" class="mtile danger"><span class="mico"></span><span class="mcap" data-t>Verilerimi sil</span></button>
+      <div id="linkBox" class="menulink" hidden>
+        <button id="linkGoogleBtn" class="mtile" data-tt title="Google hesabımı bağla"><span class="mico"><span class="g">G</span></span><span class="mcap" data-t>Hesabı bağla</span></button>
+        <p data-t class="small">Hesabın şu an yalnızca bu tarayıcıda. Bağlarsan evin ve verilerin aynen kalır, başka cihazdan da girebilirsin.</p>
+      </div>
     </div>
-    <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#kvkk">KVKK</a><a data-t href="#iletisim">İletişim</a></nav>
-    <label class="langrow"><span data-t>Dil</span> <span id="langMenu"></span></label>
-    <button data-t id="tourBtn" class="link">Nasıl kullanılır?</button>
-    <button data-t id="logoutBtn" class="link">Çıkış yap</button>
-    <button data-t id="singlesLink" class="link">Bekarlar için</button>
-    <button data-t id="deleteBtn" class="link danger">Verilerimi sil</button>
-    <button data-t class="close link" data-close>Kapat</button>
+    <div class="menusecond">
+      <label class="langrow"><span class="mico gl"></span><span data-t>Dil</span> <span id="langMenu"></span></label>
+      <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#kvkk">KVKK</a><a data-t href="#iletisim">İletişim</a></nav>
+    </div>
   </div>
 </div>
 
 <!-- Karakter düzenleyici -->
 <div id="editor" class="modal" hidden>
   <div class="card">
-    <h3 data-t>Karakterin</h3>
+    <div class="menuhead"><h3 data-t>Karakterin</h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <canvas id="preview" width="48" height="48"></canvas>
     <label><span data-t>Adın</span> <input id="edName" maxlength="14"></label>
     <div class="opts" id="edSide"></div>
@@ -237,7 +238,7 @@
 <!-- Özellik penceresi (TV, müzik, günlük, oyunlar…) -->
 <div id="sheet" class="modal" hidden>
   <div class="card sheet">
-    <div class="sheethead"><h3 id="sheetTitle"></h3><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="sheethead"><h3 id="sheetTitle"></h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <div id="sheetBody"></div>
   </div>
 </div>

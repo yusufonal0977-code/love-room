@@ -247,7 +247,7 @@ export function createRoulette(ctx) {
   }
 
   function open() {
-    body = openSheet({ title: 'Rulet', iconName: 'game', wide: true, onClose: () => { cancelAnimationFrame(raf); body = null; } });
+    body = openSheet({ title: 'Rulet', iconName: 'game', game: true, wide: true, onClose: () => { cancelAnimationFrame(raf); body = null; } });
     body.classList.add('roulette');
     watch(); watchRound(phaseOf().r); ensureCoins().then(render);
     render();

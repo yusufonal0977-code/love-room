@@ -87,7 +87,7 @@ export function createTV(ctx) {
       h('button', { title: 'Kalp', class: 'love', html: icon('heart'), onclick: () => ctx.react('heart') }),
       h('button', { title: 'Mikrofon', html: icon('mic'), onclick: (e) => { ctx.toggleMic(); e.currentTarget.innerHTML = icon(ctx.call.micOn ? 'mic' : 'micOff'); } }),
       h('button', { title: 'Sadece film (tam ekran)', html: icon('full'), onclick: () => setFull(!full) }),
-      h('button', { title: 'Sinemadan çık', html: icon('close'), onclick: () => setCinema(false) }),
+      h('button', { class: 'xclose', title: 'Sinemadan çık', html: icon('close'), onclick: () => setCinema(false) }),
     ));
   document.body.append(cbar);
 

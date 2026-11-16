@@ -17,7 +17,7 @@ export function createChat(ctx) {
   const list = h('div', { class: 'chatlist' });
   const input = h('input', { placeholder: 'Mesaj yaz…', maxLength: 300, autocomplete: 'off', enterKeyHint: 'send' });
   const panel = h('div', { id: 'chatPanel', class: 'chatpanel', hidden: true },
-    h('div', { class: 'chathead' }, h('b', {}, t('Oda sohbeti')), h('button', { class: 'x', title: 'Kapat', html: icon('close'), onclick: () => toggle(false) })),
+    h('div', { class: 'chathead' }, h('b', {}, t('Oda sohbeti')), h('button', { class: 'x xclose', title: 'Kapat', html: icon('close'), onclick: () => toggle(false) })),
     list,
     h('div', { class: 'quick' }, ...QUICK.map((e) => h('button', { onclick: () => send(t(e)) }, t(e)))),
     h('form', { class: 'chatform', onsubmit: (e) => { e.preventDefault(); send(input.value); } }, input, h('button', { class: 'primary', title: 'Gönder', html: icon('send') })),
