@@ -1,7 +1,7 @@
 // Telefon uygulaması (Android) ile köprü. Uygulama siteyi açar ve window.LoveRoomApp'i verir; widget'lar (ortak tuval,
 // evcil dostumuz, ilişki saatimiz) uygulama kapalıyken Firebase'den kendileri okur. Burada site uygulamaya oturumu,
 // hayvanın piksel resmini ve "bir şey değişti, widget'ları yenile" haberini verir. Tarayıcıda hiçbir şey yapmaz.
-import { auth, db, ref as dbRef, set, now, onValue } from '../fb.js';
+import { auth, onValue } from '../fb.js';
 import { petSprites } from '../art.js';
 import { DECOR } from '../scenes.js';
 import { h, icon, openSheet, toast } from '../ui.js';
@@ -11,6 +11,8 @@ export const inApp = () => !!window.LoveRoomApp;
 export const APK_URL = 'https://github.com/yusufonal0977-code/love-room/releases/download/android/GetLoveRoom.apk';
 export const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.eclip.getloveroom';
 /** Kapalı test katılım bağlantısı: yalnızca test listesindeki Gmail hesaplarıyla çalışır. */
+/** Erken erişim isteği bildirimi: Apps Script web uygulaması adresi şirket posta kutusuna hatırlatma e-postası yollar (adres başka yerde saklanmaz). */
+const REQUEST_URL = 'https://script.google.com/macros/s/AKfycbwyq3xKCuAp0OojTFwRxc4NWs9lQdZHQYncdDEJaKhN80ZXNTY3bXK3poa5LFPhZ5WrFA/exec';
 export const TEST_URL = 'https://play.google.com/apps/testing/com.eclip.getloveroom';
 
 export function connectApp(ctx, { rid, care, draw, life, spotify }) {
@@ -94,11 +96,10 @@ export function openDownload() {
   const send = h('button', { class: 'primary', onclick: async () => {
     const v = email.value.trim().toLowerCase();
     if (v.length > 120 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return toast(t('Geçerli bir e-posta adresi yaz'));
-    const uid = auth.currentUser?.uid;
-    if (!uid) return toast(t('Gönderilemedi, tekrar dene'));
     send.disabled = true;
     try {
-      await set(dbRef(db, `testRequests/${uid}`), { email: v, at: now(), lang: document.documentElement.lang || 'tr' });
+      // Yanıt okunamaz (no-cors); ağ hatası olmazsa istek iletilmiş sayılır
+      await fetch(REQUEST_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ email: v, lang: document.documentElement.lang || 'tr' }) });
       try { localStorage.setItem(KEY, v); } catch { /* özel pencere */ }
       state.hidden = false;
     } catch (e) { console.warn(e); toast(t('Gönderilemedi, tekrar dene')); }
