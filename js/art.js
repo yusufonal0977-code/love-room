@@ -204,6 +204,16 @@ function swing(dx) {
   });
 }
 
+/** Nefes: bel hizasından bir satır silinir, üst kısım bir piksel iner (boy aynı kalır). */
+function breathe(g) {
+  const top = g.findIndex((r) => r.includes('P'));
+  if (top < 4) return g;
+  const out = g.map((r) => r.slice());
+  out.splice(top - 2, 1);
+  out.unshift(out[0].map(() => '.'));
+  return out;
+}
+
 const cache = new Map();
 /** Görünüme göre tüm yön karelerini üretir (önbellekli). Duran kare çizimin aynısı; yürürken ayaklar sırayla kalkar. */
 export function characterSprites(look) {
@@ -216,6 +226,7 @@ export function characterSprites(look) {
   set.up = paint(B, look); set.up2 = paint(B, look, step('L')); set.up3 = paint(B, look, step('R'));
   set.side = paint(S, look); set.side2 = paint(S, look, swing(-1)); set.side3 = paint(S, look, swing(1));
   set.sideL = mirror(set.side); set.side2L = mirror(set.side2); set.side3L = mirror(set.side3);
+  set.downB = paint(F, look, breathe); set.upB = paint(B, look, breathe); set.sideB = paint(S, look, breathe); set.sideBL = mirror(set.sideB);
   set.sit = paint(F, look, seated);
   set.sitBack = paint(B, look, seated);
   set.lie = paint(F, look, (g) => g.slice(0, 18)); // yatakta: yalnızca baş ve omuz yastıkta görünür, gövde yorganın altında
