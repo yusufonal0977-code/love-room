@@ -1,5 +1,7 @@
 {
+  "id": "/",
   "name": "Get Love Room",
+  "categories": ["social", "lifestyle"],
   "short_name": "Love Room",
   "description": "Uzaktaki çiftler için ortak piksel ev.",
   "lang": "tr",
