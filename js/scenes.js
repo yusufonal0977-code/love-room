@@ -2,6 +2,7 @@
 // Her sahne: statik arka plan (boyaya göre yeniden çizilir), canlı parçalar, y'ye göre sıralanan ön plan eşyaları,
 // çarpışma kutuları, kapılar, etkileşim noktaları, oturma yerleri, foto çerçeveleri ve ışık kaynakları.
 // Taşınabilir eşyaların kaydırması, yerleştirilen dekor ve oda boyası DECOR'da tutulur (ikinize ortak).
+import { drawFireplace, drawFire, fireFlicker } from './semine.js';
 import { R, shade } from './art.js';
 import { C, CATALOG, plant } from './decor.js';
 
@@ -240,16 +241,8 @@ const somine = makeScene({
     const books = ['#ff7a59', '#ffc93c', '#5b8def', '#4fbf6a', '#ff5d8f', '#fff3dc'];
     for (let s = 0; s < 3; s++) { for (let i = 0; i < 6; i++) R(g, 5 + i * 4, 22 + s * 14 + (i % 2), 3, 11 - (i % 2), books[(i + s) % 6]); R(g, 4, 33 + s * 14, 26, 2, C.wood); }
     R(g, 12, 47, 6, 9, '#ff5d8f'); R(g, 12, 47, 6, 1, '#ffa3c0'); R(g, 14, 50, 2, 2, '#ffc93c'); // günlük
-    // Şömine
-    R(g, 72, 10, 48, 4, C.woodL); R(g, 70, 14, 52, 4, C.wood);
-    R(g, 74, 18, 44, 46, '#c4533a');
-    for (let y = 18; y < 64; y += 4) for (let x = (y / 4) % 2 ? 74 : 78; x < 118; x += 8) R(g, x, y, 1, 4, '#9c3d2a');
-    for (let y = 21; y < 64; y += 4) R(g, 74, y, 44, 1, '#9c3d2a');
-    R(g, 82, 32, 28, 32, '#2a1510'); R(g, 84, 30, 24, 2, '#9c3d2a');
-    R(g, 86, 58, 20, 4, '#6b3e22'); R(g, 88, 56, 16, 3, '#7a4a2a');
-    R(g, 68, 62, 56, 4, '#b8b0a4');
-    // Rafta mumlar ve vazo
-    R(g, 76, 4, 3, 6, '#fff3dc'); R(g, 81, 6, 3, 4, '#fff3dc'); R(g, 108, 4, 6, 6, '#e8d8c2'); R(g, 110, 0, 1, 4, '#d8c39b'); R(g, 112, 1, 1, 3, '#d8c39b');
+    // Şömine (yeniden çizildi: koyu ahşap, alevi dyn'de canlanır)
+    drawFireplace(g, 69, 19);
     // Koyun postu
     R(g, 74, 78, 44, 12, '#fffaf0'); R(g, 72, 80, 48, 8, '#fffaf0'); R(g, 76, 82, 40, 1, '#ece4d4');
     // Odun sepeti
@@ -265,9 +258,10 @@ const somine = makeScene({
     line(g, 133, 22, 133 + Math.sin(a) * 3, 22 - Math.cos(a) * 3, '#e0473f');
     R(g, 131 + Math.round(Math.sin(t * 2) * 1.5), 35, 2, 3, '#ff5d8f'); // sarkaç
     if (!st.fire) return;
-    const f = Math.sin(t * 12) * 1.5;
-    R(g, 88, 46 - f, 16, 12 + f, '#ff6a2c'); R(g, 91, 42 - f, 10, 16 + f, '#ffa53c'); R(g, 94, 46 - f * 1.5, 4, 10, '#fff1a0');
-    R(g, 77, 2 + (Math.sin(t * 9) > 0 ? 1 : 0), 1, 2, '#ffd27a'); R(g, 82, 4, 1, 2, '#ffd27a');
+    drawFire(g, 69, 19, t);
+    // Zemine vuran sıcak parıltı: ocağın önünde, alevle birlikte titrer
+    const f = fireFlicker(t);
+    [[48, 0.17], [40, 0.13], [32, 0.10], [24, 0.07], [16, 0.05]].forEach(([w, a], i) => R(g, 96 - w / 2, 66 + i, w, 1, `rgba(255,150,60,${(a * f).toFixed(3)})`));
   },
   props: [
     { id: 'armchair', movable: true, y: 88, hit: [146, 58, 34, 32], block: [146, 70, 34, 20], draw(g) {
@@ -297,10 +291,14 @@ const somine = makeScene({
     somine1: (g, x, y, w, h) => { R(g, x, y, w, h, '#ffb070'); R(g, x, y + h - 5, w, 5, '#b5543a'); R(g, x + w - 7, y + 2, 4, 4, '#fff1a8'); },
     somine2: (g, x, y, w, h) => { R(g, x, y, w, h, '#f6efe0'); R(g, x + w / 2 - 1, y + 2, 2, h - 4, '#6b5440'); R(g, x + 2, y + 4, 5, 3, '#4fbf6a'); R(g, x + w - 7, y + 7, 5, 3, '#2e8a4e'); },
   },
-  lights: ({ st, t }) => [
-    st.fire && { x: 96, y: 52, r: 82 + Math.sin(t * 7) * 3, a: 0.95, color: '255,140,60' },
-    { x: 80, y: 6, r: 26, a: 0.6, color: '255,200,120' },
-  ],
+  // Ateşin ışığı alevle birlikte titrer: geniş turuncu ışık + ocağın önünde yerde daha sıcak bir leke; gündüz de hafifçe hissedilir (glow)
+  lights: ({ st, t }) => {
+    const f = st.fire ? fireFlicker(t) : 1;
+    return [
+      st.fire && { x: 96, y: 58, r: 84 + 60 * (f - 1), a: Math.min(1, 0.82 + 0.9 * (f - 1)), color: '255,140,60', glow: 1.7 * f },
+      st.fire && { x: 96, y: 67, r: 36 + 24 * (f - 1), a: 0.4, color: '255,175,90', glow: 0.8 * f },
+    ];
+  },
 });
 
 /** Bilardo masası (balkon ve admin odası aynı çizimi kullanır); (x, y) sol üst köşe. */

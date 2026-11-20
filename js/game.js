@@ -569,7 +569,7 @@ export function createGame(opts) {
     ctx.globalCompositeOperation = 'lighter';
     for (const l of lights) {
       const grd = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * 0.85);
-      grd.addColorStop(0, `rgba(${l.color},${0.1 + 0.16 * night})`); grd.addColorStop(1, `rgba(${l.color},0)`);
+      grd.addColorStop(0, `rgba(${l.color},${(0.1 + 0.16 * night) * (l.glow ?? 1)})`); grd.addColorStop(1, `rgba(${l.color},0)`);
       ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
     }
     ctx.globalCompositeOperation = 'source-over';
