@@ -715,3 +715,5 @@ body:has(.modal:not([hidden])) .ratecard, body.cinema .ratecard { display: none;
   .ratestars .star { width: 40px; height: 40px; }
   .ratemore textarea { min-height: 44px; }
 }
+
+.shopitem.sel { border-color: var(--sun); background: #2b2410; }

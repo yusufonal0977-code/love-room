@@ -1,5 +1,12 @@
 // Get Love Room · ko çevirisi (anahtar: Türkçe kaynak metin). tools/i18n/build.py ile üretilir, elle düzenlemeyin.
 export default {
+ "Şömine rafı": "벽난로 선반",
+ "Sade": "기본",
+ "Gemi": "배",
+ "Tablo ve mumlar": "액자와 초",
+ "Işık zinciri": "조명 줄",
+ "Dantel kenar": "레이스 장식",
+ "Asılı süsler": "매달린 장식",
  "Pizza": "피자",
  "Mantar": "버섯",
  "Kekik": "타임",
@@ -263,7 +270,6 @@ export default {
  "Mumlar": "촛불",
  "Kalp balonlar": "하트 풍선",
  "Poster": "포스터",
- "Işık zinciri": "꼬마 전구",
  "Disko topu": "미러볼",
  "Küçük tablo": "작은 그림",
  "Mercan": "코랄",
@@ -783,7 +789,6 @@ export default {
  "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "필드 위에서 마우스/손가락을 위아래로 움직이세요; 탭하거나 스페이스를 눌러 차세요! 당신은 오른쪽(파랑)이에요.",
  "Kıyafet modeli": "의상",
  "Kıyafet rengi (sade ve tişört)": "의상 색 (무지 & 티셔츠)",
- "Sade": "무지",
  "Tişört": "티셔츠",
  "Desenli kazak": "무늬 스웨터",
  "Pembe kazak": "핑크 스웨터",

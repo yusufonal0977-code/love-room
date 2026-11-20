@@ -48,12 +48,32 @@ for y in range(y0, y1 + 1):
     if not inner: continue
     if fy0 is None: fy0 = y
     fire.append([min(inner) - x0, max(inner) - x0])
+# Raf süsleri: sade şömineye göre farklı olan pikseller (designer/semine-raf/<ad>.png, 64x64'e indirilmiş çizimler)
+MANTEL = ['gemi', 'tablo', 'isik', 'dantel', 'susler']
+mantel = {}
+for name in MANTEL:
+    v = Image.open(os.path.join(HERE, 'designer', 'semine-raf', name + '.png')).convert('RGB'); vp = v.load()
+    diff = [(x, y) for y in range(64) for x in range(64) if dist(vp[x, y], q[(x, y)]) > 34]
+    ox0, oy0 = min(p[0] for p in diff), min(p[1] for p in diff)
+    ox1, oy1 = max(p[0] for p in diff), max(p[1] for p in diff)
+    cols = {}
+    grid_rows = []
+    for y in range(oy0, oy1 + 1):
+        row = ''
+        for x in range(ox0, ox1 + 1):
+            if (x, y) not in set(diff): row += '.'; continue
+            c = vp[x, y]
+            if c not in cols: cols[c] = CH[len(cols)]
+            row += cols[c]
+        grid_rows.append(row)
+    mantel[name] = {'x': ox0 - x0, 'y': oy0 - y0, 'rows': grid_rows, 'pal': {ch: '#%02x%02x%02x' % c for c, ch in cols.items()}}
 js = '// Otomatik üretildi: tools/sprites/build_semine.py (tasarımcı çizimi: tools/sprites/designer/semine-varsayilan.png). Elle düzenlemeyin.\n'
 js += 'export const SEMINE = ' + json.dumps({
     'pal': {ch: '#%02x%02x%02x' % c for c, ch in pal.items()},
     'rows': rows,
     'fireY': fy0 - y0,
     'fire': fire,
+    'mantel': mantel,
 }, ensure_ascii=False, separators=(',', ':')) + ';\n'
 open(OUT, 'w', encoding='utf-8', newline='').write(js)
 print('sprite', len(rows[0]), 'x', len(rows), 'palet', len(pal), 'ateş satırı', len(fire), 'y0', fy0 - y0, fire[:3], fire[-2:])

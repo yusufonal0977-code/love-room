@@ -1,5 +1,12 @@
 // Get Love Room · zh çevirisi (anahtar: Türkçe kaynak metin). tools/i18n/build.py ile üretilir, elle düzenlemeyin.
 export default {
+ "Şömine rafı": "壁炉架",
+ "Sade": "简约",
+ "Gemi": "帆船",
+ "Tablo ve mumlar": "画框与蜡烛",
+ "Işık zinciri": "灯串",
+ "Dantel kenar": "蕾丝边",
+ "Asılı süsler": "悬挂装饰",
  "Pizza": "披萨",
  "Mantar": "蘑菇",
  "Kekik": "百里香",
@@ -263,7 +270,6 @@ export default {
  "Mumlar": "蜡烛",
  "Kalp balonlar": "爱心气球",
  "Poster": "海报",
- "Işık zinciri": "小彩灯",
  "Disko topu": "迪斯科球",
  "Küçük tablo": "小画",
  "Mercan": "珊瑚",
@@ -783,7 +789,6 @@ export default {
  "Fareni/parmağını sahada yukarı aşağı gezdir; dokun ya da boşluğa bas: vur! Sen sağdasın (mavi).": "在球场上上下移动鼠标/手指；点按或按空格键踢球！你在右边（蓝色）。",
  "Kıyafet modeli": "服装",
  "Kıyafet rengi (sade ve tişört)": "服装颜色（纯色和 T 恤）",
- "Sade": "纯色",
  "Tişört": "T 恤",
  "Desenli kazak": "花纹毛衣",
  "Pembe kazak": "粉色毛衣",

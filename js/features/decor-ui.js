@@ -5,6 +5,7 @@ import { h, icon, openSheet, closeSheet, toast, $ } from '../ui.js';
 import { push, remove, set } from '../fb.js';
 import { DECOR, SCENES, WALL, H, bump, repaint } from '../scenes.js';
 import { CATALOG, THEMES, MOTIFS } from '../decor.js';
+import { MANTELS, mantelThumb } from '../semine.js';
 import { t } from '../i18n.js';
 
 export function createDecorUI(ctx) {
@@ -79,6 +80,9 @@ export function createDecorUI(ctx) {
       outdoor ? pick('Karo 2', 'accent') : null,
     ));
     if (!outdoor) body.append(h('small', {}, 'Duvar kâğıdı deseni'), h('div', { class: 'row wrap' }, ...MOTIFS.map(([m, name]) => h('button', { class: cur.motif === m ? 'sel' : '', onclick: () => { save({ motif: m }); open('paint'); } }, name))));
+    // Şömine odasında: raf süsü seçimi (ortak kaydedilir, iki kişide de görünür)
+    if (sc.id === 'somine') body.append(h('small', {}, 'Şömine rafı'), h('div', { class: 'shop' }, ...MANTELS.map(([id, name]) => h('button', { class: `shopitem${(cur.mantel || 'none') === id ? ' sel' : ''}`, onclick: () => { save({ mantel: id }); open('paint'); } },
+      Object.assign(mantelThumb(id), { className: 'itemprev' }), h('span', {}, name)))));
     body.append(h('button', { class: 'link', onclick: () => { if (confirm(t('Bu odanın boyası, eşya yerleri ve eklenen dekorlar sıfırlansın mı?'))) { remove(live.ref(`decor/${sc.id}`)); closeSheet(); } } }, 'Bu odayı ilk haline döndür'));
   }
 

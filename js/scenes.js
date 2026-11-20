@@ -2,7 +2,7 @@
 // Her sahne: statik arka plan (boyaya göre yeniden çizilir), canlı parçalar, y'ye göre sıralanan ön plan eşyaları,
 // çarpışma kutuları, kapılar, etkileşim noktaları, oturma yerleri, foto çerçeveleri ve ışık kaynakları.
 // Taşınabilir eşyaların kaydırması, yerleştirilen dekor ve oda boyası DECOR'da tutulur (ikinize ortak).
-import { drawFireplace, drawFire, fireFlicker } from './semine.js';
+import { drawFireplace, drawFire, drawMantel, fireFlicker } from './semine.js';
 import { R, shade } from './art.js';
 import { C, CATALOG, plant } from './decor.js';
 
@@ -243,6 +243,7 @@ const somine = makeScene({
     R(g, 12, 47, 6, 9, '#ff5d8f'); R(g, 12, 47, 6, 1, '#ffa3c0'); R(g, 14, 50, 2, 2, '#ffc93c'); // günlük
     // Şömine (yeniden çizildi: koyu ahşap, alevi dyn'de canlanır)
     drawFireplace(g, 69, 19);
+    drawMantel(g, col.mantel, 69, 19); // raf süsü: Evi düzenle > Boya'dan seçilir
     // Koyun postu
     R(g, 74, 78, 44, 12, '#fffaf0'); R(g, 72, 80, 48, 8, '#fffaf0'); R(g, 76, 82, 40, 1, '#ece4d4');
     // Odun sepeti

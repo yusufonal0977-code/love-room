@@ -43,3 +43,22 @@ export function drawFireplace(g, x, y) { if (!base) build(); g.drawImage(base, x
 export function drawFire(g, x, y, t) { if (!base) build(); g.drawImage(frames[Math.floor(t * 9) % N], x, y); }
 /** Ateşin o anki parlaklığı: ortalama 1, alev karesine göre ~0,85-1,15; hızlı küçük bir titreme eklenir. Işık yarıçapı ve zemin parıltısı bunu kullanır. */
 export function fireFlicker(t) { if (!base) build(); return bright[Math.floor(t * 9) % N] + 0.03 * Math.sin(t * 31) + 0.02 * Math.sin(t * 17 + 1); }
+
+/** Raf süsleri (sade şömineye göre fark katmanları); seçimde gösterilen ad ve sıra. */
+export const MANTELS = [['none', 'Sade'], ['gemi', 'Gemi'], ['tablo', 'Tablo ve mumlar'], ['isik', 'Işık zinciri'], ['dantel', 'Dantel kenar'], ['susler', 'Asılı süsler']];
+const layers = {};
+function layer(id) {
+  if (layers[id]) return layers[id];
+  const o = SEMINE.mantel[id], c = canvasOf(o.rows[0].length, o.rows.length), g = c.getContext('2d');
+  o.rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') dot(g, x, y, o.pal[ch]); }));
+  return (layers[id] = c);
+}
+/** Seçilen raf süsünü şöminenin üstüne çizer; (x, y) şömine çizimiyle aynı sol üst köşe. */
+export function drawMantel(g, id, x, y) { const o = SEMINE.mantel[id]; if (o) g.drawImage(layer(id), x + o.x, y + o.y); }
+/** Seçim düğmesindeki küçük resim (64x64): şömine, ilk alev karesi ve raf süsü. */
+export function mantelThumb(id) {
+  if (!base) build();
+  const c = canvasOf(64, 64), g = c.getContext('2d');
+  g.drawImage(base, 5, 17); g.drawImage(frames[0], 5, 17); drawMantel(g, id, 5, 17);
+  return c;
+}
