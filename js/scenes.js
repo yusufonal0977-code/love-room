@@ -2,7 +2,7 @@
 // Her sahne: statik arka plan (boyaya göre yeniden çizilir), canlı parçalar, y'ye göre sıralanan ön plan eşyaları,
 // çarpışma kutuları, kapılar, etkileşim noktaları, oturma yerleri, foto çerçeveleri ve ışık kaynakları.
 // Taşınabilir eşyaların kaydırması, yerleştirilen dekor ve oda boyası DECOR'da tutulur (ikinize ortak).
-import { drawFireplace, drawFire, drawMantel, fireFlicker } from './semine.js';
+import { drawFireplace, drawFire, drawMantel, fireFlicker, FIRE_LIGHT_Y } from './semine.js';
 import { R, shade } from './art.js';
 import { C, CATALOG, plant } from './decor.js';
 
@@ -242,8 +242,8 @@ const somine = makeScene({
     for (let s = 0; s < 3; s++) { for (let i = 0; i < 6; i++) R(g, 5 + i * 4, 22 + s * 14 + (i % 2), 3, 11 - (i % 2), books[(i + s) % 6]); R(g, 4, 33 + s * 14, 26, 2, C.wood); }
     R(g, 12, 47, 6, 9, '#ff5d8f'); R(g, 12, 47, 6, 1, '#ffa3c0'); R(g, 14, 50, 2, 2, '#ffc93c'); // günlük
     // Şömine (yeniden çizildi: koyu ahşap, alevi dyn'de canlanır)
-    drawFireplace(g, 69, 19);
-    drawMantel(g, col.mantel, 69, 19); // raf süsü: Evi düzenle > Boya'dan seçilir
+    drawFireplace(g, col.fireplace); // model ve raf süsü: Evi düzenle > Boya'dan seçilir (varsayılan koyu ahşap)
+    drawMantel(g, col.mantel, col.fireplace);
     // Koyun postu
     R(g, 74, 78, 44, 12, '#fffaf0'); R(g, 72, 80, 48, 8, '#fffaf0'); R(g, 76, 82, 40, 1, '#ece4d4');
     // Odun sepeti
@@ -259,9 +259,10 @@ const somine = makeScene({
     line(g, 133, 22, 133 + Math.sin(a) * 3, 22 - Math.cos(a) * 3, '#e0473f');
     R(g, 131 + Math.round(Math.sin(t * 2) * 1.5), 35, 2, 3, '#ff5d8f'); // sarkaç
     if (!st.fire) return;
-    drawFire(g, 69, 19, t);
+    const fp = DECOR.paint.somine?.fireplace;
+    drawFire(g, t, fp);
     // Zemine vuran sıcak parıltı: ocağın önünde, alevle birlikte titrer
-    const f = fireFlicker(t);
+    const f = fireFlicker(t, fp);
     [[48, 0.17], [40, 0.13], [32, 0.10], [24, 0.07], [16, 0.05]].forEach(([w, a], i) => R(g, 96 - w / 2, 66 + i, w, 1, `rgba(255,150,60,${(a * f).toFixed(3)})`));
   },
   props: [
@@ -294,9 +295,9 @@ const somine = makeScene({
   },
   // Ateşin ışığı alevle birlikte titrer: geniş turuncu ışık + ocağın önünde yerde daha sıcak bir leke; gündüz de hafifçe hissedilir (glow)
   lights: ({ st, t }) => {
-    const f = st.fire ? fireFlicker(t) : 1;
+    const fp = DECOR.paint.somine?.fireplace, f = st.fire ? fireFlicker(t, fp) : 1;
     return [
-      st.fire && { x: 96, y: 58, r: 84 + 60 * (f - 1), a: Math.min(1, 0.82 + 0.9 * (f - 1)), color: '255,140,60', glow: 1.7 * f },
+      st.fire && { x: 96, y: FIRE_LIGHT_Y[fp] || 58, r: 84 + 60 * (f - 1), a: Math.min(1, 0.82 + 0.9 * (f - 1)), color: '255,140,60', glow: 1.7 * f },
       st.fire && { x: 96, y: 67, r: 36 + 24 * (f - 1), a: 0.4, color: '255,175,90', glow: 0.8 * f },
     ];
   },

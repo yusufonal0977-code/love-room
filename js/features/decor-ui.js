@@ -5,7 +5,7 @@ import { h, icon, openSheet, closeSheet, toast, $ } from '../ui.js';
 import { push, remove, set } from '../fb.js';
 import { DECOR, SCENES, WALL, H, bump, repaint } from '../scenes.js';
 import { CATALOG, THEMES, MOTIFS } from '../decor.js';
-import { MANTELS, mantelThumb } from '../semine.js';
+import { FIREPLACES, MANTELS, fireplaceThumb } from '../semine.js';
 import { t } from '../i18n.js';
 
 export function createDecorUI(ctx) {
@@ -80,9 +80,14 @@ export function createDecorUI(ctx) {
       outdoor ? pick('Karo 2', 'accent') : null,
     ));
     if (!outdoor) body.append(h('small', {}, 'Duvar kâğıdı deseni'), h('div', { class: 'row wrap' }, ...MOTIFS.map(([m, name]) => h('button', { class: cur.motif === m ? 'sel' : '', onclick: () => { save({ motif: m }); open('paint'); } }, name))));
-    // Şömine odasında: raf süsü seçimi (ortak kaydedilir, iki kişide de görünür)
-    if (sc.id === 'somine') body.append(h('small', {}, 'Şömine rafı'), h('div', { class: 'shop' }, ...MANTELS.map(([id, name]) => h('button', { class: `shopitem${(cur.mantel || 'none') === id ? ' sel' : ''}`, onclick: () => { save({ mantel: id }); open('paint'); } },
-      Object.assign(mantelThumb(id), { className: 'itemprev' }), h('span', {}, name)))));
+    // Şömine odasında: şömine modeli ve raf süsü seçimi (ortak kaydedilir, iki kişide de görünür)
+    if (sc.id === 'somine') {
+      const fp = cur.fireplace || 'ahsap', mantel = cur.mantel || 'none';
+      const tile = (selected, thumb, name, patch) => h('button', { class: `shopitem${selected ? ' sel' : ''}`, onclick: () => { save(patch); open('paint'); } },
+        Object.assign(thumb, { className: 'itemprev' }), h('span', {}, name));
+      body.append(h('small', {}, 'Şömine modeli'), h('div', { class: 'shop' }, ...FIREPLACES.map(([id, name]) => tile(fp === id, fireplaceThumb(id, 'none'), name, { fireplace: id, mantel: 'none' }))),
+        h('small', {}, 'Şömine rafı'), h('div', { class: 'shop' }, ...MANTELS[fp].map(([id, name]) => tile(mantel === id, fireplaceThumb(fp, id), name, { mantel: id }))));
+    }
     body.append(h('button', { class: 'link', onclick: () => { if (confirm(t('Bu odanın boyası, eşya yerleri ve eklenen dekorlar sıfırlansın mı?'))) { remove(live.ref(`decor/${sc.id}`)); closeSheet(); } } }, 'Bu odayı ilk haline döndür'));
   }
 
