@@ -4,7 +4,7 @@ import { h, icon, openSheet, toast, loadImg, saveImage } from '../ui.js';
 import { t } from '../i18n.js';
 import { petSprites, drawPetAcc } from '../art.js';
 import { APP_URL } from '../config.js';
-import { ADMIN_SCENES, SCENES } from '../scenes.js';
+import { SCENES } from '../scenes.js';
 
 const TEMPLATES = {
   night: { name: 'Gece', bg: ['#0d0b1a', '#2a1f4d'], ink: '#fff6d8', accent: '#fcdf4b', soft: 'rgba(255,246,216,.6)', deco: 'stars' },
@@ -18,7 +18,7 @@ export function createShare(ctx) {
   const { game } = ctx;
   let kind = 'room', tpl = 'night', fmt = 'story', framesOn = true;
   // Admin odası ve meyhane çift evi değil: orada kartta "ben & partnerim" yerine odadaki adminler yazar
-  const inAdmin = () => ADMIN_SCENES.has(game.me.scene);
+  const inAdmin = () => false; // admin odası kaldırıldı (v0.60)
 
   const names = () => {
     if (inAdmin()) return [ctx.myName(), ...(ctx.adminRoom?.namesHere?.(game.me.scene) || [])].slice(0, 5).join('  ·  ');

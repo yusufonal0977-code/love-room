@@ -1,7 +1,8 @@
 // Vitrin: dekore ettiğiniz evi bir linkle arkadaşlarınıza gösterin. Link açan kişi giriş yapmadan
 // evi misafir olarak gezer (sadece görüntü; sohbet, albüm, günlük gibi özel şeyler paylaşılmaz).
 //
-// showcase/{id}      = { by, rid, at, title, owners: [{name, side, look}], decor, pet, flower, state, frames? }  (herkes okuyabilir)
+// showcase/{id}      = { at, title, owners: [{name, side, look}], decor, pet, flower, state, frames? }  (girişli her ziyaretçi okuyabilir)
+// showcaseRid/{id}   = rid   (yazma yetkisi için; kimse okuyamaz, yalnızca ev sahipleri yazıp silebilir)
 // live/{rid}/showcase = id   (ikiniz de aynı linki görür ve güncelleyebilir)
 import { h, icon, openSheet, toast, compressImage } from '../ui.js';
 import { db, push, ref, remove, set, serverTimestamp } from '../fb.js';
@@ -22,7 +23,7 @@ export function createShowcase(ctx) {
     if (withPhotos) for (const [k, img] of Object.entries(ctx.photos.frameImages())) frames[k] = await compressImage(img, 320, 0.75);
     const pet = ctx.care.petNow();
     const snap = {
-      by: uid, rid: ctx.rid, at: serverTimestamp(), title: t('Bizim Ev'),
+      at: serverTimestamp(), title: t('Bizim Ev'),
       owners: [{ name: ctx.myName(), side: ctx.mySide(), look: ctx.myLook() }, ...(ctx.partnerProfile() ? [{ name: ctx.partnerName(), side: ctx.partnerProfile().side || 'moon', look: ctx.partnerProfile().look || null }] : [])],
       decor: { paint: DECOR.paint, moved: DECOR.moved, items: DECOR.items },
       pet: { name: pet.name, species: pet.species, color: pet.color, acc: pet.acc },
@@ -30,6 +31,7 @@ export function createShowcase(ctx) {
       ...(withPhotos ? { frames } : {}),
     };
     try {
+      await set(ref(db, `showcaseRid/${newId}`), ctx.rid).catch(() => {}); // eski vitrinlerde yoksa eklenir; varsa kural reddeder, sorun değil
       await set(ref(db, `showcase/${newId}`), JSON.parse(JSON.stringify(snap, (k, v) => (v === undefined ? null : v))));
     } catch (e) {
       console.warn(e);
@@ -57,7 +59,7 @@ export function createShowcase(ctx) {
         h('button', { class: 'primary', onclick: async () => { await navigator.clipboard?.writeText(link()); toast(t('Link kopyalandı')); } }, 'Linki kopyala'),
         h('button', { onclick: () => publish(withPhotos.checked) }, 'Evin son halini yükle'),
         h('a', { class: 'btn', href: link(), target: '_blank', rel: 'noopener' }, 'Önizle'),
-        h('button', { class: 'link', onclick: async () => { await remove(ref(db, `showcase/${id}`)).catch(() => {}); await remove(live.ref('showcase')); toast(t('Vitrin linki kapatıldı')); } }, 'Linki kapat'),
+        h('button', { class: 'link', onclick: async () => { await remove(ref(db, `showcase/${id}`)).catch(() => {}); await remove(ref(db, `showcaseRid/${id}`)).catch(() => {}); await remove(live.ref('showcase')); toast(t('Vitrin linki kapatıldı')); } }, 'Linki kapat'),
       ), h('p', { class: 'small' }, 'Evi değiştirdikten sonra "Evin son halini yükle" deyin; link aynı kalır.'));
     } else {
       body.append(h('button', { class: 'primary', html: `${icon('link')} Vitrin linki oluştur`, onclick: () => publish(withPhotos.checked) }));

@@ -1,6 +1,6 @@
-// Vitrin görüntüleyici: ?ev=<id> linkiyle açılır. Giriş gerekmez; ziyaretçi evi misafir olarak gezer.
+// Vitrin görüntüleyici: ?ev=<id> linkiyle açılır. Ziyaretçi otomatik misafir (anonim) girişle evi gezer; ad, e-posta istenmez.
 // Ev sahipleri salondaki kanepede oturur; evcil dostları dolaşır. Hiçbir şey veritabanına yazılmaz.
-import { db, get, ref } from './fb.js';
+import { db, get, ref, firstUser, loginGuest } from './fb.js';
 import { createGame } from './game.js';
 import { DECOR, DEFAULT_STATE, SCENES, repaint } from './scenes.js';
 import { DEFAULT_LOOK } from './art.js';
@@ -9,6 +9,7 @@ import { t } from './i18n.js';
 import { APP_URL } from './config.js';
 
 export async function runViewer(id) {
+  if (!(await firstUser())) await loginGuest().catch(() => {}); // vitrin girişli okunur (kural K4)
   const snap = (await get(ref(db, `showcase/${id}`)).catch(() => null))?.val();
   if (!snap) return false;
   document.body.classList.add('viewer');

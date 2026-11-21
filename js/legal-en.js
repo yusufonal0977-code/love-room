@@ -1,7 +1,7 @@
 // English legal texts and About page. Shown for every language except Turkish.
 // The Turkish version (legal.js) is the original; titles stay as Turkish keys so the interface translates them.
 
-const DATE = 'October 29, 2026';
+const DATE = 'November 21, 2026';
 const CONTACT = 'eclipsoftware.dev@gmail.com';
 const COMPANY = 'Eclip Software &amp; Entertainment Company';
 const mail = `<a href="mailto:${CONTACT}">${CONTACT}</a>`;
@@ -79,18 +79,21 @@ export const LEGAL_EN = [
   <li><b>Voice/video chat and sharing:</b> microphone, camera and screen/video sharing flow directly and encrypted between your two devices (WebRTC). <b>We don't record or store them.</b> On some networks the connection passes through a relay server (Metered TURN) that cannot see the content.</li>
   <li><b>Spotify:</b> if you connect Spotify, the access token is stored only on your device. So your partner can see them, the names and cover images of your public/collaborative playlists are written to your home.</li>
   <li><b>Android app (Google Play):</b> The app opens the website. So the home screen widgets (canvas, your pet, relationship clock, record player) can update, your session key and widget images are stored <b>only on your phone</b> and are excluded from backups. Camera and microphone permission is requested only when you start a voice/video chat; photos are accessed only for the file you pick. The app has no ads, analytics or tracking tools.</li>
+  <li><b>Usage counter:</b> To see how the Service is used, while the app is open we keep a daily "active today" mark and a last-seen time (tied to your user ID; only administrators can see them). We may also keep counts of events that do not identify you, such as "home created" or "partner joined". No third-party analytics or advertising tools are used.</li>
+  <li><b>Early access request:</b> The email address you enter in the Android early access form is forwarded, via Google Apps Script, only to our company inbox. It is used to add you to the Google Play test list and deleted on request.</li>
+  <li><b>Showcase:</b> Visitors who open an "Show our home" link see the home through an automatic guest (anonymous) sign-in; no name or email is asked. The showcase only contains the look and names you chose to share.</li>
 </ul>
 <h4>Why we use it</h4>
 <p>Only to provide the Service: bringing you and your partner together in one home, showing your partner what you share, syncing movies and music, security and preventing abuse. Never for marketing, profiling or ads.</p>
 <h4>Who it's shared with</h4>
 <ul>
   <li><b>Your partner:</b> sees everything you add to the home. The diary and jar answers are shared between you.</li>
-  <li><b>Service providers</b> working on our behalf: Google Firebase (authentication and database; European Union, Belgium region), GitHub Pages (website hosting), Metered (connection relay).</li>
+  <li><b>Service providers</b> working on our behalf: Google Firebase (authentication and database; European Union, Belgium region), GitHub Pages (website hosting), Metered (connection relay), Google Apps Script (forwarding early access requests to our company inbox).</li>
   <li><b>Services you open:</b> when you open YouTube or another site on the TV, or connect Spotify, those services process data under their own privacy policies (e.g. YouTube cookies).</li>
   <li>Competent authorities, when required by law.</li>
 </ul>
 <h4>Retention and deletion</h4>
-<p>Your data is kept until you delete it. You can delete each photo, entry or answer individually. When you choose Menu → <i>Delete my data</i>, your account, profile and <b>shared home (including content your partner added)</b> are removed from the database immediately. If your partner wants to keep their content, ask them to save it from the Album first. To request deletion without the app: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
+<p>Your data is kept until you delete it. You can delete each photo, entry or answer individually. When you choose Menu → <i>Delete my data</i>, your account, profile and <b>shared home (including content your partner added)</b> are removed from the database immediately, together with the usage counter records tied to your ID and your showcase link, if any. If your partner wants to keep their content, ask them to save it from the Album first. To request deletion without the app: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
 <h4>Security</h4>
 <p>Connections are encrypted with HTTPS; database rules ensure that only the two owners of a home can access it. Chat streams are end-to-end encrypted. Still, no system is 100% secure; share your invite link only with your partner.</p>
 <h4>Children</h4>
@@ -117,7 +120,7 @@ export const LEGAL_EN = [
 <h4>How it's collected</h4>
 <p>Data is collected electronically and automatically from what you enter and share while using the app, and from Google when you sign in with Google.</p>
 <h4>Transfers</h4>
-<p>Data may be transferred to Google LLC for hosting and database services (Firebase, European Union – Belgium servers), to Metered for connection relaying, to GitHub for publishing the website (abroad), and to legally authorised bodies. Transfers abroad rely on the explicit consent you gave at sign-in. You can withdraw your consent at any time; since the Service can't work without it, your data will then be deleted.</p>
+<p>Data may be transferred to Google LLC for hosting and database services (Firebase, European Union – Belgium servers), to Metered for connection relaying, to Google (Apps Script) for forwarding early access requests, to GitHub for publishing the website (abroad), and to legally authorised bodies. Transfers abroad rely on the explicit consent you gave at sign-in. You can withdraw your consent at any time; since the Service can't work without it, your data will then be deleted.</p>
 <h4>Your rights (KVKK Art. 11)</h4>
 <p>You have the right to learn whether your data is processed, request information, learn whether it is used for its purpose, know who it is transferred to, request correction of incomplete or incorrect data, request deletion or destruction, request that these actions be notified to recipients, object to results against you arising from automated analysis, and claim compensation for damage caused by unlawful processing.</p>
 <p>Send your requests to ${mail}; they will be answered free of charge within 30 days at the latest. If you are not satisfied with the answer, you can complain to the Personal Data Protection Board.</p>`,

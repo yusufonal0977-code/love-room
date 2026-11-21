@@ -6,7 +6,6 @@
 import { h, icon, openSheet, toast } from '../ui.js';
 import { db, ref as dbRef, onValue, set, update, now } from '../fb.js';
 import { t, locale } from '../i18n.js';
-import { totals } from './poolbet.js';
 
 const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 const CARD_ICONS = ['heart', 'music', 'flower', 'paw', 'tv', 'book', 'jar', 'booth'];
@@ -313,8 +312,7 @@ export function createGames(ctx) {
   // Kurallar: açık masada ilk sokulan top oyuncunun grubunu belirler (1-7 düz, 9-15 çizgili). Önce kendi grubuna değmek
   // gerekir; beyaz topu sokmak, hiçbir topa değmemek ya da önce rakip gruba/8'e değmek fauldür (sıra geçer, beyaz başa döner).
   // Kendi grubundan top sokan tekrar vurur. 8 en son sokulur: grubunu bitirip faulsüz sokan kazanır, erken ya da faulle sokan kaybeder.
-  // Oyuncular: host (masayı açan) ve opp (partner, bot ya da katılan admin). Admin odasındaki masa ortaktır
-  // (admin/config/pool): bir admin açar, diğeri "Oyuna katıl" der, odadaki herkes canlı izler.
+  // Oyuncular: host (masayı açan) ve opp (partner ya da bot).
   // Sırayla oynanır. Vuran cihaz vuruşu (açı, güç, başlangıç konumları) yazar; iki cihaz da aynı simülasyonu oynatır,
   // vuruş bitince vuran sonucu (toplar, sıra, skor) yazar. Top sokan tekrar vurur; beyaz top girerse sıra geçer.
   // Bütün renkli toplar girince en çok top sokan kazanır. Partner yoksa tek başına antrenman.
@@ -393,22 +391,17 @@ export function createGames(ctx) {
     return { end, potted, frames, first };
   }
   function openPool(opts) {
-    const admin = opts?.admin === true;
-    const DENEME = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && new URLSearchParams(location.search).has('tvdeneme');
-    const poolRef = admin ? dbRef(db, DENEME ? 'admin/config/pooltest' : 'admin/config/pool') : live.ref('games/pool');
+    const admin = false; // admin odasındaki ortak masa kaldırıldı (v0.60); masa yalnızca evde
+    const poolRef = live.ref('games/pool');
     body = openSheet({ title: 'Bilardo', iconName: 'game', game: true, wide: true, onClose: close });
     const canvas = h('canvas', { width: PW, height: PH, class: 'foos pool' });
     const info = h('p', { class: 'center foos-score' }), hint = h('p', { class: 'small center' });
     const joinBtn = h('button', { class: 'primary', hidden: true, onclick: () => update(poolRef, { opp: uid, [`names/${uid}`]: ctx.myName() }) }, 'Oyuna katıl');
     const botBtn = h('button', { hidden: true, onclick: () => update(poolRef, { opp: 'bot' }) }, 'Bota karşı');
-    const bets = admin ? ctx.adminRoom?.poolBets : null;
-    const betBox = h('div', { class: 'poolbets' });
-    let betChip = 50, betKey = '';
     body.append(info, canvas, h('div', { class: 'row' }, joinBtn, botBtn, h('button', { onclick: () => {
       if (admin && st?.opp && !st.over && st.host !== uid && st.opp !== uid && !confirm(t('Masada oyun sürüyor. Sıfırlansın mı?'))) return;
-      if (st && !st.over) bets?.finish(st.gid, 'void'); // yarıda kalan oyunun bahisleri iade
       newGame();
-    } }, 'Yeni oyun')), hint, admin ? betBox : null);
+    } }, 'Yeni oyun')), hint);
     const g = canvas.getContext('2d');
     let st = null, anim = null, aim = null, lastShot = 0, raf = 0, botTimer = null;
     // Partner çevrimiçiyse onunla, değilse bota karşı (bot hamlelerini bu cihaz yapar)
@@ -457,7 +450,6 @@ export function createGames(ctx) {
           if (win) toast(win === who ? t('8 numarayı soktu, oyunu kazandı: {name}', { name: nameOf(who) }) : t('8 numara erken girdi, oyunu kaybetti: {name}', { name: nameOf(who) }), 4000);
           else if (why) toast(t('Faul: {why} Sıra geçti, beyaz top başa döndü.', { why }), 3500);
           if (win === uid) live.stat('wins');
-          if (win) bets?.finish(st.gid, win);
         }
       } else if (!sh) anim = null;
       if (!sh && (st.n || 0) > lastShot) lastShot = st.n;
@@ -473,31 +465,8 @@ export function createGames(ctx) {
       if (d < 6) return;
       shoot(uid, Math.atan2(dy, dx), Math.min(900, d * 7));
     };
-    /** Bahis paneli: ilk atışa kadar açık; oyuncular yalnızca kendilerine yatırır. */
-    function drawBets() {
-      if (!bets || !st?.gid) return;
-      const gid = st.gid, node = bets.node(gid), mine = bets.mine(gid), open = !st.over && !(st.n > 0);
-      const key = JSON.stringify([gid, st.host, st.opp, open, st.win, node, bets.coins(), betChip]);
-      if (key === betKey) return;
-      betKey = key;
-      const { by, pot } = totals(node), fmt = (n) => Math.round(n).toLocaleString(locale);
-      const players = [st.host, st.opp].filter(Boolean);
-      const isPlayer = players.includes(uid);
-      const odds = (p) => (by[p] ? (pot / by[p]).toFixed(2) + 'x' : '-');
-      betBox.innerHTML = '';
-      if (st.over && !node) { betBox.append(h('p', { class: 'small' }, t('Oyun bitti, kazançlar dağıtıldı.'))); return; }
-      betBox.append(h('b', {}, t('Bahis havuzu: {n} fiş', { n: fmt(pot) })),
-        h('p', { class: 'small' }, players.map((p) => `${nameOf(p)}: ${fmt(by[p] || 0)} (${odds(p)})`).join('  ·  ')),
-        mine ? h('p', { class: 'small' }, t('Bahsin: {name} için {n} fiş', { name: nameOf(mine.on), n: fmt(mine.amt) })) : '');
-      if (!open) { betBox.append(h('p', { class: 'small' }, st.over ? t('Oyun bitti, kazançlar dağıtıldı.') : t('Bahisler kapandı: ilk atış yapıldı.'))); return; }
-      const targets = players.filter((p) => (isPlayer ? p === uid : true) && (!mine || mine.on === p));
-      betBox.append(h('p', { class: 'small' }, t('Fişin: {n}', { n: fmt(bets.coins()) })),
-        h('div', { class: 'row wrap' }, ...[10, 50, 100, 500].map((c) => h('button', { class: 'rchipbtn' + (c === betChip ? ' sel' : ''), onclick: () => { betChip = c; drawBets(); } }, String(c)))),
-        h('div', { class: 'row wrap' }, ...targets.map((p) => h('button', { class: 'primary', onclick: () => bets.place(gid, p, betChip) }, t('{name} kazanır: {n} fiş', { name: nameOf(p), n: betChip })))));
-    }
     function draw() {
       raf = requestAnimationFrame(draw);
-      drawBets();
       g.fillStyle = '#6b3e22'; g.fillRect(0, 0, PW, PH);
       g.fillStyle = '#2f8f5a'; g.fillRect(12, 12, PW - 24, PH - 24);
       g.fillStyle = '#3fa86a'; g.fillRect(16, 16, PW - 32, PH - 32);

@@ -1,8 +1,8 @@
 // Hakkımızda, iletişim ve hukuki metinler. Uygulama içinde ve legal.html sayfasında aynı içerik gösterilir.
 // Metin değişirse LEGAL_VERSION artırılır; kullanıcılar bir sonraki girişte yeniden onaylar.
 
-export const LEGAL_VERSION = 1;
-export const LEGAL_DATE = '13 Kasım 2026';
+export const LEGAL_VERSION = 2;
+export const LEGAL_DATE = '21 Kasım 2026';
 export const CONTACT = 'eclipsoftware.dev@gmail.com';
 const COMPANY = 'Eclip Software &amp; Entertainment Company';
 const mail = `<a href="mailto:${CONTACT}">${CONTACT}</a>`;
@@ -83,18 +83,21 @@ const LEGAL_TR = [
   <li><b>Sesli/görüntülü sohbet ve paylaşım:</b> Mikrofon, kamera ve ekran/ video paylaşımı doğrudan iki cihaz arasında, şifreli olarak (WebRTC) akar. <b>Kaydetmiyor, saklamıyoruz.</b> Bazı ağlarda bağlantı, içeriği göremeyen bir aktarma sunucusu (Metered TURN) üzerinden geçer.</li>
   <li><b>Spotify:</b> Spotify'ı bağlarsanız erişim anahtarı yalnızca sizin cihazınızda saklanır. Partnerinizin görebilmesi için herkese açık/ortak çalma listelerinizin adı ve kapak görseli evinize yazılır.</li>
   <li><b>Android uygulaması (Google Play):</b> Uygulama siteyi açar; ana ekran widget'larının (tuval, evcil dostunuz, ilişki saati, pikap) güncellenebilmesi için oturum anahtarınız ve widget görselleri <b>yalnızca telefonunuzda</b> saklanır ve yedeğe alınmaz. Kamera ve mikrofon izni yalnızca sesli/görüntülü sohbeti açtığınızda istenir; fotoğraflara yalnızca sizin seçtiğiniz dosya için erişilir. Uygulamada reklam, analiz ya da takip aracı yoktur.</li>
+  <li><b>Kullanım sayacı:</b> Hizmetin nasıl kullanıldığını görebilmek için uygulama açıkken günlük bir "bugün aktif" işareti ve son görülme zamanı tutulur (kullanıcı kimliğinizle; yalnızca yöneticiler görür). Ayrıca "ev kuruldu", "partner katıldı" gibi kişiyi tanımlamayan olay sayıları tutulabilir. Dışarıdan bir analiz ya da reklam aracı kullanılmaz.</li>
+  <li><b>Erken erişim isteği:</b> Android erken erişim formuna yazdığınız e-posta adresi, Google Apps Script aracılığıyla yalnızca şirket e-posta kutumuza iletilir. Sizi Google Play test listesine eklemek için kullanılır ve isteğiniz üzerine silinir.</li>
+  <li><b>Vitrin:</b> "Evimizi göster" linkini açan ziyaretçiler evi otomatik misafir (anonim) girişle görür; ad ya da e-posta istenmez. Vitrinde yalnızca sizin paylaştığınız görünüm ve adlar yer alır.</li>
 </ul>
 <h4>Kullanım amaçları</h4>
 <p>Verileri yalnızca Hizmeti sunmak için kullanırız: sizi ve partnerinizi aynı evde buluşturmak, paylaştıklarınızı partnerinize göstermek, film/müzik senkronu, güvenlik ve kötüye kullanımın önlenmesi. Pazarlama, profil çıkarma ya da reklam için kullanmayız.</p>
 <h4>Kimlerle paylaşılır</h4>
 <ul>
   <li><b>Partneriniz:</b> evinize eklediğiniz her şeyi görür. Günlük ve kavanoz cevapları ikinize ortaktır.</li>
-  <li><b>Hizmet sağlayıcılar</b> (bizim adımıza işlerler): Google Firebase (kimlik doğrulama ve veritabanı; Avrupa Birliği, Belçika bölgesi), GitHub Pages (sitenin barındırılması), Metered (bağlantı aktarma).</li>
+  <li><b>Hizmet sağlayıcılar</b> (bizim adımıza işlerler): Google Firebase (kimlik doğrulama ve veritabanı; Avrupa Birliği, Belçika bölgesi), GitHub Pages (sitenin barındırılması), Metered (bağlantı aktarma), Google Apps Script (erken erişim isteğinin şirket e-postasına iletilmesi).</li>
   <li><b>Sizin açtığınız hizmetler:</b> TV'de YouTube ya da başka bir site açtığınızda, Spotify'ı bağladığınızda o hizmetler kendi gizlilik politikalarına göre veri işler (ör. YouTube çerezleri).</li>
   <li>Kanunen zorunlu olduğunda yetkili makamlar.</li>
 </ul>
 <h4>Saklama süresi ve silme</h4>
-<p>Verileriniz siz silene kadar saklanır. Bir fotoğrafı, yazıyı ya da cevabı tek tek silebilirsiniz. Menü → <i>Verilerimi sil</i> dediğinizde hesabınız, profiliniz ve <b>ortak eviniz (partnerinizin eklediği içerikler dahil)</b> veritabanından hemen silinir. Partnerinizin içeriklerini korumak istiyorsanız silmeden önce Albüm'den kaydetmesini isteyin. Uygulamaya girmeden silme talebi için: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
+<p>Verileriniz siz silene kadar saklanır. Bir fotoğrafı, yazıyı ya da cevabı tek tek silebilirsiniz. Menü → <i>Verilerimi sil</i> dediğinizde hesabınız, profiliniz ve <b>ortak eviniz (partnerinizin eklediği içerikler dahil)</b> veritabanından hemen silinir; kullanım sayaçlarındaki kimliğinize bağlı kayıtlar ve varsa vitrin linkiniz de silinir. Partnerinizin içeriklerini korumak istiyorsanız silmeden önce Albüm'den kaydetmesini isteyin. Uygulamaya girmeden silme talebi için: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
 <h4>Güvenlik</h4>
 <p>Bağlantılar HTTPS ile şifrelenir; veritabanı kuralları sayesinde bir eve yalnızca o evin iki sahibi erişebilir. Sohbet uçtan uca şifreli akar. Yine de hiçbir sistem %100 güvenli değildir; davet linkinizi sadece partnerinizle paylaşın.</p>
 <h4>Çocuklar</h4>
@@ -121,7 +124,7 @@ const LEGAL_TR = [
 <h4>Toplama yöntemi</h4>
 <p>Veriler, uygulamayı kullanırken sizin girdiğiniz ve paylaştığınız bilgilerden, Google ile girişte Google'dan elektronik ortamda otomatik yolla toplanır.</p>
 <h4>Aktarım</h4>
-<p>Veriler; barındırma ve veritabanı hizmeti için Google LLC'ye (Firebase, Avrupa Birliği - Belçika sunucuları), bağlantı aktarımı için Metered'e, sitenin yayını için GitHub'a (yurt dışı) ve kanunen yetkili kurumlara aktarılabilir. Yurt dışına aktarım, giriş sırasında verdiğiniz açık rızaya dayanır. Rızanızı dilediğiniz an geri alabilirsiniz; bu durumda Hizmet çalışamayacağı için verileriniz silinir.</p>
+<p>Veriler; barındırma ve veritabanı hizmeti için Google LLC'ye (Firebase, Avrupa Birliği - Belçika sunucuları), bağlantı aktarımı için Metered'e, erken erişim isteklerinin iletilmesi için Google'a (Apps Script), sitenin yayını için GitHub'a (yurt dışı) ve kanunen yetkili kurumlara aktarılabilir. Yurt dışına aktarım, giriş sırasında verdiğiniz açık rızaya dayanır. Rızanızı dilediğiniz an geri alabilirsiniz; bu durumda Hizmet çalışamayacağı için verileriniz silinir.</p>
 <h4>Haklarınız (KVKK m. 11)</h4>
 <p>Verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, amacına uygun kullanılıp kullanılmadığını öğrenme, aktarıldığı kişileri bilme, eksik/yanlış işlenmişse düzeltilmesini, silinmesini ya da yok edilmesini isteme, bu işlemlerin aktarılan kişilere bildirilmesini isteme, otomatik analiz sonucu aleyhinize bir sonuca itiraz etme ve kanuna aykırı işleme nedeniyle zararın giderilmesini talep etme haklarına sahipsiniz.</p>
 <p>Başvurularınızı ${mail} adresine iletebilirsiniz; en geç 30 gün içinde ücretsiz yanıtlanır. Yanıttan memnun kalmazsanız Kişisel Verileri Koruma Kurulu'na şikâyette bulunabilirsiniz.</p>`,

@@ -419,29 +419,7 @@ button.big { font-size: 20px; padding: 14px 22px; }
 .recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
 
 /* Admin odası: kasa tablosu (odada hep görünür) ve rulet */
-.casino-board { position: fixed; right: 10px; top: 134px; z-index: 15; min-width: 170px; padding: 8px 10px; border-radius: 10px; background: rgba(13, 16, 32, .88); border: 1.5px solid #3a3f5c; color: #e8ecff; font-size: 12px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
-.casino-board[hidden] { display: none; }
-.casino-board b { color: #fcdf4b; font-size: 13px; }
-.casino-board .row { display: flex; justify-content: space-between; gap: 12px; }
-.casino-board .row.me { color: #fcdf4b; }
-.casino-board small { color: #8a90b0; }
-.roulette .rtop { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center; }
-.roulette .rwheel { width: 200px; height: 200px; }
-.roulette .rinfo { display: flex; flex-direction: column; gap: 6px; min-width: 200px; flex: 1; }
-.roulette .rstatus, .horses .rstatus { font-weight: 700; color: #fcdf4b; }
-.roulette .rtable { display: grid; grid-template-columns: repeat(14, 1fr); gap: 2px; margin-top: 10px; }
-.roulette .rtable .zero { grid-row: span 3; }
-.roulette .rrow { display: flex; gap: 2px; margin-top: 2px; }
-.roulette .rrow .rcell { flex: 1; }
-.roulette .rcell { position: relative; padding: 8px 0; min-width: 0; font-size: 13px; border-radius: 4px; border: 1px solid #2f6b47; background: #1f8a4c; color: #fff6e8; }
-.roulette .rcell.red { background: #c8323c; }
-.roulette .rcell.black { background: #1a1a22; }
-.roulette .rcell.out { background: #176b3a; }
-.roulette .rchip { position: absolute; right: 1px; top: 1px; font-style: normal; font-size: 9px; padding: 0 3px; border-radius: 6px; background: #fcdf4b; color: #1a1608; }
-.roulette .rchipbtn.sel, .poolbets .rchipbtn.sel, .horses .rchipbtn.sel { background: #fcdf4b; border-color: #fcdf4b; color: #1a1608; font-weight: 700; }
-.roulette.closed .rtable, .roulette.closed .rrow { opacity: .55; }
 
-body:has(.modal:not([hidden])) .casino-board, body:has(.modal:not([hidden])) .admintvbtns, body:has(.admscreen.full:not([hidden])) .admintvbtns, body:has(.admscreen.full:not([hidden])) .casino-board { display: none; } /* pencere açıkken kasa tablosu gizlenir */
 
 /* Admin bilgisayarı: konsol görünümlü maç listesi */
 .pcsheet .pc { background: #020604; color: #39ff88; border: 1.5px solid #1f7a4a; border-radius: 8px; padding: 12px; font-family: 'Pixelify Sans', monospace; display: flex; flex-direction: column; gap: 8px; }
@@ -458,45 +436,13 @@ body:has(.modal:not([hidden])) .casino-board, body:has(.modal:not([hidden])) .ad
 .pcsheet .pcrow .tm { color: #1f7a4a; }
 .pcsheet .odd { text-align: right; color: #e8fff2; }
 .pcsheet small { color: #1f7a4a; }
-html[dir=rtl] .casino-board { right: auto; left: 10px; }
-.msg.admin small { color: #39ff88; }
 
 /* Admin TV: odadaki ekran, tam ekran ve geçiş tuşu */
-.admintvbtns { position: fixed; right: 10px; top: 92px; z-index: 15; display: flex; gap: 6px; }
-.admintvbtns[hidden], .admintvbtns button[hidden] { display: none; }
-.admintvbtns button { padding: 6px 12px; font-size: 13px; background: #06140c; color: #39ff88; border-color: #1f7a4a; }
-html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
-.admscreen { position: fixed; background: #000; overflow: hidden; pointer-events: auto; }
-.admscreen[hidden] { display: none; }
-.admscreen-in { position: absolute; inset: 0; }
-.admscreen-in iframe, .admscreen-in video { width: 100%; height: 100%; border: 0; background: #000; object-fit: contain; }
-.admscreen-idle { color: #39ff88; font-size: 12px; text-align: center; margin: 0; padding: 8px; }
-.admscreen-bar { display: none; }
-.admscreen.full { position: fixed; z-index: 40; }
-.admscreen.full .admscreen-in { inset: 44px 0 0 0; }
-.admscreen.full iframe { background: #fff; }
-.admscreen.full .admscreen-bar { display: flex; gap: 8px; justify-content: flex-end; padding: 6px 10px; background: #020604; }
-.admscreen.full .admscreen-bar button { padding: 4px 12px; font-size: 13px; }
 .admtv-now { word-break: break-all; }
 .admsound { position: absolute; left: 6px; top: 6px; z-index: 3; padding: 4px 10px; font-size: 12px; }
 .admsound[hidden] { display: none; }
-.admscreen-in > div, .admscreen-in iframe { width: 100%; height: 100%; }
-.casino-board.collapsed { min-width: 0; }
-.casino-board.collapsed .row:not(.me), .casino-board.collapsed small { display: none; }
-.poolbets { margin-top: 10px; padding: 10px; border: 1px solid #2f6b47; border-radius: 8px; display: flex; flex-direction: column; gap: 6px; }
-.poolbets b { color: #fcdf4b; }
-.poolbets p { margin: 0; }
 
 /* Admin at yarışı */
-.horses .hrace { width: 100%; aspect-ratio: 480 / 216; border-radius: 8px; display: block; }
-.horses .hchips { justify-content: center; margin: 4px 0; }
-.horses .hlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; }
-.horses .hrow { display: flex; align-items: center; gap: 8px; padding: 8px 10px; font-size: 14px; }
-.horses .hrow i { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(255,255,255,.3); flex: none; }
-.horses .hrow span { flex: 1; text-align: left; }
-.horses .hrow small { color: #fcdf4b; }
-.horses .hrow b { background: #fcdf4b; color: #1a1608; font-size: 11px; padding: 0 5px; border-radius: 6px; }
-.horses.closed .hlist { opacity: .55; }
 
 /* Menü: Google hesabını bağlama */
 #linkBox button { width: 100%; }
@@ -516,8 +462,6 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .livevol { display: flex; align-items: center; gap: 4px; }
 .livevol input { width: 80px; }
 .livevol span svg { width: 14px; height: 14px; }
-.tvbox.full .livebar, .admscreen.full .livebar, .tvbox.incinema .livebar { font-size: 13px; padding: 8px 12px; }
-.admscreen.full .livebar { top: 44px; }
 .sharepick { margin-bottom: 10px; }
 .sharepick button.sel { background: #fcdf4b; color: #1a1608; }
 
@@ -539,21 +483,9 @@ html[dir=rtl] .admintvbtns { right: auto; left: 10px; }
 .tourmedia[hidden] { display: none; }
 
 /* Meyhane: masada oturanlara garsonu çağırma düğmesi */
-.meybtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(max(12px, env(safe-area-inset-bottom)) + 74px); z-index: 7; background: #f4d36b; color: #1a0f08; font-weight: 700; padding: 8px 16px; border-radius: 14px; border: 2px solid #5a3420; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
-.meybtn[hidden] { display: none; }
-.meybtn:disabled { background: #d9c3a0; opacity: 1; }
-body:has(.modal:not([hidden])) .meybtn, body.cinema .meybtn { display: none; }
 
 /* Meyhane radyosu: YouTube oynatıcısı görünmez yerde çalar */
-.radiohost { position: fixed; left: -9999px; top: 0; width: 320px; height: 180px; pointer-events: none; }
 
-.radiovol { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
-.radiovol input { flex: 1; }
-.radiovol b { min-width: 52px; text-align: right; }
-.radiochip { position: fixed; left: 10px; top: 92px; z-index: 15; display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 13px; }
-.radiochip[hidden] { display: none; }
-.radiochip svg { width: 16px; height: 16px; }
-body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden])) .radiochip, body.cinema .radiochip { display: none; }
 
 /* Menü: widget ekle */
 .widgetgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
@@ -583,17 +515,10 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
   #bar button { width: 44px; height: 44px; background: rgba(18, 15, 9, .78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 14px rgba(0, 0, 0, .4); }
   #help { display: none; }
   /* Kenara yapışan çip ve paneller yan sütunların içine kayar */
-  .radiochip { left: calc(max(8px, env(safe-area-inset-left)) + 54px); top: calc(max(6px, env(safe-area-inset-top)) + 44px); }
-  .admintvbtns { right: calc(max(8px, env(safe-area-inset-right)) + 54px); top: calc(max(6px, env(safe-area-inset-top)) + 44px); }
-  .casino-board { right: calc(max(8px, env(safe-area-inset-right)) + 54px); top: calc(max(6px, env(safe-area-inset-top)) + 86px); max-height: calc(100vh - 100px); overflow-y: auto; }
-  html[dir=rtl] .admintvbtns, html[dir=rtl] .casino-board { right: auto; left: calc(max(8px, env(safe-area-inset-left)) + 54px); }
   .chatpanel, body.cinema .chatpanel { left: calc(max(8px, env(safe-area-inset-left)) + 54px); right: auto; width: min(340px, calc(100vw - 130px)); top: calc(max(6px, env(safe-area-inset-top)) + 44px); bottom: max(8px, env(safe-area-inset-bottom)); height: auto; }
   html[dir=rtl] .chatpanel { left: auto; right: calc(max(8px, env(safe-area-inset-right)) + 54px); }
-  .meybtn { bottom: max(10px, env(safe-area-inset-bottom)); }
-  body:has(.chatpanel:not([hidden])) .radiochip { display: none; }
 }
 @media (orientation: landscape) and (max-height: 380px) { #bar { gap: 4px; } #bar button { width: 40px; height: 40px; } }
-@media (orientation: landscape) and (max-height: 320px) { #bar { gap: 3px; } #bar button { width: 36px; height: 36px; } .radiochip, .chatpanel { left: calc(max(8px, env(safe-area-inset-left)) + 46px); } }
 
 
 /* Mutfak: buzdolabı ve yeni yemek aşamaları */
@@ -690,7 +615,6 @@ body:has(.modal:not([hidden])) .radiochip, body:has(.admscreen.full:not([hidden]
   .card.sheet.game .foos { width: auto; max-width: 100%; height: calc(100dvh - 166px); align-self: center; }
   .card.sheet.game .xox { width: min(100%, calc(100dvh - 130px)); }
   .card.sheet.game .foos-score { margin: 0; }
-  .card.sheet.game .horses .hrace { width: auto; max-width: 100%; height: calc(100dvh - 190px); align-self: center; }
 }
 
 /* Değerlendirme kartı */
@@ -717,3 +641,9 @@ body:has(.modal:not([hidden])) .ratecard, body.cinema .ratecard { display: none;
 }
 
 .shopitem.sel { border-color: var(--sun); background: #2b2410; }
+
+/* Pikap radyosu (radio.js): görünmez oynatıcı ve ses ayarı */
+.radiohost { position: fixed; left: -9999px; top: 0; width: 320px; height: 180px; pointer-events: none; }
+.radiovol { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.radiovol input { flex: 1; }
+.radiovol b { min-width: 52px; text-align: right; }

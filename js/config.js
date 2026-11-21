@@ -14,24 +14,29 @@ export const firebaseConfig = {
 export const APP_URL = location.origin + location.pathname.replace(/index\.html$/, '');
 
 /**
- * Sesli/görüntülü sohbet bağlantı sunucuları. STUN çoğu ağda yeter; mobil veri ve bazı modemlerde
- * bağlantı TURN (Metered) aracılığıyla kurulur. Kimlik kötüye kullanılırsa Metered panelinden yenileyin.
+ * Sesli/görüntülü sohbet bağlantı sunucuları. STUN çoğu ağda yeter; mobil veri ve bazı modemlerde bağlantı TURN (Metered)
+ * aracılığıyla kurulur. TURN kimliği artık kodda durmaz (K1): Google Apps Script servisi (tools/apps-script/turn-kimlik.gs)
+ * 24 saat geçerli kimliği verir; cihaz 6 saat önbellekte tutar. Servise ulaşılamazsa yalnızca STUN ile denenir.
  */
-const TURN_USER = '4b5cf311071b31223d690a59';
-const TURN_PASS = 'OuOrxAMoHHCvKFeT';
-export const ICE_SERVERS = [
-  { urls: ['stun:stun.l.google.com:19302', 'stun:stun.relay.metered.ca:80'] },
-  {
-    urls: [
-      'turn:global.relay.metered.ca:80',
-      'turn:global.relay.metered.ca:80?transport=tcp',
-      'turn:global.relay.metered.ca:443',
-      'turns:global.relay.metered.ca:443?transport=tcp',
-    ],
-    username: TURN_USER,
-    credential: TURN_PASS,
-  },
-];
+const STUN = { urls: ['stun:stun.l.google.com:19302', 'stun:stun.relay.metered.ca:80'] };
+const ICE_URL = 'https://script.google.com/macros/s/AKfycbxmLD8DaN8HIchlerjd51TU7btQALZRvbyYng9EybGTYI4sy0txbisA9itvhEPoEejvyw/exec';
+const ICE_KEY = 'lr.ice', ICE_TTL = 6 * 3600 * 1000;
+export let ICE_SERVERS = [STUN];
+let iceLoad = null;
+/** TURN kimliğini alır (açılışta bir kez); call.js yeni bağlantıda güncel listeyi kullanır. */
+export function loadIce() {
+  if (iceLoad) return iceLoad;
+  const use = (list) => { if (Array.isArray(list) && list.length) ICE_SERVERS = [STUN, ...list]; };
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(ICE_KEY) || 'null'); } catch { /* gizli sekme */ }
+  if (cached && Date.now() - cached.at < ICE_TTL) { use(cached.list); return (iceLoad = Promise.resolve()); }
+  iceLoad = fetch(ICE_URL, { signal: AbortSignal.timeout(8000) }).then((r) => r.json()).then((j) => {
+    if (!Array.isArray(j.iceServers) || !j.iceServers.length) throw new Error('boş');
+    use(j.iceServers);
+    try { localStorage.setItem(ICE_KEY, JSON.stringify({ at: Date.now(), list: j.iceServers })); } catch { /* gizli sekme */ }
+  }).catch((e) => { console.warn('TURN kimliği alınamadı', e); if (cached) use(cached.list); iceLoad = null; });
+  return iceLoad;
+}
 
 /** Spotify geliştirici uygulaması (PKCE, gizli anahtar gerekmez). */
 export const SPOTIFY_CLIENT_ID = '925064e861c146678848c22db62e859a';

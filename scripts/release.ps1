@@ -22,6 +22,10 @@ $gh = 'C:\Program Files\GitHub CLI\gh.exe'
 Set-Location $root
 if (git tag --list $tag) { throw "$tag zaten var" }
 
+# 0. On kontrol (K30): legal.html, sozdizimi, sir taramasi, eksik ceviri. Hata varsa yayin durur.
+& node (Join-Path $root 'tools/preflight.mjs')
+if ($LASTEXITCODE -ne 0) { throw 'On kontrol basarisiz, yayin durduruldu.' }
+
 # 1. Surum numaralari (dosya bicimini bozmadan, sadece "version" satirlari)
 foreach ($file in @('app/app.json', 'package.json', 'app/package.json', 'server/package.json')) {
   $path = Join-Path $root $file

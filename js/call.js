@@ -4,7 +4,7 @@
 // Bağlantıda baştan dört kanal açılır: mikrofon, kamera, ekran görüntüsü ve ekran sesi. Kamerayı/ekranı
 // açıp kapatmak yeniden anlaşma gerektirmez; sadece o kanaldaki parça değişir.
 // Farklı ağlarda (mobil veri, sıkı modemler) bağlantı config.js'teki TURN sunucusu üzerinden geçer.
-import { ICE_SERVERS } from './config.js';
+import { ICE_SERVERS, loadIce } from './config.js';
 import { t } from './i18n.js';
 import { capture, tune, changeQuality, savedOpts } from './screenshare.js';
 
@@ -22,6 +22,7 @@ export function mediaError(e, what) {
 }
 
 export function createCall({ uid, send, onRemote, onState }) {
+  loadIce(); // TURN kimliği arka planda gelir; ilk bağlantıya kadar hazır olur
   let pc = null, partner = null, pendingIce = [];
   let mic = null, cam = null, screen = null, shareOpts = savedOpts();
   let discT = null;

@@ -7,7 +7,7 @@ import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
 import { createGame } from './game.js';
 import { createCall } from './call.js';
-import { DECOR, DEFAULT_STATE, SCENES, W, H, ADMIN_SCENES } from './scenes.js';
+import { DECOR, DEFAULT_STATE, SCENES, W, H } from './scenes.js';
 import { APP_URL } from './config.js';
 import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
 import { $, h, icon, toast, openSheet, closeSheet, esc } from './ui.js';
@@ -27,15 +27,12 @@ import { createShare } from './features/share.js';
 import { createShowcase } from './features/showcase.js';
 import { createKitchen } from './features/kitchen.js';
 import { createSleep } from './features/sleep.js';
-import { createAdmin, trackActivity } from './features/admin.js';
+import { trackActivity, dayKey } from './features/metrics.js';
 import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
-import { auth, db, get, ref, remove } from './fb.js';
+import { auth, db, get, ref, remove, update } from './fb.js';
 import { initI18n, t, lang, locale, langPicker } from './i18n.js';
 import { deleteUser, GoogleAuthProvider, reauthenticateWithPopup } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
-// Kaldırılan yapay partnerden (v0.47-0.48) kalanlar: bu cihazdaki sohbetler ve indirilen model dosyaları (1 GB'a kadar) silinir
-try { for (const k of Object.keys(localStorage)) if (k.startsWith('lr.ai.')) localStorage.removeItem(k); } catch { /* gizli sekme */ }
-globalThis.caches?.keys().then((ks) => ks.filter((k) => k.startsWith('webllm/') || k === 'transformers-cache').forEach((k) => caches.delete(k))).catch(() => {});
 
 // ---------- Hakkımızda ve hukuki metinler (uygulama içi pencere) ----------
 function openLegal(id) {
@@ -70,7 +67,7 @@ if (params.get('davet')) {
   history.replaceState(null, '', location.pathname);
 }
 
-let user = null, profile = null, spotifyReturn = null, pendingAdmin = null, beforeLogout = null;
+let user = null, profile = null, spotifyReturn = null, beforeLogout = null;
 
 async function boot() {
   await initI18n();
@@ -106,14 +103,6 @@ $('googleBtn').onclick = async () => {
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }
 };
 $('guestBtn').onclick = guest;
-// Giriş ekranındaki "Bekarlar için": şifreyi şimdi alır, giriş yapılıp eve girilince admin odasına götürür
-$('singlesGate').onclick = (e) => {
-  e.preventDefault();
-  const pw = prompt(t('Şifre?'));
-  if (!pw) return;
-  pendingAdmin = pw;
-  $('gateErr').textContent = t('Şimdi Google ile ya da adınla giriş yap; evine girince admin odasına geçeceksin.');
-};
 $('nameIn').addEventListener('keydown', (e) => e.key === 'Enter' && guest());
 async function guest() {
   const name = $('nameIn').value.trim();
@@ -348,7 +337,7 @@ async function enterWorld(rid, fresh = false) {
     onRel: (t) => { $('relChip').textContent = t; $('relChip').hidden = !t; },
     onFrame: null,
   };
-  let decor = null, care = null, kitchen = null, adminRoom = null, sleep = null;
+  let decor = null, care = null, kitchen = null, sleep = null;
 
   // Yatak odası: evde birlikte 100 saat (6000 dk) geçirince açılır. Sayaç live/{rid}/stats/minutes;
   // ikiniz de açıksanız yalnızca ev sahibi sayar (süre iki kez sayılmasın). Yerelde ?yatak ile hemen açılır.
@@ -386,15 +375,12 @@ async function enterWorld(rid, fresh = false) {
       b.d.hidden = !(visible && has);
       if (!b.d.hidden) { b.d.style.left = (x / W) * 100 + '%'; b.d.style.top = (y / H) * 100 + '%'; }
     },
-    onFrame: () => { tv?.place(); adminRoom?.placeTv(); ctx.onFrame?.(); },
+    onFrame: () => { tv?.place(); ctx.onFrame?.(); },
     onSpot: (id, s) => spot(id, s),
-    onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); adminRoom?.onScene(s); if (ADMIN_SCENES.has(s)) ctx.homeRadio?.leave(); else ctx.homeRadio?.enter(); },
+    onSceneChange: (s) => { toast(t(SCENES[s].name), 1400); care?.visit(s); ctx.homeRadio?.enter(); },
     hungerOf: (who) => kitchen?.hunger(who) ?? 100,
     sleepyOf: (who) => !!sleep?.sleepy(who),
-    getExtras: () => adminRoom?.extras() || [],
-    hasCrown: (who) => ADMIN_SCENES.has(game?.me.scene) && !!adminRoom && adminRoom.leader() === (who === 'me' ? user.uid : partnerUid()),
-    takenSeats: (sc) => adminRoom?.takenSeats?.(sc) || [],
-    canEnter: (to) => (to === 'meyhane' ? !!adminRoom?.active() : to !== 'yatak' || bedOpen()),
+    canEnter: (to) => to !== 'yatak' || bedOpen(),
     onLocked: () => toast(t('Yatak odası, evde birlikte 100 saat geçirince açılır. Şu an: {h} saat', { h: Math.floor((minutes || 0) / 60) }), 4000),
     onTogether: () => { live.react('heart'); live.stat('together'); toast(t('Yan yanasınız')); },
     onToast: toast,
@@ -429,9 +415,7 @@ async function enterWorld(rid, fresh = false) {
   kitchen = createKitchen(ctx);
   // Uyku ihtiyacı yalnızca yatak odası açıldıktan sonra; yatakta uzanınca dolar
   sleep = createSleep(ctx, { enabled: bedOpen, lying: () => game.me.scene === 'yatak' && game.me.seat >= 0 });
-  adminRoom = createAdmin(ctx);
-  ctx.adminRoom = adminRoom;
-  beforeLogout = async () => { await adminRoom.leave(); window.LoveRoomApp?.logout(); };
+  beforeLogout = async () => { window.LoveRoomApp?.logout(); };
   connectApp(ctx, { rid, care, draw, life, spotify });
   homeRadio.enter();
   const activityTick = trackActivity(user.uid);
@@ -459,15 +443,8 @@ async function enterWorld(rid, fresh = false) {
       foos: () => games.openFoos(),
       cook: () => kitchen.open(),
       fridge: () => kitchen.open(),
-      admintv: () => adminRoom.openTv(),
-      pc: () => adminRoom.openPc(),
-      roulette: () => adminRoom.openRoulette(),
-      horses: () => adminRoom.openHorses(),
-      radio: () => adminRoom.openRadio(),
-      meyphoto: () => adminRoom.openMeyPhoto(s?.n ?? 0),
       home: () => game.goto('salon', 96, 120),
       pool: () => games.openPool(),
-      adminpool: () => games.openPool({ admin: true }),
       flower: () => care.openFlower(),
       easel: () => draw.open(),
       booth: () => photos.openBooth(),
@@ -536,7 +513,7 @@ async function enterWorld(rid, fresh = false) {
   // Menü karoları: simge + tek kelime
   const tile = (id, name) => { const e = $(id).querySelector('.mico'); if (e) e.innerHTML = icon(name); };
   [['editBtn', 'user'], ['zoomBtn', 'eye'], ['fullBtn', 'full'], ['appBtn', 'phone'], ['widgetBtn', 'widget'], ['orientBtn', 'rotate'], ['tourBtn', 'help'],
-    ['logoutBtn', 'logout'], ['singlesLink', 'lock'], ['deleteBtn', 'trash'], ['copyBtn', 'copy']].forEach(([id, n]) => tile(id, n));
+    ['logoutBtn', 'logout'], ['deleteBtn', 'trash'], ['copyBtn', 'copy']].forEach(([id, n]) => tile(id, n));
   document.querySelector('.langrow .gl').innerHTML = icon('globe');
   $('soundBtn').innerHTML = icon('sound') + `<span>${t('Sesi aç')}</span>`;
   $('micWarn').innerHTML = icon('micOff') + `<span>${t('Mikrofon kapalı')}</span>`;
@@ -583,10 +560,6 @@ async function enterWorld(rid, fresh = false) {
   $('inviteChip').onclick = $('menuBtn').onclick;
   $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı')); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
-  // Gizli admin girişi: menünün alt bağlantılarındaki "Bekarlar için" → şifre → admin odası
-  $('singlesLink').onclick = (e) => { e.preventDefault(); $('menu').hidden = true; adminRoom.enter(); };
-  // Giriş ekranından gelindiyse: giriş yapıp evine girince şifreyle admin odasına geçer
-  if (pendingAdmin) { const pw = pendingAdmin; pendingAdmin = null; setTimeout(() => adminRoom.enter(pw), 800); }
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
   $('linkGoogleBtn').onclick = async () => {
     try {
@@ -620,14 +593,20 @@ async function enterWorld(rid, fresh = false) {
   async function deleteEverything() {
     toast(t('Siliniyor…'), 8000);
     call.setPartner(null);
-    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); sleep.stop(); adminRoom.stop(); game.stop(); live.leave();
+    clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); sleep.stop(); game.stop(); live.leave();
     const r = room.data;
     const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
-    if (sc) await remove(ref(db, `showcase/${sc}`)).catch(() => {});
+    if (sc) { await remove(ref(db, `showcase/${sc}`)).catch(() => {}); await remove(ref(db, `showcaseRid/${sc}`)).catch(() => {}); }
     if (r?.info?.invite) await remove(ref(db, `invites/${r.info.invite}`)).catch(() => {});
     await remove(ref(db, `live/${rid}`));
     await remove(ref(db, `rooms/${rid}`));
     await remove(ref(db, `users/${user.uid}`));
+    // Kullanım sayaçları ve varsa admin işareti: son 400 günün aktiflik kaydı, çevrimiçi işareti (K2)
+    // Ayrı istekler: biri reddedilirse (ör. admin işareti yoksa) diğerleri yine silinir
+    const gone = { [`metrics/online/${user.uid}`]: null };
+    for (let i = 0; i < 400; i++) gone[`metrics/active/${dayKey(Date.now() - i * 864e5)}/${user.uid}`] = null;
+    await update(ref(db), gone).catch((e) => console.warn('sayaç silme', e));
+    await remove(ref(db, `admins/${user.uid}`)).catch(() => {});
     try { await deleteUser(auth.currentUser); }
     catch (e) {
       if (e.code === 'auth/requires-recent-login') { await reauthenticateWithPopup(auth.currentUser, new GoogleAuthProvider()); await deleteUser(auth.currentUser); }
