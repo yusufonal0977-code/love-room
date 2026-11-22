@@ -44,7 +44,7 @@ export function loadIce() {
  * "desteklenmiyor" der ve hiçbir istek gönderilmez.
  */
 /** "Bize destek ol" bağış sayfası (K14-B; Ko-fi ya da Buy Me a Coffee). Boşsa düğme görünmez. */
-export const DONATE_URL = '';
+export const DONATE_URL = 'https://buymeacoffee.com/eclip';
 
 /** Fotoğraf deposu (K6-C, tools/cloudflare/foto). Boşsa fotoğraflar eskisi gibi veritabanında durur. */
 export const PHOTO_URL = '';
