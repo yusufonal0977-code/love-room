@@ -80,6 +80,8 @@ const P = {
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
   copy: '<rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/>',
   phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+  bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
   widget: '<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><path d="M17 13.5v7M13.5 17h7"/>',
 };
 export function icon(name, cls = '') {
@@ -122,6 +124,37 @@ export function closeSheet() {
   f?.();
 }
 export const sheetOpen = () => !$('sheet').hidden;
+
+// ---------- Erişilebilir pencereler (K36) ----------
+// .modal pencereleri açılınca odak içeri girer, Tab dışarı çıkmaz, Escape kapatır; kapanınca odak açan düğmeye döner.
+const FOCUSABLE = 'button:not([disabled]):not([hidden]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+const openModals = () => [...document.querySelectorAll('.modal')].filter((m) => !m.hidden);
+export function a11yModals() {
+  const opener = new WeakMap();
+  const obs = new MutationObserver((list) => {
+    for (const { target: m } of list) {
+      if (!m.hidden) {
+        opener.set(m, document.activeElement);
+        requestAnimationFrame(() => { if (!m.contains(document.activeElement)) (m.querySelector('.xclose') || m.querySelector(FOCUSABLE))?.focus({ preventScroll: true }); });
+      } else {
+        const back = opener.get(m);
+        if (back?.isConnected && !openModals().length) back.focus?.({ preventScroll: true });
+      }
+    }
+  });
+  document.querySelectorAll('.modal').forEach((m) => obs.observe(m, { attributes: true, attributeFilter: ['hidden'] }));
+  addEventListener('keydown', (e) => {
+    const top = openModals().pop();
+    if (!top) return;
+    if (e.key === 'Escape') { if (top.id === 'sheet') closeSheet(); else top.hidden = true; return; }
+    if (e.key !== 'Tab') return;
+    const f = [...top.querySelectorAll(FOCUSABLE)].filter((x) => x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !top.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  });
+}
 
 // ---------- Fotoğraf ----------
 /** Dosya seçtirir (kamera rulosu / bilgisayar). */

@@ -106,7 +106,7 @@
       <li data-t><b>Anı biriktirin:</b> fotoğraf kabini, ortak albüm, günlük, geleceğe mektup, ilişki saati.</li>
       <li data-t><b>Birlikte vakit geçirin:</b> çizim, XOX, hafıza, langırt; ortak kedi ve çiçek.</li>
     </ul>
-    <p data-t>Ücretsiz, reklamsız; telefonda ve bilgisayarda tarayıcıdan çalışır.</p>
+    <p data-t>Temel özellikler her zaman ücretsiz, reklam yok; telefonda ve bilgisayarda tarayıcıdan çalışır.</p>
   </details>
   <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#iletisim">İletişim</a><a href="/rehber/">Rehber</a></nav>
 </section>
@@ -158,7 +158,7 @@
 
 <!-- Dünya -->
 <section id="world" hidden>
-  <div id="stage"><canvas id="c" width="192" height="144"></canvas><div id="ov"></div></div>
+  <div id="stage"><canvas id="c" width="192" height="144" role="img" aria-label="Ortak eviniz: karakterler ve eşyalar. Alt çubuktaki düğmelerle ve menüyle kullanılır." data-ta></canvas><div id="ov"></div></div>
   <div id="tvLayer"></div>
   <header id="top">
     <div class="who"><b data-t id="roomName">Bizim Ev</b><span id="status"></span><button id="connDot" class="conn idle" aria-label="Bağlantı"></button></div>
@@ -192,15 +192,15 @@
 </section>
 
 <div id="langCorner"></div>
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <div id="brand"><img src="assets/eclip-logo.webp" alt="">ECLIP</div>
 <audio id="remoteAudio" autoplay playsinline></audio>
 <audio id="screenAudio" autoplay playsinline></audio>
 
 <!-- Menü -->
-<div id="menu" class="modal" hidden>
+<div id="menu" class="modal" role="dialog" aria-modal="true" aria-labelledby="menuTitle" hidden>
   <div class="card menucard">
-    <div class="menuhead"><h3 data-t>Bizim Ev</h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="menuhead"><h3 id="menuTitle" data-t>Bizim Ev</h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <div id="menuInvite" class="menuinv">
       <div class="invrow"><div class="linkbox"><span id="inviteLink"></span></div><button id="copyBtn" class="mini" data-tt title="Linki kopyala"><span class="mico"></span></button></div>
     </div>
@@ -212,6 +212,8 @@
       <button id="widgetBtn" class="mtile" data-tt title="Widget ekle"><span class="mico"></span><span class="mcap" data-t>Widget</span></button>
       <button id="orientBtn" class="mtile" hidden><span class="mico"></span><span class="mcap" data-t>Ekran yönü</span></button>
       <button id="tourBtn" class="mtile" data-tt title="Nasıl kullanılır?"><span class="mico"></span><span class="mcap" data-t>Yardım</span></button>
+      <button id="notifBtn" class="mtile" data-tt title="Bildirimler"><span class="mico"></span><span class="mcap" data-t>Bildirim</span></button>
+      <button id="feedbackBtn" class="mtile" data-tt title="Görüş bildir"><span class="mico"></span><span class="mcap" data-t>Görüş</span></button>
       <button id="logoutBtn" class="mtile"><span class="mico"></span><span class="mcap" data-t>Çıkış yap</span></button>
       <button id="deleteBtn" class="mtile danger"><span class="mico"></span><span class="mcap" data-t>Verilerimi sil</span></button>
       <div id="linkBox" class="menulink" hidden>
@@ -227,9 +229,9 @@
 </div>
 
 <!-- Karakter düzenleyici -->
-<div id="editor" class="modal" hidden>
+<div id="editor" class="modal" role="dialog" aria-modal="true" aria-labelledby="editorTitle" hidden>
   <div class="card">
-    <div class="menuhead"><h3 data-t>Karakterin</h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="menuhead"><h3 id="editorTitle" data-t>Karakterin</h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <canvas id="preview" width="48" height="48"></canvas>
     <label><span data-t>Adın</span> <input id="edName" maxlength="14"></label>
     <div class="opts" id="edSide"></div>
@@ -245,7 +247,7 @@
 </div>
 
 <!-- Özellik penceresi (TV, müzik, günlük, oyunlar…) -->
-<div id="sheet" class="modal" hidden>
+<div id="sheet" class="modal" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="card sheet">
     <div class="sheethead"><h3 id="sheetTitle"></h3><button class="x xclose" data-close data-tt title="Kapat" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <div id="sheetBody"></div>

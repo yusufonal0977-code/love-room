@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /yonetim.html
 
 Sitemap: https://getloveroom.com/sitemap.xml

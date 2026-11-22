@@ -60,6 +60,7 @@ export function translateDom(root) {
   root.querySelectorAll('[data-t]').forEach((el) => { el.innerHTML = t(el.innerHTML.trim()); });
   root.querySelectorAll('[data-tp]').forEach((el) => { el.placeholder = t(el.placeholder); });
   root.querySelectorAll('[data-tt]').forEach((el) => { el.title = t(el.title); });
+  root.querySelectorAll('[data-ta]').forEach((el) => { el.setAttribute('aria-label', t(el.getAttribute('aria-label'))); });
 }
 
 export function setLang(code) {

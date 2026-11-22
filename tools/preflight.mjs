@@ -3,6 +3,7 @@
 //   2. Her js modülünü sözdizimi için denetler (node --check)
 //   3. Repoya girecek dosyalarda şifre/gizli anahtar kalıbı arar (Firebase'in herkese açık web anahtarı hariç)
 //   4. Eksik çevirileri sayar (yalnızca uyarı)
+//   5. tests/ altındaki testleri çalıştırır
 // Kullanım: node tools/preflight.mjs
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync, readdirSync, statSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -54,6 +55,12 @@ console.log(`sır taraması: ${files.length} dosya`);
 const miss = spawnSync('python', [join(ROOT, 'tools', 'i18n', 'build.py'), '--missing'], { encoding: 'utf8', env: { ...process.env, PYTHONIOENCODING: 'utf-8' } });
 const missing = (miss.stdout || '').split('\n').filter((l) => l.trim()).length;
 if (miss.status === 0 && missing) console.warn(`uyarı: çevrilmemiş metin kalemi: ${missing} (python tools/i18n/build.py --missing)`);
+
+// 5. Testler (tests/*.test.mjs, K29-B)
+const testFiles = readdirSync(join(ROOT, 'tests')).filter((f) => f.endsWith('.test.mjs')).map((f) => join(ROOT, 'tests', f));
+const tr = spawnSync(process.execPath, ['--test', ...testFiles], { encoding: 'utf8' });
+if (tr.status !== 0) fail('testler başarısız\n' + (tr.stdout || '').split('\n').filter((l) => /✖|fail|Error/.test(l)).slice(0, 12).join('\n'));
+else console.log(`testler: ${testFiles.length} dosya geçti`);
 
 if (failed) { console.error('Ön kontrol BAŞARISIZ, yayın durduruldu.'); process.exit(1); }
 console.log('Ön kontrol tamam.');

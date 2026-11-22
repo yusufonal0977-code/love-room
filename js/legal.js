@@ -2,7 +2,7 @@
 // Metin değişirse LEGAL_VERSION artırılır; kullanıcılar bir sonraki girişte yeniden onaylar.
 
 export const LEGAL_VERSION = 2;
-export const LEGAL_DATE = '21 Kasım 2026';
+export const LEGAL_DATE = '22 Kasım 2026';
 export const CONTACT = 'eclipsoftware.dev@gmail.com';
 const COMPANY = 'Eclip Software &amp; Entertainment Company';
 const mail = `<a href="mailto:${CONTACT}">${CONTACT}</a>`;
@@ -59,7 +59,7 @@ const LEGAL_TR = [
 <p>TV'ye eklenen link, site ya da ekran paylaşımı iki kullanıcı arasında oynatılır; bu içerikleri biz barındırmayız, seçmeyiz ve denetlemeyiz. Açtığınız sitelerin ve paylaştığınız içeriklerin hukuka ve telif haklarına uygun olmasından <b>siz sorumlusunuz</b>. YouTube, Spotify ve diğer hizmetleri kullanırken onların kendi koşulları da geçerlidir (Spotify ile birlikte dinleme için Spotify Premium gerekebilir).</p>
 <p>Hak sahibiyseniz ve Hizmet üzerinden hakkınızın ihlal edildiğini düşünüyorsanız ${mail} adresine yazın; gerekli adımları atarız.</p>
 <h4>6. Hizmetin durumu</h4>
-<p>Get Love Room ücretsizdir ve geliştirilmeye devam etmektedir. Hizmeti "olduğu gibi" sunuyoruz; kesintisiz ya da hatasız çalışacağını garanti etmiyoruz. Özellikleri değiştirebilir, ekleyebilir ya da kaldırabiliriz. Ses/görüntü kalitesi internet bağlantınıza bağlıdır.</p>
+<p>Get Love Room'un temel özellikleri (ortak ev, sesli ve görüntülü sohbet, birlikte film izleme ve müzik dinleme, oyunlar, anılarınız) her zaman ücretsizdir ve reklam içermez. İleride isteğe bağlı ücretli eklentiler (örneğin dekor paketleri) gelebilir; bunlar temel özellikleri kısıtlamaz ve önceden duyurulur. Hizmet geliştirilmeye devam etmektedir. Hizmeti "olduğu gibi" sunuyoruz; kesintisiz ya da hatasız çalışacağını garanti etmiyoruz. Özellikleri değiştirebilir, ekleyebilir ya da kaldırabiliriz. Ses/görüntü kalitesi internet bağlantınıza bağlıdır.</p>
 <h4>7. Sorumluluğun sınırı</h4>
 <p>Kanunun izin verdiği ölçüde; dolaylı zararlardan, veri kaybından, üçüncü taraf hizmetlerden ve kullanıcıların paylaştığı içeriklerden sorumlu değiliz. Önemli anılarınızın bir kopyasını (Albüm → Galeriye kaydet) cihazınızda saklamanızı öneririz.</p>
 <h4>8. Sona erme</h4>
@@ -86,18 +86,20 @@ const LEGAL_TR = [
   <li><b>Kullanım sayacı:</b> Hizmetin nasıl kullanıldığını görebilmek için uygulama açıkken günlük bir "bugün aktif" işareti ve son görülme zamanı tutulur (kullanıcı kimliğinizle; yalnızca yöneticiler görür). Ayrıca "ev kuruldu", "partner katıldı" gibi kişiyi tanımlamayan olay sayıları tutulabilir. Dışarıdan bir analiz ya da reklam aracı kullanılmaz.</li>
   <li><b>Erken erişim isteği:</b> Android erken erişim formuna yazdığınız e-posta adresi, Google Apps Script aracılığıyla yalnızca şirket e-posta kutumuza iletilir. Sizi Google Play test listesine eklemek için kullanılır ve isteğiniz üzerine silinir.</li>
   <li><b>Vitrin:</b> "Evimizi göster" linkini açan ziyaretçiler evi otomatik misafir (anonim) girişle görür; ad ya da e-posta istenmez. Vitrinde yalnızca sizin paylaştığınız görünüm ve adlar yer alır.</li>
+  <li><b>Görüş bildirimi:</b> Menüdeki "Görüş" formuna yazdıklarınız kullanıcı kimliğinizle birlikte saklanır ve yalnızca Get Love Room ekibi okur; partneriniz görmez.</li>
+  <li><b>Bildirimler:</b> Bildirimleri açarsanız tarayıcınızın bildirim jetonu ve dil seçiminiz saklanır; partneriniz eve geldiğinde ya da kavanoz sorusunu cevapladığında günde en fazla bir bildirim gönderilir. Menüden istediğiniz an kapatabilirsiniz.</li>
 </ul>
 <h4>Kullanım amaçları</h4>
 <p>Verileri yalnızca Hizmeti sunmak için kullanırız: sizi ve partnerinizi aynı evde buluşturmak, paylaştıklarınızı partnerinize göstermek, film/müzik senkronu, güvenlik ve kötüye kullanımın önlenmesi. Pazarlama, profil çıkarma ya da reklam için kullanmayız.</p>
 <h4>Kimlerle paylaşılır</h4>
 <ul>
   <li><b>Partneriniz:</b> evinize eklediğiniz her şeyi görür. Günlük ve kavanoz cevapları ikinize ortaktır.</li>
-  <li><b>Hizmet sağlayıcılar</b> (bizim adımıza işlerler): Google Firebase (kimlik doğrulama ve veritabanı; Avrupa Birliği, Belçika bölgesi), GitHub Pages (sitenin barındırılması), Metered (bağlantı aktarma), Google Apps Script (erken erişim isteğinin şirket e-postasına iletilmesi).</li>
+  <li><b>Hizmet sağlayıcılar</b> (bizim adımıza işlerler): Google Firebase (kimlik doğrulama, veritabanı ve bildirimler; Avrupa Birliği, Belçika bölgesi), GitHub Pages (sitenin barındırılması), Metered (bağlantı aktarma), Google Apps Script (erken erişim isteğinin şirket e-postasına iletilmesi).</li>
   <li><b>Sizin açtığınız hizmetler:</b> TV'de YouTube ya da başka bir site açtığınızda, Spotify'ı bağladığınızda o hizmetler kendi gizlilik politikalarına göre veri işler (ör. YouTube çerezleri).</li>
   <li>Kanunen zorunlu olduğunda yetkili makamlar.</li>
 </ul>
 <h4>Saklama süresi ve silme</h4>
-<p>Verileriniz siz silene kadar saklanır. Bir fotoğrafı, yazıyı ya da cevabı tek tek silebilirsiniz. Menü → <i>Verilerimi sil</i> dediğinizde hesabınız, profiliniz ve <b>ortak eviniz (partnerinizin eklediği içerikler dahil)</b> veritabanından hemen silinir; kullanım sayaçlarındaki kimliğinize bağlı kayıtlar ve varsa vitrin linkiniz de silinir. Partnerinizin içeriklerini korumak istiyorsanız silmeden önce Albüm'den kaydetmesini isteyin. Uygulamaya girmeden silme talebi için: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
+<p>Verileriniz siz silene kadar saklanır. Bir fotoğrafı, yazıyı ya da cevabı tek tek silebilirsiniz. Menü → <i>Verilerimi sil</i> dediğinizde hesabınız, profiliniz ve <b>ortak eviniz (partnerinizin eklediği içerikler dahil)</b> veritabanından hemen silinir; kullanım sayaçlarındaki kimliğinize bağlı kayıtlar, görüşleriniz, bildirim jetonlarınız ve varsa vitrin linkiniz de silinir. Partnerinizin içeriklerini korumak istiyorsanız silmeden önce Albüm'den kaydetmesini isteyin. Uygulamaya girmeden silme talebi için: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
 <h4>Güvenlik</h4>
 <p>Bağlantılar HTTPS ile şifrelenir; veritabanı kuralları sayesinde bir eve yalnızca o evin iki sahibi erişebilir. Sohbet uçtan uca şifreli akar. Yine de hiçbir sistem %100 güvenli değildir; davet linkinizi sadece partnerinizle paylaşın.</p>
 <h4>Çocuklar</h4>

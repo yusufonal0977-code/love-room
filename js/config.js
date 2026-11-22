@@ -38,5 +38,13 @@ export function loadIce() {
   return iceLoad;
 }
 
+/**
+ * Web bildirimleri (K24). VAPID_KEY: Firebase konsolu > Proje ayarları > Cloud Messaging > Web Push sertifikaları (herkese açık
+ * anahtar, gizli değildir). PUSH_URL: tools/apps-script/bildirim.gs web uygulamasının adresi. İkisi de boşsa bildirim düğmesi
+ * "desteklenmiyor" der ve hiçbir istek gönderilmez.
+ */
+export const VAPID_KEY = '';
+export const PUSH_URL = '';
+
 /** Spotify geliştirici uygulaması (PKCE, gizli anahtar gerekmez). */
 export const SPOTIFY_CLIENT_ID = '925064e861c146678848c22db62e859a';

@@ -1,7 +1,7 @@
 // English legal texts and About page. Shown for every language except Turkish.
 // The Turkish version (legal.js) is the original; titles stay as Turkish keys so the interface translates them.
 
-const DATE = 'November 21, 2026';
+const DATE = 'November 22, 2026';
 const CONTACT = 'eclipsoftware.dev@gmail.com';
 const COMPANY = 'Eclip Software &amp; Entertainment Company';
 const mail = `<a href="mailto:${CONTACT}">${CONTACT}</a>`;
@@ -55,7 +55,7 @@ export const LEGAL_EN = [
 <p>Links, websites or screen shares added to the TV are played between the two users; we don't host, choose or review this content. <b>You are responsible</b> for making sure the sites you open and the content you share are lawful and respect copyright. When you use YouTube, Spotify and other services, their own terms also apply (playing together on Spotify may require Spotify Premium).</p>
 <p>If you are a rights holder and believe your rights are being infringed through the Service, write to ${mail} and we will take the necessary steps.</p>
 <h4>6. Status of the Service</h4>
-<p>Get Love Room is free and still being developed. We provide the Service "as is" and don't guarantee it will run uninterrupted or error-free. We may change, add or remove features. Audio/video quality depends on your internet connection.</p>
+<p>Get Love Room's core features (the shared home, voice and video chat, watching and listening together, games, your memories) are always free and ad-free. Optional paid extras (such as decor packs) may come later; they will never limit the core features and will be announced in advance. The Service is still being developed. We provide the Service "as is" and don't guarantee it will run uninterrupted or error-free. We may change, add or remove features. Audio/video quality depends on your internet connection.</p>
 <h4>7. Limitation of liability</h4>
 <p>To the extent permitted by law, we are not liable for indirect damages, data loss, third-party services, or content shared by users. We recommend keeping a copy of important memories on your device (Album → Save to gallery).</p>
 <h4>8. Termination</h4>
@@ -82,18 +82,20 @@ export const LEGAL_EN = [
   <li><b>Usage counter:</b> To see how the Service is used, while the app is open we keep a daily "active today" mark and a last-seen time (tied to your user ID; only administrators can see them). We may also keep counts of events that do not identify you, such as "home created" or "partner joined". No third-party analytics or advertising tools are used.</li>
   <li><b>Early access request:</b> The email address you enter in the Android early access form is forwarded, via Google Apps Script, only to our company inbox. It is used to add you to the Google Play test list and deleted on request.</li>
   <li><b>Showcase:</b> Visitors who open an "Show our home" link see the home through an automatic guest (anonymous) sign-in; no name or email is asked. The showcase only contains the look and names you chose to share.</li>
+  <li><b>Feedback:</b> What you write in the "Feedback" form in the menu is stored with your user ID and read only by the Get Love Room team; your partner cannot see it.</li>
+  <li><b>Notifications:</b> If you turn notifications on, your browser's notification token and language are stored; you get at most one notification a day, when your partner comes home or answers the jar question. You can turn them off in the menu at any time.</li>
 </ul>
 <h4>Why we use it</h4>
 <p>Only to provide the Service: bringing you and your partner together in one home, showing your partner what you share, syncing movies and music, security and preventing abuse. Never for marketing, profiling or ads.</p>
 <h4>Who it's shared with</h4>
 <ul>
   <li><b>Your partner:</b> sees everything you add to the home. The diary and jar answers are shared between you.</li>
-  <li><b>Service providers</b> working on our behalf: Google Firebase (authentication and database; European Union, Belgium region), GitHub Pages (website hosting), Metered (connection relay), Google Apps Script (forwarding early access requests to our company inbox).</li>
+  <li><b>Service providers</b> working on our behalf: Google Firebase (authentication, database and notifications; European Union, Belgium region), GitHub Pages (website hosting), Metered (connection relay), Google Apps Script (forwarding early access requests to our company inbox).</li>
   <li><b>Services you open:</b> when you open YouTube or another site on the TV, or connect Spotify, those services process data under their own privacy policies (e.g. YouTube cookies).</li>
   <li>Competent authorities, when required by law.</li>
 </ul>
 <h4>Retention and deletion</h4>
-<p>Your data is kept until you delete it. You can delete each photo, entry or answer individually. When you choose Menu → <i>Delete my data</i>, your account, profile and <b>shared home (including content your partner added)</b> are removed from the database immediately, together with the usage counter records tied to your ID and your showcase link, if any. If your partner wants to keep their content, ask them to save it from the Album first. To request deletion without the app: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
+<p>Your data is kept until you delete it. You can delete each photo, entry or answer individually. When you choose Menu → <i>Delete my data</i>, your account, profile and <b>shared home (including content your partner added)</b> are removed from the database immediately, together with the usage counter records tied to your ID, your feedback, your notification tokens and your showcase link, if any. If your partner wants to keep their content, ask them to save it from the Album first. To request deletion without the app: <a href="hesap-sil.html">getloveroom.com/hesap-sil.html</a>.</p>
 <h4>Security</h4>
 <p>Connections are encrypted with HTTPS; database rules ensure that only the two owners of a home can access it. Chat streams are end-to-end encrypted. Still, no system is 100% secure; share your invite link only with your partner.</p>
 <h4>Children</h4>

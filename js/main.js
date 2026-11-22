@@ -10,7 +10,7 @@ import { createCall } from './call.js';
 import { DECOR, DEFAULT_STATE, SCENES, W, H } from './scenes.js';
 import { APP_URL } from './config.js';
 import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
-import { $, h, icon, toast, openSheet, closeSheet, esc } from './ui.js';
+import { $, h, icon, toast, openSheet, closeSheet, esc, a11yModals } from './ui.js';
 import { createTV } from './features/tv.js';
 import { createSpotify, handleSpotifyRedirect } from './features/spotify.js';
 import { createPhotos } from './features/photos.js';
@@ -27,7 +27,12 @@ import { createShare } from './features/share.js';
 import { createShowcase } from './features/showcase.js';
 import { createKitchen } from './features/kitchen.js';
 import { createSleep } from './features/sleep.js';
-import { trackActivity, dayKey } from './features/metrics.js';
+import { trackActivity, track } from './features/metrics.js';
+import { createGoals } from './features/goals.js';
+import { createFeedback } from './features/feedback.js';
+import { createPush, pushConfigured } from './features/push.js';
+import { createWaiting } from './features/waiting.js';
+import { deleteAccountData } from './features/account.js';
 import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
 import { auth, db, get, ref, remove, update } from './fb.js';
 import { initI18n, t, lang, locale, langPicker } from './i18n.js';
@@ -47,7 +52,7 @@ function openLegal(id) {
 // Pencereleri kapatma (, boşluğa dokunma, Esc): giriş ekranında da çalışsın diye en başta bağlanır
 document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
 document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
-addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
+a11yModals(); // Escape, odak tuzağı, odağın geri dönmesi (K36)
 document.addEventListener('click', (e) => {
   const a = e.target.closest?.('a[href^="#"]');
   if (!a || !legalById(a.getAttribute('href').slice(1))) return;
@@ -169,7 +174,7 @@ async function route() {
 }
 $('createBtn').onclick = async () => {
   $('createBtn').disabled = true;
-  try { const rid = await createRoom(user.uid); profile.roomId = rid; await enterWorld(rid, true); }
+  try { const rid = await createRoom(user.uid); profile.roomId = rid; track('home_created'); await enterWorld(rid, true); }
   catch (e) { toast(t('Ev kurulamadı. İnternet bağlantını kontrol et.')); console.warn(e); $('createBtn').disabled = false; }
 };
 [$('logoutBtn'), $('logoutBtn1')].forEach((b) => (b.onclick = async () => { await beforeLogout?.(); await logout(); location.reload(); }));
@@ -188,7 +193,7 @@ function showInvite(inv, code) {
   }
   $('acceptBtn').onclick = async () => {
     $('acceptBtn').disabled = true;
-    try { await acceptInvite(user.uid, inv.rid); profile = await getProfile(user.uid); await enterWorld(inv.rid); }
+    try { await acceptInvite(user.uid, inv.rid); profile = await getProfile(user.uid); track('partner_joined'); await enterWorld(inv.rid); }
     catch (e) { toast(t('Odaya girilemedi.')); console.warn(e); $('acceptBtn').disabled = false; }
   };
   $('declineBtn').onclick = () => (profile.roomId ? enterWorld(profile.roomId) : (($('setupName').textContent = profile.name), show('setup')));
@@ -234,7 +239,7 @@ async function enterWorld(rid, fresh = false) {
   const room = { data: await getRoom(rid) };
   let shared = { ...DEFAULT_STATE }, presence = {}, partnerProfile = null, catPos = null;
   // Veritabanı olayları, oyun ve arama nesneleri kurulmadan da gelebilir; o yüzden önceden tanımlı.
-  let game = null, call = null, tv = null;
+  let game = null, call = null, tv = null, goals = null, push = null;
   const partnerUid = () => (room.data?.a === user.uid ? room.data?.b : room.data?.a) || null;
   const isHost = () => room.data?.a === user.uid;
   const partnerP = () => (partnerUid() ? presence[partnerUid()] : null);
@@ -265,13 +270,14 @@ async function enterWorld(rid, fresh = false) {
       const before = partnerUid();
       room.data = r;
       const p = partnerUid();
-      if (p && p !== before) { live.watchProfile(p, (pp) => (partnerProfile = pp)); toast(t('Partnerin eve katıldı')); }
+      if (p && p !== before) { live.watchProfile(p, (pp) => (partnerProfile = pp)); toast(t('Partnerin eve katıldı')); setTimeout(() => push?.suggest(), 20_000); }
       updateTop();
     },
     onPresence(map) {
       const was = partnerP();
       presence = map;
       const now_ = partnerP();
+      if (now_) goals?.together(); // ikiniz aynı anda evdesiniz: haftalık hedef (K38)
       if (!!now_ !== !!was) {
         call?.setPartner(now_ ? partnerUid() : null);
         if (now_ && partnerProfile) toast(t('{name} geldi. Sesli sohbet açık', { name: partnerProfile.name }));
@@ -412,6 +418,12 @@ async function enterWorld(rid, fresh = false) {
   ctx.chat = createChat(ctx);
   const share = createShare(ctx);
   const showcase = createShowcase(ctx);
+  // Haftalık hedef, görüş formu, bildirimler (K38, K39, K24). Her live.stat hem haftalık hedefe hem olay sayacına (K12) yazılır.
+  goals = createGoals(ctx); push = createPush(ctx);
+  const feedback = createFeedback(ctx);
+  Object.assign(ctx, { goals, push });
+  const rawStat = live.stat;
+  live.stat = (key, n) => { goals.did(key); track(key); return rawStat(key, n); };
   kitchen = createKitchen(ctx);
   // Uyku ihtiyacı yalnızca yatak odası açıldıktan sonra; yatakta uzanınca dolar
   sleep = createSleep(ctx, { enabled: bedOpen, lying: () => game.me.scene === 'yatak' && game.me.seat >= 0 });
@@ -513,7 +525,7 @@ async function enterWorld(rid, fresh = false) {
   // Menü karoları: simge + tek kelime
   const tile = (id, name) => { const e = $(id).querySelector('.mico'); if (e) e.innerHTML = icon(name); };
   [['editBtn', 'user'], ['zoomBtn', 'eye'], ['fullBtn', 'full'], ['appBtn', 'phone'], ['widgetBtn', 'widget'], ['orientBtn', 'rotate'], ['tourBtn', 'help'],
-    ['logoutBtn', 'logout'], ['deleteBtn', 'trash'], ['copyBtn', 'copy']].forEach(([id, n]) => tile(id, n));
+    ['logoutBtn', 'logout'], ['deleteBtn', 'trash'], ['copyBtn', 'copy'], ['notifBtn', 'bell'], ['feedbackBtn', 'chat']].forEach(([id, n]) => tile(id, n));
   document.querySelector('.langrow .gl').innerHTML = icon('globe');
   $('soundBtn').innerHTML = icon('sound') + `<span>${t('Sesi aç')}</span>`;
   $('micWarn').innerHTML = icon('micOff') + `<span>${t('Mikrofon kapalı')}</span>`;
@@ -557,7 +569,12 @@ async function enterWorld(rid, fresh = false) {
   };
   $('zoomBtn').onclick = () => { game.setZoom(game.zoom === 'cover' ? 'contain' : 'cover'); $('menu').hidden = true; };
   $('fullBtn').onclick = fullscreen;
-  $('inviteChip').onclick = $('menuBtn').onclick;
+  const inviteUrl = () => `${APP_URL}?davet=${room.data?.info?.invite}`;
+  const waiting = createWaiting(ctx, { inviteUrl, life, decor, care, games });
+  $('inviteChip').onclick = () => waiting.open();
+  $('notifBtn').onclick = () => { $('menu').hidden = true; push.open(); };
+  $('notifBtn').hidden = !pushConfigured();
+  $('feedbackBtn').onclick = () => { $('menu').hidden = true; feedback.open(); };
   $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı')); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };
@@ -594,19 +611,7 @@ async function enterWorld(rid, fresh = false) {
     toast(t('Siliniyor…'), 8000);
     call.setPartner(null);
     clearInterval(minuteTick); clearInterval(activityTick); kitchen.stop(); sleep.stop(); game.stop(); live.leave();
-    const r = room.data;
-    const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
-    if (sc) { await remove(ref(db, `showcase/${sc}`)).catch(() => {}); await remove(ref(db, `showcaseRid/${sc}`)).catch(() => {}); }
-    if (r?.info?.invite) await remove(ref(db, `invites/${r.info.invite}`)).catch(() => {});
-    await remove(ref(db, `live/${rid}`));
-    await remove(ref(db, `rooms/${rid}`));
-    await remove(ref(db, `users/${user.uid}`));
-    // Kullanım sayaçları ve varsa admin işareti: son 400 günün aktiflik kaydı, çevrimiçi işareti (K2)
-    // Ayrı istekler: biri reddedilirse (ör. admin işareti yoksa) diğerleri yine silinir
-    const gone = { [`metrics/online/${user.uid}`]: null };
-    for (let i = 0; i < 400; i++) gone[`metrics/active/${dayKey(Date.now() - i * 864e5)}/${user.uid}`] = null;
-    await update(ref(db), gone).catch((e) => console.warn('sayaç silme', e));
-    await remove(ref(db, `admins/${user.uid}`)).catch(() => {});
+    await deleteAccountData({ uid: user.uid, rid, room: room.data });
     try { await deleteUser(auth.currentUser); }
     catch (e) {
       if (e.code === 'auth/requires-recent-login') { await reauthenticateWithPopup(auth.currentUser, new GoogleAuthProvider()); await deleteUser(auth.currentUser); }
@@ -642,6 +647,7 @@ async function enterWorld(rid, fresh = false) {
       tile('game', 'Oyunlar', 'XOX · Hafıza · Langırt', () => games.openHub()),
       tile('paw', 'Evcil dostumuz', 'Kedi · köpek · tavşan', () => care.openPet()),
       tile('flower', 'Çiçeğimiz', 'Balkon', () => care.openFlower()),
+      tile('target', 'Haftalık hedef', 'Üç küçük hedef · rozet', () => goals.open()),
       tile('badge', 'Rozetler', 'Başarılar', () => care.openBadges()),
       tile('paint', 'Evi düzenle', 'Eşya, boya, taşı', () => decor.open('shop')),
       tile('eye', 'Evimizi göster', 'Linkle arkadaşlarına', () => showcase.open()),
@@ -655,9 +661,12 @@ async function enterWorld(rid, fresh = false) {
   if (!profile.tourSeen && (newcomer || fresh)) {
     setTimeout(() => startTour(() => {
       profile.tourSeen = true; saveProfile(user.uid, { tourSeen: true }).catch(() => {});
-      if (fresh) $('menuBtn').onclick();
+      waiting.maybe();
     }), 800);
-  } else if (fresh) setTimeout(() => $('menuBtn').onclick(), 600);
+  } else setTimeout(() => waiting.maybe(), 600);
+  // Partnere "evdeyim" bildirimi (sunucu: partner şu an evdeyse ya da bugün aldıysa göndermez) ve bir kerelik bildirim önerisi
+  setTimeout(() => { if (!document.hidden) push.notify('home'); }, 30_000);
+  setTimeout(() => push.suggest(), 45_000);
   $('tourBtn').onclick = () => { $('menu').hidden = true; startTour(); };
   $('appBtn').hidden = inApp(); // uygulamanın içindeyken gereksiz
   $('appBtn').onclick = () => { $('menu').hidden = true; openDownload(); };

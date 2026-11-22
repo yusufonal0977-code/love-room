@@ -18,10 +18,8 @@ export function createShare(ctx) {
   const { game } = ctx;
   let kind = 'room', tpl = 'night', fmt = 'story', framesOn = true;
   // Admin odası ve meyhane çift evi değil: orada kartta "ben & partnerim" yerine odadaki adminler yazar
-  const inAdmin = () => false; // admin odası kaldırıldı (v0.60)
 
   const names = () => {
-    if (inAdmin()) return [ctx.myName(), ...(ctx.adminRoom?.namesHere?.(game.me.scene) || [])].slice(0, 5).join('  ·  ');
     const meMoon = ctx.mySide() === 'moon';
     const a = `${meMoon ? ctx.partnerName() : ctx.myName()}`, b = `${meMoon ? ctx.myName() : ctx.partnerName()}`;
     return `${a}  &  ${b}`;
@@ -31,7 +29,6 @@ export function createShare(ctx) {
   const KINDS = {
     room: { label: 'Evimiz', async make() {
       const src = roomShot();
-      if (inAdmin()) { const n = t(SCENES[game.me.scene].name); return { title: game.me.scene === 'meyhane' ? 'Eclip Meyhanesi' : n, sub: names(), image: src, caption: game.me.scene === 'meyhane' ? t('Eclip Meyhanesi\'nde bir akşam') : n }; }
       return { title: t('Bizim küçük evimiz'), sub: names(), image: src, caption: t('Kilometreler arada, aynı odadayız') };
     } },
     days: { label: 'Gün sayacı', async make() {
@@ -186,7 +183,7 @@ export function createShare(ctx) {
     if (data.sub) { g.font = `700 ${story ? 64 : 50}px ${FONT}`; g.fillText(data.sub, W / 2, sy); sy += story ? 80 : 62; }
     if (data.sub2) { g.font = `600 ${story ? 46 : 38}px ${FONT}`; g.fillStyle = T.soft; g.fillText(data.sub2, W / 2, sy); }
     g.fillStyle = T.accent; g.font = `700 ${story ? 46 : 36}px ${FONT}`;
-    g.fillText('getloveroom.com', W / 2, H - (story ? 150 : 70));
+    g.fillText(t('Kendi evinizi kurun: {url}', { url: 'getloveroom.com' }), W / 2, H - (story ? 150 : 70)); // K20: karttan gelen davet
     g.fillStyle = T.soft; g.font = `600 ${story ? 36 : 30}px ${FONT}`;
     if (story) g.fillText('#GetLoveRoom', W / 2, H - 95);
     return c;
@@ -198,10 +195,9 @@ export function createShare(ctx) {
     const body = openSheet({ title: 'Paylaş', iconName: 'share', wide: true });
     const prev = h('img', { class: 'sharepreview', alt: '' });
     const status = h('p', { class: 'small center' }, 'Hazırlanıyor…');
-    if (inAdmin()) kind = 'room'; // diğer şablonlar çift evine ait
     const row = (items, cur, set) => h('div', { class: 'tabs' }, ...Object.entries(items).map(([k, v]) => h('button', { class: k === cur ? 'sel' : '', onclick: () => { set(k); open(); } }, v.label || v.name || v)));
     body.append(
-      inAdmin() ? null : row(KINDS, kind, (k) => (kind = k)),
+      row(KINDS, kind, (k) => (kind = k)),
       row(TEMPLATES, tpl, (k) => (tpl = k)),
       row({ story: 'Hikâye 9:16', square: 'Kare 1:1' }, fmt, (k) => (fmt = k)),
       kind === 'room' ? row({ on: 'Tablolar görünsün', off: 'Tablolar gizli' }, framesOn ? 'on' : 'off', (k) => (framesOn = k === 'on')) : null,
@@ -213,7 +209,7 @@ export function createShare(ctx) {
     const url = canvas.toDataURL('image/png');
     prev.src = url;
     status.textContent = '';
-    const caption = `${data.caption} #GetLoveRoom ${APP_URL.startsWith('http://localhost') ? 'https://getloveroom.com' : APP_URL}`;
+    const caption = `${data.caption} #GetLoveRoom ${t('Siz de kendi evinizi kurun:')} ${APP_URL.startsWith('http://localhost') ? 'https://getloveroom.com' : APP_URL}`;
     body.append(h('div', { class: 'row wrap' },
       h('button', { class: 'primary', html: `${icon('share')} Paylaş`, onclick: async () => {
         if (window.LoveRoomApp?.shareImage) { window.LoveRoomApp.shareImage(url, caption, `getloveroom-${kind}.png`); ctx.live.stat('shares'); return; }

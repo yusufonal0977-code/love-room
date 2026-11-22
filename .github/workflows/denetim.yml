@@ -1,0 +1,23 @@
+# Her push ve PR'da: sözdizimi, sır taraması, yasal sayfa üretimi (tools/preflight.mjs) ve testler (tests/). K29-C + K29-B.
+name: Denetim
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  denetim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Ön kontrol
+        run: node tools/preflight.mjs
+      - name: Testler
+        run: node --test tests/*.test.mjs
+      - name: legal.html güncel mi
+        run: git diff --exit-code legal.html || (echo "legal.html eski; node tools/build_legal.mjs çalıştırıp commit et" && exit 1)

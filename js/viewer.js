@@ -4,7 +4,8 @@ import { db, get, ref, firstUser, loginGuest } from './fb.js';
 import { createGame } from './game.js';
 import { DECOR, DEFAULT_STATE, SCENES, repaint } from './scenes.js';
 import { DEFAULT_LOOK } from './art.js';
-import { $, toast, icon } from './ui.js';
+import { $, toast, icon, h, openSheet } from './ui.js';
+import { track } from './features/metrics.js';
 import { t } from './i18n.js';
 import { APP_URL } from './config.js';
 
@@ -34,7 +35,8 @@ export async function runViewer(id) {
   const cta = $('inviteChip');
   cta.hidden = false;
   cta.textContent = t('Kendi evini kur');
-  cta.onclick = () => (location.href = APP_URL);
+  const go = (from) => { track(from); location.href = APP_URL; };
+  cta.onclick = () => go('showcase_cta');
   $('bar').hidden = true;
 
   const seats = [{ x: 84, y: 116 }, { x: 108, y: 116 }];
@@ -65,5 +67,16 @@ export async function runViewer(id) {
   }
   toast(t('{names} seni evlerine davet etti. Gezmek için dokun ya da yürü.', { names }), 5000);
   window.__lr = { game, snap };
+  track('showcase_view');
+  // K20: bir süre gezdikten sonra kısa davet kartı (bir kez)
+  setTimeout(() => {
+    if (document.querySelector('.modal:not([hidden])')) return;
+    const b = openSheet({ title: 'Sizin de bir eviniz olsun', iconName: 'heart' });
+    b.append(
+      h('p', {}, t('{names} uzaktan da aynı evde. Sen de sevgilinle ortak evinizi kur: film izleyin, müzik dinleyin, birlikte oyun oynayın.', { names })),
+      h('p', { class: 'small' }, t('Temel özellikler her zaman ücretsiz, reklam yok. Telefonda ve bilgisayarda tarayıcıdan çalışır.')),
+      h('button', { class: 'primary', onclick: () => go('showcase_cta') }, 'Kendi evini kur'),
+    );
+  }, 25_000);
   return true;
 }
