@@ -3,7 +3,9 @@
 // Hareketi azalt tercihi açıksa görsel patlama yok; ses ayrıca "lr.sfx" = "0" ile kapanır.
 
 const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const sfxOn = () => { try { return localStorage.getItem('lr.sfx') !== '0'; } catch { return true; } };
+export const sfxOn = () => { try { return localStorage.getItem('lr.sfx') !== '0'; } catch { return true; } };
+/** Menüdeki Ses düğmesi: açar/kapatır, yeni durumu döndürür. */
+export function toggleSfx() { const on = !sfxOn(); try { localStorage.setItem('lr.sfx', on ? '1' : '0'); } catch { /* gizli sekme */ } return on; }
 
 // Piksel kalp: 7x6 ızgara, canvas'tan bir kez üretilir
 let HEART = null;

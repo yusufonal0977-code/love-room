@@ -29,7 +29,7 @@ import { createKitchen } from './features/kitchen.js';
 import { createSleep } from './features/sleep.js';
 import { trackActivity, track } from './features/metrics.js';
 import { createGoals } from './features/goals.js';
-import { burst, sfx } from './features/juice.js';
+import { burst, sfx, sfxOn, toggleSfx } from './features/juice.js';
 import { createFeedback } from './features/feedback.js';
 import { createPush, pushConfigured } from './features/push.js';
 import { DONATE_URL } from './config.js';
@@ -580,6 +580,10 @@ async function enterWorld(rid, fresh = false) {
   $('notifBtn').onclick = () => { $('menu').hidden = true; push.open(); };
   $('notifBtn').hidden = !pushConfigured();
   $('feedbackBtn').onclick = () => { $('menu').hidden = true; feedback.open(); };
+  // Oyun sesleri (kalp, partner geldi, rozet): menüden açılıp kapanır; durum simgede ve yazıda görünür
+  const sfxTile = () => { const on = sfxOn(); tile('sfxBtn', on ? 'sound' : 'soundOff'); $('sfxBtn').classList.toggle('off', !on); $('sfxBtn').setAttribute('aria-pressed', String(on)); $('sfxBtn').title = t(on ? 'Oyun sesleri açık' : 'Oyun sesleri kapalı'); };
+  sfxTile();
+  $('sfxBtn').onclick = () => { const on = toggleSfx(); sfxTile(); toast(t(on ? 'Oyun sesleri açık' : 'Oyun sesleri kapalı')); if (on) sfx.pop(); };
   $('copyBtn').onclick = async () => { await navigator.clipboard.writeText($('inviteLink').textContent); toast(t('Davet linki kopyalandı')); };
   $('editBtn').onclick = () => { $('menu').hidden = true; openEditor(); };
   $('deleteBtn').onclick = () => { $('menu').hidden = true; confirmDelete(); };

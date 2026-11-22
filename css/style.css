@@ -750,3 +750,4 @@ button:active:not(:disabled) { transform: scale(0.97); }
 
 /* Oyun hissi (juice.js): piksel kalpler ve konfeti, tıklamayı engellemez */
 .juice { position: fixed; z-index: 40; pointer-events: none; image-rendering: pixelated; will-change: transform, opacity; }
+.mtile.off .mico { color: var(--dim); background: rgba(255, 246, 216, .06); }

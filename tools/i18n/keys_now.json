@@ -69,6 +69,8 @@
 "Öpmek için aynı odaya git",
 "Görünüm: yakın (tüm odayı göster)",
 "Görünüm: tüm oda (yakınlaştır)",
+"Oyun sesleri açık",
+"Oyun sesleri kapalı",
 "Davet linki kopyalandı",
 "Hesabın Google'a bağlandı. Artık başka cihazdan da Google ile girebilirsin.",
 "Bu Google hesabı zaten başka bir Get Love Room hesabında kullanılıyor. Başka bir Google hesabı seç.",
@@ -1162,6 +1164,7 @@
 "Ekran yönü",
 "Yardım",
 "Bildirim",
+"Ses",
 "Görüş",
 "Çıkış yap",
 "Hesabı bağla",
@@ -1177,5 +1180,6 @@
 "Sohbet",
 "Karakterimi düzenle",
 "Nasıl kullanılır?",
+"Oyun sesleri",
 "Google hesabımı bağla"
 ]
