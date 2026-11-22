@@ -3,6 +3,7 @@
 // live/{rid}/frames/{çerçeve} = { img, by, at }        (tablodaki foto; sahnede piksel haliyle görünür)
 // live/{rid}/album/{id}       = { img, title, by, at }  (kabin şeritleri ve eklenen anılar)
 // live/{rid}/booth           = { mode, slots: {uid: img}, shot: {at, by} }
+import { storeImage } from './media.js';
 import { h, icon, openSheet, closeSheet, toast, pickImage, pickImages, compressImage, loadImg, saveImage, fmtDate } from '../ui.js';
 import { get, limitToLast, push, query, remove, serverTimestamp, set, now } from '../fb.js';
 import { DECOR, SCENES, bump } from '../scenes.js';
@@ -25,7 +26,7 @@ export function createPhotos(ctx) {
   });
 
   async function addToAlbum(img, title) {
-    await push(live.ref('album'), { img, title: title || '', by: uid, at: serverTimestamp() });
+    await push(live.ref('album'), { img: await storeImage(img), title: title || '', by: uid, at: serverTimestamp() });
     live.stat('photos');
   }
 
@@ -40,7 +41,7 @@ export function createPhotos(ctx) {
       h('button', { class: 'primary', html: `${icon('upload')} Fotoğraf koy`, onclick: async () => {
         const file = await pickImage();
         if (!file) return;
-        const img = await compressImage(file, 720);
+        const img = await storeImage(await compressImage(file, 720));
         await set(live.ref(`frames/${id}`), { img, by: uid, at: serverTimestamp() });
         if (confirm(t('Albüme de eklensin mi?'))) addToAlbum(img, t(f.scene));
         closeSheet(); toast('Tabloya asıldı');

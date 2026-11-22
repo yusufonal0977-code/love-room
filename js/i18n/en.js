@@ -789,6 +789,7 @@ export default {
  "Bir ödül alsan teşekkür konuşmanda kimin adını ilk söylerdin?": "If you won an award, whose name would you say first in your acceptance speech?",
  "Bu hafta birbirimiz için yapabileceğimiz küçük bir şey ne olsun?": "What's a small thing we could do for each other this week?",
  "İkimizin şarkısı hangisi olmalı, ve neden o?": "What should our song be, and why that one?",
+ "Bize destek ol": "Support us",
  "Bu vitrin linki artık yok.": "This showcase link no longer exists.",
  "Evcil dostumuz": "Our pet",
  "Kedi · köpek · tavşan": "Cat · dog · bunny",

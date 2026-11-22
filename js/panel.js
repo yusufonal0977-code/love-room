@@ -15,7 +15,7 @@ const EVENTS = {
 };
 
 async function load() {
-  const [active, events, online, fb] = await Promise.all(['metrics/active', 'metrics/events', 'metrics/online', 'feedback'].map((p) => get(ref(db, p)).then((s) => s.val() || {})));
+  const [active, events, online, fb, rooms] = await Promise.all(['metrics/active', 'metrics/events', 'metrics/online', 'feedback', 'rooms'].map((p) => get(ref(db, p)).then((s) => s.val() || {})));
   const today = day(Date.now());
   const days = Array.from({ length: 14 }, (_, i) => addDays(today, -i));
   const users = (d) => Object.keys(active[d] || {});
@@ -33,11 +33,21 @@ async function load() {
   const onlineNow = Object.values(online).filter((ts) => Date.now() - ts < 3 * 60_000).length;
   const sum = (ev, n) => Array.from({ length: n }, (_, i) => events[addDays(today, -i)]?.[ev] || 0).reduce((a, b) => a + b, 0);
   const homes = sum('home_created', 30), joined = sum('partner_joined', 30);
+  // Kuzey yıldızı (K13): son 7 günde en az 2 gün ikisi de aktif olan çift; tüm evlerde partner gelme oranı
+  const roomList = Object.values(rooms || {});
+  const paired = roomList.filter((r) => r.a && r.b);
+  const last7 = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
+  const together = paired.filter((r) => last7.filter((d) => active[d]?.[r.a] && active[d]?.[r.b]).length >= 2).length;
 
   const evNames = [...new Set([...Object.keys(EVENTS), ...days.flatMap((d) => Object.keys(events[d] || {}))])].filter((e) => days.some((d) => events[d]?.[e]));
   const fbList = Object.entries(fb).flatMap(([uid, items]) => Object.values(items || {}).map((x) => ({ ...x, uid }))).sort((a, b) => (b.at || 0) - (a.at || 0));
 
   $('out').innerHTML = `
+    <section><h2>Kuzey yıldızı</h2><div class="kpis">
+      <div class="kpi"><b>${together}</b><span>son 7 günde en az 2 gün birlikte kullanan çift</span></div>
+      <div class="kpi"><b>${pct(paired.length, roomList.length)}</b><span>partnerini getiren ev (${paired.length}/${roomList.length})</span></div>
+      <div class="kpi"><b>${users(today).length}</b><span>günlük aktif kullanıcı</span></div>
+    </div></section>
     <section><h2>Özet</h2><div class="kpis">
       <div class="kpi"><b>${onlineNow}</b><span>şu an çevrimiçi</span></div>
       <div class="kpi"><b>${users(today).length}</b><span>bugün aktif</span></div>

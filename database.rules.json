@@ -53,12 +53,12 @@
         },
         "frames": {
           "$f": {
-            ".validate": "!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 1500000)"
+            ".validate": "!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 1500000 && (newData.child('img').val().beginsWith('data:image/') || newData.child('img').val().beginsWith('https://')))"
           }
         },
         "album": {
           "$id": {
-            ".validate": "!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 1500000)"
+            ".validate": "!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 1500000 && (newData.child('img').val().beginsWith('data:image/') || newData.child('img').val().beginsWith('https://')))"
           }
         },
         "booth": {
@@ -132,6 +132,14 @@
     "pushSent": {
       "$uid": {
         ".write": "auth != null && auth.uid === $uid && !newData.exists()"
+      }
+    },
+    "widgetKeys": {
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        "$key": {
+          ".validate": "!newData.exists() || ($key.matches(/^[a-f0-9]{36}$/) && newData.child('rid').isString() && (root.child('rooms').child(newData.child('rid').val()).child('a').val() === auth.uid || root.child('rooms').child(newData.child('rid').val()).child('b').val() === auth.uid))"
+        }
       }
     },
     "admin": {

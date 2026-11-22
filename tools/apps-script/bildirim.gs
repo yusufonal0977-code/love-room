@@ -1,4 +1,4 @@
-// Get Love Room: partnere web bildirimi gönderir (K24-A, K25-A+B).
+// Get Love Room servisi: partnere web bildirimi gönderir (K24-A, K25-A+B; doPost) ve Android widget'larına veri verir (K5-B; doGet).
 // Google Apps Script web uygulaması (eclipsoftware.dev hesabı, "Get Love Room bildirim"). Çalıştıran: Ben, Erişim: Herkes.
 // Koda gizli bilgi yazılmaz. Bu hesap Firebase projesinde (love-room-aaf7e) Sahip ya da Düzenleyici olmalı; veritabanını ve
 // FCM'yi kendi yetkisiyle kullanır (ScriptApp.getOAuthToken). appsscript.json'a şu kapsamlar eklenir:
@@ -57,7 +57,7 @@ function doPost(e) {
         const [title, text] = L[kind].map(function (s) { return s.replace('{n}', String(me.name || 'Partnerin').slice(0, 30)); });
         const r = UrlFetchApp.fetch('https://fcm.googleapis.com/v1/projects/' + PROJECT + '/messages:send', {
           method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-          headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+          headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken(), 'x-goog-user-project': PROJECT }, // kota Firebase projesine yazılır
           payload: JSON.stringify({ message: { token: tk.t, webpush: {
             notification: { title: title, body: text, icon: 'https://getloveroom.com/assets/icon-192.png', tag: 'lr-' + kind },
             fcm_options: { link: 'https://getloveroom.com/' },
@@ -69,6 +69,24 @@ function doPost(e) {
       });
       return out({ ok: sent > 0, sent: sent });
     } finally { lock.releaseLock(); }
+  } catch (err) {
+    return out({ ok: false, why: String(err && err.message || err).slice(0, 120) });
+  }
+}
+
+// K5-B: Android widget'ları buradan okur. GET ?k=<uid>.<anahtar>  ->  { draw, pet, rel, ytradio, music }
+// Anahtar yalnızca widgetKeys/{uid}/{anahtar} kayıtlıysa ve kişi hâlâ o evin üyesiyse geçerlidir; yalnızca widget verisi döner.
+function doGet(e) {
+  try {
+    const k = String(e.parameter.k || '');
+    const m = k.match(/^([A-Za-z0-9]{10,40})\.([a-f0-9]{36})$/);
+    if (!m) return out({ ok: false, why: 'anahtar' });
+    const rec = dbGet('widgetKeys/' + m[1] + '/' + m[2]);
+    if (!rec || !rec.rid) return out({ ok: false, why: 'anahtar' });
+    const room = dbGet('rooms/' + rec.rid);
+    if (!room || (room.a !== m[1] && room.b !== m[1])) return out({ ok: false, why: 'oda' });
+    const live = 'live/' + rec.rid + '/';
+    return out({ ok: true, draw: dbGet(live + 'draw'), pet: dbGet(live + 'pet'), rel: dbGet(live + 'rel'), ytradio: dbGet(live + 'ytradio'), music: dbGet(live + 'music') });
   } catch (err) {
     return out({ ok: false, why: String(err && err.message || err).slice(0, 120) });
   }

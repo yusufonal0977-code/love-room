@@ -207,6 +207,7 @@ export default {
  "Bir ödül alsan teşekkür konuşmanda kimin adını ilk söylerdin?": "상을 받는다면 수상 소감에서 누구 이름을 가장 먼저 말할래?",
  "Bu hafta birbirimiz için yapabileceğimiz küçük bir şey ne olsun?": "이번 주에 우리 서로를 위해 할 수 있는 작은 일은 뭘까?",
  "İkimizin şarkısı hangisi olmalı, ve neden o?": "우리 노래는 어떤 게 좋을까, 그리고 왜 그거야?",
+ "Bize destek ol": "저희를 응원해 주세요",
  "Pizza": "피자",
  "Mantar": "버섯",
  "Kekik": "타임",

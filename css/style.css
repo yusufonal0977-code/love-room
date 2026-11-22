@@ -670,3 +670,6 @@ body:has(.modal:not([hidden])) .ratecard, body.cinema .ratecard { display: none;
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Ana sayfa tanıtımında gerçek oda görüntüsü (K18) */
+.pitchimg { display: block; width: 100%; max-width: 384px; height: auto; margin: 10px auto; image-rendering: pixelated; border-radius: 12px; border: 2px solid var(--line); }

@@ -26,6 +26,11 @@ function detect() {
 }
 let saved = null;
 try { saved = localStorage.getItem('lr.lang'); } catch { /* gizli sekme */ }
+// Blogun dil sürümlerinden gelen "?lang=en" seçimi hatırlanır (K17)
+try {
+  const q = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('lang') : null;
+  if (q && LANGS.some(([c]) => c === q)) { saved = q; localStorage.setItem('lr.lang', q); }
+} catch { /* gizli sekme */ }
 export const lang = LANGS.some(([c]) => c === saved) ? saved : detect();
 export const locale = LOCALES[lang];
 

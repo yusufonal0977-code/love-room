@@ -182,7 +182,7 @@ export async function compressImage(src, max = 360, q = 0.78) {
   return c.toDataURL('image/jpeg', q);
 }
 export function loadImg(src) {
-  return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  return new Promise((res, rej) => { const i = new Image(); if (/^https?:/.test(src)) i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = rej; i.src = src; });
 }
 export function download(dataUrl, name) {
   h('a', { href: dataUrl, download: name }).click();

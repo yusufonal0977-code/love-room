@@ -1,7 +1,7 @@
 // Telefon uygulaması (Android) ile köprü. Uygulama siteyi açar ve window.LoveRoomApp'i verir; widget'lar (ortak tuval,
 // evcil dostumuz, ilişki saatimiz) uygulama kapalıyken Firebase'den kendileri okur. Burada site uygulamaya oturumu,
 // hayvanın piksel resmini ve "bir şey değişti, widget'ları yenile" haberini verir. Tarayıcıda hiçbir şey yapmaz.
-import { auth, onValue } from '../fb.js';
+import { auth, db, onValue, ref, set, serverTimestamp } from '../fb.js';
 import { petSprites } from '../art.js';
 import { DECOR } from '../scenes.js';
 import { h, icon, openSheet, toast } from '../ui.js';
@@ -23,7 +23,13 @@ export function connectApp(ctx, { rid, care, draw, life, spotify }) {
   const ac = new URLSearchParams(location.search).get('ac');
   if (ac) setTimeout(() => window.__lrAction(ac), 900);
   if (!app) return;
-  const send = () => app.session(JSON.stringify({ rid, uid: ctx.uid, refreshToken: auth.currentUser?.refreshToken || '', lang: document.documentElement.lang }));
+  // K5-B: widget'lar için yalnızca widget verisini okuyabilen, iptal edilebilir anahtar (widgetKeys/{uid}/{anahtar}).
+  // Android 2.0.1 bu anahtarla servisten okur; 2.0.0 hâlâ refreshToken kullandığı için o da şimdilik gönderilir.
+  let wkey = null;
+  try { wkey = localStorage.getItem('lr.wkey'); } catch { /* gizli sekme */ }
+  if (!wkey) { wkey = Array.from(crypto.getRandomValues(new Uint8Array(18)), (b) => b.toString(16).padStart(2, '0')).join(''); try { localStorage.setItem('lr.wkey', wkey); } catch { /* gizli sekme */ } }
+  set(ref(db, `widgetKeys/${ctx.uid}/${wkey}`), { rid, at: serverTimestamp() }).catch(() => {});
+  const send = () => app.session(JSON.stringify({ rid, uid: ctx.uid, widgetKey: `${ctx.uid}.${wkey}`, refreshToken: auth.currentUser?.refreshToken || '', lang: document.documentElement.lang }));
   send();
   let tmr = null;
   const refresh = () => { clearTimeout(tmr); tmr = setTimeout(() => app.refresh(), 2500); };

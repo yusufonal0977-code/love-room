@@ -31,6 +31,7 @@ import { trackActivity, track } from './features/metrics.js';
 import { createGoals } from './features/goals.js';
 import { createFeedback } from './features/feedback.js';
 import { createPush, pushConfigured } from './features/push.js';
+import { DONATE_URL } from './config.js';
 import { createWaiting } from './features/waiting.js';
 import { deleteAccountData } from './features/account.js';
 import { LEGAL, LEGAL_VERSION, legalById } from './legal.js';
@@ -53,6 +54,8 @@ function openLegal(id) {
 document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
 document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
 a11yModals(); // Escape, odak tuzağı, odağın geri dönmesi (K36)
+// Bağış bağlantısı (K14-B): adres tanımlıysa alt bağlantılarda görünür
+if (DONATE_URL) document.querySelectorAll('a.donate').forEach((l) => { l.href = DONATE_URL; l.hidden = false; });
 document.addEventListener('click', (e) => {
   const a = e.target.closest?.('a[href^="#"]');
   if (!a || !legalById(a.getAttribute('href').slice(1))) return;

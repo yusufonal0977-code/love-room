@@ -70,9 +70,8 @@
   ]
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/pixelify-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link href="/assets/fonts/pixelify.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -98,6 +97,7 @@
   <details class="pitch">
     <summary data-t>Get Love Room nedir?</summary>
     <h2 data-t>Uzak mesafe ilişkiler için ortak sanal ev</h2>
+    <img class="pitchimg" src="assets/rooms/somine.webp" width="768" height="576" alt="Get Love Room şömine odası: piksel ev" loading="lazy">
     <p data-t>Kilometreler arada olsa da aynı odadasınız. Biriniz evi kurar, diğerine davet linki gönderir; ikinizin küçük piksel evi hazır.</p>
     <ul>
       <li data-t><b>Birlikte film izleyin:</b> YouTube ya da video linki ikinizde aynı saniyede oynar, kanepede yan yana oturursunuz.</li>
@@ -108,7 +108,7 @@
     </ul>
     <p data-t>Temel özellikler her zaman ücretsiz, reklam yok; telefonda ve bilgisayarda tarayıcıdan çalışır.</p>
   </details>
-  <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#iletisim">İletişim</a><a href="/rehber/">Rehber</a></nav>
+  <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#iletisim">İletişim</a><a href="/rehber/">Rehber</a><a class="donate" data-t href="#" target="_blank" rel="noopener" hidden>Bize destek ol</a></nav>
 </section>
 
 <!-- Onay (ev kurulmadan / davete girilmeden önce) -->
@@ -223,7 +223,7 @@
     </div>
     <div class="menusecond">
       <label class="langrow"><span class="mico gl"></span><span data-t>Dil</span> <span id="langMenu"></span></label>
-      <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#kvkk">KVKK</a><a data-t href="#iletisim">İletişim</a><a href="/rehber/">Rehber</a></nav>
+      <nav class="footlinks"><a data-t href="#hakkimizda">Hakkımızda</a><a data-t href="#gizlilik">Gizlilik</a><a data-t href="#kosullar">Koşullar</a><a data-t href="#kvkk">KVKK</a><a data-t href="#iletisim">İletişim</a><a href="/rehber/">Rehber</a><a class="donate" data-t href="#" target="_blank" rel="noopener" hidden>Bize destek ol</a></nav>
     </div>
   </div>
 </div>
@@ -260,11 +260,16 @@
 try {
   const v = await (await fetch('version.json', { cache: 'no-store' })).json();
   let seen = null; try { seen = localStorage.getItem('lr.ver'); } catch {}
-  if (v?.v && seen !== v.v) {
-    await Promise.all((v.files || []).map((f) => fetch(f, { cache: 'reload' }).catch(() => {})));
+  // İlk ziyarette önbellekte eski dosya yoktur: tazelemeye gerek yok (K35: ilk açılış 9 dilin sözlüğünü indirmesin).
+  // Güncellemede yalnızca kişinin dili ve İngilizce (yedek) sözlük tazelenir.
+  if (v?.v && seen && seen !== v.v) {
+    let L = null; try { L = localStorage.getItem('lr.lang'); } catch {}
+    L = L || (navigator.language || 'en').slice(0, 2);
+    const need = (f) => !f.startsWith('js/i18n/') || f === `js/i18n/${L}.js` || f === 'js/i18n/en.js';
+    await Promise.all((v.files || []).filter(need).map((f) => fetch(f, { cache: 'reload' }).catch(() => {})));
     try { localStorage.setItem('lr.ver', v.v); } catch {}
-    if (seen && sessionStorage.getItem('lr.verReload') !== v.v) { sessionStorage.setItem('lr.verReload', v.v); location.reload(); await new Promise(() => {}); }
-  }
+    if (sessionStorage.getItem('lr.verReload') !== v.v) { sessionStorage.setItem('lr.verReload', v.v); location.reload(); await new Promise(() => {}); }
+  } else if (v?.v && !seen) { try { localStorage.setItem('lr.ver', v.v); } catch {} }
 } catch { /* çevrimdışı ya da dosya yok: önbellektekiyle devam */ }
 import('./js/main.js');
 </script>

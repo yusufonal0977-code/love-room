@@ -789,6 +789,7 @@ export default {
  "Bir ödül alsan teşekkür konuşmanda kimin adını ilk söylerdin?": "لو فزت بجائزة، من ستذكر اسمه أولًا في كلمة الشكر؟",
  "Bu hafta birbirimiz için yapabileceğimiz küçük bir şey ne olsun?": "ما الشيء الصغير الذي يمكننا فعله لبعضنا هذا الأسبوع؟",
  "İkimizin şarkısı hangisi olmalı, ve neden o?": "ما الأغنية التي يجب أن تكون أغنيتنا، ولماذا هي؟",
+ "Bize destek ol": "ادعمنا",
  "Bu vitrin linki artık yok.": "رابط العرض هذا لم يعد موجودًا.",
  "Evcil dostumuz": "حيواننا الأليف",
  "Kedi · köpek · tavşan": "قطة · كلب · أرنب",

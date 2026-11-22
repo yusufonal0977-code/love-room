@@ -207,6 +207,7 @@ export default {
  "Bir ödül alsan teşekkür konuşmanda kimin adını ilk söylerdin?": "如果你得奖了，在致谢词里你会先提谁的名字？",
  "Bu hafta birbirimiz için yapabileceğimiz küçük bir şey ne olsun?": "这周我们可以为彼此做的一件小事是什么？",
  "İkimizin şarkısı hangisi olmalı, ve neden o?": "我们的歌应该是哪首，为什么是那首？",
+ "Bize destek ol": "支持我们",
  "Pizza": "披萨",
  "Mantar": "蘑菇",
  "Kekik": "百里香",

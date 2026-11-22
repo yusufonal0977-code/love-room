@@ -613,7 +613,7 @@ export function createGame(opts) {
   function setPicture(key, scene, rect, src) {
     let p = pictures.get(key);
     if (!src) { p?.el.remove(); pictures.delete(key); return; }
-    if (!p) { p = { el: document.createElement('img') }; p.el.className = 'pic'; p.el.alt = ''; overlay.prepend(p.el); pictures.set(key, p); }
+    if (!p) { p = { el: document.createElement('img') }; p.el.className = 'pic'; p.el.alt = ''; p.el.crossOrigin = 'anonymous'; /* R2 fotoğrafı paylaşım kartına çizilebilsin */ overlay.prepend(p.el); pictures.set(key, p); }
     Object.assign(p, { scene, rect, key, at: '' });
     if (p.el.getAttribute('src') !== src) p.el.src = src;
     placePicture(p);

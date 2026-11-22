@@ -43,8 +43,14 @@ export function loadIce() {
  * anahtar, gizli değildir). PUSH_URL: tools/apps-script/bildirim.gs web uygulamasının adresi. İkisi de boşsa bildirim düğmesi
  * "desteklenmiyor" der ve hiçbir istek gönderilmez.
  */
-export const VAPID_KEY = '';
-export const PUSH_URL = '';
+/** "Bize destek ol" bağış sayfası (K14-B; Ko-fi ya da Buy Me a Coffee). Boşsa düğme görünmez. */
+export const DONATE_URL = '';
+
+/** Fotoğraf deposu (K6-C, tools/cloudflare/foto). Boşsa fotoğraflar eskisi gibi veritabanında durur. */
+export const PHOTO_URL = '';
+
+export const VAPID_KEY = 'BNnlIITcNQ5IsxW5jekTRq4io_0f4UukVzovsAZn5E0Qk3mekCMU9VfHjZG3v5536YHAdYMrE8Aaro2WM7xU9co';
+export const PUSH_URL = 'https://script.google.com/macros/s/AKfycbz4ZEYMJVgqMYcLz9Lwf9-7BWUce8o71ldvUJEF7s_H3CH1PcN1l_QqLvuxQJLuAlAQgw/exec';
 
 /** Spotify geliştirici uygulaması (PKCE, gizli anahtar gerekmez). */
 export const SPOTIFY_CLIENT_ID = '925064e861c146678848c22db62e859a';

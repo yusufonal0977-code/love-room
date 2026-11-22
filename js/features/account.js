@@ -2,9 +2,11 @@
 // Her adım ayrı istek: biri reddedilirse (ör. hiç admin işareti yoksa) diğerleri yine silinir.
 import { db, get, ref, remove, update } from '../fb.js';
 import { dayKey } from './metrics.js';
+import { deleteMyImages } from './media.js';
 
 export async function deleteAccountData({ uid, rid, room }) {
   const quiet = (what) => (e) => console.warn(`silme: ${what}`, e);
+  await deleteMyImages(); // R2'deki fotoğraflar (K6-C); kimlik belgesi hesap silinmeden önce gerekir
   const sc = (await get(ref(db, `live/${rid}/showcase`)).catch(() => null))?.val();
   if (sc) {
     await remove(ref(db, `showcase/${sc}`)).catch(quiet('vitrin'));
@@ -18,6 +20,6 @@ export async function deleteAccountData({ uid, rid, room }) {
   const gone = { [`metrics/online/${uid}`]: null };
   for (let i = 0; i < 400; i++) gone[`metrics/active/${dayKey(Date.now() - i * 864e5)}/${uid}`] = null;
   await update(ref(db), gone).catch(quiet('sayaçlar'));
-  // Görüşler, bildirim jetonları, bildirim günlüğü, admin işareti
-  for (const p of [`feedback/${uid}`, `push/${uid}`, `pushSent/${uid}`, `admins/${uid}`]) await remove(ref(db, p)).catch(() => {});
+  // Görüşler, bildirim jetonları, bildirim günlüğü, widget anahtarları, admin işareti
+  for (const p of [`feedback/${uid}`, `push/${uid}`, `pushSent/${uid}`, `widgetKeys/${uid}`, `admins/${uid}`]) await remove(ref(db, p)).catch(() => {});
 }
