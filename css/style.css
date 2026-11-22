@@ -747,3 +747,6 @@ button:active:not(:disabled) { transform: scale(0.97); }
   #toast .tst { transition: opacity 200ms ease; transform: none; }
   #sheet > .card, .modal > .card { transition: opacity 200ms ease !important; transform: none !important; }
 }
+
+/* Oyun hissi (juice.js): piksel kalpler ve konfeti, tıklamayı engellemez */
+.juice { position: fixed; z-index: 40; pointer-events: none; image-rendering: pixelated; will-change: transform, opacity; }

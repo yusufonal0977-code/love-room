@@ -8,6 +8,7 @@ import { h, openSheet, toast } from '../ui.js';
 import { onValue, set, serverTimestamp } from '../fb.js';
 import { t } from '../i18n.js';
 import { track } from './metrics.js';
+import { confetti, sfx } from './juice.js';
 
 import { localDay, weekKey, streakOf } from './goal-math.js';
 export { localDay, weekKey, streakOf };
@@ -32,6 +33,7 @@ export function createGoals(ctx) {
     if (badges[wk] || !GOALS.every(done)) return;
     set(live.ref(`badges/${wk}`), serverTimestamp()).catch(() => {});
     toast(t('Bu haftanın üç hedefi de tamam. Rozetiniz rafta.'), 5000);
+    confetti(); sfx.badge();
     track('weekly_badge');
   }
   function rollWeek() { const k = weekKey(); if (k !== wk) { stopWeek(); wk = k; week = {}; stopWeek = sub(); } }
@@ -52,6 +54,7 @@ export function createGoals(ctx) {
     if (week.did?.[key]) return;
     set(live.ref(`week/${wk}/did/${key}`), true).catch(() => {});
     toast(t('Haftalık hedeften biri tamam'), 3000);
+    sfx.done();
   }
   const streak = () => streakOf(days, uid, ctx.partnerUid());
 

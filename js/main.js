@@ -29,6 +29,7 @@ import { createKitchen } from './features/kitchen.js';
 import { createSleep } from './features/sleep.js';
 import { trackActivity, track } from './features/metrics.js';
 import { createGoals } from './features/goals.js';
+import { burst, sfx } from './features/juice.js';
 import { createFeedback } from './features/feedback.js';
 import { createPush, pushConfigured } from './features/push.js';
 import { DONATE_URL } from './config.js';
@@ -274,7 +275,7 @@ async function enterWorld(rid, fresh = false) {
       const before = partnerUid();
       room.data = r;
       const p = partnerUid();
-      if (p && p !== before) { live.watchProfile(p, (pp) => (partnerProfile = pp)); toast(t('Partnerin eve katıldı')); setTimeout(() => push?.suggest(), 20_000); }
+      if (p && p !== before) { live.watchProfile(p, (pp) => (partnerProfile = pp)); toast(t('Partnerin eve katıldı')); sfx.arrive(); setTimeout(() => push?.suggest(), 20_000); }
       updateTop();
     },
     onPresence(map) {
@@ -284,7 +285,7 @@ async function enterWorld(rid, fresh = false) {
       if (now_) goals?.together(); // ikiniz aynı anda evdesiniz: haftalık hedef (K38)
       if (!!now_ !== !!was) {
         call?.setPartner(now_ ? partnerUid() : null);
-        if (now_ && partnerProfile) toast(t('{name} geldi. Sesli sohbet açık', { name: partnerProfile.name }));
+        if (now_ && partnerProfile) { toast(t('{name} geldi. Sesli sohbet açık', { name: partnerProfile.name })); sfx.arrive(); }
       }
       if (!!now_?.screen !== !!was?.screen) tv?.setScreen(now_?.screen ? call.remote.screen : call?.screenStream || null);
       updateTop();
@@ -552,10 +553,10 @@ async function enterWorld(rid, fresh = false) {
     tv.setScreen(on ? call.screenStream : partnerP()?.screen ? call.remote.screen : null);
     if (on) { toast(t('Ekranın salondaki TV\'de')); if (game.me.scene !== 'salon') tv.cinema(true); }
   };
-  $('heartBtn').onclick = () => live.react('heart');
+  $('heartBtn').onclick = () => { live.react('heart'); burst($('heartBtn')); sfx.pop(); };
   const touch = (kind) => {
     if (!partnerP()) return toast(t('Partnerin odada değil'));
-    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); };
+    const go = () => { live.react(kind); live.stat(kind === 'hug' ? 'hugs' : 'kisses'); burst($(kind === 'hug' ? 'hugBtn' : 'kissBtn'), kind === 'hug' ? '#fcdf4b' : '#ff6f8f', 9); sfx.pop(); };
     if (game.near()) return go();
     // Aynı odadaysanız karakterin partnerine yürür, varınca sarılır/öper
     if (game.sameRoom() && partnerP()?.seat < 0) return game.approach(go);
