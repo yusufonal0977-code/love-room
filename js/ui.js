@@ -90,14 +90,46 @@ export function icon(name, cls = '') {
 export const iconEl = (name, cls) => h('span', { class: 'icw', html: icon(name, cls) });
 
 // ---------- Bildirim ----------
-let toastT;
-export function toast(msg, ms = 2800) {
-  const el = $('toast');
-  el.textContent = typeof msg === 'string' ? t(msg) : msg;
-  el.style.opacity = 1;
-  clearTimeout(toastT);
-  toastT = setTimeout(() => (el.style.opacity = 0), ms);
+// Sonner gibi bir yığın: yenisi üstten gelir, eskiler arkada küçülerek dizilir (en çok 3 görünür).
+// Yukarı fiskeyle kapanır; sekme gizliyken süre işlemez (kullanıcı görmeden kaybolmasın).
+const toasts = [];
+function layoutToasts() { toasts.forEach((x, i) => { x.el.style.setProperty('--i', i); x.el.dataset.i = i; x.el.style.zIndex = 10 - i; }); }
+function dropToast(x) {
+  const k = toasts.indexOf(x);
+  if (k < 0) return;
+  toasts.splice(k, 1);
+  clearTimeout(x.tmr);
+  x.el.classList.add('out');
+  setTimeout(() => x.el.remove(), 220);
+  layoutToasts();
 }
+export function toast(msg, ms = 2800) {
+  const box = $('toast');
+  if (!box) return;
+  const el = document.createElement('div');
+  el.className = 'tst';
+  el.textContent = typeof msg === 'string' ? t(msg) : String(msg);
+  const x = { el, left: ms, start: 0, tmr: 0 };
+  const run = () => { x.start = Date.now(); x.tmr = setTimeout(() => dropToast(x), x.left); };
+  const pause = () => { clearTimeout(x.tmr); x.left -= Date.now() - x.start; };
+  x.pause = pause; x.run = run;
+  // Yukarı kaydır-kapat: hızlı fiske yeter (hız > 0.11 px/ms) ya da 40px
+  let y0 = null, t0 = 0;
+  el.onpointerdown = (e) => { y0 = e.clientY; t0 = Date.now(); el.setPointerCapture(e.pointerId); el.style.transition = 'none'; pause(); };
+  el.onpointermove = (e) => { if (y0 == null) return; const dy = Math.min(0, e.clientY - y0); el.style.transform = `translateY(${dy}px)`; };
+  el.onpointerup = el.onpointercancel = (e) => {
+    if (y0 == null) return;
+    const dy = e.clientY - y0, v = Math.abs(dy) / Math.max(1, Date.now() - t0);
+    y0 = null; el.style.transition = ''; el.style.transform = '';
+    if (dy < -40 || (dy < 0 && v > 0.11)) dropToast(x); else run();
+  };
+  box.prepend(el);
+  toasts.unshift(x);
+  while (toasts.length > 5) dropToast(toasts[toasts.length - 1]);
+  layoutToasts();
+  if (document.hidden) x.start = Date.now(); else run();
+}
+document.addEventListener('visibilitychange', () => toasts.forEach((x) => (document.hidden ? x.pause() : x.run())));
 
 // ---------- Alt pencere ----------
 // Tek bir pencere: başlık + içerik. Açık olan özellik kapanınca kendi temizliğini yapar (onClose).
@@ -124,6 +156,44 @@ export function closeSheet() {
   f?.();
 }
 export const sheetOpen = () => !$('sheet').hidden;
+
+/** Telefonda alt pencereyi parmakla aşağı çekip kapatma (Vaul yaklaşımı). Başlıktan ya da en üstteyken içerikten tutulur;
+ *  yukarı çekişte direnç artar (sert duvar yok); hızlı bir fiske eşiği beklemeden kapatır. */
+export function dragToClose() {
+  const m = $('sheet'), card = m?.querySelector('.card');
+  if (!card) return;
+  let y0 = null, t0 = 0, dy = 0, id = null;
+  const small = () => matchMedia('(max-width: 600px)').matches;
+  card.addEventListener('pointerdown', (e) => {
+    if (!small() || y0 != null || e.button > 0) return; // çoklu dokunuşta ikinci parmak yok sayılır
+    const onHead = e.target.closest('.sheethead') && !e.target.closest('button');
+    if (!onHead && card.scrollTop > 0) return;
+    if (!onHead && e.target.closest('input, textarea, select, button, canvas, .noscroll')) return;
+    y0 = e.clientY; t0 = Date.now(); dy = 0; id = e.pointerId;
+  });
+  card.addEventListener('pointermove', (e) => {
+    if (y0 == null || e.pointerId !== id) return;
+    const raw = e.clientY - y0;
+    if (!card.classList.contains('dragging')) {
+      if (Math.abs(raw) < 6) return;
+      if (raw < 0 && !e.target.closest('.sheethead')) { y0 = null; return; } // içerik yukarı kaydırılıyor
+      card.classList.add('dragging'); card.setPointerCapture(id);
+    }
+    dy = raw > 0 ? raw : -Math.sqrt(-raw) * 2; // yukarı çekişte sönümleme
+    card.style.transform = `translateY(${dy}px)`;
+  });
+  const end = () => {
+    if (y0 == null) return;
+    const dragged = card.classList.contains('dragging');
+    const v = dy / Math.max(1, Date.now() - t0);
+    y0 = null; card.classList.remove('dragging');
+    if (!dragged) return;
+    if (dy > card.offsetHeight * 0.3 || v > 0.11) { card.style.transform = ''; closeSheet(); }
+    else card.style.transform = '';
+  };
+  card.addEventListener('pointerup', end);
+  card.addEventListener('pointercancel', end);
+}
 
 // ---------- Erişilebilir pencereler (K36) ----------
 // .modal pencereleri açılınca odak içeri girer, Tab dışarı çıkmaz, Escape kapatır; kapanınca odak açan düğmeye döner.

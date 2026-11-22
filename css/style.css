@@ -673,3 +673,77 @@ body:has(.modal:not([hidden])) .ratecard, body.cinema .ratecard { display: none;
 
 /* Ana sayfa tanıtımında gerçek oda görüntüsü (K18) */
 .pitchimg { display: block; width: 100%; max-width: 384px; height: auto; margin: 10px auto; image-rendering: pixelated; border-radius: 12px; border: 2px solid var(--line); }
+
+/* ================= Hareket dili (Emil Kowalski yaklaşımı, deneme) =================
+   Kurallar: yalnızca transform ve opacity hareket eder; girişler ease-out, ekrandaki hareket ease-in-out;
+   çıkış girişten hızlı; sık basılan şeyler (klavye, kalp) beklemez; hiçbir şey scale(0)'dan doğmaz. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Basınca hafifçe küçülen düğmeler: arayüz "duydum" der */
+button { transition: transform 160ms var(--ease-out), background-color 200ms ease, border-color 200ms ease, color 200ms ease; }
+button:active:not(:disabled) { transform: scale(0.97); }
+#bar button:active { transform: scale(0.94); }
+.mtile:active, .hubtile:active { transform: scale(0.96); }
+/* Dokunmatikte hover yanlış tetiklenmesin */
+@media (hover: none) { button:hover { border-color: var(--line); } #bar button:hover { background: rgba(255, 246, 216, .06); } }
+
+/* Pencereler: arka plan yumuşakça kararır; kapanırken daha hızlı */
+.modal {
+  opacity: 1;
+  transition: opacity 220ms var(--ease-out), display 220ms allow-discrete, overlay 220ms allow-discrete;
+}
+.modal[hidden] { display: none; opacity: 0; transition-duration: 160ms; }
+@starting-style { .modal:not([hidden]) { opacity: 0; } }
+
+/* Ortadaki pencere (masaüstü): 0.96'dan büyüyerek, yerinde açılır */
+.modal > .card {
+  transform: none; opacity: 1;
+  transition: transform 240ms var(--ease-out), opacity 200ms var(--ease-out);
+}
+.modal[hidden] > .card { transform: scale(0.96); opacity: 0; transition-duration: 150ms; }
+@starting-style { .modal:not([hidden]) > .card { transform: scale(0.96); opacity: 0; } }
+
+/* Menü: tıklanan düğmenin olduğu sağ alt köşeden açılır */
+#menu > .card { transform-origin: 100% 100%; }
+
+/* Telefonda alt pencere: iPhone çekmecesi gibi alttan kayar, parmakla aşağı çekilince kapanır */
+@media (max-width: 600px) {
+  #sheet > .card { transition: transform 420ms var(--ease-drawer), opacity 200ms ease; will-change: transform; }
+  #sheet[hidden] > .card { transform: translateY(100%); opacity: 1; transition: transform 260ms var(--ease-drawer); }
+  @starting-style { #sheet:not([hidden]) > .card { transform: translateY(100%); opacity: 1; } }
+  #sheet > .card.dragging { transition: none; }
+  .sheethead { padding-top: 22px; touch-action: none; }
+  .sheethead::before { content: ''; position: absolute; top: 8px; left: 50%; width: 38px; height: 5px; margin-left: -19px; border-radius: 3px; background: rgba(255, 246, 216, .22); }
+}
+
+/* Bildirim yığını (Sonner gibi): üstten gelir, üst üste dizilir, yukarı kaydırınca kapanır */
+#toast { all: unset; position: fixed; top: max(54px, calc(env(safe-area-inset-top) + 46px)); left: 50%; width: min(92vw, 360px); transform: translateX(-50%); z-index: 30; pointer-events: none; }
+#toast .tst {
+  position: absolute; top: 0; left: 0; right: 0; width: 100%;
+  box-sizing: border-box; padding: 9px 15px; border-radius: 12px; background: var(--moon); color: #1a1608;
+  font: 600 14px/1.3 'Pixelify Sans', monospace; text-align: center; box-shadow: 0 6px 24px rgba(0, 0, 0, .35);
+  pointer-events: auto; touch-action: none;
+  transform: translateY(calc(var(--i, 0) * 9px)) scale(calc(1 - var(--i, 0) * 0.05)); opacity: calc(1 - var(--i, 0) * 0.25);
+  transition: transform 400ms ease, opacity 400ms ease;
+}
+@starting-style { #toast .tst { transform: translateY(-100%); opacity: 0; } }
+#toast .tst.out { transform: translateY(-100%); opacity: 0; transition-duration: 200ms; }
+#toast .tst[data-i="3"], #toast .tst[data-i="4"] { opacity: 0; }
+
+/* Simge değişimi (mikrofon, kamera): zıplamaz, bulanıklıktan netleşir */
+@keyframes iconIn { from { filter: blur(2px); opacity: .3; transform: scale(.9); } }
+.iconswap .ic { animation: iconIn 200ms var(--ease-out); }
+
+/* Kavanoz cevapları: iki cevap sırayla, hafif bulanıktan netleşerek açılır */
+@keyframes revealIn { from { opacity: 0; transform: translateY(6px); filter: blur(3px); } }
+.answers > * { animation: revealIn 380ms var(--ease-out) both; }
+.answers > *:nth-child(2) { animation-delay: 70ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  #toast .tst { transition: opacity 200ms ease; transform: none; }
+  #sheet > .card, .modal > .card { transition: opacity 200ms ease !important; transform: none !important; }
+}

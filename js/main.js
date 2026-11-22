@@ -10,7 +10,7 @@ import { createCall } from './call.js';
 import { DECOR, DEFAULT_STATE, SCENES, W, H } from './scenes.js';
 import { APP_URL } from './config.js';
 import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
-import { $, h, icon, toast, openSheet, closeSheet, esc, a11yModals } from './ui.js';
+import { $, h, icon, toast, openSheet, closeSheet, esc, a11yModals, dragToClose } from './ui.js';
 import { createTV } from './features/tv.js';
 import { createSpotify, handleSpotifyRedirect } from './features/spotify.js';
 import { createPhotos } from './features/photos.js';
@@ -54,6 +54,7 @@ function openLegal(id) {
 document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { const m = b.closest('.modal'); if (m.id === 'sheet') closeSheet(); else m.hidden = true; }));
 document.querySelectorAll('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => e.target === m && (m.id === 'sheet' ? closeSheet() : (m.hidden = true))));
 a11yModals(); // Escape, odak tuzağı, odağın geri dönmesi (K36)
+dragToClose(); // telefonda alt pencere aşağı çekilince kapanır
 // Bağış bağlantısı (K14-B): adres tanımlıysa alt bağlantılarda görünür
 if (DONATE_URL) document.querySelectorAll('a.donate').forEach((l) => { l.href = DONATE_URL; l.hidden = false; });
 document.addEventListener('click', (e) => {
@@ -521,7 +522,7 @@ async function enterWorld(rid, fresh = false) {
   updateTop();
 
   // ---------- Alt çubuk ----------
-  const setIcon = (id, name) => ($(id).innerHTML = icon(name));
+  const setIcon = (id, name) => { const b = $(id); if (b.dataset.icon === name) return; const swap = !!b.dataset.icon; b.dataset.icon = name; b.innerHTML = icon(name); if (swap) { b.classList.remove('iconswap'); void b.offsetWidth; b.classList.add('iconswap'); } };
   function setBtn(id, on) { $(id).classList.toggle('off', !on); $(id).classList.toggle('on', on); }
   setIcon('micBtn', call.micOn ? 'mic' : 'micOff'); setBtn('micBtn', call.micOn);
   setIcon('camBtn', 'camOff'); setIcon('screenBtn', 'screen'); setIcon('heartBtn', 'heart'); setIcon('hugBtn', 'hug'); setIcon('kissBtn', 'kiss'); setIcon('hubBtn', 'grid'); setIcon('menuBtn', 'menu');
