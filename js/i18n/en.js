@@ -800,6 +800,7 @@ export default {
  "Çıkmak için tekrar geri bas": "Press back again to exit",
  "Uzaktaki sevgilinle ortak bir piksel ev: birlikte film izleyin, müzik dinleyin, oyun oynayın. Ücretsiz:": "A shared pixel home with your long-distance partner: watch movies, listen to music and play together. Free:",
  "Paylaşım metni kopyalandı": "Share text copied",
+ "Kalp gönder (basılı tut: sarıl, öp, ekran)": "Send a heart (hold: hug, kiss, screen)",
  "Bu vitrin linki artık yok.": "This showcase link no longer exists.",
  "Evcil dostumuz": "Our pet",
  "Kedi · köpek · tavşan": "Cat · dog · bunny",

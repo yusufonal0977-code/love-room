@@ -470,7 +470,7 @@ export function createGame(opts) {
     const px = at ? at.x + (at.lean ? (at.face === 'right' ? at.lean : -at.lean) : 0) : p.x, py = at ? at.y : p.y;
     // Önce konumu yuvarla, sonra yarım genişliği çıkar: tek genişlikli karede yuvarlama sağa-sola oynamasın
     // Yürürken adım ortasında (ayaklar yan yana) gövde bir piksel yükselir: sürüklenme yerine adım hissi
-    const bob = !at && p.seat < 0 && p.moving && ((p.t * 8 | 0) % 2 === 0) ? 1 : 0;
+    const bob = !at && p.seat < 0 && p.moving && (p.dir === 'up' || p.dir === 'down') && ((p.t * 8 | 0) % 2 === 0) ? 1 : 0; // yana yürürken zıplamaz
     const x = Math.round(px) - (img.width >> 1), y = Math.round(py) - img.height + seatPad(p) - Math.round(at?.lift || 0) - bob;
     if (p.seat < 0) R(ctx, px - 5, py - 1, 10, 2, 'rgba(30,15,5,0.3)');
     ctx.drawImage(img, x, y);

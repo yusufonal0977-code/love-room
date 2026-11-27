@@ -2,7 +2,7 @@
 // karakterin başının üstünde konuşma balonu olarak da görünür.
 //
 // live/{rid}/chat/{id} = { by, name, side, text, at }   (son 80 mesaj gösterilir)
-import { h, icon, toast, $, fmtTime } from '../ui.js';
+import { h, icon, pixIcon, toast, $, fmtTime } from '../ui.js';
 import { limitToLast, onChildAdded, push, query, serverTimestamp, now } from '../fb.js';
 import { t } from '../i18n.js';
 
@@ -24,7 +24,7 @@ export function createChat(ctx) {
   );
   document.body.append(panel);
   const btn = $('chatBtn');
-  btn.innerHTML = icon('chat') + '<i class="dot" hidden></i>';
+  btn.innerHTML = pixIcon('chat') + '<i class="dot" hidden></i>';
   btn.onclick = () => toggle(!open);
 
   function toggle(on) {

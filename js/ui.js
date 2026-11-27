@@ -85,6 +85,27 @@ const P = {
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
   widget: '<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><path d="M17 13.5v7M13.5 17h7"/>',
 };
+// Alt çubuğun piksel simgeleri: evin piksel diline uyar. "Off" sürümleri çapraz çizgiyle üretilir.
+const PX = {
+  mic: ['....XXX....', '...XXXXX...', '...XXXXX...', '...XXXXX...', '...XXXXX...', '.X.XXXXX.X.', '.X..XXX..X.', '..X.....X..', '...XXXXX...', '.....X.....', '...XXXXX...'],
+  cam: ['...........', '...........', 'XXXXXXX....', 'X.....X..XX', 'X.....X.XXX', 'X.....XXXXX', 'X.....X.XXX', 'X.....X..XX', 'XXXXXXX....', '...........', '...........'],
+  heart: ['...........', '.XXX...XXX.', 'XXXXX.XXXXX', 'XXXXXXXXXXX', 'XXXXXXXXXXX', '.XXXXXXXXX.', '..XXXXXXX..', '...XXXXX...', '....XXX....', '.....X.....', '...........'],
+  chat: ['...........', 'XXXXXXXXXXX', 'X.........X', 'X.XXXXXXX.X', 'X.........X', 'X.XXXXX...X', 'X.........X', 'XXXXXXXXXXX', '..XX.......', '..X........', '...........'],
+  grid: ['XXXX...XXXX', 'X..X...X..X', 'X..X...X..X', 'XXXX...XXXX', '...........', '...........', '...........', 'XXXX...XXXX', 'X..X...X..X', 'X..X...X..X', 'XXXX...XXXX'],
+  menu: ['...........', '...........', 'XXXXXXXXXXX', '...........', '...........', 'XXXXXXXXXXX', '...........', '...........', 'XXXXXXXXXXX', '...........', '...........'],
+  screen: ['XXXXXXXXXXX', 'X.........X', 'X....X....X', 'X...XXX...X', 'X..X.X.X..X', 'X....X....X', 'X.........X', 'XXXXXXXXXXX', '...........', '....XXX....', '..XXXXXXX..'],
+  kiss: ['...........', '...........', '..XX...XX..', '.XXXX.XXXX.', 'XXXXXXXXXXX', 'X.........X', 'XXXXXXXXXXX', '.XXXXXXXXX.', '..XXXXXXX..', '...........', '...........'],
+  hug: ['.XX.....XX.', 'XXXX...XXXX', 'XXXX...XXXX', '.XX.....XX.', '...........', 'XXXXX.XXXXX', 'XXXXXXXXXXX', 'XX.XXXXX.XX', 'XX.XXXXX.XX', 'XX.XX.XX.XX', '...........'],
+};
+const slash = (rows) => rows.map((r, y) => [...r].map((c, x) => (x === y ? 'X' : x === y + 1 ? '.' : c)).join(''));
+PX.micOff = slash(PX.mic); PX.camOff = slash(PX.cam);
+export function pixIcon(name) {
+  const rows = PX[name];
+  if (!rows) return icon(name);
+  let d = '';
+  rows.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'X') d += `M${x} ${y}h1v1h-1z`; }));
+  return `<svg class="ic px" viewBox="0 0 11 11" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true"><path d="${d}"/></svg>`;
+}
 export function icon(name, cls = '') {
   return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] ?? ''}</svg>`;
 }

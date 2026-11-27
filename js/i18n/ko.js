@@ -219,6 +219,7 @@ export default {
  "Çıkmak için tekrar geri bas": "나가려면 뒤로 버튼을 한 번 더 누르세요",
  "Uzaktaki sevgilinle ortak bir piksel ev: birlikte film izleyin, müzik dinleyin, oyun oynayın. Ücretsiz:": "멀리 있는 연인과 함께하는 픽셀 집: 같이 영화 보고, 음악 듣고, 게임해요. 무료:",
  "Paylaşım metni kopyalandı": "공유 문구가 복사되었어요",
+ "Kalp gönder (basılı tut: sarıl, öp, ekran)": "하트 보내기 (길게 누르기: 포옹, 키스, 화면)",
  "Pizza": "피자",
  "Mantar": "버섯",
  "Kekik": "타임",

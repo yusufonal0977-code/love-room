@@ -219,6 +219,7 @@ export default {
  "Çıkmak için tekrar geri bas": "再按一次返回键退出",
  "Uzaktaki sevgilinle ortak bir piksel ev: birlikte film izleyin, müzik dinleyin, oyun oynayın. Ücretsiz:": "和异地恋人共享的像素小屋：一起看电影、听音乐、玩游戏。免费：",
  "Paylaşım metni kopyalandı": "分享文字已复制",
+ "Kalp gönder (basılı tut: sarıl, öp, ekran)": "发送爱心（长按：拥抱、亲吻、屏幕）",
  "Pizza": "披萨",
  "Mantar": "蘑菇",
  "Kekik": "百里香",

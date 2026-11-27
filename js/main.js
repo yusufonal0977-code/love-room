@@ -10,7 +10,7 @@ import { createCall } from './call.js';
 import { DECOR, DEFAULT_STATE, SCENES, W, H } from './scenes.js';
 import { APP_URL } from './config.js';
 import { DEFAULT_LOOK, HAIR, HAIR_STYLES, OUTFIT_IDS, bodyOf, PANTS, SHIRT, SKIN, characterSprites, SUN_BADGE, MOON_BADGE } from './art.js';
-import { $, h, icon, toast, openSheet, closeSheet, esc, a11yModals, dragToClose } from './ui.js';
+import { $, h, icon, pixIcon, toast, openSheet, closeSheet, esc, a11yModals, dragToClose } from './ui.js';
 import { createTV } from './features/tv.js';
 import { createSpotify, handleSpotifyRedirect } from './features/spotify.js';
 import { createPhotos } from './features/photos.js';
@@ -491,10 +491,16 @@ async function enterWorld(rid, fresh = false) {
     const p = partnerP();
     const name = partnerProfile?.name;
     $('inviteChip').hidden = !!partnerUid();
+    // Tek rozet: partnerin baş harfi (güneş/ay rengi) + nerede olduğu; partner yoksa davet çağrısı
+    const pill = $('partnerPill');
+    pill.classList.toggle('none', !partnerUid());
+    pill.classList.toggle('on', !!p);
+    $('pAvatar').textContent = partnerUid() ? (name || '?').trim().charAt(0).toLocaleUpperCase(locale) : '+';
+    $('pAvatar').dataset.side = partnerProfile?.side || (profile.side === 'moon' ? 'sun' : 'moon');
     $('status').textContent = !partnerUid()
-      ? t('Partnerin henüz gelmedi')
+      ? t('Partnerini davet et')
       : p
-        ? `${name ?? ''} ${t(SCENE_AT[p.scene] ?? '')}`
+        ? `${name ?? ''} · ${t(SCENE_AT[p.scene] ?? '')}`
         : t('{name} çevrimdışı', { name: name ?? t('Partnerin') });
     updateConn();
   }
@@ -505,6 +511,7 @@ async function enterWorld(rid, fresh = false) {
     dot.className = 'conn ' + c;
     dot.title = t({ idle: 'Partner odada değil', ok: 'Sesli sohbet bağlı', bad: 'Bağlantı koptu: dokun', wait: 'Bağlanıyor…' }[c]);
     $('micWarn').hidden = st.mic !== 'error';
+    $('micBtn').classList.toggle('err', st.mic === 'error'); // mikrofon sorunu ayrı rozet değil, düğmenin kendisinde
   }
   $('connDot').onclick = $('micWarn').onclick = openDiag;
   function openDiag() {
@@ -527,7 +534,7 @@ async function enterWorld(rid, fresh = false) {
   updateTop();
 
   // ---------- Alt çubuk ----------
-  const setIcon = (id, name) => { const b = $(id); if (b.dataset.icon === name) return; const swap = !!b.dataset.icon; b.dataset.icon = name; b.innerHTML = icon(name); if (swap) { b.classList.remove('iconswap'); void b.offsetWidth; b.classList.add('iconswap'); } };
+  const setIcon = (id, name) => { const b = $(id); if (b.dataset.icon === name) return; const swap = !!b.dataset.icon; b.dataset.icon = name; b.innerHTML = b.closest('#bar') ? pixIcon(name) : icon(name); if (swap) { b.classList.remove('iconswap'); void b.offsetWidth; b.classList.add('iconswap'); } };
   function setBtn(id, on) { $(id).classList.toggle('off', !on); $(id).classList.toggle('on', on); }
   setIcon('micBtn', call.micOn ? 'mic' : 'micOff'); setBtn('micBtn', call.micOn);
   setIcon('camBtn', 'camOff'); setIcon('screenBtn', 'screen'); setIcon('heartBtn', 'heart'); setIcon('hugBtn', 'hug'); setIcon('kissBtn', 'kiss'); setIcon('hubBtn', 'grid'); setIcon('menuBtn', 'menu');
@@ -581,6 +588,25 @@ async function enterWorld(rid, fresh = false) {
   const inviteUrl = () => `${APP_URL}?davet=${room.data?.info?.invite}`;
   const waiting = createWaiting(ctx, { inviteUrl, life, decor, care, games });
   $('inviteChip').onclick = () => waiting.open();
+  // Partner rozeti: partner yoksa davet penceresi; varsa iki tarafın saati ve bağlantı durumu
+  $('partnerPill').onclick = () => {
+    if (!partnerUid()) return waiting.open();
+    const fmt = (z) => new Date(now()).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: z });
+    const pn = partnerProfile?.name;
+    toast(pn && partnerProfile?.tz ? t('Sende {mine} · {name} tarafında {theirs}', { mine: fmt(tz), name: pn, theirs: fmt(partnerProfile.tz) }) : t('Saat {time}', { time: fmt(tz) }), 4000);
+  };
+  // Büyük kalp: dokun = kalp; basılı tut (ya da sağ tık) = sarıl, öp, ekran yayı açılır
+  {
+    const hb = $('heartBtn'), arc = $('heartArc'), tap = hb.onclick;
+    let timer = 0, longed = false;
+    const openArc = (on) => { arc.hidden = !on; hb.classList.toggle('open', on); hb.setAttribute('aria-expanded', String(on)); };
+    hb.onclick = (e) => { if (longed) { longed = false; e.preventDefault(); return; } if (!arc.hidden) return openArc(false); tap?.(e); };
+    hb.addEventListener('pointerdown', () => { longed = false; clearTimeout(timer); timer = setTimeout(() => { longed = true; openArc(true); navigator.vibrate?.(12); }, 380); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => hb.addEventListener(ev, () => clearTimeout(timer)));
+    hb.addEventListener('contextmenu', (e) => { e.preventDefault(); openArc(true); });
+    arc.addEventListener('click', () => setTimeout(() => openArc(false), 120));
+    addEventListener('pointerdown', (e) => { if (!arc.hidden && !e.target.closest('.heartwrap')) openArc(false); }, true);
+  }
   $('notifBtn').onclick = () => { $('menu').hidden = true; push.open(); };
   $('notifBtn').hidden = !pushConfigured();
   $('feedbackBtn').onclick = () => { $('menu').hidden = true; feedback.open(); };

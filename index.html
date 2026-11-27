@@ -161,26 +161,32 @@
   <div id="stage"><canvas id="c" width="192" height="144" role="img" aria-label="Ortak eviniz: karakterler ve eşyalar. Alt çubuktaki düğmelerle ve menüyle kullanılır." data-ta></canvas><div id="ov"></div></div>
   <div id="tvLayer"></div>
   <header id="top">
-    <div class="who"><b data-t id="roomName">Bizim Ev</b><span id="status"></span><button id="connDot" class="conn idle" aria-label="Bağlantı"></button></div>
+    <div class="who"><b data-t id="roomName">Bizim Ev</b><button id="partnerPill" class="ppill" type="button"><span id="pAvatar" class="pav" aria-hidden="true"></span><span id="status"></span></button><button id="connDot" class="conn idle" aria-label="Bağlantı"></button></div>
     <div class="chips">
       <span id="relChip" class="chip" hidden></span>
       <button id="soundBtn" class="chip warn" hidden></button>
       <button id="micWarn" class="chip warn" hidden></button>
       <button data-t id="inviteChip" class="chip" hidden>Partnerini davet et</button>
+      <button id="menuBtn" class="topround" data-tt title="Menü"></button>
     </div>
   </header>
   <nav id="bar">
-    <button id="micBtn" data-tt title="Mikrofon"></button>
-    <button id="camBtn" data-tt title="Kamera" class="off"></button>
-    <button id="screenBtn" data-tt title="Ekranını TV'ye yansıt" class="off"></button>
-    <span class="sep"></span>
-    <button id="heartBtn" data-tt title="Kalp gönder" class="love"></button>
-    <button id="hugBtn" data-tt title="Sarıl" class="love"></button>
-    <button id="kissBtn" data-tt title="Öp" class="love"></button>
-    <span class="sep"></span>
-    <button id="chatBtn" data-tt title="Sohbet" class="chatbtn"></button>
-    <button id="hubBtn" data-tt title="Birlikte" class="hub"></button>
-    <button id="menuBtn" data-tt title="Menü"></button>
+    <div class="bgrp left">
+      <button id="micBtn" data-tt title="Mikrofon"></button>
+      <button id="camBtn" data-tt title="Kamera" class="off"></button>
+    </div>
+    <div class="heartwrap">
+      <div id="heartArc" class="arc" hidden>
+        <button id="hugBtn" data-tt title="Sarıl" class="love"></button>
+        <button id="kissBtn" data-tt title="Öp" class="love"></button>
+        <button id="screenBtn" data-tt title="Ekranını TV'ye yansıt" class="off"></button>
+      </div>
+      <button id="heartBtn" data-tt title="Kalp gönder (basılı tut: sarıl, öp, ekran)" class="love big"></button>
+    </div>
+    <div class="bgrp">
+      <button id="chatBtn" data-tt title="Sohbet" class="chatbtn"></button>
+      <button id="hubBtn" data-tt title="Birlikte" class="hub"></button>
+    </div>
   </nav>
   <div id="editBar" hidden>
     <span id="editHint"></span>

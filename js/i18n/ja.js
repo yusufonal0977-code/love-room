@@ -219,6 +219,7 @@ export default {
  "Çıkmak için tekrar geri bas": "もう一度戻るを押すと終了します",
  "Uzaktaki sevgilinle ortak bir piksel ev: birlikte film izleyin, müzik dinleyin, oyun oynayın. Ücretsiz:": "遠距離の恋人とふたりのピクセルハウス：一緒に映画、音楽、ゲーム。無料：",
  "Paylaşım metni kopyalandı": "共有テキストをコピーしました",
+ "Kalp gönder (basılı tut: sarıl, öp, ekran)": "ハートを送る（長押し：ハグ、キス、画面）",
  "Pizza": "ピザ",
  "Mantar": "マッシュルーム",
  "Kekik": "タイム",
