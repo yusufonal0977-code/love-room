@@ -1,7 +1,7 @@
 // Get Love Room — giriş akışı ve dünya: açılış → giriş → (davet | ev kurma) → oda.
 import { firstUser, linkGoogle, loginGoogle, loginGuest, logout, now } from './fb.js';
 import { pickQuality } from './screenshare.js';
-import { connectApp, inApp, openDownload, openWidgets } from './features/app.js';
+import { connectApp, inApp, openDownload, openWidgets, PLAY_URL } from './features/app.js';
 import { createRadio } from './features/radio.js';
 import { startTour } from './features/tour.js';
 import { acceptInvite, createRoom, getProfile, getRoom, joinLive, readInvite, saveProfile } from './net.js';
@@ -106,8 +106,12 @@ function showGate() {
 window.__lrBack = () => {
   for (const m of document.querySelectorAll('.modal:not([hidden])')) { (m.querySelector('[data-close]') || m).click?.(); m.hidden = true; return true; }
   if (document.querySelector('.tour')) { document.querySelector('.tour .tourcard .link')?.click(); return true; }
-  return false;
+  if (Date.now() - backAt < 2000) return false; // ikinci basış: uygulama arka plana gider
+  backAt = Date.now();
+  toast(t('Çıkmak için tekrar geri bas'), 2000);
+  return true;
 };
+let backAt = 0;
 $('googleBtn').onclick = async () => {
   try { const r = await loginGoogle(); await afterLogin(r.user); }
   catch (e) { $('gateErr').textContent = t('Google girişi tamamlanamadı. Tekrar dene.'); console.warn(e); }
@@ -530,7 +534,7 @@ async function enterWorld(rid, fresh = false) {
   // Menü karoları: simge + tek kelime
   const tile = (id, name) => { const e = $(id).querySelector('.mico'); if (e) e.innerHTML = icon(name); };
   [['editBtn', 'user'], ['zoomBtn', 'eye'], ['fullBtn', 'full'], ['appBtn', 'phone'], ['widgetBtn', 'widget'], ['orientBtn', 'rotate'], ['tourBtn', 'help'],
-    ['logoutBtn', 'logout'], ['deleteBtn', 'trash'], ['copyBtn', 'copy'], ['notifBtn', 'bell'], ['feedbackBtn', 'chat']].forEach(([id, n]) => tile(id, n));
+    ['logoutBtn', 'logout'], ['deleteBtn', 'trash'], ['copyBtn', 'copy'], ['notifBtn', 'bell'], ['feedbackBtn', 'chat'], ['shareAppBtn', 'share'], ['rateBtn', 'star']].forEach(([id, n]) => tile(id, n));
   document.querySelector('.langrow .gl').innerHTML = icon('globe');
   $('soundBtn').innerHTML = icon('sound') + `<span>${t('Sesi aç')}</span>`;
   $('micWarn').innerHTML = icon('micOff') + `<span>${t('Mikrofon kapalı')}</span>`;
@@ -580,6 +584,25 @@ async function enterWorld(rid, fresh = false) {
   $('notifBtn').onclick = () => { $('menu').hidden = true; push.open(); };
   $('notifBtn').hidden = !pushConfigured();
   $('feedbackBtn').onclick = () => { $('menu').hidden = true; feedback.open(); };
+  // Uygulamayı arkadaşına öner (test raporu): uygulamada paylaşım penceresi (tanıtım görseliyle), tarayıcıda Web Share ya da kopyala
+  $('shareAppBtn').onclick = async () => {
+    $('menu').hidden = true;
+    const link = inApp() ? PLAY_URL : 'https://getloveroom.com';
+    const text = t('Uzaktaki sevgilinle ortak bir piksel ev: birlikte film izleyin, müzik dinleyin, oyun oynayın. Ücretsiz:') + ' ' + link;
+    track('app_share');
+    try {
+      if (window.LoveRoomApp?.shareImage) {
+        const blob = await (await fetch('assets/og-image.png')).blob();
+        const url = await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(blob); });
+        if (window.LoveRoomApp.shareImage(url, text, 'getloveroom.png')) return;
+      }
+      if (navigator.share) { await navigator.share({ title: 'Get Love Room', text, url: link }); return; }
+    } catch (e) { if (e?.name === 'AbortError') return; }
+    await navigator.clipboard?.writeText(text).catch(() => {});
+    toast(t('Paylaşım metni kopyalandı'));
+  };
+  // Bizi değerlendir (test raporu): yıldız kartı açılır, oradan Google Play yorum sayfasına gidilir
+  $('rateBtn').onclick = () => { $('menu').hidden = true; ctx.rate.show(); };
   // Oyun sesleri (kalp, partner geldi, rozet): menüden açılıp kapanır; durum simgede ve yazıda görünür
   const sfxTile = () => { const on = sfxOn(); tile('sfxBtn', on ? 'sound' : 'soundOff'); $('sfxBtn').classList.toggle('off', !on); $('sfxBtn').setAttribute('aria-pressed', String(on)); $('sfxBtn').title = t(on ? 'Oyun sesleri açık' : 'Oyun sesleri kapalı'); };
   sfxTile();
