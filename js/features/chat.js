@@ -24,7 +24,7 @@ export function createChat(ctx) {
   );
   document.body.append(panel);
   const btn = $('chatBtn');
-  btn.innerHTML = pixIcon('chat') + '<i class="dot" hidden></i>';
+  btn.innerHTML = icon('chat') + '<i class="dot" hidden></i>';
   btn.onclick = () => toggle(!open);
 
   function toggle(on) {

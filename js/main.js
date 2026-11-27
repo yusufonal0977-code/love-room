@@ -534,7 +534,7 @@ async function enterWorld(rid, fresh = false) {
   updateTop();
 
   // ---------- Alt çubuk ----------
-  const setIcon = (id, name) => { const b = $(id); if (b.dataset.icon === name) return; const swap = !!b.dataset.icon; b.dataset.icon = name; b.innerHTML = b.closest('#bar') ? pixIcon(name) : icon(name); if (swap) { b.classList.remove('iconswap'); void b.offsetWidth; b.classList.add('iconswap'); } };
+  const setIcon = (id, name) => { const b = $(id); if (b.dataset.icon === name) return; const swap = !!b.dataset.icon; b.dataset.icon = name; b.innerHTML = icon(name); if (swap) { b.classList.remove('iconswap'); void b.offsetWidth; b.classList.add('iconswap'); } };
   function setBtn(id, on) { $(id).classList.toggle('off', !on); $(id).classList.toggle('on', on); }
   setIcon('micBtn', call.micOn ? 'mic' : 'micOff'); setBtn('micBtn', call.micOn);
   setIcon('camBtn', 'camOff'); setIcon('screenBtn', 'screen'); setIcon('heartBtn', 'heart'); setIcon('hugBtn', 'hug'); setIcon('kissBtn', 'kiss'); setIcon('hubBtn', 'grid'); setIcon('menuBtn', 'menu');
@@ -595,18 +595,6 @@ async function enterWorld(rid, fresh = false) {
     const pn = partnerProfile?.name;
     toast(pn && partnerProfile?.tz ? t('Sende {mine} · {name} tarafında {theirs}', { mine: fmt(tz), name: pn, theirs: fmt(partnerProfile.tz) }) : t('Saat {time}', { time: fmt(tz) }), 4000);
   };
-  // Büyük kalp: dokun = kalp; basılı tut (ya da sağ tık) = sarıl, öp, ekran yayı açılır
-  {
-    const hb = $('heartBtn'), arc = $('heartArc'), tap = hb.onclick;
-    let timer = 0, longed = false;
-    const openArc = (on) => { arc.hidden = !on; hb.classList.toggle('open', on); hb.setAttribute('aria-expanded', String(on)); };
-    hb.onclick = (e) => { if (longed) { longed = false; e.preventDefault(); return; } if (!arc.hidden) return openArc(false); tap?.(e); };
-    hb.addEventListener('pointerdown', () => { longed = false; clearTimeout(timer); timer = setTimeout(() => { longed = true; openArc(true); navigator.vibrate?.(12); }, 380); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => hb.addEventListener(ev, () => clearTimeout(timer)));
-    hb.addEventListener('contextmenu', (e) => { e.preventDefault(); openArc(true); });
-    arc.addEventListener('click', () => setTimeout(() => openArc(false), 120));
-    addEventListener('pointerdown', (e) => { if (!arc.hidden && !e.target.closest('.heartwrap')) openArc(false); }, true);
-  }
   $('notifBtn').onclick = () => { $('menu').hidden = true; push.open(); };
   $('notifBtn').hidden = !pushConfigured();
   $('feedbackBtn').onclick = () => { $('menu').hidden = true; feedback.open(); };
