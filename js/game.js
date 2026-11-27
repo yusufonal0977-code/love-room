@@ -54,42 +54,6 @@ export function createGame(opts) {
     if (cam.snap) { scale = targetScale; setSize(); }
   }
   addEventListener('resize', () => { cam.snap = true; fit(); }); fit();
-
-  // ---------- Kenar uzatma: ekranın oda dışında kalan bantları siyah kalmasın ----------
-  // Odanın kenar satırı/sütunu bandın içine doğru uzatılır (üstte duvar, altta zemin, yatayda yan duvarlar) ve
-  // uzaklaştıkça kararır; göz yine odanın ortasında kalır. Her karede ana tuvalden kopyalanır: boya, ışık ve gece
-  // kararması da aynen devam eder. Oyun pikselleriyle çizilir, CSS ile ekrana büyütülür (ucuz).
-  const bleed = document.createElement('canvas');
-  bleed.className = 'bleed';
-  bleed.setAttribute('aria-hidden', 'true');
-  stage.parentNode?.insertBefore(bleed, stage);
-  const bctx = bleed.getContext('2d');
-  function drawBleed() {
-    const vw = innerWidth, vh = innerHeight, sw = W * scale, sh = H * scale;
-    if (sw >= vw - 1 && sh >= vh - 1) { if (bleed.width) { bleed.width = 0; } return; } // oda ekranı dolduruyor
-    const bw = Math.ceil(vw / scale) + 2, bh = Math.ceil(vh / scale) + 2;
-    if (bleed.width !== bw || bleed.height !== bh) { bleed.width = bw; bleed.height = bh; bctx.imageSmoothingEnabled = false; }
-    const ox = cam.x / scale, oy = cam.y / scale; // odanın sol üst köşesi (oyun pikseli)
-    bctx.clearRect(0, 0, bw, bh);
-    bctx.drawImage(canvas, ox, oy);
-    const top = Math.max(0, oy), bot = Math.max(0, bh - (oy + H)), left = Math.max(0, ox), right = Math.max(0, bw - (ox + W));
-    // Kenar satırlarını uzat (1 piksellik şerit, bant boyunca gerilir)
-    if (top > 0) bctx.drawImage(canvas, 0, 1, W, 1, ox, 0, W, oy + 0.5);
-    if (bot > 0) bctx.drawImage(canvas, 0, H - 2, W, 1, ox, oy + H - 0.5, W, bot + 1);
-    if (left > 0) bctx.drawImage(bleed, Math.ceil(ox) + 1, 0, 1, bh, 0, 0, ox + 0.5, bh);
-    if (right > 0) bctx.drawImage(bleed, Math.floor(ox + W) - 2, 0, 1, bh, ox + W - 0.5, 0, right + 1, bh);
-    // Uzaklaştıkça karar: odanın kenarında açık, ekranın kenarında koyu
-    const shade = (x0, y0, x1, y1, rx, ry, rw, rh) => {
-      const gr = bctx.createLinearGradient(x0, y0, x1, y1);
-      gr.addColorStop(0, 'rgba(0,0,0,0.25)'); gr.addColorStop(1, 'rgba(0,0,0,0.88)');
-      bctx.fillStyle = gr; bctx.fillRect(rx, ry, rw, rh);
-    };
-    if (top > 0) shade(0, oy, 0, 0, 0, 0, bw, oy);
-    if (bot > 0) shade(0, oy + H, 0, bh, 0, oy + H, bw, bot);
-    if (left > 0) shade(ox, 0, 0, 0, 0, 0, ox, bh);
-    if (right > 0) shade(ox + W, 0, bw, 0, ox + W, 0, right, bh);
-    bleed.style.width = bw * scale + 'px'; bleed.style.height = bh * scale + 'px';
-  }
   function camera(dt) {
     // Yakınlaştırma yumuşak geçsin (sinema moduna girip çıkarken)
     if (scale !== targetScale) {
@@ -797,7 +761,6 @@ export function createGame(opts) {
     if (edit) drawEdit(l);
     if (fade > 0) { ctx.fillStyle = `rgba(0,0,0,${Math.min(1, fade)})`; ctx.fillRect(0, 0, W, H); }
     camera(dt);
-    drawBleed();
     updateOverlay();
     updatePictures(info.night);
     opts.onFrame?.(t);
