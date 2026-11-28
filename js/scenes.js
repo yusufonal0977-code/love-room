@@ -89,23 +89,53 @@ export function skyColors(hour) {
   if (hour < 19.3) return ['#ff8a4c', '#ffcf6e', false];
   return ['#4b3f8a', '#f08a6a', true];
 }
+const mixHex = (a, b, k) => {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const ch = (sh) => Math.round(((pa >> sh) & 255) * (1 - k) + ((pb >> sh) & 255) * k);
+  return '#' + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
+};
+/** Piksel bulut: yuvarlak tepeli, alt kenarı düz, altı gölgeli. */
+function pixCloud(g, x, y, big) {
+  const rows = big ? [[4, 5], [2, 9], [1, 12], [0, 14], [0, 14]] : [[2, 4], [1, 7], [0, 9], [0, 9]];
+  rows.forEach(([o, n], j) => R(g, x + o, y + j, n, 1, j === rows.length - 1 ? '#d6e6f5' : '#ffffff'));
+  R(g, x + rows[1][0] + 1, y + 1, 2, 1, '#ffffff');
+}
+/** Gökyüzü: dört ton kuşak ve aralarında noktalama; bulut, güneş, ay ve yıldızlar pencerenin içinde kalır. */
 function drawSky(g, x, y, w, h, hour, t) {
   const [top, bottom, night] = skyColors(hour);
-  const grd = g.createLinearGradient(0, y, 0, y + h);
-  grd.addColorStop(0, top); grd.addColorStop(1, bottom);
-  g.fillStyle = grd; g.fillRect(x, y, w, h);
+  x = Math.round(x); y = Math.round(y); w = Math.round(w); h = Math.round(h);
+  g.save();
+  g.beginPath(); g.rect(x, y, w, h); g.clip();
+  const bands = 4, bh = h / bands;
+  for (let i = 0; i < bands; i++) {
+    const y0 = y + Math.round(i * bh), y1 = y + Math.round((i + 1) * bh);
+    const c = mixHex(top, bottom, i / (bands - 1));
+    R(g, x, y0, w, y1 - y0, c);
+    if (i > 0) { const pc = mixHex(top, bottom, (i - 1) / (bands - 1)); for (let k = (y0 & 1); k < w; k += 2) R(g, x + k, y0, 1, 1, pc); }
+  }
   if (night) {
     for (let i = 0; i < 14; i++) {
-      const sx = x + ((i * 37) % w), sy = y + ((i * 23) % Math.max(4, h - 10));
-      if ((Math.sin(t * 2 + i) + 1) / 2 > 0.25) R(g, sx, sy, 1, 1, '#fff6c8');
+      const sx = x + ((i * 37) % w), sy = y + 1 + ((i * 23) % Math.max(4, h - 10));
+      const on = (Math.sin(t * 2 + i) + 1) / 2;
+      if (on > 0.25) R(g, sx, sy, 1, 1, on > 0.8 ? '#ffffff' : '#fff6c8');
     }
-    R(g, x + w * 0.72, y + 4, 6, 6, '#fff6d8'); R(g, x + w * 0.72 + 2, y + 3, 5, 5, top);
+    const mx = x + Math.round(w * 0.7), my = y + 3;
+    R(g, mx + 1, my, 4, 6, '#fff6d8'); R(g, mx, my + 1, 6, 4, '#fff6d8');
+    R(g, mx + 3, my, 3, 5, top); R(g, mx + 2, my + 1, 1, 1, top);
+    R(g, mx + 1, my + 2, 1, 2, '#e8dcae');
   } else {
-    const sunY = y + (hour < 12 ? h - (hour - 6) * 3 : 4 + (hour - 12) * 2.6);
-    R(g, x + w * 0.7, Math.max(y + 2, Math.min(y + h - 8, sunY)), 7, 7, '#fff1a8');
-    const cx = x + ((t * 3) % (w + 20)) - 20;
-    R(g, cx, y + 6, 14, 3, '#ffffff'); R(g, cx + 3, y + 4, 8, 2, '#ffffff');
+    const sunY = Math.round(Math.max(y + 2, Math.min(y + h - 8, y + (hour < 12 ? h - (hour - 6) * 3 : 4 + (hour - 12) * 2.6))));
+    const sx = x + Math.round(w * 0.7), warm = hour < 8 || hour >= 17;
+    const core = warm ? '#ffe08a' : '#fff6c0', rim = warm ? '#ffb85c' : '#ffe680';
+    R(g, sx + 1, sunY, 5, 7, rim); R(g, sx, sunY + 1, 7, 5, rim);
+    R(g, sx + 2, sunY + 1, 3, 5, core); R(g, sx + 1, sunY + 2, 5, 3, core);
+    const span = w + 16, big = w > 60;
+    for (const [off, cy, sp] of big ? [[0, 6, 3], [0.45, 14, 2], [0.75, 4, 2.5]] : [[0, Math.max(2, Math.round(h * 0.2)), 2]]) {
+      const cx = x - 15 + Math.floor((t * sp + off * span) % span);
+      pixCloud(g, cx, y + cy, big);
+    }
   }
+  g.restore();
 }
 
 // ---------- Sahneler ----------
@@ -240,7 +270,7 @@ const balkon = makeScene({
     else drawSky(g, 0, 0, W, 58, hour, t);
     const night = skyColors(hour)[2];
     drawCity(g, night);
-    railing(g);
+    railing(g, night);
     lightChain(g, st.lights, t);
   },
   props: [

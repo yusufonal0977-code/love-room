@@ -101,7 +101,8 @@ export function armchair(g) {
   R(g, 152, 82, 22, 5, OUT); R(g, 153, 82, 20, 4, y.d); R(g, 153, 82, 20, 1, y.m);
   // Krem yastık
   const c = ramp('#fff3dc');
-  R(g, 165, 61, 10, 19, OUT); R(g, 166, 62, 8, 17, c.m); R(g, 166, 62, 8, 1, c.h); R(g, 173, 63, 1, 15, c.d); R(g, 168, 64, 1, 13, c.d);
+  R(g, 163, 65, 10, 9, OUT); R(g, 162, 66, 12, 7, OUT); R(g, 163, 66, 10, 7, c.m);
+  R(g, 164, 66, 8, 1, c.h); P(g, 163, 67, c.l); R(g, 163, 72, 10, 1, c.d); R(g, 172, 67, 1, 5, c.d); P(g, 167, 69, c.d2); P(g, 168, 69, c.d);
   // Ayaklar
   for (const lx of [149, 173]) { R(g, lx, 86, 4, 3, OUT); P(g, lx + 1, 86, WOOD); P(g, lx + 2, 86, WOOD_D); }
 }
@@ -116,8 +117,12 @@ function flowerBox(g, x, colors) {
     R(g, fx - 1, fy - 1, 5, 5, OUT); R(g, fx, fy, 3, 3, c.m); P(g, fx, fy, c.h); P(g, fx + 1, fy + 1, '#ffd27a');
   }
 }
-export function railing(g) {
+export function railing(g, night = false) {
   const k = ramp('#fff3dc');
+  // Parmaklık araları: aşağıdaki şehrin uzak çatıları (boş kalırsa arkadaki eski pikseller görünür)
+  const far = night ? '#1b1d3a' : '#5f7fa6';
+  R(g, 0, 61, W, 7, far); dith(g, 0, 61, W, 2, night ? '#2a2d55' : '#7aa0c8');
+  if (night) for (let x = 5; x < W; x += 11) P(g, x, 64 + (x % 3), '#ffd27a');
   R(g, 0, 57, W, 5, OUT); R(g, 0, 58, W, 1, k.h); R(g, 0, 59, W, 2, k.m); // tırabzan
   for (let x = 2; x < W; x += 8) { R(g, x - 1, 61, 4, 9, OUT); R(g, x, 61, 2, 9, k.m); P(g, x, 61, k.l); P(g, x + 1, 68, k.d); }
   R(g, 0, 68, W, 2, OUT); R(g, 0, 68, W, 1, k.d);
