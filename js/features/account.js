@@ -13,8 +13,9 @@ export async function deleteAccountData({ uid, rid, room }) {
     await remove(ref(db, `showcaseRid/${sc}`)).catch(quiet('vitrin odası'));
   }
   if (room?.info?.invite) await remove(ref(db, `invites/${room.info.invite}`)).catch(quiet('davet'));
-  await remove(ref(db, `live/${rid}`));
-  await remove(ref(db, `rooms/${rid}`));
+  // Partner hesabını önce sildiyse ev zaten yok; kurallar artık üyeliği göremediği için reddeder. Bu, hesabın silinmesini engellemesin.
+  await remove(ref(db, `live/${rid}`)).catch(quiet('canlı oda'));
+  await remove(ref(db, `rooms/${rid}`)).catch(quiet('oda'));
   await remove(ref(db, `users/${uid}`));
   // Kullanım sayaçları: son 400 günün aktiflik kaydı ve çevrimiçi işareti (K2)
   const gone = { [`metrics/online/${uid}`]: null };
