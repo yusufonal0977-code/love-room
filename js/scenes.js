@@ -5,6 +5,8 @@
 import { drawFireplace, drawFire, drawMantel, fireFlicker, FIRE_LIGHT_Y } from './semine.js';
 import { R, shade } from './art.js';
 import { C, CATALOG, plant } from './decor.js';
+import { drawSomine, drawSomineClock, armchair as pixArmchair, drawBalkon, drawCity, railing, lightChain, candleTable, foosball, poolTable as pixPool, flower as pixFlower, drawHobi, drawHobiDyn, gameTable, drawYatak, drawYatakDyn, blanket as pixBlanket, drawMutfak, drawMutfakDyn, kitchenTable } from './rooms-pix.js';
+import { drawSalon, drawSalonDyn, sofaBack, lamp as pixLamp, jarTable, plant as pixPlant } from './salon-pix.js';
 
 export const W = 192, H = 144, WALL = 50;
 
@@ -66,9 +68,11 @@ function rug(g, x, y, w, h, outer, inner, mid, dots) {
   for (let fx = x + 2; fx < x + w - 2; fx += 4) { R(g, fx, y - 2, 1, 2, '#fff3dc'); R(g, fx, y + h, 1, 2, '#fff3dc'); }
 }
 /** Çerçeve: (x,y,w,h) dış ölçü; içi fotoğraf yoksa varsayılan resim. */
-function frame(g, x, y, w, h, art) {
-  R(g, x + 1, y + 1, w, h, 'rgba(0,0,0,0.2)');
-  R(g, x, y, w, h, C.woodD); R(g, x + 1, y + 1, w - 2, h - 2, C.gold); R(g, x + 2, y + 2, w - 4, h - 4, C.cream);
+function frame(g, x, y, w, h, art) { // piksel sanat: koyu dış hat, kabartmalı altın çerçeve
+  R(g, x + 1, y + h, w - 1, 1, 'rgba(0,0,0,0.25)');
+  R(g, x, y, w, h, '#26160f'); R(g, x + 1, y + 1, w - 2, h - 2, '#c8901c');
+  R(g, x + 1, y + 1, w - 2, 1, '#fff1a8'); R(g, x + 1, y + 1, 1, h - 2, '#ffd75e'); R(g, x + w - 2, y + 2, 1, h - 3, '#8a5a12'); R(g, x + 1, y + h - 2, w - 2, 1, '#8a5a12');
+  R(g, x + 2, y + 2, w - 4, h - 4, '#26160f');
   art(x + 3, y + 3, w - 6, h - 6);
 }
 /** Basit piksel çizgi (saat kolları). */
@@ -125,76 +129,17 @@ const salon = makeScene({
   id: 'salon',
   name: 'Salon',
   colors: { wall: '#ff9a76', accent: '#ffb999', floor: '#c98a55', motif: 'diamond' },
-  draw(g, col) {
-    wallpaper(g, col.wall, col.accent, col.motif);
-    wainscot(g, '#fff0dc', '#d9784f');
-    woodFloor(g, col.floor);
-    // Pencere (gökyüzü canlı çizilir) ve perdeler
-    R(g, 6, 6, 28, 28, C.woodD); R(g, 8, 8, 24, 24, '#5ec2ff');
-    R(g, 2, 4, 7, 34, C.cream); R(g, 31, 4, 7, 34, C.cream); R(g, 4, 4, 1, 34, '#e6cfa6'); R(g, 34, 4, 1, 34, '#e6cfa6');
-    R(g, 0, 2, 40, 2, C.metal); R(g, 6, 33, 28, 3, C.woodL);
-    // Duvardaki TV + hoparlörler
-    R(g, 70, 10, 52, 32, '#16141a'); R(g, 71, 11, 50, 30, '#26242c'); R(g, 94, 42, 4, 2, C.metal);
-    R(g, 63, 30, 5, 14, '#26242c'); R(g, 64, 32, 3, 3, '#4a4752'); R(g, 64, 37, 3, 5, '#4a4752');
-    R(g, 124, 30, 5, 14, '#26242c'); R(g, 125, 32, 3, 3, '#4a4752'); R(g, 125, 37, 3, 5, '#4a4752');
-    // TV ünitesi
-    R(g, 60, 44, 72, 12, C.wood); R(g, 60, 44, 72, 2, C.woodL); R(g, 64, 48, 20, 6, C.woodD); R(g, 86, 48, 20, 6, C.woodD); R(g, 108, 48, 20, 6, C.woodD);
-    R(g, 62, 56, 2, 2, C.woodD); R(g, 128, 56, 2, 2, C.woodD);
-    // Pikap dolabı + plaklar
-    R(g, 134, 42, 22, 14, C.woodD); R(g, 135, 43, 20, 2, C.woodL); R(g, 136, 46, 18, 8, '#5a3420');
-    for (let i = 0; i < 5; i++) R(g, 137 + i * 3, 47, 2, 6, ['#ff5d8f', '#ffc93c', '#5b8def', '#fff3dc', '#3fb7a4'][i]);
-    R(g, 135, 56, 2, 2, C.woodD); R(g, 153, 56, 2, 2, C.woodD);
-    // Arka kapı (hobi köşesine)
-    R(g, 158, 14, 26, 38, C.woodD); R(g, 160, 16, 22, 36, '#c98a55'); R(g, 162, 18, 18, 14, '#b47744'); R(g, 162, 34, 18, 16, '#b47744'); R(g, 177, 33, 2, 2, C.gold);
-    R(g, 160, 52, 22, 4, '#c9a36b');
-    // Kilim (TV ile kanepe arası)
-    rug(g, 56, 64, 80, 28, '#e0473f', '#ffb547', '#2f5d8f', '#fff3dc');
-    // Kanepenin oturma minderleri (sırt arkadan, ön planda çizilir)
-    const s1 = '#2f9e8f', s2 = '#3fb7a4', s3 = '#6fd6c5';
-    R(g, 56, 98, 80, 14, s1); R(g, 58, 99, 37, 11, s2); R(g, 97, 99, 37, 11, s2); R(g, 58, 99, 76, 2, s3);
-    sideDoor(g, 'left', col.wall); sideDoor(g, 'right', col.wall);
-  },
+  draw(g, col) { drawSalon(g, col, wallpaper); }, // piksel sanat sürümü: salon-pix.js
   dyn(g, { st, hour, t }) {
     drawSky(g, 8, 8, 24, 24, hour, t);
-    R(g, 19, 8, 2, 24, C.woodD); R(g, 8, 19, 24, 2, C.woodD);
-    // TV ekranı (film açıksa üstünde gerçek görüntü oynar)
-    if (DECOR.tvOn) R(g, 73, 13, 46, 26, '#000');
-    else if (st.tv) {
-      const k = (t * 2 | 0) % 3;
-      R(g, 73, 13, 46, 26, ['#7ab8ff', '#9ad0ff', '#86c4ff'][k]); R(g, 73, 31, 46, 8, '#4fbf6a');
-      R(g, 80 + k * 4, 18, 8, 8, '#fff1c8'); R(g, 106, 20 - k, 5, 5, '#ffffff');
-    } else { R(g, 73, 13, 46, 26, '#121016'); R(g, 74, 14, 12, 1, '#3a3842'); R(g, 74, 15, 6, 1, '#3a3842'); }
-    // Pikap
-    R(g, 136, 36, 18, 6, '#3a2418'); R(g, 136, 36, 18, 1, '#5a3a28');
-    const spin = DECOR.music ? (t * 6 | 0) % 2 : 0;
-    R(g, 138, 35, 11, 4, '#16141a'); R(g, 142, 36, 3, 2, spin ? '#ff5d8f' : '#ffc93c'); R(g, 151, 33, 1, 5, '#d8d0c0'); R(g, 148, 33, 3, 1, '#d8d0c0');
-    if (DECOR.music) for (let i = 0; i < 3; i++) {
-      const p = (t * 0.6 + i / 3) % 1, nx = 142 + Math.sin(p * 6 + i) * 6, ny = 32 - p * 22;
-      R(g, nx, ny, 2, 2, ['#ffd27a', '#ff7aa3', '#8fd0ff'][i]); R(g, nx + 1, ny - 3, 1, 3, ['#ffd27a', '#ff7aa3', '#8fd0ff'][i]);
-    }
-    // Mama kabı
-    R(g, 40, 64, 10, 4, '#5b8def'); R(g, 40, 64, 10, 1, '#8fb0ff');
-    if (DECOR.pet.food > 25) R(g, 41, 63, 8, 2, '#c8742c');
+    drawSalonDyn(g, { st, t }, DECOR);
   },
   props: [
-    { id: 'sofa', y: 132, draw(g) { // kanepe sırtı ve kolçaklar (oturanların önünde)
-      const s1 = '#2f9e8f', s2 = '#3fb7a4', s3 = '#6fd6c5';
-      R(g, 52, 98, 9, 28, s1); R(g, 131, 98, 9, 28, s1); R(g, 52, 98, 9, 2, s3); R(g, 131, 98, 9, 2, s3);
-      R(g, 58, 111, 76, 15, s2); R(g, 58, 111, 76, 2, s3); R(g, 95, 113, 2, 12, s1);
-      for (let x = 66; x < 130; x += 10) R(g, x, 118, 2, 2, s1);
-      R(g, 54, 126, 3, 3, C.woodD); R(g, 135, 126, 3, 3, C.woodD);
-    } },
-    { id: 'lamp', movable: true, y: 120, hit: [20, 68, 20, 54], block: [22, 114, 16, 6], draw(g, { st }) {
-      R(g, 29, 78, 2, 40, C.metal); R(g, 24, 117, 12, 3, C.metal); R(g, 23, 70, 14, 9, st.lamp ? '#ffe08a' : '#d6c08f'); R(g, 24, 70, 12, 1, '#fff6c8');
-    } },
-    { id: 'jartable', movable: true, y: 118, hit: [140, 88, 24, 32], block: [143, 112, 18, 6], draw(g) {
-      R(g, 144, 104, 16, 3, C.wood); R(g, 144, 104, 16, 1, C.woodL); R(g, 146, 107, 2, 11, C.woodD); R(g, 156, 107, 2, 11, C.woodD);
-      R(g, 147, 94, 10, 10, '#bfe6f2'); R(g, 148, 95, 8, 8, '#d8f2fa');
-      R(g, 149, 99, 2, 2, '#ff7aa3'); R(g, 152, 100, 2, 2, '#ffc93c'); R(g, 150, 101, 3, 2, '#8fd0ff'); R(g, 153, 97, 2, 2, '#9ee6a8');
-      R(g, 146, 92, 12, 2, '#e0473f'); R(g, 148, 90, 8, 2, '#ff6a5a');
-    } },
-    { id: 'plantL', movable: true, y: 134, hit: [4, 100, 18, 36], block: [6, 128, 14, 6], draw(g) { plant(g, 13, 134, true); } },
-    { id: 'plantR', movable: true, y: 136, hit: [170, 102, 20, 36], block: [172, 130, 14, 6], draw(g) { plant(g, 180, 136, true); } },
+    { id: 'sofa', y: 132, draw(g) { sofaBack(g); } },
+    { id: 'lamp', movable: true, y: 120, hit: [20, 68, 20, 54], block: [22, 114, 16, 6], draw(g, { st }) { pixLamp(g, st.lamp); } },
+    { id: 'jartable', movable: true, y: 118, hit: [140, 88, 24, 32], block: [143, 112, 18, 6], draw(g) { jarTable(g); } },
+    { id: 'plantL', movable: true, y: 134, hit: [4, 100, 18, 36], block: [6, 128, 14, 6], draw(g) { pixPlant(g, 13, 134); } },
+    { id: 'plantR', movable: true, y: 136, hit: [170, 102, 20, 36], block: [172, 130, 14, 6], draw(g) { pixPlant(g, 180, 136); } },
   ],
   blocks: [[0, 0, W, 54], [58, 42, 76, 16], [132, 40, 26, 18], [50, 96, 92, 32]],
   doors: [
@@ -229,35 +174,9 @@ const somine = makeScene({
   id: 'somine',
   name: 'Şömine odası',
   colors: { wall: '#1f7a7a', accent: '#2f9a95', floor: '#8a4f2c', motif: 'dots' },
-  draw(g, col) {
-    wallpaper(g, col.wall, col.accent, col.motif);
-    wainscot(g, shade(col.wall, -0.25), '#e0b25a');
-    woodFloor(g, col.floor);
-    // İlişki saati (kolları canlı çizilir)
-    R(g, 125, 14, 16, 16, '#e0b25a'); R(g, 127, 16, 12, 12, '#fff3dc'); R(g, 132, 16, 2, 1, '#e0473f');
-    R(g, 131, 30, 4, 6, '#e0b25a'); R(g, 132, 35, 2, 3, '#ff5d8f');
-    // Kitaplık (sol) ve günlük
-    R(g, 2, 18, 30, 46, C.woodD); R(g, 4, 20, 26, 42, '#3a2418');
-    const books = ['#ff7a59', '#ffc93c', '#5b8def', '#4fbf6a', '#ff5d8f', '#fff3dc'];
-    for (let s = 0; s < 3; s++) { for (let i = 0; i < 6; i++) R(g, 5 + i * 4, 22 + s * 14 + (i % 2), 3, 11 - (i % 2), books[(i + s) % 6]); R(g, 4, 33 + s * 14, 26, 2, C.wood); }
-    R(g, 12, 47, 6, 9, '#ff5d8f'); R(g, 12, 47, 6, 1, '#ffa3c0'); R(g, 14, 50, 2, 2, '#ffc93c'); // günlük
-    // Şömine (yeniden çizildi: koyu ahşap, alevi dyn'de canlanır)
-    drawFireplace(g, col.fireplace); // model ve raf süsü: Evi düzenle > Boya'dan seçilir (varsayılan koyu ahşap)
-    drawMantel(g, col.mantel, col.fireplace);
-    // Koyun postu
-    R(g, 74, 78, 44, 12, '#fffaf0'); R(g, 72, 80, 48, 8, '#fffaf0'); R(g, 76, 82, 40, 1, '#ece4d4');
-    // Odun sepeti
-    R(g, 54, 58, 14, 10, '#c9a36b'); R(g, 55, 54, 3, 5, '#7a4a2a'); R(g, 59, 53, 3, 6, '#8a5a36'); R(g, 63, 54, 3, 5, '#7a4a2a');
-    sideDoor(g, 'right', col.wall);
-    sideDoor(g, 'left', col.wall); // yatak odasına (100 saat birlikte geçirince açılır)
-  },
+  draw(g, col) { drawSomine(g, col, wallpaper, () => { drawFireplace(g, col.fireplace); drawMantel(g, col.mantel, col.fireplace); }); }, // şömine tasarımcı çizimi
   dyn(g, { st, t, hour }) {
-    // Saat: gerçek saat
-    const a = ((hour % 12) / 12) * Math.PI * 2, m = ((hour % 1) * Math.PI * 2);
-    R(g, 128, 17, 10, 10, '#fff3dc');
-    line(g, 133, 22, 133 + Math.sin(m) * 5, 22 - Math.cos(m) * 5, '#3a2418');
-    line(g, 133, 22, 133 + Math.sin(a) * 3, 22 - Math.cos(a) * 3, '#e0473f');
-    R(g, 131 + Math.round(Math.sin(t * 2) * 1.5), 35, 2, 3, '#ff5d8f'); // sarkaç
+    drawSomineClock(g, hour, t);
     if (!st.fire) return;
     const fp = DECOR.paint.somine?.fireplace;
     drawFire(g, t, fp);
@@ -266,12 +185,8 @@ const somine = makeScene({
     [[48, 0.17], [40, 0.13], [32, 0.10], [24, 0.07], [16, 0.05]].forEach(([w, a], i) => R(g, 96 - w / 2, 66 + i, w, 1, `rgba(255,150,60,${(a * f).toFixed(3)})`));
   },
   props: [
-    { id: 'armchair', movable: true, y: 88, hit: [146, 58, 34, 32], block: [146, 70, 34, 20], draw(g) {
-      R(g, 150, 60, 26, 14, '#ffc93c'); R(g, 152, 62, 22, 10, '#ffd75e'); R(g, 148, 70, 6, 16, '#e0a92a'); R(g, 172, 70, 6, 16, '#e0a92a');
-      R(g, 152, 74, 22, 8, '#ffd75e'); R(g, 152, 82, 22, 4, '#e0a92a'); R(g, 150, 86, 2, 3, C.woodD); R(g, 174, 86, 2, 3, C.woodD);
-      R(g, 166, 62, 8, 18, '#fff3dc'); R(g, 168, 62, 1, 18, '#ecd8b8');
-    } },
-    { id: 'plant', movable: true, y: 128, hit: [18, 94, 24, 36], block: [20, 122, 20, 6], draw(g) { plant(g, 30, 128, true); } },
+    { id: 'armchair', movable: true, y: 88, hit: [146, 58, 34, 32], block: [146, 70, 34, 20], draw(g) { pixArmchair(g); } },
+    { id: 'plant', movable: true, y: 128, hit: [18, 94, 24, 36], block: [20, 122, 20, 6], draw(g) { pixPlant(g, 30, 128); } },
   ],
   blocks: [[0, 0, W, 54], [0, 54, 34, 12], [52, 52, 18, 18], [68, 54, 56, 14]],
   doors: [
@@ -317,56 +232,23 @@ const balkon = makeScene({
   id: 'balkon',
   name: 'Balkon',
   colors: { floor: '#e88a5c', accent: '#d9784f' },
-  draw(g, col) {
-    tileFloor(g, 66, col.floor, col.accent);
-    R(g, 0, 58, W, 3, '#fff3dc'); R(g, 0, 61, W, 1, '#e6cfa6');
-    for (let x = 2; x < W; x += 8) R(g, x, 61, 2, 9, '#fff3dc');
-    R(g, 0, 68, W, 2, '#e6cfa6');
-    // Korkuluk saksıları
-    R(g, 20, 52, 28, 6, '#b8552f'); for (let i = 0; i < 6; i++) R(g, 22 + i * 4, 46 - (i % 2) * 2, 3, 6, ['#ff5d8f', '#ffc93c', '#fff3dc'][i % 3]);
-    R(g, 144, 52, 28, 6, '#b8552f'); for (let i = 0; i < 6; i++) R(g, 146 + i * 4, 46 - (i % 2) * 2, 3, 6, ['#5b8def', '#ff7a59', '#fff3dc'][i % 3]);
-    // Bank (karşıya bakan)
-    R(g, 68, 70, 56, 4, '#a8683c'); R(g, 68, 75, 56, 4, '#a8683c'); R(g, 68, 70, 56, 1, '#c98a55');
-    R(g, 66, 80, 60, 8, '#c98a55'); R(g, 66, 80, 60, 2, '#e0a870'); R(g, 68, 88, 3, 6, '#5a3a22'); R(g, 121, 88, 3, 6, '#5a3a22');
-    R(g, 76, 76, 10, 8, '#ff7a59'); R(g, 106, 76, 10, 8, '#3fb7a4');
-    // Sol kapı (cam)
-    R(g, 0, 72, 5, 44, '#fff3dc'); R(g, 0, 74, 3, 40, '#9ad0ff');
-    R(g, 5, 92, 12, 10, '#c9a36b');
-  },
+  draw(g, col) { drawBalkon(g, col); },
   dyn(g, { hour, partnerHour, t, st }) {
     // İki saat dilimi farklıysa gökyüzü ikiye bölünür: sol senin, sağ partnerinin gökyüzü
     const split = partnerHour !== null && Math.abs(((partnerHour - hour + 36) % 24) - 12) < 10;
     if (split) { drawSky(g, 0, 0, W / 2, 58, hour, t); drawSky(g, W / 2, 0, W / 2, 58, partnerHour, t); R(g, W / 2, 0, 1, 58, 'rgba(255,255,255,0.35)'); }
     else drawSky(g, 0, 0, W, 58, hour, t);
     const night = skyColors(hour)[2];
-    const blds = [[0, 30, 18], [16, 24, 14], [30, 34, 20], [52, 20, 12], [64, 28, 18], [84, 18, 14], [100, 26, 20], [122, 22, 12], [134, 32, 18], [154, 24, 16], [172, 30, 20]];
-    for (const [x, y, w] of blds) {
-      R(g, x, y + 4, w, 58 - y - 4, night ? '#23264a' : '#7aa0c8');
-      if (night) for (let wy = y + 8; wy < 54; wy += 6) for (let wx = x + 2; wx < x + w - 2; wx += 5) if ((wx * 7 + wy) % 3) R(g, wx, wy, 2, 2, '#ffd27a');
-    }
-    R(g, 0, 58, W, 3, '#fff3dc');
-    for (let x = 2; x < W; x += 8) R(g, x, 61, 2, 9, '#fff3dc');
-    R(g, 20, 52, 28, 6, '#b8552f'); for (let i = 0; i < 6; i++) R(g, 22 + i * 4, 46 - (i % 2) * 2, 3, 6, ['#ff5d8f', '#ffc93c', '#fff3dc'][i % 3]);
-    R(g, 144, 52, 28, 6, '#b8552f'); for (let i = 0; i < 6; i++) R(g, 146 + i * 4, 46 - (i % 2) * 2, 3, 6, ['#5b8def', '#ff7a59', '#fff3dc'][i % 3]);
-    // Işık zinciri
-    for (let i = 0; i < 16; i++) {
-      const x = 6 + i * 12, y = 8 + Math.round(Math.sin((i / 15) * Math.PI * 2) * 2) + 2;
-      R(g, x, y - 2, 1, 2, '#3a3330');
-      R(g, x - 1, y, 3, 3, st.lights ? ((Math.sin(t * 2 + i) + 1) / 2 > 0.2 ? '#ffd27a' : '#ffb347') : '#8a7a60');
-    }
+    drawCity(g, night);
+    railing(g);
+    lightChain(g, st.lights, t);
   },
   props: [
-    { id: 'candle', movable: true, y: 112, hit: [136, 88, 26, 26], block: [138, 104, 22, 8], draw(g) { R(g, 140, 98, 18, 3, '#fff3dc'); R(g, 148, 101, 2, 10, '#3a3330'); R(g, 144, 110, 10, 2, '#3a3330'); R(g, 146, 94, 3, 4, '#fff3dc'); R(g, 147, 92, 1, 2, '#ffd27a'); } },
-    { id: 'foos', movable: true, y: 132, hit: [12, 106, 48, 28], block: [14, 118, 44, 14], draw(g) { // langırt (ayakları bilardoyla aynı hizada)
-      R(g, 14, 112, 44, 16, '#7a4426'); R(g, 16, 114, 40, 11, '#3fae5a'); R(g, 16, 114, 40, 1, '#6fd07f');
-      R(g, 35, 114, 1, 11, '#d8f5d8'); R(g, 16, 117, 2, 5, '#fff3dc'); R(g, 54, 117, 2, 5, '#fff3dc');
-      [22, 30, 42, 50].forEach((x, i) => { R(g, x, 111, 1, 18, '#c8ccd4'); R(g, x - 1, 116 + (i % 2) * 3, 3, 3, i < 2 ? '#e0473f' : '#5b8def'); });
-      R(g, 35, 119, 2, 2, '#ffffff');
-      R(g, 16, 128, 3, 4, C.woodD); R(g, 53, 128, 3, 4, C.woodD);
-    } },
-    { id: 'pool', movable: true, y: 132, hit: [70, 104, 54, 30], block: [72, 114, 50, 18], draw(g) { poolTable(g, 72, 108); } },
-    { id: 'flower', movable: true, y: 126, hit: [158, 92, 26, 36], block: [162, 120, 16, 6], draw(g, { t }) { drawFlower(g, 170, 126, t); } },
-    { id: 'plant', movable: true, y: 134, hit: [180, 102, 12, 34], block: [178, 128, 12, 6], draw(g) { plant(g, 184, 134, false); } },
+    { id: 'candle', movable: true, y: 112, hit: [136, 88, 26, 26], block: [138, 104, 22, 8], draw(g) { candleTable(g); } },
+    { id: 'foos', movable: true, y: 132, hit: [12, 106, 48, 28], block: [14, 118, 44, 14], draw(g) { foosball(g); } },
+    { id: 'pool', movable: true, y: 132, hit: [70, 104, 54, 30], block: [72, 114, 50, 18], draw(g) { pixPool(g, 72, 108); } },
+    { id: 'flower', movable: true, y: 126, hit: [158, 92, 26, 36], block: [162, 120, 16, 6], draw(g, { t }) { pixFlower(g, 170, 126, t, DECOR.flower); } },
+    { id: 'plant', movable: true, y: 134, hit: [180, 102, 12, 34], block: [178, 128, 12, 6], draw(g) { pixPlant(g, 184, 134, true); } },
   ],
   blocks: [[0, 0, W, 72], [64, 68, 64, 22]],
   doors: [{ x: 4, y: 84, w: 6, h: 28, to: 'salon', spawn: { x: 176, y: 96, dir: 'left' } }],
@@ -412,46 +294,12 @@ const hobi = makeScene({
   id: 'hobi',
   name: 'Hobi köşesi',
   colors: { wall: '#8fe0c8', accent: '#b4ecdb', floor: '#e0b07a', motif: 'stripes' },
-  draw(g, col) {
-    wallpaper(g, col.wall, col.accent, col.motif);
-    wainscot(g, '#ffd75e', '#e0a92a');
-    woodFloor(g, col.floor);
-    // Duvarda bayrak süsü
-    for (let i = 0; i < 12; i++) { const x = 50 + i * 8; R(g, x, 6 + (i % 2), 6, 2, '#3a3330'); R(g, x + 1, 8 + (i % 2), 4, 4, ['#ff7a59', '#ffc93c', '#5b8def', '#ff5d8f'][i % 4]); }
-    // Gardırop + dekor dolabı
-    R(g, 6, 12, 34, 52, C.woodD); R(g, 8, 14, 15, 48, '#c98a55'); R(g, 24, 14, 14, 48, '#c98a55'); R(g, 21, 34, 2, 6, C.gold); R(g, 25, 34, 2, 6, C.gold);
-    R(g, 10, 18, 11, 18, '#b47744'); R(g, 26, 18, 10, 18, '#b47744');
-    R(g, 10, 42, 11, 16, '#b47744'); R(g, 26, 42, 10, 16, '#b47744');
-    // Şövale
-    R(g, 62, 26, 2, 38, '#7a4426'); R(g, 76, 26, 2, 38, '#7a4426'); R(g, 58, 30, 24, 20, '#fffaf0'); R(g, 60, 32, 20, 16, '#ffffff');
-    R(g, 58, 50, 24, 2, '#7a4426'); R(g, 84, 56, 6, 4, '#fff3dc'); R(g, 85, 55, 1, 1, '#ff5d8f'); R(g, 87, 55, 1, 1, '#5b8def'); R(g, 88, 56, 1, 1, '#ffc93c');
-    // Çalışma masası
-    R(g, 92, 44, 40, 4, C.wood); R(g, 92, 44, 40, 1, C.woodL); R(g, 94, 48, 2, 14, C.woodD); R(g, 128, 48, 2, 14, C.woodD);
-    R(g, 98, 38, 10, 6, '#2e2e3a'); R(g, 99, 39, 8, 4, '#5ec2ff'); R(g, 112, 40, 6, 4, '#fff3dc'); R(g, 120, 36, 6, 8, C.pot); R(g, 119, 31, 8, 6, C.leaf);
-    // Fotoğraf kabini
-    R(g, 142, 6, 44, 60, '#e0473f'); R(g, 144, 10, 40, 4, '#ffc93c'); R(g, 150, 4, 28, 6, '#fff3dc');
-    R(g, 146, 16, 18, 48, '#c43838'); for (let y = 18; y < 64; y += 4) R(g, 146, y, 18, 1, '#a82e2e');
-    R(g, 166, 16, 16, 48, '#2a1a18'); R(g, 170, 24, 8, 10, '#ffffff'); R(g, 171, 25, 6, 8, '#ffd27a');
-    // Yuvarlak halı
-    R(g, 66, 92, 60, 26, '#ff5d8f'); R(g, 62, 96, 68, 18, '#ff5d8f'); R(g, 70, 96, 52, 18, '#ffc93c'); R(g, 76, 100, 40, 10, '#ff7a59');
-    // Alt kapı (salona)
-    R(g, 82, 138, 28, 6, '#c9a36b'); R(g, 80, 140, 32, 4, C.woodD);
-    sideDoor(g, 'right', col.wall); // mutfağa
-  },
-  dyn(g, { st }) {
-    R(g, 106, 30, 6, 4, st.desk ? '#ffe08a' : '#d6c08f'); R(g, 108, 34, 2, 10, C.metal);
-    if (DECOR.drawing) R(g, 60, 32, 20, 16, '#fffaf0');
-    else { R(g, 66, 36, 3, 3, '#ff5d8f'); R(g, 71, 36, 3, 3, '#ff5d8f'); R(g, 65, 38, 10, 3, '#ff5d8f'); R(g, 67, 41, 6, 2, '#ff5d8f'); R(g, 69, 43, 2, 1, '#ff5d8f'); }
-  },
+  draw(g, col) { drawHobi(g, col, wallpaper); },
+  dyn(g, { st }) { drawHobiDyn(g, st, DECOR.drawing); },
   props: [
-    { id: 'gametable', movable: true, y: 110, hit: [80, 90, 32, 22], block: [82, 102, 28, 8], draw(g) {
-      R(g, 84, 98, 24, 6, C.wood); R(g, 84, 98, 24, 1, C.woodL);
-      for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) R(g, 88 + i * 3, 99 + j * 2, 2, 2, (i + j) % 2 ? '#fff3dc' : '#3a2418');
-      R(g, 86, 104, 2, 6, C.woodD); R(g, 104, 104, 2, 6, C.woodD);
-      R(g, 90, 95, 3, 3, '#e0473f'); R(g, 100, 95, 3, 3, '#5b8def');
-    } },
-    { id: 'plantR', movable: true, y: 130, hit: [166, 96, 22, 36], block: [168, 124, 16, 6], draw(g) { plant(g, 176, 130, true); } },
-    { id: 'plantL', movable: true, y: 128, hit: [8, 102, 20, 28], block: [10, 122, 16, 6], draw(g) { plant(g, 18, 128, false); } },
+    { id: 'gametable', movable: true, y: 110, hit: [80, 90, 32, 22], block: [82, 102, 28, 8], draw(g) { gameTable(g); } },
+    { id: 'plantR', movable: true, y: 130, hit: [166, 96, 22, 36], block: [168, 124, 16, 6], draw(g) { pixPlant(g, 176, 130); } },
+    { id: 'plantL', movable: true, y: 128, hit: [8, 102, 20, 28], block: [10, 122, 16, 6], draw(g) { pixPlant(g, 18, 128, true); } },
   ],
   blocks: [[0, 0, W, 54], [4, 54, 38, 12], [56, 54, 36, 12], [90, 54, 44, 10], [140, 54, 48, 14]],
   doors: [
@@ -481,33 +329,11 @@ const yatak = makeScene({
   name: 'Yatak odası',
   colors: { wall: '#3b3566', accent: '#4a4380', floor: '#7a5a46', motif: 'dots' },
   dim: 0.45,
-  draw(g, col) {
-    wallpaper(g, col.wall, col.accent, col.motif);
-    wainscot(g, shade(col.wall, -0.2), '#c9a36b');
-    woodFloor(g, col.floor);
-    // Pencere (gece gökyüzü canlı çizilir), tül perde
-    R(g, 150, 8, 28, 26, C.woodD); R(g, 152, 10, 24, 22, '#141a3d');
-    R(g, 146, 6, 6, 34, '#e9d8f0'); R(g, 176, 6, 6, 34, '#e9d8f0'); R(g, 144, 4, 40, 2, C.metal);
-    // Yatak başlığı + çarşaf + yastıklar
-    R(g, 62, 26, 68, 28, C.woodD); R(g, 64, 28, 64, 24, '#6b4a8a'); for (let x = 70; x < 126; x += 8) R(g, x, 32, 4, 16, '#7d5a9e');
-    R(g, 62, 50, 68, 54, C.woodD); R(g, 64, 50, 64, 52, '#f4efe6');
-    R(g, 68, 52, 24, 11, '#ffffff'); R(g, 100, 52, 24, 11, '#ffffff'); R(g, 68, 61, 24, 2, '#e3dccf'); R(g, 100, 61, 24, 2, '#e3dccf');
-    nightstand(g, 40); nightstand(g, 132);
-    // Kilim (yatağın ayak ucu)
-    R(g, 58, 112, 76, 18, '#e9d8f0'); R(g, 60, 114, 72, 14, '#8a6fb0'); R(g, 64, 117, 64, 8, '#b39ddb');
-    sideDoor(g, 'right', col.wall);
-  },
-  dyn(g, { st, t, hour }) {
-    drawSky(g, 152, 10, 24, 22, hour, t); R(g, 163, 10, 2, 22, C.woodD);
-    for (const x of [40, 132]) { R(g, x + 4, 38, 12, 7, st.bedlamp ? '#ffcf8a' : '#b8a48a'); R(g, x + 5, 38, 10, 1, st.bedlamp ? '#fff1c8' : '#cbb89c'); }
-  },
+  draw(g, col) { drawYatak(g, col, wallpaper); },
+  dyn(g, { st, t, hour }) { drawYatakDyn(g, st, hour, t, drawSky); },
   props: [
-    { id: 'blanket', y: 106, draw(g) { // yorgan: uzananların gövdesini örter
-      R(g, 64, 66, 64, 36, '#c4566c'); R(g, 64, 66, 64, 4, '#f4efe6'); R(g, 64, 70, 64, 1, '#a8445a');
-      for (let x = 70; x < 126; x += 12) for (let y = 76; y < 100; y += 10) R(g, x, y, 3, 3, '#d97a8c');
-      R(g, 62, 102, 68, 6, C.woodD); R(g, 62, 102, 68, 1, C.woodL); R(g, 62, 108, 3, 3, C.woodD); R(g, 127, 108, 3, 3, C.woodD);
-    } },
-    { id: 'plant', movable: true, y: 134, hit: [8, 100, 20, 36], block: [10, 128, 16, 6], draw(g) { plant(g, 18, 134, true); } },
+    { id: 'blanket', y: 106, draw(g) { pixBlanket(g); } }, // yorgan: uzananların gövdesini örter
+    { id: 'plant', movable: true, y: 134, hit: [8, 100, 20, 36], block: [10, 128, 16, 6], draw(g) { pixPlant(g, 18, 134); } },
   ],
   blocks: [[0, 0, W, 54], [38, 48, 24, 20], [130, 48, 24, 20], [60, 48, 72, 62]],
   doors: [{ x: 182, y: 84, w: 6, h: 26, to: 'somine', spawn: { x: 16, y: 96, dir: 'right' } }],
@@ -529,55 +355,11 @@ const mutfak = makeScene({
   id: 'mutfak',
   name: 'Mutfak',
   colors: { wall: '#fff0d6', accent: '#ffd9a8', floor: '#d9c3a0', motif: 'stripes' },
-  draw(g, col) {
-    wallpaper(g, col.wall, col.accent, col.motif);
-    // Fayans duvar (tezgah arkası)
-    R(g, 0, 22, W, 28, '#ffffff'); for (let y = 22; y < 50; y += 7) for (let x = (y / 7) % 2 ? 0 : 7; x < W; x += 14) R(g, x, y, 7, 7, '#e8f4f7');
-    tileFloor(g, WALL, col.floor, shade(col.floor, -0.08));
-    // Üst dolaplar
-    R(g, 40, 4, 110, 16, '#5b8def'); for (let x = 42; x < 148; x += 27) { R(g, x, 6, 25, 12, '#7aa4f5'); R(g, x + 11, 15, 3, 1, C.gold); }
-    // Tezgah: lavabo, ocak, fırın
-    R(g, 34, 44, 150, 22, '#5b8def'); R(g, 34, 42, 150, 4, '#e8e2d6'); R(g, 34, 46, 150, 1, '#c8c0b0');
-    for (let x = 38; x < 180; x += 24) { R(g, x, 50, 22, 14, '#7aa4f5'); R(g, x + 9, 52, 4, 1, C.gold); }
-    R(g, 44, 42, 22, 5, '#b8c4cc'); R(g, 46, 43, 18, 3, '#8fd0ff'); R(g, 54, 36, 2, 7, '#9aa3ad'); R(g, 54, 36, 6, 2, '#9aa3ad'); // lavabo
-    R(g, 96, 40, 34, 6, '#2e2e3a'); for (const x of [100, 118]) { R(g, x, 41, 8, 4, '#4a4752'); } // ocak
-    R(g, 98, 50, 30, 14, '#2e2e3a'); R(g, 100, 52, 26, 8, '#5a5560'); R(g, 102, 53, 22, 6, '#ffb36b'); // fırın camı
-    // Buzdolabı
-    R(g, 150, 10, 30, 56, '#e8f4f7'); R(g, 150, 10, 30, 2, '#ffffff'); R(g, 150, 30, 30, 1, '#b8c4cc'); R(g, 174, 16, 2, 10, '#9aa3ad'); R(g, 174, 34, 2, 14, '#9aa3ad');
-    R(g, 156, 14, 5, 5, '#ff5d8f'); R(g, 163, 18, 5, 4, '#ffc93c'); // magnetler
-    R(g, 154, 36, 8, 10, '#fff3dc'); R(g, 155, 37, 6, 1, '#e0473f'); R(g, 155, 39, 5, 1, '#9aa3ad'); R(g, 155, 41, 6, 1, '#9aa3ad'); // alışveriş listesi
-    // Fayans duvarda: baharat rafı, kepçe askısı, bıçaklık
-    R(g, 66, 26, 24, 2, C.woodD); for (let i = 0; i < 5; i++) { R(g, 67 + i * 5, 21, 3, 5, ['#e0473f', '#ffc93c', '#4fbf6a', '#c8742c', '#8a5a36'][i]); R(g, 67 + i * 5, 20, 3, 1, '#fff6e8'); }
-    R(g, 92, 24, 40, 1, '#9aa3ad'); for (const [x, c] of [[95, '#c8742c'], [104, '#9aa3ad'], [112, '#8a5a36'], [121, '#2e2e3a']]) { R(g, x, 25, 1, 6, '#6d7680'); R(g, x - 2, 31, 5, 3, c); }
-    R(g, 134, 26, 10, 8, '#5a3420'); R(g, 135, 22, 1, 4, '#c8d0d8'); R(g, 138, 21, 1, 5, '#c8d0d8'); R(g, 141, 23, 1, 3, '#c8d0d8');
-    // Tezgahın üstü: kesme tahtası, meyve kâsesi, çaydanlık, mikser
-    R(g, 70, 39, 18, 4, '#c48b55'); R(g, 72, 38, 4, 2, '#e0473f'); R(g, 78, 38, 3, 2, '#4fbf6a');
-    R(g, 36, 39, 6, 4, '#ffc93c'); R(g, 37, 37, 4, 2, '#4fbf6a'); R(g, 35, 41, 8, 2, '#5a3420'); // meyve kâsesi
-    R(g, 132, 36, 9, 6, '#e0473f'); R(g, 134, 34, 5, 2, '#e0473f'); R(g, 141, 37, 2, 2, '#e0473f'); R(g, 135, 33, 3, 1, '#2e2e3a'); // çaydanlık
-    // Pencere önünde saksıda fesleğen, duvarda saat
-    R(g, 12, 28, 16, 2, C.woodD); R(g, 14, 25, 5, 3, '#c8742c'); R(g, 15, 22, 3, 3, '#4fbf6a'); R(g, 21, 25, 5, 3, '#c8742c'); R(g, 22, 21, 3, 4, '#3f9b4f');
-    // Yerde yolluk halı
-    R(g, 40, 76, 110, 10, '#e07a5f'); R(g, 42, 78, 106, 6, '#f2cc8f'); for (let x = 46; x < 146; x += 10) R(g, x, 80, 4, 2, '#e07a5f');
-    // Masa örtüsü (yemek masası ön planda çizilir)
-    sideDoor(g, 'left', col.wall);
-    R(g, 8, 4, 24, 26, C.woodD); R(g, 10, 6, 20, 22, '#5ec2ff'); // küçük pencere
-  },
-  dyn(g, { t, hour }) {
-    drawSky(g, 10, 6, 20, 22, hour, t); R(g, 19, 6, 2, 22, C.woodD);
-    // Buzdolabındaki yemekler: üstünde saklama kapları (en çok 5)
-    (DECOR.fridgeFood || []).forEach((col, i) => { R(g, 151 + i * 6, 6, 5, 4, col); R(g, 151 + i * 6, 5, 5, 1, '#ffffff'); });
-    if (DECOR.cooking) { // ocakta tencere + buhar
-      R(g, 99, 34, 12, 7, '#9aa3ad'); R(g, 100, 34, 10, 2, '#b8c4cc');
-      for (let i = 0; i < 3; i++) R(g, 101 + i * 4, 30 - ((t * 2 + i) % 2 | 0) * 3, 1, 3, 'rgba(255,255,255,0.7)');
-    }
-  },
+  draw(g, col) { drawMutfak(g, col, wallpaper); },
+  dyn(g, { t, hour }) { drawMutfakDyn(g, t, hour, drawSky, DECOR); },
   props: [
-    { id: 'table', movable: true, y: 112, hit: [72, 88, 48, 26], block: [76, 96, 40, 14], draw(g) {
-      R(g, 74, 94, 44, 14, '#ff7a59'); R(g, 74, 94, 44, 2, '#ffa58a'); for (let x = 76; x < 116; x += 8) R(g, x, 96, 4, 4, '#fff3dc');
-      R(g, 78, 108, 3, 4, C.woodD); R(g, 111, 108, 3, 4, C.woodD);
-      R(g, 84, 96, 8, 4, '#ffffff'); R(g, 100, 96, 8, 4, '#ffffff'); // tabaklar
-    } },
-    { id: 'plant', movable: true, y: 134, hit: [168, 100, 20, 36], block: [170, 128, 16, 6], draw(g) { plant(g, 178, 134, true); } },
+    { id: 'table', movable: true, y: 112, hit: [72, 88, 48, 26], block: [76, 96, 40, 14], draw(g) { kitchenTable(g); } },
+    { id: 'plant', movable: true, y: 134, hit: [168, 100, 20, 36], block: [170, 128, 16, 6], draw(g) { pixPlant(g, 178, 134); } },
   ],
   blocks: [[0, 0, W, 54], [34, 54, 150, 14]],
   doors: [{ x: 4, y: 84, w: 6, h: 26, to: 'hobi', spawn: { x: 176, y: 100, dir: 'left' } }],
